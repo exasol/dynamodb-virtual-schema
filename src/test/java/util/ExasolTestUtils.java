@@ -1,17 +1,25 @@
 package util;
 
+import com.exasol.adapter.dynamodb.DynamodbAdapterTestLocalIT;
 import com.exasol.bucketfs.Bucket;
 import com.exasol.bucketfs.BucketAccessException;
 import com.exasol.containers.ExasolContainer;
+import com.github.dockerjava.api.model.ContainerNetwork;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.nio.file.Path;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Map;
 import java.util.concurrent.TimeoutException;
 
 
 public class ExasolTestUtils {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(DynamodbAdapterTestLocalIT.class);
+
     private static final String VIRTUAL_SCHEMAS_JAR_NAME_AND_VERSION = "dynamodb-virtual-schemas-adapter-dist-0.0.1.jar";
     private static final Path PATH_TO_VIRTUAL_SCHEMAS_JAR = Path.of("target", VIRTUAL_SCHEMAS_JAR_NAME_AND_VERSION);
     public static final String ADAPTER_SCHEMA = "ADAPTER";
@@ -52,12 +60,26 @@ public class ExasolTestUtils {
                 "/");
     }
 
+    /*
+        hacky method for retrieving the host address for access from inside the docker container
+     */
+    private String getTestHostIpAddress(){
+        Map<String, ContainerNetwork> networks =  container.getContainerInfo().getNetworkSettings().getNetworks();
+        if(networks.size() == 0)
+            return null;
+        return networks.values().iterator().next().getGateway();
+    }
+
     public void createDynamodbVirtualSchema(String name, String dynamodbConnection) throws SQLException {
+
+        LOGGER.info(getTestHostIpAddress());
+
+
         statement.execute("CREATE VIRTUAL SCHEMA " + name + "\n" +
                 "    USING " + ADAPTER_SCHEMA + "." + DYNAMODB_ADAPTER + " WITH\n" +
                 "    CONNECTION_NAME = '" + dynamodbConnection+ "'\n" +
                 "   SQL_DIALECT     = 'Dynamodb'\n" +
-                "   DEBUG_ADDRESS   = '10.0.2.15:3000'\n" +//TODO find host ip dynamiclaly
+                "   DEBUG_ADDRESS   = '" + getTestHostIpAddress() + ":3000'\n" +
                 "   LOG_LEVEL       =  'ALL';");
     }
 

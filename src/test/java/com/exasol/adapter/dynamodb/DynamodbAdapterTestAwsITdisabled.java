@@ -28,7 +28,7 @@ import static org.junit.Assert.assertFalse;
   create a table JB_Books with primary key "isbn" and insert one item
  */
 @Testcontainers
-public class DynamodbAdapterTestAwsIT {
+public class DynamodbAdapterTestAwsITdisabled {
     private static final Logger LOGGER = LoggerFactory.getLogger(DynamodbAdapterTestLocalIT.class);
 
     @Container
