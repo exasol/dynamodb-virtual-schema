@@ -1,6 +1,6 @@
 package util;
 
-import com.exasol.adapter.dynamodb.DynamodbAdapterTestLocalIT;
+import com.exasol.adapter.dynamodb.DynamodbAdapterTestLocalITdisabled;
 import com.github.dockerjava.api.model.ContainerNetwork;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,7 +30,7 @@ public class DynamodbTestUtils {
     private String dockerUrl;
     private String localUrl;
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(DynamodbAdapterTestLocalIT.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(DynamodbAdapterTestLocalITdisabled.class);
 
 
     /*

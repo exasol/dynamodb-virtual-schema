@@ -25,8 +25,8 @@ import static org.junit.Assert.*;
  **/
 @Tag("integration")
 @Testcontainers
-public class DynamodbAdapterTestLocalIT {
-    private static final Logger LOGGER = LoggerFactory.getLogger(DynamodbAdapterTestLocalIT.class);
+public class DynamodbAdapterTestLocalITdisabled {
+    private static final Logger LOGGER = LoggerFactory.getLogger(DynamodbAdapterTestLocalITdisabled.class);
 
     final static Network network = Network.newNetwork();
 

@@ -1,6 +1,6 @@
 package util;
 
-import com.exasol.adapter.dynamodb.DynamodbAdapterTestLocalIT;
+import com.exasol.adapter.dynamodb.DynamodbAdapterTestLocalITdisabled;
 import com.exasol.bucketfs.Bucket;
 import com.exasol.bucketfs.BucketAccessException;
 import com.exasol.containers.ExasolContainer;
@@ -18,7 +18,7 @@ import java.util.concurrent.TimeoutException;
 
 public class ExasolTestUtils {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(DynamodbAdapterTestLocalIT.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(DynamodbAdapterTestLocalITdisabled.class);
 
     private static final String VIRTUAL_SCHEMAS_JAR_NAME_AND_VERSION = "dynamodb-virtual-schemas-adapter-dist-0.0.1.jar";
     private static final Path PATH_TO_VIRTUAL_SCHEMAS_JAR = Path.of("target", VIRTUAL_SCHEMAS_JAR_NAME_AND_VERSION);

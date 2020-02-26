@@ -29,7 +29,7 @@ import static org.junit.Assert.assertFalse;
  */
 @Testcontainers
 public class DynamodbAdapterTestAwsITdisabled {
-    private static final Logger LOGGER = LoggerFactory.getLogger(DynamodbAdapterTestLocalIT.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(DynamodbAdapterTestLocalITdisabled.class);
 
     @Container
     private static ExasolContainer<? extends ExasolContainer<?>> exasolContainer = new ExasolContainer<>(

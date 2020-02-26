@@ -41,8 +41,8 @@ public class DynamodbAdapter implements VirtualSchemaAdapter{
 	 **/
 	@Override
 	public CreateVirtualSchemaResponse createVirtualSchema(ExaMetadata exaMetadata, CreateVirtualSchemaRequest request) throws AdapterException {
-		List<TableMetadata> tables = new LinkedList<TableMetadata>();
-		List<ColumnMetadata> cols = new LinkedList<ColumnMetadata>();
+		List<TableMetadata> tables = new LinkedList<>();
+		List<ColumnMetadata> cols = new LinkedList<>();
 		ColumnMetadata.Builder b = new ColumnMetadata.Builder();
 		b.name("isbn");
 		b.type(DataType.createVarChar(100, DataType.ExaCharset.ASCII));

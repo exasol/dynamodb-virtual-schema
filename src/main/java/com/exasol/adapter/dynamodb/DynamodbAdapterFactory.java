@@ -19,7 +19,7 @@ public class DynamodbAdapterFactory implements AdapterFactory {
 
     @Override
     public Set<String> getSupportedAdapterNames() {
-        Set<String> ret = new HashSet<String>();
+        Set<String> ret = new HashSet<>();
         ret.add("Dynamodb");
         return ret;
     }
