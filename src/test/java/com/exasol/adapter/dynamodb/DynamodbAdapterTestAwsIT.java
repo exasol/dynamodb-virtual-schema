@@ -16,7 +16,6 @@ import util.ExasolTestUtils;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 
 import static org.junit.Assert.*;
 import static org.junit.Assert.assertFalse;
@@ -50,7 +49,7 @@ public class DynamodbAdapterTestAwsIT {
         exasolTestUtils = new ExasolTestUtils(exasolContainer);
         exasolTestUtils.uploadDynamodbAdapterJar();
         exasolTestUtils.createAdapterScript();
-        exasolTestUtils.createConnection(DYNAMODB_CONNECTION, dynamodbTestUtils.getUrl(), DynamodbTestUtils.LOCAL_DYNAMO_USER,DynamodbTestUtils.LOCAL_DYNAMO_PASS);
+        exasolTestUtils.createConnection(DYNAMODB_CONNECTION, dynamodbTestUtils.getDockerUrl(), DynamodbTestUtils.LOCAL_DYNAMO_USER,DynamodbTestUtils.LOCAL_DYNAMO_PASS);
         exasolTestUtils.createDynamodbVirtualSchema(TEST_SCHEMA,DYNAMODB_CONNECTION);
     }
 

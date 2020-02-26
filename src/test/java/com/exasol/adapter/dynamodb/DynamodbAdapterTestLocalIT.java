@@ -1,13 +1,12 @@
 package com.exasol.adapter.dynamodb;
 
-import com.exasol.bucketfs.BucketAccessException;
-import com.exasol.jdbc.TimeoutException;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testcontainers.containers.GenericContainer;
+import org.testcontainers.containers.Network;
 import org.testcontainers.containers.output.Slf4jLogConsumer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
@@ -17,10 +16,8 @@ import com.exasol.containers.ExasolContainerConstants;
 import util.DynamodbTestUtils;
 import util.ExasolTestUtils;
 
-import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 
 import static org.junit.Assert.*;
 /**
@@ -31,13 +28,15 @@ import static org.junit.Assert.*;
 public class DynamodbAdapterTestLocalIT {
     private static final Logger LOGGER = LoggerFactory.getLogger(DynamodbAdapterTestLocalIT.class);
 
+    final static Network network = Network.newNetwork();
+
     @Container
     private static ExasolContainer<? extends ExasolContainer<?>> exasolContainer = new ExasolContainer<>(
-            ExasolContainerConstants.EXASOL_DOCKER_IMAGE_REFERENCE).withLogConsumer(new Slf4jLogConsumer(LOGGER));
+            ExasolContainerConstants.EXASOL_DOCKER_IMAGE_REFERENCE).withNetwork(network).withLogConsumer(new Slf4jLogConsumer(LOGGER));
 
     @Container
     public static GenericContainer localDynamo = new GenericContainer<>("amazon/dynamodb-local")
-            .withExposedPorts(8000).withCommand("-jar DynamoDBLocal.jar -sharedDb -dbPath .");
+            .withExposedPorts(8000).withNetwork(network).withNetworkAliases("dynamo").withCommand("-jar DynamoDBLocal.jar -sharedDb -dbPath .");
 
     private static DynamodbTestUtils dynamodbTestUtils;
     private static ExasolTestUtils exasolTestUtils;
@@ -50,9 +49,9 @@ public class DynamodbAdapterTestLocalIT {
 
 
     @BeforeAll
-    static void beforeAll() throws SQLException, BucketAccessException, InterruptedException, TimeoutException, java.util.concurrent.TimeoutException {
+    static void beforeAll() throws Exception {
         LOGGER.info("starting locat test beforAll");
-        dynamodbTestUtils = new DynamodbTestUtils(localDynamo);
+        dynamodbTestUtils = new DynamodbTestUtils(localDynamo, network);
         LOGGER.info("inited dynamoTestUtil");
         exasolTestUtils = new ExasolTestUtils(exasolContainer);
         LOGGER.info("inited exasolTestUtil");
@@ -60,7 +59,7 @@ public class DynamodbAdapterTestLocalIT {
         LOGGER.info("uploaded jar");
         exasolTestUtils.createAdapterScript();
         LOGGER.info("created adapter script");
-        exasolTestUtils.createConnection(DYNAMODB_CONNECTION, dynamodbTestUtils.getUrl(), DynamodbTestUtils.LOCAL_DYNAMO_USER,DynamodbTestUtils.LOCAL_DYNAMO_PASS);
+        exasolTestUtils.createConnection(DYNAMODB_CONNECTION, dynamodbTestUtils.getDockerUrl(), DynamodbTestUtils.LOCAL_DYNAMO_USER,DynamodbTestUtils.LOCAL_DYNAMO_PASS);
         LOGGER.info("created connection");
         exasolTestUtils.createDynamodbVirtualSchema(TEST_SCHEMA,DYNAMODB_CONNECTION);
         LOGGER.info("created schema");

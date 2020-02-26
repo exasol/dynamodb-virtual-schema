@@ -1,13 +1,12 @@
 package util;
 
-import com.exasol.adapter.dynamodb.DynamodbAdapter;
-import com.fasterxml.jackson.core.JsonFactory;
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.exasol.adapter.dynamodb.DynamodbAdapterTestLocalIT;
+import com.github.dockerjava.api.model.ContainerNetwork;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.testcontainers.containers.GenericContainer;
+import org.testcontainers.containers.Network;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
-import software.amazon.awssdk.auth.credentials.EnvironmentVariableCredentialsProvider;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
@@ -17,7 +16,7 @@ import software.amazon.awssdk.services.dynamodb.model.*;
 import java.io.*;
 import java.net.URI;
 import java.util.HashMap;
-import java.util.Iterator;
+import java.util.Map;
 
 /*
     Test utils for testing dynamodb
@@ -28,7 +27,10 @@ public class DynamodbTestUtils {
     public static final String LOCAL_DYNAMO_PASS = "fakeSecretAccessKey";
 
     private DynamoDbClient client;
-    private String url;
+    private String dockerUrl;
+    private String localUrl;
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(DynamodbAdapterTestLocalIT.class);
 
 
     /*
@@ -47,31 +49,44 @@ AwsSessionCredentials awsCreds = AwsSessionCredentials.create(
     /*
         Creates an DynamodbTestUtils instance with default login credentials for the local dynamodb docker instance
      */
-    public DynamodbTestUtils(GenericContainer localDynamo){
-        this( getUrlForLocalDynamodb(localDynamo), LOCAL_DYNAMO_USER,LOCAL_DYNAMO_PASS);
+    public DynamodbTestUtils(GenericContainer localDynamo, Network dockerNetwork) throws Exception {
+        this(   getLocalUrlForLocalDynamodb(localDynamo),
+                getDockerNetworkURlForLocalDynamodb(localDynamo, dockerNetwork),
+                LOCAL_DYNAMO_USER,LOCAL_DYNAMO_PASS);
     }
 
-    private static String getUrlForLocalDynamodb(GenericContainer localDynamo){
+
+    private static String getDockerNetworkURlForLocalDynamodb(GenericContainer localDynamo, Network thisNetwork) throws Exception {
         String address = localDynamo.getContainerIpAddress();
-        Integer port = localDynamo.getFirstMappedPort();
-        address = "10.0.2.15"; //TODO beeter solution
-        return "http://" + address + ":" + port;
+        final Map<String, ContainerNetwork> networks = localDynamo.getContainerInfo().getNetworkSettings().getNetworks();
+        for (final ContainerNetwork network : networks.values()) {
+            if (thisNetwork.getId().equals(network.getNetworkID())) {
+                return "http://" + network.getIpAddress() + ":8000";
+            }
+        }
+
+        throw new Exception("no network found");
+    }
+
+    private static String getLocalUrlForLocalDynamodb(GenericContainer localDynamo) {
+        return "http://127.0.0.1:" + localDynamo.getFirstMappedPort();
     }
 
     /*
         Create DynamodbTestUtils for aws connection
      */
     public DynamodbTestUtils(String user, String pass){
-        this("aws",user,pass);
+        this("aws","aws",user,pass);
     }
 
 
-    private DynamodbTestUtils(String url, String user, String pass) {
-        this.url = url;
+    private DynamodbTestUtils(String localUrl, String dockerUrl, String user, String pass) {
+        this.localUrl = localUrl;
+        this.dockerUrl = dockerUrl;
         StaticCredentialsProvider credentialsProvider = StaticCredentialsProvider.create(AwsBasicCredentials.create(user, pass));
         DynamoDbClientBuilder cilentBuilder = DynamoDbClient.builder().region(Region.EU_CENTRAL_1).credentialsProvider(credentialsProvider);
-        if(!url.equals("aws")){
-            cilentBuilder.endpointOverride(URI.create(url));
+        if(!this.dockerUrl.equals("aws")){
+            cilentBuilder.endpointOverride(URI.create(this.dockerUrl));
         }
         this.client = cilentBuilder.build();
     }
@@ -110,20 +125,26 @@ AwsSessionCredentials awsCreds = AwsSessionCredentials.create(
 
     public void importData(File asset) throws IOException, InterruptedException {
         Runtime rt = Runtime.getRuntime();
-        String cmd = "aws dynamodb batch-write-item --request-items file://" + asset.getPath() + " --endpoint-url " + getUrl();
+        String cmd = "aws dynamodb batch-write-item --request-items file://" + asset.getPath();
+        if(!this.localUrl.equals("aws")){
+            cmd += " --endpoint-url " + this.localUrl;
+        }
+
         System.out.println(cmd);
         Process proc = rt.exec(cmd);
         InputStream stderr = proc.getErrorStream();
         InputStreamReader isr = new InputStreamReader(stderr);
         BufferedReader br = new BufferedReader(isr);
-        String line = null;
-        while ( (line = br.readLine()) != null)
-            System.out.println(line);
 
+
+        String line = null;
+        while ( (line = br.readLine()) != null) {
+            LOGGER.error(line);
+        }
         proc.waitFor();
     }
 
-    public String getUrl(){
-        return this.url;
+    public String getDockerUrl(){
+        return this.dockerUrl;
     }
 }
