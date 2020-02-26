@@ -74,13 +74,19 @@ public class ExasolTestUtils {
 
         LOGGER.info(getTestHostIpAddress());
 
-
-        statement.execute("CREATE VIRTUAL SCHEMA " + name + "\n" +
+        String stmnt = "CREATE VIRTUAL SCHEMA " + name + "\n" +
                 "    USING " + ADAPTER_SCHEMA + "." + DYNAMODB_ADAPTER + " WITH\n" +
                 "    CONNECTION_NAME = '" + dynamodbConnection+ "'\n" +
-                "   SQL_DIALECT     = 'Dynamodb'\n" +
-                "   DEBUG_ADDRESS   = '" + getTestHostIpAddress() + ":3000'\n" +
-                "   LOG_LEVEL       =  'ALL';");
+                "   SQL_DIALECT     = 'Dynamodb'";
+
+        String hostIp = getTestHostIpAddress();
+        if(hostIp != null){
+            stmnt += "\n   DEBUG_ADDRESS   = '" + getTestHostIpAddress() + ":3000'\n" +
+                     "   LOG_LEVEL       =  'ALL'";
+        }
+
+        stmnt += ";";
+        statement.execute(stmnt);
     }
 
     public void sleepForDebugging(){
