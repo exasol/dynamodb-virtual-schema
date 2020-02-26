@@ -51,16 +51,24 @@ public class DynamodbAdapterTestLocalIT {
 
     @BeforeAll
     static void beforeAll() throws SQLException, BucketAccessException, InterruptedException, TimeoutException, java.util.concurrent.TimeoutException {
+        LOGGER.info("starting locat test beforAll");
         dynamodbTestUtils = new DynamodbTestUtils(localDynamo);
+        LOGGER.info("inited dynamoTestUtil");
         exasolTestUtils = new ExasolTestUtils(exasolContainer);
+        LOGGER.info("inited exasolTestUtil");
         exasolTestUtils.uploadDynamodbAdapterJar();
+        LOGGER.info("uploaded jar");
         exasolTestUtils.createAdapterScript();
+        LOGGER.info("created adapter script");
         exasolTestUtils.createConnection(DYNAMODB_CONNECTION, dynamodbTestUtils.getUrl(), DynamodbTestUtils.LOCAL_DYNAMO_USER,DynamodbTestUtils.LOCAL_DYNAMO_PASS);
+        LOGGER.info("created connection");
         exasolTestUtils.createDynamodbVirtualSchema(TEST_SCHEMA,DYNAMODB_CONNECTION);
-
+        LOGGER.info("created schema");
         //create dummy data
         dynamodbTestUtils.createTable(DYNAMO_TABLE_NAME, "isbn");
+        LOGGER.info("created table");
         dynamodbTestUtils.pushItem();
+        LOGGER.info("created item");
     }
 
     @Test
