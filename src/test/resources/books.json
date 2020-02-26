@@ -1,0 +1,12 @@
+{
+  "JB_Books": [
+    {
+      "PutRequest": {
+        "Item": {
+          "isbn": {"S":"123567"},
+          "name": {"S": "Dummes Buch"}
+        }
+      }
+    }
+  ]
+}

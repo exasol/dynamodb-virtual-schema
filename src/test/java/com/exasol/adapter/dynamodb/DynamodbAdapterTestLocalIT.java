@@ -35,7 +35,7 @@ public class DynamodbAdapterTestLocalIT {
 
     @Container
     public static GenericContainer localDynamo = new GenericContainer<>("amazon/dynamodb-local")
-            .withExposedPorts(8000);
+            .withExposedPorts(8000).withCommand("-jar DynamoDBLocal.jar -sharedDb -dbPath .");
 
     private static DynamodbTestUtils dynamodbTestUtils;
     private static ExasolTestUtils exasolTestUtils;
@@ -69,5 +69,6 @@ public class DynamodbAdapterTestLocalIT {
         assertEquals("12398439493", expected.getString(1));
         assertFalse(expected.next());
     }
+
 
 }

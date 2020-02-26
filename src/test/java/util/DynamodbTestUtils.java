@@ -1,6 +1,10 @@
 package util;
 
 import com.exasol.adapter.dynamodb.DynamodbAdapter;
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.testcontainers.containers.GenericContainer;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.EnvironmentVariableCredentialsProvider;
@@ -10,8 +14,10 @@ import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClientBuilder;
 import software.amazon.awssdk.services.dynamodb.model.*;
 
+import java.io.*;
 import java.net.URI;
 import java.util.HashMap;
+import java.util.Iterator;
 
 /*
     Test utils for testing dynamodb
@@ -80,9 +86,10 @@ AwsSessionCredentials awsCreds = AwsSessionCredentials.create(
         client.putItem(request);
     }
 
-    public void scan(String tableName){
+    public int scan(String tableName){
         ScanResponse res = client.scan(ScanRequest.builder().tableName(tableName).build());
         System.out.println(res.toString());
+        return res.count();
     }
 
     public void createTable(String tableName, String keyName){
@@ -99,6 +106,21 @@ AwsSessionCredentials awsCreds = AwsSessionCredentials.create(
                         .build())
                 .build();
         client.createTable(request);
+    }
+
+    public void importData(File asset) throws IOException, InterruptedException {
+        Runtime rt = Runtime.getRuntime();
+        String cmd = "aws dynamodb batch-write-item --request-items file://" + asset.getPath() + " --endpoint-url " + getUrl();
+        System.out.println(cmd);
+        Process proc = rt.exec(cmd);
+        InputStream stderr = proc.getErrorStream();
+        InputStreamReader isr = new InputStreamReader(stderr);
+        BufferedReader br = new BufferedReader(isr);
+        String line = null;
+        while ( (line = br.readLine()) != null)
+            System.out.println(line);
+
+        proc.waitFor();
     }
 
     public String getUrl(){
