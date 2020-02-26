@@ -20,7 +20,14 @@ import java.sql.Statement;
 
 import static org.junit.Assert.*;
 import static org.junit.Assert.assertFalse;
+/*
+  Tests using the aws DynamoDB.
+  Setup credentials on your machine using: aws configure
+  Until no two factor authentication is NOT SUPPORTED!
 
+  Preparation:
+  create a table JB_Books with primary key "isbn" and insert one item
+ */
 @Testcontainers
 public class DynamodbAdapterTestAwsIT {
     private static final Logger LOGGER = LoggerFactory.getLogger(DynamodbAdapterTestLocalIT.class);

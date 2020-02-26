@@ -13,7 +13,7 @@ Next create the Adapter Script:
  ```
 CREATE OR REPLACE JAVA ADAPTER SCRIPT ADAPTER.DYNAMODB_ADAPTER AS
     %scriptclass com.exasol.adapter.RequestDispatcher;
-    %jar /buckets/bfsdefault/default/dynamodb-virtual-schemas-adapter-dist-0.1.jar;
+    %jar /buckets/bfsdefault/default/dynamodb-virtual-schemas-adapter-dist-0.0.1.jar;
 /
 ```
 
@@ -52,7 +52,7 @@ SELECT * FROM ASDF."testTable";
 ```
 
 # Debuging
-   For recieving virtual schema logs during integration tests use:
+For recieving virtual schema logs during integration tests use:
 ```
     nc -lkp 3000
 ```

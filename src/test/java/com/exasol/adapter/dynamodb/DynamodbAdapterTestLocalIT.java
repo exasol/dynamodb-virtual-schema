@@ -23,7 +23,9 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 import static org.junit.Assert.*;
-
+/**
+   Tests the {@link DynamodbAdapter} using a local docker version of DynamoDB and a local docker version of exasol.
+ **/
 @Tag("integration")
 @Testcontainers
 public class DynamodbAdapterTestLocalIT {

@@ -16,6 +16,9 @@ import java.sql.SQLException;
 
 import static org.junit.Assert.assertEquals;
 
+/**
+ *  Tests the {@link DynamodbTestUtils}
+ */
 @Tag("integration")
 @Testcontainers
 public class DynamodbTestUtilTestIT {

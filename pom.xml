@@ -9,7 +9,7 @@
     <description>Adapter for Dynamodb data access from Virtual Schemas.</description>
     <url>https://github.com/exasol/virtual-schema-dynamodb</url>
     <properties>
-        <product.version>0.1</product.version>
+        <product.version>0.0.1</product.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <java.version>11</java.version>
@@ -267,7 +267,7 @@
                       <property>	                      in the logging lambdas too. -->
                     <argLine>-Djava.util.logging.config.file=src/test/resources/logging.properties ${argLine}</argLine>
                     <includes>
-                        <include>DynamodbAdapterTestIT.java</include>
+                        <include>**IT.java</include>
                     </includes>
                     <failIfNoTests>true</failIfNoTests>
                 </configuration>
