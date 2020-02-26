@@ -15,8 +15,11 @@ addons:
 before_script:
   - tools/version.sh verify
 
+before_install:
+  - pip3 install awscli
+  
 install:
-    - travis_retry mvn dependency:resolve
+  - travis_retry mvn dependency:resolve
 
 script:
   - mvn clean org.jacoco:jacoco-maven-plugin:prepare-agent org.jacoco:jacoco-maven-plugin:prepare-agent-integration verify sonar:sonar
