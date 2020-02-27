@@ -20,18 +20,19 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import static org.junit.Assert.*;
+
 /**
-   Tests the {@link DynamodbAdapter} using a local docker version of DynamoDB and a local docker version of exasol.
+ * Tests the {@link DynamodbAdapter} using a local docker version of DynamoDB and a local docker version of exasol.
  **/
 @Tag("integration")
 @Testcontainers
-public class DynamodbAdapterTestLocalITdisabled {
-    private static final Logger LOGGER = LoggerFactory.getLogger(DynamodbAdapterTestLocalITdisabled.class);
+public class DynamodbAdapterTestLocalIT {
+    private static final Logger LOGGER = LoggerFactory.getLogger(DynamodbAdapterTestLocalIT.class);
 
     final static Network network = Network.newNetwork();
 
     @Container
-    private static ExasolContainer<? extends ExasolContainer<?>> exasolContainer = new ExasolContainer<>(
+    private static final ExasolContainer<? extends ExasolContainer<?>> exasolContainer = new ExasolContainer<>(
             ExasolContainerConstants.EXASOL_DOCKER_IMAGE_REFERENCE).withNetwork(network).withLogConsumer(new Slf4jLogConsumer(LOGGER));
 
     @Container
@@ -46,8 +47,6 @@ public class DynamodbAdapterTestLocalITdisabled {
 
     private static final String DYNAMO_TABLE_NAME = "JB_Books";
 
-
-
     @BeforeAll
     static void beforeAll() throws Exception {
         LOGGER.info("starting locat test beforAll");
@@ -59,9 +58,9 @@ public class DynamodbAdapterTestLocalITdisabled {
         LOGGER.info("uploaded jar");
         exasolTestUtils.createAdapterScript();
         LOGGER.info("created adapter script");
-        exasolTestUtils.createConnection(DYNAMODB_CONNECTION, dynamodbTestUtils.getDockerUrl(), DynamodbTestUtils.LOCAL_DYNAMO_USER,DynamodbTestUtils.LOCAL_DYNAMO_PASS);
+        exasolTestUtils.createConnection(DYNAMODB_CONNECTION, dynamodbTestUtils.getDockerUrl(), DynamodbTestUtils.LOCAL_DYNAMO_USER, DynamodbTestUtils.LOCAL_DYNAMO_PASS);
         LOGGER.info("created connection");
-        exasolTestUtils.createDynamodbVirtualSchema(TEST_SCHEMA,DYNAMODB_CONNECTION);
+        exasolTestUtils.createDynamodbVirtualSchema(TEST_SCHEMA, DYNAMODB_CONNECTION);
         LOGGER.info("created schema");
         //create dummy data
         dynamodbTestUtils.createTable(DYNAMO_TABLE_NAME, "isbn");
@@ -72,7 +71,7 @@ public class DynamodbAdapterTestLocalITdisabled {
 
     @Test
     void testSelect() throws SQLException {
-        final ResultSet expected = exasolTestUtils.getStatement().executeQuery("SELECT * FROM " +  TEST_SCHEMA + ".\"testTable\";");//table name is hardcoded in adapter definition (DynamodbAdapter)
+        final ResultSet expected = exasolTestUtils.getStatement().executeQuery("SELECT * FROM " + TEST_SCHEMA + ".\"testTable\";");//table name is hardcoded in adapter definition (DynamodbAdapter)
         assertNotNull(expected);
         assertTrue(expected.next());
         assertEquals("12398439493", expected.getString(1));

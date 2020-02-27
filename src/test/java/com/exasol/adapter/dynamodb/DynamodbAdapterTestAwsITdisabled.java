@@ -29,10 +29,10 @@ import static org.junit.Assert.assertFalse;
  */
 @Testcontainers
 public class DynamodbAdapterTestAwsITdisabled {
-    private static final Logger LOGGER = LoggerFactory.getLogger(DynamodbAdapterTestLocalITdisabled.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(DynamodbAdapterTestLocalIT.class);
 
     @Container
-    private static ExasolContainer<? extends ExasolContainer<?>> exasolContainer = new ExasolContainer<>(
+    private static final ExasolContainer<? extends ExasolContainer<?>> exasolContainer = new ExasolContainer<>(
             ExasolContainerConstants.EXASOL_DOCKER_IMAGE_REFERENCE).withLogConsumer(new Slf4jLogConsumer(LOGGER));
 
     private static DynamodbTestUtils dynamodbTestUtils;
@@ -40,8 +40,6 @@ public class DynamodbAdapterTestAwsITdisabled {
 
     private static final String TEST_SCHEMA = "TEST";
     private static final String DYNAMODB_CONNECTION = "DYNAMODB_CONNECTION";
-
-
 
     @BeforeAll
     static void beforeAll() throws SQLException, BucketAccessException, InterruptedException, TimeoutException, java.util.concurrent.TimeoutException {

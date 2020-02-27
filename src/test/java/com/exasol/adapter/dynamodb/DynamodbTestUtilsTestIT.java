@@ -37,8 +37,8 @@ public class DynamodbTestUtilsTestIT {
 
     @Test
     void test1() throws IOException, InterruptedException {
-        ClassLoader classLoader = DynamodbTestUtilsTestIT.class.getClassLoader();
-        File books = new File(classLoader.getResource("books.json").getFile());
+        final ClassLoader classLoader = DynamodbTestUtilsTestIT.class.getClassLoader();
+        final File books = new File(classLoader.getResource("books.json").getFile());
         dynamodbTestUtils.importData(books);
         assertEquals(1,dynamodbTestUtils.scan("JB_Books"));
     }

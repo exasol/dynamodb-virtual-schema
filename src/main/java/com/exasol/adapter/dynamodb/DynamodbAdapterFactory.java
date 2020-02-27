@@ -19,9 +19,9 @@ public class DynamodbAdapterFactory implements AdapterFactory {
 
     @Override
     public Set<String> getSupportedAdapterNames() {
-        Set<String> ret = new HashSet<>();
-        ret.add("Dynamodb");
-        return ret;
+        final Set<String> supportedNames = new HashSet<>();
+        supportedNames.add("Dynamodb");
+        return supportedNames;
     }
 
     @Override

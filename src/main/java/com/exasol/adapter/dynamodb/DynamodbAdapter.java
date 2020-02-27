@@ -40,22 +40,22 @@ public class DynamodbAdapter implements VirtualSchemaAdapter{
 	 	returnes a hard coded table "testTable" with only one column testCol
 	 **/
 	@Override
-	public CreateVirtualSchemaResponse createVirtualSchema(ExaMetadata exaMetadata, CreateVirtualSchemaRequest request) throws AdapterException {
-		List<TableMetadata> tables = new LinkedList<>();
-		List<ColumnMetadata> cols = new LinkedList<>();
-		ColumnMetadata.Builder b = new ColumnMetadata.Builder();
-		b.name("isbn");
-		b.type(DataType.createVarChar(100, DataType.ExaCharset.ASCII));
-		cols.add(b.build());
+	public CreateVirtualSchemaResponse createVirtualSchema(final ExaMetadata exaMetadata, final CreateVirtualSchemaRequest request) throws AdapterException {
+		final List<TableMetadata> tables = new LinkedList<>();
+		final ColumnMetadata.Builder colBuilder = new ColumnMetadata.Builder();
+		colBuilder.name("isbn");
+		colBuilder.type(DataType.createVarChar(100, DataType.ExaCharset.ASCII));
+		final List<ColumnMetadata> cols = new LinkedList<>();
+		cols.add(colBuilder.build());
 		tables.add(new TableMetadata("testTable","",cols,""));
-		SchemaMetadata remoteMeta = new SchemaMetadata("",tables);
+		final SchemaMetadata remoteMeta = new SchemaMetadata("",tables);
 		return CreateVirtualSchemaResponse.builder().schemaMetadata(remoteMeta).build();
 	}
 
-	private DynamoDbClient getConnection(ExaMetadata exaMetadata, AbstractAdapterRequest request) throws ExaConnectionAccessException {
+	private DynamoDbClient getConnection(final ExaMetadata exaMetadata, final AbstractAdapterRequest request) throws ExaConnectionAccessException {
 		final AdapterProperties properties = getPropertiesFromRequest(request);
-		ExaConnectionInformation con = exaMetadata.getConnection(properties.getConnectionName());
-		return this.getDynamodbConnection(con.getAddress(),con.getUser(),con.getPassword());
+		final ExaConnectionInformation connection = exaMetadata.getConnection(properties.getConnectionName());
+		return this.getDynamodbConnection(connection.getAddress(),connection.getUser(),connection.getPassword());
 	}
 
 	private AdapterProperties getPropertiesFromRequest(final AdapterRequest request) {
@@ -63,17 +63,17 @@ public class DynamodbAdapter implements VirtualSchemaAdapter{
 	}
 
 	@Override
-	public DropVirtualSchemaResponse dropVirtualSchema(ExaMetadata arg0, DropVirtualSchemaRequest arg1)
+	public DropVirtualSchemaResponse dropVirtualSchema(final ExaMetadata arg0, final DropVirtualSchemaRequest arg1)
 			throws AdapterException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public GetCapabilitiesResponse getCapabilities(ExaMetadata arg0, GetCapabilitiesRequest arg1)
+	public GetCapabilitiesResponse getCapabilities(final ExaMetadata arg0, final GetCapabilitiesRequest arg1)
 			throws AdapterException {
 		final Capabilities.Builder builder = Capabilities.builder();
-		Capabilities capabilities = builder.build();
+		final Capabilities capabilities = builder.build();
 		return GetCapabilitiesResponse //
 				.builder()//
 				.capabilities(capabilities)//
@@ -81,53 +81,49 @@ public class DynamodbAdapter implements VirtualSchemaAdapter{
 	}
 
 	@Override
-	public PushDownResponse pushdown(ExaMetadata exaMetadata, PushDownRequest request) throws AdapterException {
+	public PushDownResponse pushdown(final ExaMetadata exaMetadata, final PushDownRequest request) throws AdapterException {
 		try{
-			DynamoDbClient client = getConnection(exaMetadata,request);
-			ScanResponse res = client.scan(ScanRequest.builder().tableName("JB_Books").build());
-			StringBuilder respB = new StringBuilder("SELECT * FROM VALUES(");
-			boolean first = true;
-			for(Map<String, AttributeValue> item : res.items()){
-				if(!first) {
+			final DynamoDbClient client = getConnection(exaMetadata,request);
+			final ScanResponse res = client.scan(ScanRequest.builder().tableName("JB_Books").build());
+			final StringBuilder respB = new StringBuilder("SELECT * FROM VALUES(");
+			boolean isFirst = true;
+			for(final Map<String, AttributeValue> item : res.items()){
+				if(!isFirst) {
 					respB.append(", ");
-					first = false;
 				}
+				isFirst = false;
 				respB.append(item.get("isbn").s());
 			}
 
 			respB.append(");");
 
-			PushDownResponse.Builder builder = new PushDownResponse.Builder();
+			final PushDownResponse.Builder builder = new PushDownResponse.Builder();
 			builder.pushDownSql(respB.toString());
 			return builder.build();
-		} catch (ExaConnectionAccessException exception) {
+		} catch (final ExaConnectionAccessException exception) {
 			throw new AdapterException("Unable create Virtual Schema \"" + request.getVirtualSchemaName()
 					+ "\". Cause: \"" + exception.getMessage(), exception);
 		}
 	}
 
 	@Override
-	public RefreshResponse refresh(ExaMetadata arg0, RefreshRequest arg1) throws AdapterException {
+	public RefreshResponse refresh(final ExaMetadata arg0, final RefreshRequest arg1) throws AdapterException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public SetPropertiesResponse setProperties(ExaMetadata arg0, SetPropertiesRequest arg1) throws AdapterException {
+	public SetPropertiesResponse setProperties(final ExaMetadata arg0, final SetPropertiesRequest arg1) throws AdapterException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
-
-	protected DynamoDbClient getDynamodbConnection(String uri, String user, String key){
-		StaticCredentialsProvider credentialsProvider = StaticCredentialsProvider.create(AwsBasicCredentials.create(user, key));
-		DynamoDbClientBuilder cilentBuilder = DynamoDbClient.builder().region(Region.EU_CENTRAL_1).credentialsProvider(credentialsProvider);
+	protected DynamoDbClient getDynamodbConnection(final String uri, final String user, final String key){
+		final StaticCredentialsProvider credentialsProvider = StaticCredentialsProvider.create(AwsBasicCredentials.create(user, key));
+		final DynamoDbClientBuilder cilentBuilder = DynamoDbClient.builder().region(Region.EU_CENTRAL_1).credentialsProvider(credentialsProvider);
 		if(!uri.equals("aws")){
 			cilentBuilder.endpointOverride(URI.create(uri));
 		}
 		return cilentBuilder.build();
 	}
-
-
-
 }
