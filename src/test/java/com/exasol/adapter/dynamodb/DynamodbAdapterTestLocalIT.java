@@ -22,61 +22,66 @@ import java.sql.SQLException;
 import static org.junit.Assert.*;
 
 /**
- * Tests the {@link DynamodbAdapter} using a local docker version of DynamoDB and a local docker version of exasol.
+ * Tests the {@link DynamodbAdapter} using a local docker version of DynamoDB
+ * and a local docker version of exasol.
  **/
 @Tag("integration")
 @Testcontainers
 public class DynamodbAdapterTestLocalIT {
-    private static final Logger LOGGER = LoggerFactory.getLogger(DynamodbAdapterTestLocalIT.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(DynamodbAdapterTestLocalIT.class);
 
-    final static Network network = Network.newNetwork();
+	final static Network network = Network.newNetwork();
 
-    @Container
-    private static final ExasolContainer<? extends ExasolContainer<?>> exasolContainer = new ExasolContainer<>(
-            ExasolContainerConstants.EXASOL_DOCKER_IMAGE_REFERENCE).withNetwork(network).withLogConsumer(new Slf4jLogConsumer(LOGGER));
+	@Container
+	private static final ExasolContainer<? extends ExasolContainer<?>> exasolContainer = new ExasolContainer<>(
+			ExasolContainerConstants.EXASOL_DOCKER_IMAGE_REFERENCE).withNetwork(network)
+					.withLogConsumer(new Slf4jLogConsumer(LOGGER));
 
-    @Container
-    public static GenericContainer localDynamo = new GenericContainer<>("amazon/dynamodb-local")
-            .withExposedPorts(8000).withNetwork(network).withNetworkAliases("dynamo").withCommand("-jar DynamoDBLocal.jar -sharedDb -dbPath .");
+	@Container
+	public static GenericContainer localDynamo = new GenericContainer<>("amazon/dynamodb-local").withExposedPorts(8000)
+			.withNetwork(network).withNetworkAliases("dynamo")
+			.withCommand("-jar DynamoDBLocal.jar -sharedDb -dbPath .");
 
-    private static DynamodbTestUtils dynamodbTestUtils;
-    private static ExasolTestUtils exasolTestUtils;
+	private static DynamodbTestUtils dynamodbTestUtils;
+	private static ExasolTestUtils exasolTestUtils;
 
-    private static final String TEST_SCHEMA = "TEST";
-    private static final String DYNAMODB_CONNECTION = "DYNAMODB_CONNECTION";
+	private static final String TEST_SCHEMA = "TEST";
+	private static final String DYNAMODB_CONNECTION = "DYNAMODB_CONNECTION";
 
-    private static final String DYNAMO_TABLE_NAME = "JB_Books";
+	private static final String DYNAMO_TABLE_NAME = "JB_Books";
 
-    @BeforeAll
-    static void beforeAll() throws Exception {
-        LOGGER.info("starting locat test beforAll");
-        dynamodbTestUtils = new DynamodbTestUtils(localDynamo, network);
-        LOGGER.info("inited dynamoTestUtil");
-        exasolTestUtils = new ExasolTestUtils(exasolContainer);
-        LOGGER.info("inited exasolTestUtil");
-        exasolTestUtils.uploadDynamodbAdapterJar();
-        LOGGER.info("uploaded jar");
-        exasolTestUtils.createAdapterScript();
-        LOGGER.info("created adapter script");
-        exasolTestUtils.createConnection(DYNAMODB_CONNECTION, dynamodbTestUtils.getDockerUrl(), DynamodbTestUtils.LOCAL_DYNAMO_USER, DynamodbTestUtils.LOCAL_DYNAMO_PASS);
-        LOGGER.info("created connection");
-        exasolTestUtils.createDynamodbVirtualSchema(TEST_SCHEMA, DYNAMODB_CONNECTION);
-        LOGGER.info("created schema");
-        //create dummy data
-        dynamodbTestUtils.createTable(DYNAMO_TABLE_NAME, "isbn");
-        LOGGER.info("created table");
-        dynamodbTestUtils.pushItem();
-        LOGGER.info("created item");
-    }
+	@BeforeAll
+	static void beforeAll() throws Exception {
+		LOGGER.info("starting locat test beforAll");
+		dynamodbTestUtils = new DynamodbTestUtils(localDynamo, network);
+		LOGGER.info("inited dynamoTestUtil");
+		exasolTestUtils = new ExasolTestUtils(exasolContainer);
+		LOGGER.info("inited exasolTestUtil");
+		exasolTestUtils.uploadDynamodbAdapterJar();
+		LOGGER.info("uploaded jar");
+		exasolTestUtils.createAdapterScript();
+		LOGGER.info("created adapter script");
+		exasolTestUtils.createConnection(DYNAMODB_CONNECTION, dynamodbTestUtils.getDockerUrl(),
+				DynamodbTestUtils.LOCAL_DYNAMO_USER, DynamodbTestUtils.LOCAL_DYNAMO_PASS);
+		LOGGER.info("created connection");
+		exasolTestUtils.createDynamodbVirtualSchema(TEST_SCHEMA, DYNAMODB_CONNECTION);
+		LOGGER.info("created schema");
+		// create dummy data
+		dynamodbTestUtils.createTable(DYNAMO_TABLE_NAME, "isbn");
+		LOGGER.info("created table");
+		dynamodbTestUtils.pushItem();
+		LOGGER.info("created item");
+	}
 
-    @Test
-    void testSelect() throws SQLException {
-        final ResultSet expected = exasolTestUtils.getStatement().executeQuery("SELECT * FROM " + TEST_SCHEMA + ".\"testTable\";");//table name is hardcoded in adapter definition (DynamodbAdapter)
-        assertNotNull(expected);
-        assertTrue(expected.next());
-        assertEquals("12398439493", expected.getString(1));
-        assertFalse(expected.next());
-    }
-
+	@Test
+	void testSelect() throws SQLException {
+		final ResultSet expected = exasolTestUtils.getStatement()
+				.executeQuery("SELECT * FROM " + TEST_SCHEMA + ".\"testTable\";");// table name is hardcoded in adapter
+																					// definition (DynamodbAdapter)
+		assertNotNull(expected);
+		assertTrue(expected.next());
+		assertEquals("12398439493", expected.getString(1));
+		assertFalse(expected.next());
+	}
 
 }

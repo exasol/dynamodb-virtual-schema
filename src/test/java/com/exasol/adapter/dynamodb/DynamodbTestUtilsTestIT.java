@@ -15,31 +15,31 @@ import java.io.IOException;
 import static org.junit.Assert.assertEquals;
 
 /**
- *  Tests the {@link DynamodbTestUtils}
+ * Tests the {@link DynamodbTestUtils}
  */
 @Tag("integration")
 @Testcontainers
 public class DynamodbTestUtilsTestIT {
 
-    final static Network network = Network.newNetwork();
+	final static Network network = Network.newNetwork();
 
-    @Container
-    public static GenericContainer localDynamo = new GenericContainer<>("amazon/dynamodb-local")
-            .withExposedPorts(8000).withNetwork(network).withCommand("-jar DynamoDBLocal.jar -sharedDb -dbPath .");
+	@Container
+	public static GenericContainer localDynamo = new GenericContainer<>("amazon/dynamodb-local").withExposedPorts(8000)
+			.withNetwork(network).withCommand("-jar DynamoDBLocal.jar -sharedDb -dbPath .");
 
-    private static DynamodbTestUtils dynamodbTestUtils;
+	private static DynamodbTestUtils dynamodbTestUtils;
 
-    @BeforeAll
-    static void beforeAll() throws Exception {
-        dynamodbTestUtils = new DynamodbTestUtils(localDynamo,network);
-        dynamodbTestUtils.createTable("JB_Books","isbn");
-    }
+	@BeforeAll
+	static void beforeAll() throws Exception {
+		dynamodbTestUtils = new DynamodbTestUtils(localDynamo, network);
+		dynamodbTestUtils.createTable("JB_Books", "isbn");
+	}
 
-    @Test
-    void test1() throws IOException, InterruptedException {
-        final ClassLoader classLoader = DynamodbTestUtilsTestIT.class.getClassLoader();
-        final File books = new File(classLoader.getResource("books.json").getFile());
-        dynamodbTestUtils.importData(books);
-        assertEquals(1,dynamodbTestUtils.scan("JB_Books"));
-    }
+	@Test
+	void test1() throws IOException, InterruptedException {
+		final ClassLoader classLoader = DynamodbTestUtilsTestIT.class.getClassLoader();
+		final File books = new File(classLoader.getResource("books.json").getFile());
+		dynamodbTestUtils.importData(books);
+		assertEquals(1, dynamodbTestUtils.scan("JB_Books"));
+	}
 }

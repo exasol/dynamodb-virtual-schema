@@ -29,34 +29,38 @@ import static org.junit.Assert.assertFalse;
  */
 @Testcontainers
 public class DynamodbAdapterTestAwsITdisabled {
-    private static final Logger LOGGER = LoggerFactory.getLogger(DynamodbAdapterTestLocalIT.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(DynamodbAdapterTestLocalIT.class);
 
-    @Container
-    private static final ExasolContainer<? extends ExasolContainer<?>> exasolContainer = new ExasolContainer<>(
-            ExasolContainerConstants.EXASOL_DOCKER_IMAGE_REFERENCE).withLogConsumer(new Slf4jLogConsumer(LOGGER));
+	@Container
+	private static final ExasolContainer<? extends ExasolContainer<?>> exasolContainer = new ExasolContainer<>(
+			ExasolContainerConstants.EXASOL_DOCKER_IMAGE_REFERENCE).withLogConsumer(new Slf4jLogConsumer(LOGGER));
 
-    private static DynamodbTestUtils dynamodbTestUtils;
-    private static ExasolTestUtils exasolTestUtils;
+	private static DynamodbTestUtils dynamodbTestUtils;
+	private static ExasolTestUtils exasolTestUtils;
 
-    private static final String TEST_SCHEMA = "TEST";
-    private static final String DYNAMODB_CONNECTION = "DYNAMODB_CONNECTION";
+	private static final String TEST_SCHEMA = "TEST";
+	private static final String DYNAMODB_CONNECTION = "DYNAMODB_CONNECTION";
 
-    @BeforeAll
-    static void beforeAll() throws SQLException, BucketAccessException, InterruptedException, TimeoutException, java.util.concurrent.TimeoutException {
-        dynamodbTestUtils = new DynamodbTestUtils();
-        exasolTestUtils = new ExasolTestUtils(exasolContainer);
-        exasolTestUtils.uploadDynamodbAdapterJar();
-        exasolTestUtils.createAdapterScript();
-        exasolTestUtils.createConnection(DYNAMODB_CONNECTION, dynamodbTestUtils.getDockerUrl(), DynamodbTestUtils.LOCAL_DYNAMO_USER,DynamodbTestUtils.LOCAL_DYNAMO_PASS);
-        exasolTestUtils.createDynamodbVirtualSchema(TEST_SCHEMA,DYNAMODB_CONNECTION);
-    }
+	@BeforeAll
+	static void beforeAll() throws SQLException, BucketAccessException, InterruptedException, TimeoutException,
+			java.util.concurrent.TimeoutException {
+		dynamodbTestUtils = new DynamodbTestUtils();
+		exasolTestUtils = new ExasolTestUtils(exasolContainer);
+		exasolTestUtils.uploadDynamodbAdapterJar();
+		exasolTestUtils.createAdapterScript();
+		exasolTestUtils.createConnection(DYNAMODB_CONNECTION, dynamodbTestUtils.getDockerUrl(),
+				DynamodbTestUtils.LOCAL_DYNAMO_USER, DynamodbTestUtils.LOCAL_DYNAMO_PASS);
+		exasolTestUtils.createDynamodbVirtualSchema(TEST_SCHEMA, DYNAMODB_CONNECTION);
+	}
 
-    @Test
-    void testSelect() throws SQLException {
-        final ResultSet expected = exasolTestUtils.getStatement().executeQuery("SELECT * FROM " +  TEST_SCHEMA + ".\"testTable\";");//table name is hardcoded in adapter definition (DynamodbAdapter)
-        assertNotNull(expected);
-        assertTrue(expected.next());
-        assertEquals(42, expected.getInt(1));
-        assertFalse(expected.next());
-    }
+	@Test
+	void testSelect() throws SQLException {
+		final ResultSet expected = exasolTestUtils.getStatement()
+				.executeQuery("SELECT * FROM " + TEST_SCHEMA + ".\"testTable\";");// table name is hardcoded in adapter
+																					// definition (DynamodbAdapter)
+		assertNotNull(expected);
+		assertTrue(expected.next());
+		assertEquals(42, expected.getInt(1));
+		assertFalse(expected.next());
+	}
 }

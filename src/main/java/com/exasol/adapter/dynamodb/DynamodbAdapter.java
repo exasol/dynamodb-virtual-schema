@@ -32,30 +32,32 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
-public class DynamodbAdapter implements VirtualSchemaAdapter{
+public class DynamodbAdapter implements VirtualSchemaAdapter {
 
 	private static final Logger LOGGER = Logger.getLogger(DynamodbAdapter.class.getName());
 
 	/**
-	 	returnes a hard coded table "testTable" with only one column testCol
+	 * returnes a hard coded table "testTable" with only one column testCol
 	 **/
 	@Override
-	public CreateVirtualSchemaResponse createVirtualSchema(final ExaMetadata exaMetadata, final CreateVirtualSchemaRequest request) throws AdapterException {
+	public CreateVirtualSchemaResponse createVirtualSchema(final ExaMetadata exaMetadata,
+			final CreateVirtualSchemaRequest request) throws AdapterException {
 		final List<TableMetadata> tables = new LinkedList<>();
 		final ColumnMetadata.Builder colBuilder = new ColumnMetadata.Builder();
 		colBuilder.name("isbn");
 		colBuilder.type(DataType.createVarChar(100, DataType.ExaCharset.ASCII));
 		final List<ColumnMetadata> cols = new LinkedList<>();
 		cols.add(colBuilder.build());
-		tables.add(new TableMetadata("testTable","",cols,""));
-		final SchemaMetadata remoteMeta = new SchemaMetadata("",tables);
+		tables.add(new TableMetadata("testTable", "", cols, ""));
+		final SchemaMetadata remoteMeta = new SchemaMetadata("", tables);
 		return CreateVirtualSchemaResponse.builder().schemaMetadata(remoteMeta).build();
 	}
 
-	private DynamoDbClient getConnection(final ExaMetadata exaMetadata, final AbstractAdapterRequest request) throws ExaConnectionAccessException {
+	private DynamoDbClient getConnection(final ExaMetadata exaMetadata, final AbstractAdapterRequest request)
+			throws ExaConnectionAccessException {
 		final AdapterProperties properties = getPropertiesFromRequest(request);
 		final ExaConnectionInformation connection = exaMetadata.getConnection(properties.getConnectionName());
-		return this.getDynamodbConnection(connection.getAddress(),connection.getUser(),connection.getPassword());
+		return this.getDynamodbConnection(connection.getAddress(), connection.getUser(), connection.getPassword());
 	}
 
 	private AdapterProperties getPropertiesFromRequest(final AdapterRequest request) {
@@ -81,14 +83,15 @@ public class DynamodbAdapter implements VirtualSchemaAdapter{
 	}
 
 	@Override
-	public PushDownResponse pushdown(final ExaMetadata exaMetadata, final PushDownRequest request) throws AdapterException {
-		try{
-			final DynamoDbClient client = getConnection(exaMetadata,request);
+	public PushDownResponse pushdown(final ExaMetadata exaMetadata, final PushDownRequest request)
+			throws AdapterException {
+		try {
+			final DynamoDbClient client = getConnection(exaMetadata, request);
 			final ScanResponse res = client.scan(ScanRequest.builder().tableName("JB_Books").build());
 			final StringBuilder respB = new StringBuilder("SELECT * FROM VALUES(");
 			boolean isFirst = true;
-			for(final Map<String, AttributeValue> item : res.items()){
-				if(!isFirst) {
+			for (final Map<String, AttributeValue> item : res.items()) {
+				if (!isFirst) {
 					respB.append(", ");
 				}
 				isFirst = false;
@@ -113,15 +116,18 @@ public class DynamodbAdapter implements VirtualSchemaAdapter{
 	}
 
 	@Override
-	public SetPropertiesResponse setProperties(final ExaMetadata arg0, final SetPropertiesRequest arg1) throws AdapterException {
+	public SetPropertiesResponse setProperties(final ExaMetadata arg0, final SetPropertiesRequest arg1)
+			throws AdapterException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
-	protected DynamoDbClient getDynamodbConnection(final String uri, final String user, final String key){
-		final StaticCredentialsProvider credentialsProvider = StaticCredentialsProvider.create(AwsBasicCredentials.create(user, key));
-		final DynamoDbClientBuilder cilentBuilder = DynamoDbClient.builder().region(Region.EU_CENTRAL_1).credentialsProvider(credentialsProvider);
-		if(!uri.equals("aws")){
+	protected DynamoDbClient getDynamodbConnection(final String uri, final String user, final String key) {
+		final StaticCredentialsProvider credentialsProvider = StaticCredentialsProvider
+				.create(AwsBasicCredentials.create(user, key));
+		final DynamoDbClientBuilder cilentBuilder = DynamoDbClient.builder().region(Region.EU_CENTRAL_1)
+				.credentialsProvider(credentialsProvider);
+		if (!uri.equals("aws")) {
 			cilentBuilder.endpointOverride(URI.create(uri));
 		}
 		return cilentBuilder.build();

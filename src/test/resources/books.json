@@ -3,8 +3,12 @@
     {
       "PutRequest": {
         "Item": {
-          "isbn": {"S":"123567"},
-          "name": {"S": "Dummes Buch"}
+          "isbn": {
+            "S": "123567"
+          },
+          "name": {
+            "S": "Dummes Buch"
+          }
         }
       }
     }
