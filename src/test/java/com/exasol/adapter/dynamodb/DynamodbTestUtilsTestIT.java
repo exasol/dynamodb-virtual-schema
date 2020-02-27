@@ -25,7 +25,7 @@ public class DynamodbTestUtilsTestIT {
 	final static Network network = Network.newNetwork();
 
 	@Container
-	public static GenericContainer localDynamo = new GenericContainer<>("amazon/dynamodb-local").withExposedPorts(8000)
+	public static final GenericContainer localDynamo = new GenericContainer<>("amazon/dynamodb-local").withExposedPorts(8000)
 			.withNetwork(network).withCommand("-jar DynamoDBLocal.jar -sharedDb -dbPath .");
 
 	private static DynamodbTestUtils dynamodbTestUtils;
@@ -37,10 +37,10 @@ public class DynamodbTestUtilsTestIT {
 	}
 
 	@Test
-	void test1() throws IOException, InterruptedException {
+	void testImportData() throws IOException, InterruptedException {
 		final ClassLoader classLoader = DynamodbTestUtilsTestIT.class.getClassLoader();
 		final File books = new File(classLoader.getResource("books.json").getFile());
 		dynamodbTestUtils.importData(books);
-		assertEquals(1, dynamodbTestUtils.scan("JB_Books"));
+		assertEquals(3, dynamodbTestUtils.scan("JB_Books"));
 	}
 }

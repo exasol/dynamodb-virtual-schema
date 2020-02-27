@@ -3,6 +3,8 @@ package util;
 import java.io.*;
 import java.net.URI;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 import org.slf4j.Logger;
@@ -26,7 +28,7 @@ import software.amazon.awssdk.services.dynamodb.model.*;
     Test utils for testing dynamodb
  */
 public class DynamodbTestUtils {
-	// default credentails for dynamodb docker
+	// default credentials for dynamodb docker
 	private static final String LOCAL_DYNAMO_USER = "fakeMyKeyId";
 	private static final String LOCAL_DYNAMO_PASS = "fakeSecretAccessKey";
 
@@ -37,10 +39,12 @@ public class DynamodbTestUtils {
 	private final String dynamoUser;
 	private final String dynamoPass;
 
+	private final List<String> tableNames = new LinkedList<>();
+
 	private static final Logger LOGGER = LoggerFactory.getLogger(DynamodbAdapterTestLocalIT.class);
 
 	/**
-	 * Creates a DynamodbTestUtils for aws with credentials from env var
+	 * Creates a DynamodbTestUtils for aws with credentials from system aws configuration (use aws configure to set up)
 	 */
 	public DynamodbTestUtils() {
 		this(DefaultCredentialsProvider.create().resolveCredentials());
@@ -94,18 +98,18 @@ public class DynamodbTestUtils {
 		this.dynamoPass = pass;
 		final StaticCredentialsProvider credentialsProvider = StaticCredentialsProvider
 				.create(AwsBasicCredentials.create(user, pass));
-		final DynamoDbClientBuilder cilentBuilder = DynamoDbClient.builder().region(Region.EU_CENTRAL_1)
+		final DynamoDbClientBuilder clientBuilder = DynamoDbClient.builder().region(Region.EU_CENTRAL_1)
 				.credentialsProvider(credentialsProvider);
 		if (!this.dynamoUrl.equals("aws")) {
-			cilentBuilder.endpointOverride(URI.create(this.dynamoUrl));
+			clientBuilder.endpointOverride(URI.create(this.dynamoUrl));
 		}
-		this.dynamoClient = cilentBuilder.build();
+		this.dynamoClient = clientBuilder.build();
 	}
 
 	public void pushItem() {
-		final HashMap<String, AttributeValue> itemValues = new HashMap<String, AttributeValue>();
+		final HashMap<String, AttributeValue> itemValues = new HashMap<>();
 		itemValues.put("isbn", AttributeValue.builder().s("12398439493").build());
-		itemValues.put("name", AttributeValue.builder().s("dummes Buch").build());
+		itemValues.put("name", AttributeValue.builder().s("funny Book").build());
 		final PutItemRequest request = PutItemRequest.builder().tableName("JB_Books").item(itemValues).build();
 		this.dynamoClient.putItem(request);
 	}
@@ -125,6 +129,20 @@ public class DynamodbTestUtils {
 						ProvisionedThroughput.builder().readCapacityUnits(1L).writeCapacityUnits(1L).build())
 				.build();
 		this.dynamoClient.createTable(request);
+		this.tableNames.add(tableName);
+	}
+
+
+	public void deleteTable(final String tableName){
+		final DeleteTableRequest deleteRequest = DeleteTableRequest.builder().tableName(tableName).build();
+		this.dynamoClient.deleteTable(deleteRequest);
+		this.tableNames.removeIf(n -> n.equals(tableName));
+	}
+
+	public void deleteCreatedTables(){
+		for(final String tableName : this.tableNames){
+			this.deleteTable(tableName);
+		}
 	}
 
 	public void importData(final File asset) throws IOException, InterruptedException {
@@ -140,7 +158,7 @@ public class DynamodbTestUtils {
 		final InputStreamReader inputStreamReader = new InputStreamReader(stderr);
 		final BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
 
-		String line = null;
+		String line;
 		while ((line = bufferedReader.readLine()) != null) {
 			LOGGER.error(line);
 		}

@@ -16,7 +16,6 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 import com.exasol.bucketfs.BucketAccessException;
 import com.exasol.containers.ExasolContainer;
 import com.exasol.containers.ExasolContainerConstants;
-import com.exasol.jdbc.TimeoutException;
 
 import util.DynamodbTestUtils;
 import util.ExasolTestUtils;
@@ -43,7 +42,7 @@ public class DynamodbAdapterTestAwsITdisabled {
 	private static final String DYNAMODB_CONNECTION = "DYNAMODB_CONNECTION";
 
 	@BeforeAll
-	static void beforeAll() throws SQLException, BucketAccessException, InterruptedException, TimeoutException,
+	static void beforeAll() throws SQLException, BucketAccessException, InterruptedException,
 			java.util.concurrent.TimeoutException {
 		dynamodbTestUtils = new DynamodbTestUtils();
 		exasolTestUtils = new ExasolTestUtils(exasolContainer);

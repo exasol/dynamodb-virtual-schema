@@ -56,6 +56,7 @@ public class ExasolTestUtils {
 
 	public void createAdapterScript() throws SQLException {
 		this.createTestSchema(ADAPTER_SCHEMA);
+		//noinspection SpellCheckingInspection
 		this.statement.execute("CREATE OR REPLACE JAVA ADAPTER SCRIPT " + ADAPTER_SCHEMA + "." + DYNAMODB_ADAPTER
 				+ " AS\n" + "    %scriptclass com.exasol.adapter.RequestDispatcher;\n"
 				+ "    %jar /buckets/bfsdefault/default/" + VIRTUAL_SCHEMAS_JAR_NAME_AND_VERSION + ";\n" + "/");

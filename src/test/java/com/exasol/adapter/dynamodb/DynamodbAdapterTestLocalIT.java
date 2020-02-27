@@ -1,10 +1,17 @@
 package com.exasol.adapter.dynamodb;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.collection.IsIterableContainingInAnyOrder.containsInAnyOrder;
 import static org.junit.Assert.*;
 
+import java.io.File;
+import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -39,7 +46,7 @@ public class DynamodbAdapterTestLocalIT {
 					.withLogConsumer(new Slf4jLogConsumer(LOGGER));
 
 	@Container
-	public static GenericContainer localDynamo = new GenericContainer<>("amazon/dynamodb-local").withExposedPorts(8000)
+	public static final GenericContainer localDynamo = new GenericContainer<>("amazon/dynamodb-local").withExposedPorts(8000)
 			.withNetwork(network).withNetworkAliases("dynamo")
 			.withCommand("-jar DynamoDBLocal.jar -sharedDb -dbPath .");
 
@@ -53,13 +60,9 @@ public class DynamodbAdapterTestLocalIT {
 
 	@BeforeAll
 	static void beforeAll() throws Exception {
-		LOGGER.info("starting locat test beforAll");
 		dynamodbTestUtils = new DynamodbTestUtils(localDynamo, network);
-		LOGGER.info("inited dynamoTestUtil");
 		exasolTestUtils = new ExasolTestUtils(exasolContainer);
-		LOGGER.info("inited exasolTestUtil");
 		exasolTestUtils.uploadDynamodbAdapterJar();
-		LOGGER.info("uploaded jar");
 		exasolTestUtils.createAdapterScript();
 		LOGGER.info("created adapter script");
 		exasolTestUtils.createConnection(DYNAMODB_CONNECTION, dynamodbTestUtils.getDynamoUrl(),
@@ -67,22 +70,46 @@ public class DynamodbAdapterTestLocalIT {
 		LOGGER.info("created connection");
 		exasolTestUtils.createDynamodbVirtualSchema(TEST_SCHEMA, DYNAMODB_CONNECTION);
 		LOGGER.info("created schema");
-		// create dummy data
-		dynamodbTestUtils.createTable(DYNAMO_TABLE_NAME, "isbn");
-		LOGGER.info("created table");
-		dynamodbTestUtils.pushItem();
-		LOGGER.info("created item");
 	}
 
 	@Test
-	void testSelect() throws SQLException {
-		final ResultSet expected = exasolTestUtils.getStatement()
+	void testSingleLineSelect() throws SQLException {
+		dynamodbTestUtils.createTable(DYNAMO_TABLE_NAME, "isbn");
+		dynamodbTestUtils.pushItem();
+
+		final ResultSet actualResult = exasolTestUtils.getStatement()
 				.executeQuery("SELECT * FROM " + TEST_SCHEMA + ".\"testTable\";");// table name is hardcoded in adapter
 																					// definition (DynamodbAdapter)
-		assertNotNull(expected);
-		assertTrue(expected.next());
-		assertEquals("12398439493", expected.getString(1));
-		assertFalse(expected.next());
+		assertNotNull(actualResult);
+		assertTrue(actualResult.next());
+		assertEquals("12398439493", actualResult.getString(1));
+		assertFalse(actualResult.next());
+	}
+
+	@Test
+	void testMultiLineSelect() throws IOException, InterruptedException, SQLException {
+		dynamodbTestUtils.createTable(DYNAMO_TABLE_NAME, "isbn");
+
+		final ClassLoader classLoader = DynamodbTestUtilsTestIT.class.getClassLoader();
+		dynamodbTestUtils.importData(new File(classLoader.getResource("books.json").getFile()));
+
+		final ResultSet actualResultSet = exasolTestUtils.getStatement()
+				.executeQuery("SELECT * FROM " + TEST_SCHEMA + ".\"testTable\";");
+
+		assertNotNull(actualResultSet);
+
+		final List<String> actualResult = new ArrayList<>();
+		while(actualResultSet.next()){
+			actualResult.add(actualResultSet.getString(1));
+		}
+
+		assertThat(actualResult,containsInAnyOrder("123567", "123254545", "1235673"));
+		assertEquals(3,actualResultSet.getRow());
+	}
+
+	@AfterEach
+	void after(){
+		dynamodbTestUtils.deleteCreatedTables();
 	}
 
 }

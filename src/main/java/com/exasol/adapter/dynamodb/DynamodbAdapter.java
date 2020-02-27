@@ -34,7 +34,7 @@ public class DynamodbAdapter implements VirtualSchemaAdapter {
 	private static final Logger LOGGER = Logger.getLogger(DynamodbAdapter.class.getName());
 
 	/**
-	 * returnes a hard coded table "testTable" with only one column testCol
+	 * creates a hard coded table "testTable" with only one column testCol
 	 **/
 	@Override
 	public CreateVirtualSchemaResponse createVirtualSchema(final ExaMetadata exaMetadata,
@@ -64,7 +64,6 @@ public class DynamodbAdapter implements VirtualSchemaAdapter {
 	@Override
 	public DropVirtualSchemaResponse dropVirtualSchema(final ExaMetadata arg0, final DropVirtualSchemaRequest arg1)
 			throws AdapterException {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
@@ -85,20 +84,20 @@ public class DynamodbAdapter implements VirtualSchemaAdapter {
 		try {
 			final DynamoDbClient client = getConnection(exaMetadata, request);
 			final ScanResponse res = client.scan(ScanRequest.builder().tableName("JB_Books").build());
-			final StringBuilder respB = new StringBuilder("SELECT * FROM VALUES(");
+			final StringBuilder responseBuilder = new StringBuilder("SELECT * FROM (VALUES");
 			boolean isFirst = true;
 			for (final Map<String, AttributeValue> item : res.items()) {
 				if (!isFirst) {
-					respB.append(", ");
+					responseBuilder.append(", ");
 				}
 				isFirst = false;
-				respB.append(item.get("isbn").s());
+				responseBuilder.append("(").append(item.get("isbn").s()).append(")");
 			}
 
-			respB.append(");");
+			responseBuilder.append(");");
 
 			final PushDownResponse.Builder builder = new PushDownResponse.Builder();
-			builder.pushDownSql(respB.toString());
+			builder.pushDownSql(responseBuilder.toString());
 			return builder.build();
 		} catch (final ExaConnectionAccessException exception) {
 			throw new AdapterException("Unable create Virtual Schema \"" + request.getVirtualSchemaName()
@@ -108,25 +107,23 @@ public class DynamodbAdapter implements VirtualSchemaAdapter {
 
 	@Override
 	public RefreshResponse refresh(final ExaMetadata arg0, final RefreshRequest arg1) throws AdapterException {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public SetPropertiesResponse setProperties(final ExaMetadata arg0, final SetPropertiesRequest arg1)
 			throws AdapterException {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	protected DynamoDbClient getDynamodbConnection(final String uri, final String user, final String key) {
 		final StaticCredentialsProvider credentialsProvider = StaticCredentialsProvider
 				.create(AwsBasicCredentials.create(user, key));
-		final DynamoDbClientBuilder cilentBuilder = DynamoDbClient.builder().region(Region.EU_CENTRAL_1)
+		final DynamoDbClientBuilder clientBuilder = DynamoDbClient.builder().region(Region.EU_CENTRAL_1)
 				.credentialsProvider(credentialsProvider);
 		if (!uri.equals("aws")) {
-			cilentBuilder.endpointOverride(URI.create(uri));
+			clientBuilder.endpointOverride(URI.create(uri));
 		}
-		return cilentBuilder.build();
+		return clientBuilder.build();
 	}
 }
