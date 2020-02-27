@@ -1,9 +1,10 @@
 package com.exasol.adapter.dynamodb;
 
-import com.exasol.bucketfs.BucketAccessException;
-import com.exasol.containers.ExasolContainer;
-import com.exasol.containers.ExasolContainerConstants;
-import com.exasol.jdbc.TimeoutException;
+import static org.junit.Assert.*;
+
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
@@ -11,14 +12,14 @@ import org.slf4j.LoggerFactory;
 import org.testcontainers.containers.output.Slf4jLogConsumer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
+
+import com.exasol.bucketfs.BucketAccessException;
+import com.exasol.containers.ExasolContainer;
+import com.exasol.containers.ExasolContainerConstants;
+import com.exasol.jdbc.TimeoutException;
+
 import util.DynamodbTestUtils;
 import util.ExasolTestUtils;
-
-import java.sql.ResultSet;
-import java.sql.SQLException;
-
-import static org.junit.Assert.*;
-import static org.junit.Assert.assertFalse;
 /*
   Tests using the aws DynamoDB.
   Setup credentials on your machine using: aws configure
@@ -48,8 +49,8 @@ public class DynamodbAdapterTestAwsITdisabled {
 		exasolTestUtils = new ExasolTestUtils(exasolContainer);
 		exasolTestUtils.uploadDynamodbAdapterJar();
 		exasolTestUtils.createAdapterScript();
-		exasolTestUtils.createConnection(DYNAMODB_CONNECTION, dynamodbTestUtils.getDockerUrl(),
-				DynamodbTestUtils.LOCAL_DYNAMO_USER, DynamodbTestUtils.LOCAL_DYNAMO_PASS);
+		exasolTestUtils.createConnection(DYNAMODB_CONNECTION, dynamodbTestUtils.getDynamoUrl(),
+				dynamodbTestUtils.getDynamoUser(), dynamodbTestUtils.getDynamoPass());
 		exasolTestUtils.createDynamodbVirtualSchema(TEST_SCHEMA, DYNAMODB_CONNECTION);
 	}
 
@@ -60,7 +61,7 @@ public class DynamodbAdapterTestAwsITdisabled {
 																					// definition (DynamodbAdapter)
 		assertNotNull(expected);
 		assertTrue(expected.next());
-		assertEquals(42, expected.getInt(1));
+		assertEquals("1234234243", expected.getString(1));
 		assertFalse(expected.next());
 	}
 }

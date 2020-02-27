@@ -1,12 +1,12 @@
 package com.exasol.adapter.dynamodb;
 
-import com.exasol.adapter.AdapterFactory;
-import com.exasol.adapter.VirtualSchemaAdapter;
-import com.exasol.logging.VersionCollector;
-
 import java.util.HashSet;
 import java.util.ServiceLoader;
 import java.util.Set;
+
+import com.exasol.adapter.AdapterFactory;
+import com.exasol.adapter.VirtualSchemaAdapter;
+import com.exasol.logging.VersionCollector;
 
 /**
  * This class implements a factory for the {@link DynamodbAdapter}.

@@ -1,5 +1,11 @@
 package com.exasol.adapter.dynamodb;
 
+import java.net.URI;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.logging.Logger;
+
 import com.exasol.ExaConnectionAccessException;
 import com.exasol.ExaConnectionInformation;
 import com.exasol.ExaMetadata;
@@ -12,25 +18,16 @@ import com.exasol.adapter.metadata.DataType;
 import com.exasol.adapter.metadata.SchemaMetadata;
 import com.exasol.adapter.metadata.TableMetadata;
 import com.exasol.adapter.request.*;
-import com.exasol.adapter.response.CreateVirtualSchemaResponse;
-import com.exasol.adapter.response.DropVirtualSchemaResponse;
-import com.exasol.adapter.response.GetCapabilitiesResponse;
-import com.exasol.adapter.response.PushDownResponse;
-import com.exasol.adapter.response.RefreshResponse;
-import com.exasol.adapter.response.SetPropertiesResponse;
-import software.amazon.awssdk.auth.credentials.*;
+import com.exasol.adapter.response.*;
+
+import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
+import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClientBuilder;
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 import software.amazon.awssdk.services.dynamodb.model.ScanRequest;
 import software.amazon.awssdk.services.dynamodb.model.ScanResponse;
-
-import java.net.URI;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.logging.Logger;
 
 public class DynamodbAdapter implements VirtualSchemaAdapter {
 

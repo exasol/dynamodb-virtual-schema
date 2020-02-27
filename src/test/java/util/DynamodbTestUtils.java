@@ -1,47 +1,56 @@
 package util;
 
-import com.exasol.adapter.dynamodb.DynamodbAdapterTestLocalIT;
-import com.github.dockerjava.api.model.ContainerNetwork;
+import java.io.*;
+import java.net.URI;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.Network;
+
+import com.exasol.adapter.dynamodb.DynamodbAdapterTestLocalIT;
+import com.github.dockerjava.api.model.ContainerNetwork;
+
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
+import software.amazon.awssdk.auth.credentials.AwsCredentials;
+import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClientBuilder;
 import software.amazon.awssdk.services.dynamodb.model.*;
 
-import java.io.*;
-import java.net.URI;
-import java.util.HashMap;
-import java.util.Map;
-
 /*
     Test utils for testing dynamodb
  */
 public class DynamodbTestUtils {
 	// default credentails for dynamodb docker
-	public static final String LOCAL_DYNAMO_USER = "fakeMyKeyId";
-	public static final String LOCAL_DYNAMO_PASS = "fakeSecretAccessKey";
+	private static final String LOCAL_DYNAMO_USER = "fakeMyKeyId";
+	private static final String LOCAL_DYNAMO_PASS = "fakeSecretAccessKey";
 
 	private final DynamoDbClient dynamoClient;
-	private final String dockerUrl;
+	private final String dynamoUrl;
 	private final String localUrl;
+
+	private final String dynamoUser;
+	private final String dynamoPass;
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(DynamodbAdapterTestLocalIT.class);
 
-	/*
-	 * Creates a DynamodbTestUtils for aws with credentails from env var
+	/**
+	 * Creates a DynamodbTestUtils for aws with credentials from env var
 	 */
 	public DynamodbTestUtils() {
-		this(System.getenv("AWS_ACCESS_KEY_ID"), System.getenv("AWS_SECRET_ACCESS_KEY"));
-		/*
-		 * alternative for token auth: AwsSessionCredentials awsCreds =
-		 * AwsSessionCredentials.create( "your_access_key_id_here",
-		 * "your_secret_key_id_here", "your_session_token_here");
-		 */
+		this(DefaultCredentialsProvider.create().resolveCredentials());
+	}
+
+	/*
+	 * Creates a DynamodbTestUtils for aws with credentials from env var
+	 */
+	public DynamodbTestUtils(final AwsCredentials awsCredentials) {
+		this(awsCredentials.accessKeyId(), awsCredentials.secretAccessKey());
 	}
 
 	/*
@@ -78,15 +87,17 @@ public class DynamodbTestUtils {
 		this("aws", "aws", user, pass);
 	}
 
-	private DynamodbTestUtils(final String localUrl, final String dockerUrl, final String user, final String pass) {
+	private DynamodbTestUtils(final String localUrl, final String dynamoUrl, final String user, final String pass) {
 		this.localUrl = localUrl;
-		this.dockerUrl = dockerUrl;
+		this.dynamoUrl = dynamoUrl;
+		this.dynamoUser = user;
+		this.dynamoPass = pass;
 		final StaticCredentialsProvider credentialsProvider = StaticCredentialsProvider
 				.create(AwsBasicCredentials.create(user, pass));
 		final DynamoDbClientBuilder cilentBuilder = DynamoDbClient.builder().region(Region.EU_CENTRAL_1)
 				.credentialsProvider(credentialsProvider);
-		if (!this.dockerUrl.equals("aws")) {
-			cilentBuilder.endpointOverride(URI.create(this.dockerUrl));
+		if (!this.dynamoUrl.equals("aws")) {
+			cilentBuilder.endpointOverride(URI.create(this.dynamoUrl));
 		}
 		this.dynamoClient = cilentBuilder.build();
 	}
@@ -136,7 +147,15 @@ public class DynamodbTestUtils {
 		process.waitFor();
 	}
 
-	public String getDockerUrl() {
-		return this.dockerUrl;
+	public String getDynamoUrl() {
+		return this.dynamoUrl;
+	}
+
+	public String getDynamoUser() {
+		return this.dynamoUser;
+	}
+
+	public String getDynamoPass() {
+		return this.dynamoPass;
 	}
 }

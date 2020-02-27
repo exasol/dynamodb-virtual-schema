@@ -1,5 +1,10 @@
 package com.exasol.adapter.dynamodb;
 
+import static org.junit.Assert.*;
+
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -13,13 +18,9 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 
 import com.exasol.containers.ExasolContainer;
 import com.exasol.containers.ExasolContainerConstants;
+
 import util.DynamodbTestUtils;
 import util.ExasolTestUtils;
-
-import java.sql.ResultSet;
-import java.sql.SQLException;
-
-import static org.junit.Assert.*;
 
 /**
  * Tests the {@link DynamodbAdapter} using a local docker version of DynamoDB
@@ -61,8 +62,8 @@ public class DynamodbAdapterTestLocalIT {
 		LOGGER.info("uploaded jar");
 		exasolTestUtils.createAdapterScript();
 		LOGGER.info("created adapter script");
-		exasolTestUtils.createConnection(DYNAMODB_CONNECTION, dynamodbTestUtils.getDockerUrl(),
-				DynamodbTestUtils.LOCAL_DYNAMO_USER, DynamodbTestUtils.LOCAL_DYNAMO_PASS);
+		exasolTestUtils.createConnection(DYNAMODB_CONNECTION, dynamodbTestUtils.getDynamoUrl(),
+				dynamodbTestUtils.getDynamoUser(), dynamodbTestUtils.getDynamoPass());
 		LOGGER.info("created connection");
 		exasolTestUtils.createDynamodbVirtualSchema(TEST_SCHEMA, DYNAMODB_CONNECTION);
 		LOGGER.info("created schema");

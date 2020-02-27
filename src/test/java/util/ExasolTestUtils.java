@@ -1,19 +1,20 @@
 package util;
 
-import com.exasol.adapter.dynamodb.DynamodbAdapterTestLocalIT;
-import com.exasol.bucketfs.Bucket;
-import com.exasol.bucketfs.BucketAccessException;
-import com.exasol.containers.ExasolContainer;
-import com.github.dockerjava.api.model.ContainerNetwork;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.nio.file.Path;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Map;
 import java.util.concurrent.TimeoutException;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.exasol.adapter.dynamodb.DynamodbAdapterTestLocalIT;
+import com.exasol.bucketfs.Bucket;
+import com.exasol.bucketfs.BucketAccessException;
+import com.exasol.containers.ExasolContainer;
+import com.github.dockerjava.api.model.ContainerNetwork;
 
 public class ExasolTestUtils {
 
