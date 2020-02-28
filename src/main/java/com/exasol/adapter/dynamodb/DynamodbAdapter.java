@@ -122,14 +122,18 @@ public class DynamodbAdapter implements VirtualSchemaAdapter {
 	}
 
 	private String dynamodbResultToSelectFromValues(final ScanResponse scanResponse) {
+		final List<Map<String, AttributeValue>> scannedItems = scanResponse.items();
+		if(scannedItems.size() == 0){
+			return "SELECT * FROM VALUES('') WHERE 0 = 1;";
+		}
 		final StringBuilder responseBuilder = new StringBuilder("SELECT * FROM (VALUES");
 		boolean isFirst = true;
-		for (final Map<String, AttributeValue> item : scanResponse.items()) {
+		for (final Map<String, AttributeValue> item : scannedItems) {
 			if (!isFirst) {
 				responseBuilder.append(", ");
 			}
 			isFirst = false;
-			responseBuilder.append("(").append(item.get("isbn").s()).append(")");
+			responseBuilder.append("('").append(item.get("isbn").s()).append("')");
 		}
 		responseBuilder.append(");");
 		return responseBuilder.toString();

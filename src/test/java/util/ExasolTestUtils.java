@@ -138,18 +138,4 @@ public class ExasolTestUtils {
 		createStatement += ";";
 		this.statement.execute(createStatement);
 	}
-
-	/**
-	 * Function to sleep endlessly
-	 */
-	public void sleepForDebugging() {
-		while (true) {
-			try {
-				Thread.sleep(1000);
-			} catch (final InterruptedException e) {
-				e.printStackTrace();
-			}
-		}
-	}
-
 }

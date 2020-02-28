@@ -1,7 +1,8 @@
 package com.exasol.adapter.dynamodb;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.collection.IsIterableContainingInAnyOrder.containsInAnyOrder;
 
 import java.io.File;
@@ -121,13 +122,22 @@ public class DynamodbAdapterTestLocalIT {
 		dynamodbTestUtils.createTable(DYNAMO_TABLE_NAME, "isbn");
 		final String ISBN = "12398439493";
 		dynamodbTestUtils.pushBook(ISBN, "test name");
-		final ResultSet actualResult = exasolTestUtils.getStatement()
-				.executeQuery("SELECT * FROM " + TEST_SCHEMA + ".\"testTable\";");// table name is hardcoded in adapter
-																					// definition (DynamodbAdapter)
-		assertThat(actualResult, notNullValue());
-		assertThat(actualResult.next(), is(true));
-		assertThat(actualResult.getString(1), equalTo(ISBN));
-		assertThat(actualResult.next(), is(false));
+		final SelectStringArrayResult result = selectStringArray();
+		assertThat(result.rows, containsInAnyOrder(ISBN));
+		assertThat(result.rows.size(), equalTo(1));
+	}
+
+	/**
+	 * Tests an select from an DynamoDB table with a single line with string result
+	 */
+	@Test
+	void testSingleLineSelectWithStringResult() throws SQLException {
+		dynamodbTestUtils.createTable(DYNAMO_TABLE_NAME, "isbn");
+		final String ISBN = "abc";
+		dynamodbTestUtils.pushBook(ISBN, "test name");
+		final SelectStringArrayResult result = selectStringArray();
+		assertThat(result.rows, containsInAnyOrder(ISBN));
+		assertThat(result.rows.size(), equalTo(1));
 	}
 
 	/**
