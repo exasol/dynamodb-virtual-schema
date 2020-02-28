@@ -36,7 +36,7 @@ public class DynamodbAdapterTestLocalIT {
 
 	@Container
 	private static final ExasolContainer<? extends ExasolContainer<?>> exasolContainer = new ExasolContainer<>()
-			.withNetwork(network).withLogConsumer(new Slf4jLogConsumer(LOGGER));
+			.withNetwork(network).withExposedPorts(8888).withLogConsumer(new Slf4jLogConsumer(LOGGER));
 
 	@Container
 	public static final GenericContainer localDynamo = new GenericContainer<>("amazon/dynamodb-local")
@@ -77,7 +77,7 @@ public class DynamodbAdapterTestLocalIT {
 	private static final class SelectStringArrayResult {
 		public SelectStringArrayResult(final List<String> rows, final long duration) {
 			this.rows = rows;
-			this.duration = duration;
+git			this.duration = duration;
 		}
 		public final List<String> rows;
 		public final long duration;
