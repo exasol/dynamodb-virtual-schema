@@ -78,17 +78,17 @@ public class ExasolTestUtils {
 
 		LOGGER.info(getTestHostIpAddress());
 
-		String stmnt = "CREATE VIRTUAL SCHEMA " + name + "\n" + "    USING " + ADAPTER_SCHEMA + "." + DYNAMODB_ADAPTER
+		String createStatement = "CREATE VIRTUAL SCHEMA " + name + "\n" + "    USING " + ADAPTER_SCHEMA + "." + DYNAMODB_ADAPTER
 				+ " WITH\n" + "    CONNECTION_NAME = '" + dynamodbConnection + "'\n"
 				+ "   SQL_DIALECT     = 'Dynamodb'";
 
 		final String hostIp = getTestHostIpAddress();
 		if (hostIp != null) {
-			stmnt += "\n   DEBUG_ADDRESS   = '" + getTestHostIpAddress() + ":3000'\n" + "   LOG_LEVEL       =  'ALL'";
+			createStatement += "\n   DEBUG_ADDRESS   = '" + getTestHostIpAddress() + ":3000'\n" + "   LOG_LEVEL       =  'ALL'";
 		}
 
-		stmnt += ";";
-		this.statement.execute(stmnt);
+		createStatement += ";";
+		this.statement.execute(createStatement);
 	}
 
 	public void sleepForDebugging() {

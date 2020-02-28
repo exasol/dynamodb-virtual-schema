@@ -72,17 +72,51 @@ public class DynamodbAdapterTestLocalIT {
 		LOGGER.info("created schema");
 	}
 
+	private static final class SelectStringArrayResult{
+		public SelectStringArrayResult(final List<String> rows, final long duration){
+			this.rows = rows;
+			this.duration = duration;
+		}
+		public final List<String> rows;
+		public final long duration;
+	}
+
+	private SelectStringArrayResult selectStringArray() throws SQLException {
+		final long start = System.currentTimeMillis();
+		final ResultSet actualResultSet = exasolTestUtils.getStatement()
+				.executeQuery("SELECT * FROM " + TEST_SCHEMA + ".\"testTable\";");
+
+		final long duration  = System.currentTimeMillis() -start;
+		assertNotNull(actualResultSet);
+
+		final List<String> result = new ArrayList<>();
+		while(actualResultSet.next()){
+			result.add(actualResultSet.getString(1));
+		}
+
+		LOGGER.info("query execution time was: " + String.valueOf(duration));
+		return new SelectStringArrayResult(result, duration);
+	}
+
+	@Test
+	void testEmptySelect() throws SQLException {
+		dynamodbTestUtils.createTable(DYNAMO_TABLE_NAME, "isbn");
+		final List<String> result = selectStringArray().rows;
+		assertEquals(0,result.size());
+	}
+
 	@Test
 	void testSingleLineSelect() throws SQLException {
 		dynamodbTestUtils.createTable(DYNAMO_TABLE_NAME, "isbn");
-		dynamodbTestUtils.pushItem();
+		final String ISBN = "12398439493";
+		dynamodbTestUtils.pushBook(ISBN, "test name");
 
 		final ResultSet actualResult = exasolTestUtils.getStatement()
 				.executeQuery("SELECT * FROM " + TEST_SCHEMA + ".\"testTable\";");// table name is hardcoded in adapter
 																					// definition (DynamodbAdapter)
 		assertNotNull(actualResult);
 		assertTrue(actualResult.next());
-		assertEquals("12398439493", actualResult.getString(1));
+		assertEquals(ISBN, actualResult.getString(1));
 		assertFalse(actualResult.next());
 	}
 
@@ -93,18 +127,26 @@ public class DynamodbAdapterTestLocalIT {
 		final ClassLoader classLoader = DynamodbTestUtilsTestIT.class.getClassLoader();
 		dynamodbTestUtils.importData(new File(classLoader.getResource("books.json").getFile()));
 
-		final ResultSet actualResultSet = exasolTestUtils.getStatement()
-				.executeQuery("SELECT * FROM " + TEST_SCHEMA + ".\"testTable\";");
+		final List<String> result = selectStringArray().rows;
+		assertThat(result,containsInAnyOrder("123567", "123254545", "1235673"));
+		assertEquals(3,result.size());
+	}
 
-		assertNotNull(actualResultSet);
+	@Test
+	void testBigScan() throws SQLException {
+		dynamodbTestUtils.createTable(DYNAMO_TABLE_NAME, "isbn");
+		final int numBooks = 1000;
+		final List<String> actualBookNames = new ArrayList<>(numBooks);
 
-		final List<String> actualResult = new ArrayList<>();
-		while(actualResultSet.next()){
-			actualResult.add(actualResultSet.getString(1));
+		for(int i = 0; i < numBooks; i++){
+			final String booksName = String.valueOf(i);
+			dynamodbTestUtils.pushBook(booksName, "name equal for all books");
+			actualBookNames.add(booksName);
 		}
 
-		assertThat(actualResult,containsInAnyOrder("123567", "123254545", "1235673"));
-		assertEquals(3,actualResultSet.getRow());
+		final SelectStringArrayResult result = selectStringArray();
+		assertEquals(numBooks,result.rows.size());
+		assertThat(result.rows,containsInAnyOrder(actualBookNames.toArray()));
 	}
 
 	@AfterEach

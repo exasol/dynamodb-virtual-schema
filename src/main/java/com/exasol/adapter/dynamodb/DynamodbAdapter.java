@@ -38,7 +38,7 @@ public class DynamodbAdapter implements VirtualSchemaAdapter {
 	 **/
 	@Override
 	public CreateVirtualSchemaResponse createVirtualSchema(final ExaMetadata exaMetadata,
-			final CreateVirtualSchemaRequest request) throws AdapterException {
+			final CreateVirtualSchemaRequest request) {
 		final List<TableMetadata> tables = new LinkedList<>();
 		final ColumnMetadata.Builder colBuilder = new ColumnMetadata.Builder();
 		colBuilder.name("isbn");
@@ -62,14 +62,12 @@ public class DynamodbAdapter implements VirtualSchemaAdapter {
 	}
 
 	@Override
-	public DropVirtualSchemaResponse dropVirtualSchema(final ExaMetadata arg0, final DropVirtualSchemaRequest arg1)
-			throws AdapterException {
+	public DropVirtualSchemaResponse dropVirtualSchema(final ExaMetadata arg0, final DropVirtualSchemaRequest arg1) {
 		return null;
 	}
 
 	@Override
-	public GetCapabilitiesResponse getCapabilities(final ExaMetadata arg0, final GetCapabilitiesRequest arg1)
-			throws AdapterException {
+	public GetCapabilitiesResponse getCapabilities(final ExaMetadata arg0, final GetCapabilitiesRequest arg1) {
 		final Capabilities.Builder builder = Capabilities.builder();
 		final Capabilities capabilities = builder.build();
 		return GetCapabilitiesResponse //
@@ -106,13 +104,12 @@ public class DynamodbAdapter implements VirtualSchemaAdapter {
 	}
 
 	@Override
-	public RefreshResponse refresh(final ExaMetadata arg0, final RefreshRequest arg1) throws AdapterException {
+	public RefreshResponse refresh(final ExaMetadata arg0, final RefreshRequest arg1) {
 		return null;
 	}
 
 	@Override
-	public SetPropertiesResponse setProperties(final ExaMetadata arg0, final SetPropertiesRequest arg1)
-			throws AdapterException {
+	public SetPropertiesResponse setProperties(final ExaMetadata arg0, final SetPropertiesRequest arg1) {
 		return null;
 	}
 

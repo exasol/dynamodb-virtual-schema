@@ -68,7 +68,6 @@ public class DynamodbTestUtils {
 
 	private static String getDockerNetworkURlForLocalDynamodb(final GenericContainer localDynamo,
 			final Network thisNetwork) throws Exception {
-		final String address = localDynamo.getContainerIpAddress();
 		final Map<String, ContainerNetwork> networks = localDynamo.getContainerInfo().getNetworkSettings()
 				.getNetworks();
 		for (final ContainerNetwork network : networks.values()) {
@@ -106,13 +105,14 @@ public class DynamodbTestUtils {
 		this.dynamoClient = clientBuilder.build();
 	}
 
-	public void pushItem() {
+	public void pushBook(final String isbn, final String name) {
 		final HashMap<String, AttributeValue> itemValues = new HashMap<>();
-		itemValues.put("isbn", AttributeValue.builder().s("12398439493").build());
-		itemValues.put("name", AttributeValue.builder().s("funny Book").build());
+		itemValues.put("isbn", AttributeValue.builder().s(isbn).build());
+		itemValues.put("name", AttributeValue.builder().s(name).build());
 		final PutItemRequest request = PutItemRequest.builder().tableName("JB_Books").item(itemValues).build();
 		this.dynamoClient.putItem(request);
 	}
+
 
 	public int scan(final String tableName) {
 		final ScanResponse res = this.dynamoClient.scan(ScanRequest.builder().tableName(tableName).build());
