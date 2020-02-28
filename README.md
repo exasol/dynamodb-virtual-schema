@@ -1,4 +1,4 @@
-# Virtual Schema for DynamoDB
+# Virtual Schema for AWS DynamoDB
 Using this Virtual Schema you can access to [Amazon DynamoDB](https://aws.amazon.com/dynamodb/) from Exasol.
 
  ## Installation
