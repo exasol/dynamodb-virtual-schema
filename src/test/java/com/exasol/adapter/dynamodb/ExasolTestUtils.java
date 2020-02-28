@@ -1,4 +1,4 @@
-package util;
+package com.exasol.adapter.dynamodb;
 
 import java.nio.file.Path;
 import java.sql.Connection;
@@ -10,7 +10,6 @@ import java.util.concurrent.TimeoutException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.exasol.adapter.dynamodb.DynamodbAdapterTestLocalIT;
 import com.exasol.bucketfs.Bucket;
 import com.exasol.bucketfs.BucketAccessException;
 import com.exasol.containers.ExasolContainer;

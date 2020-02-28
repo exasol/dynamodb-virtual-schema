@@ -62,15 +62,30 @@ public class DynamodbAdapter implements VirtualSchemaAdapter {
 			throws ExaConnectionAccessException {
 		final AdapterProperties properties = getPropertiesFromRequest(request);
 		final ExaConnectionInformation connection = exaMetadata.getConnection(properties.getConnectionName());
-		return this.getDynamodbConnection(connection.getAddress(), connection.getUser(), connection.getPassword());
+		return getDynamodbConnection(connection.getAddress(), connection.getUser(), connection.getPassword());
 	}
 
-	private DynamoDbClient getDynamodbConnection(final String uri, final String user, final String key) {
+	/**
+	 * Creates a DynamoDB client for a given uri, user and key
+	 * 
+	 * @param uri
+	 *            either aws:<REGION> or address of local DynamoDB server (e.g.
+	 *            http://localhost:8000)
+	 * @param user
+	 *            aws credential id
+	 * @param key
+	 *            aws credential key
+	 * @return DynamoDB client
+	 */
+	protected static DynamoDbClient getDynamodbConnection(final String uri, final String user, final String key) {
 		final StaticCredentialsProvider credentialsProvider = StaticCredentialsProvider
 				.create(AwsBasicCredentials.create(user, key));
-		final DynamoDbClientBuilder clientBuilder = DynamoDbClient.builder().region(Region.EU_CENTRAL_1)
-				.credentialsProvider(credentialsProvider);
-		if (!uri.equals("aws")) {
+		final DynamoDbClientBuilder clientBuilder = DynamoDbClient.builder().credentialsProvider(credentialsProvider);
+		final String AWS_PREFIX = "aws:";
+		if (uri.startsWith(AWS_PREFIX)) {
+			clientBuilder.region(Region.of(uri.replace(AWS_PREFIX, "")));
+		} else {
+			clientBuilder.region(Region.EU_CENTRAL_1);
 			clientBuilder.endpointOverride(URI.create(uri));
 		}
 		return clientBuilder.build();
@@ -123,7 +138,7 @@ public class DynamodbAdapter implements VirtualSchemaAdapter {
 
 	private String dynamodbResultToSelectFromValues(final ScanResponse scanResponse) {
 		final List<Map<String, AttributeValue>> scannedItems = scanResponse.items();
-		if(scannedItems.size() == 0){
+		if (scannedItems.size() == 0) {
 			return "SELECT * FROM VALUES('') WHERE 0 = 1;";
 		}
 		final StringBuilder responseBuilder = new StringBuilder("SELECT * FROM (VALUES");

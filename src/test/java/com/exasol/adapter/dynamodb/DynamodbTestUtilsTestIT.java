@@ -15,8 +15,6 @@ import org.testcontainers.containers.Network;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
-import util.DynamodbTestUtils;
-
 /**
  * Tests the {@link DynamodbTestUtils}
  */

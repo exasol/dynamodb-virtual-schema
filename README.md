@@ -26,10 +26,12 @@ For AWS use:
 
  ```
 CREATE CONNECTION DYNAMO_CONNECTION
-    TO 'aws'
+    TO 'aws:<REGION>'
     USER '<AWS_ACCESS_KEY_ID>'
     IDENTIFIED BY '<AWS_SECRET_ACCESS_KEY>';
 ```
+
+As a region use for example `eu-central-1`.
 
 For creating a connection to a local [AWS testing instance](https://docs.aws.amazon.com/de_de/amazondynamodb/latest/developerguide/DynamoDBLocal.html) use:
 

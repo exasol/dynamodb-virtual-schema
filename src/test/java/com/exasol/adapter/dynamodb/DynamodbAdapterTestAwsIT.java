@@ -17,8 +17,6 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 import com.exasol.bucketfs.BucketAccessException;
 import com.exasol.containers.ExasolContainer;
 
-import util.DynamodbTestUtils;
-import util.ExasolTestUtils;
 /**
  * Tests using the AWS DynamoDB. Setup credentials on your machine using:
  * {@code aws configure} For now two factor authentication is NOT SUPPORTED!
@@ -27,7 +25,7 @@ import util.ExasolTestUtils;
  * item
  */
 @Testcontainers
-public class DynamodbAdapterTestAwsITdisabled {
+public class DynamodbAdapterTestAwsIT {
 	private static final Logger LOGGER = LoggerFactory.getLogger(DynamodbAdapterTestLocalIT.class);
 
 	@Container

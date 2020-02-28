@@ -23,9 +23,6 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 
 import com.exasol.containers.ExasolContainer;
 
-import util.DynamodbTestUtils;
-import util.ExasolTestUtils;
-
 /**
  * Tests the {@link DynamodbAdapter} using a local docker version of DynamoDB
  * and a local docker version of exasol.
@@ -146,10 +143,8 @@ public class DynamodbAdapterTestLocalIT {
 	@Test
 	void testMultiLineSelect() throws IOException, InterruptedException, SQLException {
 		dynamodbTestUtils.createTable(DYNAMO_TABLE_NAME, "isbn");
-
 		final ClassLoader classLoader = DynamodbTestUtilsTestIT.class.getClassLoader();
 		dynamodbTestUtils.importData(new File(classLoader.getResource("books.json").getFile()));
-
 		final List<String> result = selectStringArray().rows;
 		assertThat(result, containsInAnyOrder("123567", "123254545", "1235673"));
 		assertThat(result.size(), equalTo(3));

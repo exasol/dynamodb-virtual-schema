@@ -1,7 +1,6 @@
-package util;
+package com.exasol.adapter.dynamodb;
 
 import java.io.*;
-import java.net.URI;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -12,16 +11,11 @@ import org.slf4j.LoggerFactory;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.Network;
 
-import com.exasol.adapter.dynamodb.DynamodbAdapterTestLocalIT;
 import com.github.dockerjava.api.model.ContainerNetwork;
 
-import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.AwsCredentials;
 import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider;
-import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
-import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
-import software.amazon.awssdk.services.dynamodb.DynamoDbClientBuilder;
 import software.amazon.awssdk.services.dynamodb.model.*;
 
 /*
@@ -33,6 +27,7 @@ public class DynamodbTestUtils {
 	private static final String LOCAL_DYNAMO_PASS = "fakeSecretAccessKey";
 	private static final String LOCAL_DYNAMO_PORT = "8000";
 	private static final String LOCALHOST_IP = "127.0.0.1";
+	private static final String AWS_LOCAL_URL = "aws:eu-central-1";
 
 	private final DynamoDbClient dynamoClient;
 	private final String dynamoUrl;
@@ -67,7 +62,7 @@ public class DynamodbTestUtils {
 	 * Create DynamodbTestUtils for AWS connection
 	 */
 	private DynamodbTestUtils(final String user, final String pass) {
-		this("aws", "aws", user, pass);
+		this(AWS_LOCAL_URL, AWS_LOCAL_URL, user, pass);
 	}
 
 	/*
@@ -103,14 +98,7 @@ public class DynamodbTestUtils {
 		this.dynamoUrl = dynamoUrl;
 		this.dynamoUser = user;
 		this.dynamoPass = pass;
-		final StaticCredentialsProvider credentialsProvider = StaticCredentialsProvider
-				.create(AwsBasicCredentials.create(user, pass));
-		final DynamoDbClientBuilder clientBuilder = DynamoDbClient.builder().region(Region.EU_CENTRAL_1)
-				.credentialsProvider(credentialsProvider);
-		if (!this.dynamoUrl.equals("aws")) {
-			clientBuilder.endpointOverride(URI.create(this.dynamoUrl));
-		}
-		this.dynamoClient = clientBuilder.build();
+		this.dynamoClient = DynamodbAdapter.getDynamodbConnection(dynamoUrl, user, pass);
 	}
 
 	/**
@@ -189,7 +177,7 @@ public class DynamodbTestUtils {
 	public void importData(final File asset) throws IOException, InterruptedException {
 		final Runtime runtime = Runtime.getRuntime();
 		String importCommand = "aws dynamodb batch-write-item --request-items file://" + asset.getPath();
-		if (!this.localUrl.equals("aws")) {
+		if (!this.localUrl.equals(AWS_LOCAL_URL)) {
 			importCommand += " --endpoint-url " + this.localUrl;
 		}
 		LOGGER.trace(importCommand);
