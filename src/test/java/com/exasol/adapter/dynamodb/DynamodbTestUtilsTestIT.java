@@ -1,10 +1,12 @@
 package com.exasol.adapter.dynamodb;
 
-import static org.junit.Assert.assertEquals;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
 
 import java.io.File;
 import java.io.IOException;
 
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -25,8 +27,8 @@ public class DynamodbTestUtilsTestIT {
 	final static Network network = Network.newNetwork();
 
 	@Container
-	public static final GenericContainer localDynamo = new GenericContainer<>("amazon/dynamodb-local").withExposedPorts(8000)
-			.withNetwork(network).withCommand("-jar DynamoDBLocal.jar -sharedDb -dbPath .");
+	public static final GenericContainer localDynamo = new GenericContainer<>("amazon/dynamodb-local")
+			.withExposedPorts(8000).withNetwork(network).withCommand("-jar DynamoDBLocal.jar -sharedDb -dbPath .");
 
 	private static DynamodbTestUtils dynamodbTestUtils;
 
@@ -36,11 +38,19 @@ public class DynamodbTestUtilsTestIT {
 		dynamodbTestUtils.createTable("JB_Books", "isbn");
 	}
 
+	@AfterAll
+	static void afterAll() {
+		network.close();
+	}
+
+	/**
+	 * Test for {@link DynamodbTestUtils#importData(File)}
+	 */
 	@Test
 	void testImportData() throws IOException, InterruptedException {
 		final ClassLoader classLoader = DynamodbTestUtilsTestIT.class.getClassLoader();
 		final File books = new File(classLoader.getResource("books.json").getFile());
 		dynamodbTestUtils.importData(books);
-		assertEquals(3, dynamodbTestUtils.scan("JB_Books"));
+		assertThat(dynamodbTestUtils.scan("JB_Books"), equalTo(3));
 	}
 }

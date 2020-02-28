@@ -19,7 +19,6 @@ before_install:
   - sudo apt-get install -y awscli
   - mkdir ~/.aws/ && printf "[default]\nregion = eu-central-1" > ~/.aws/config && printf "[default]\n    aws_access_key_id = fakeMyKeyId\n    aws_secret_access_key = fakeSecretAccessKey" > ~/.aws/credentials
 
-
 install:
   - travis_retry mvn dependency:resolve
 

@@ -1,8 +1,8 @@
 package com.exasol.adapter.dynamodb;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.*;
 import static org.hamcrest.collection.IsIterableContainingInAnyOrder.containsInAnyOrder;
-import static org.junit.Assert.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -11,10 +11,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Tag;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testcontainers.containers.GenericContainer;
@@ -24,7 +21,6 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import com.exasol.containers.ExasolContainer;
-import com.exasol.containers.ExasolContainerConstants;
 
 import util.DynamodbTestUtils;
 import util.ExasolTestUtils;
@@ -41,12 +37,12 @@ public class DynamodbAdapterTestLocalIT {
 	final static Network network = Network.newNetwork();
 
 	@Container
-	private static final ExasolContainer<? extends ExasolContainer<?>> exasolContainer = new ExasolContainer<>().withNetwork(network)
-					.withLogConsumer(new Slf4jLogConsumer(LOGGER));
+	private static final ExasolContainer<? extends ExasolContainer<?>> exasolContainer = new ExasolContainer<>()
+			.withNetwork(network).withLogConsumer(new Slf4jLogConsumer(LOGGER));
 
 	@Container
-	public static final GenericContainer localDynamo = new GenericContainer<>("amazon/dynamodb-local").withExposedPorts(8000)
-			.withNetwork(network).withNetworkAliases("dynamo")
+	public static final GenericContainer localDynamo = new GenericContainer<>("amazon/dynamodb-local")
+			.withExposedPorts(8000).withNetwork(network).withNetworkAliases("dynamo")
 			.withCommand("-jar DynamoDBLocal.jar -sharedDb -dbPath .");
 
 	private static DynamodbTestUtils dynamodbTestUtils;
@@ -57,6 +53,10 @@ public class DynamodbAdapterTestLocalIT {
 
 	private static final String DYNAMO_TABLE_NAME = "JB_Books";
 
+	/**
+	 * Creates a Virtual Schema in the Exasol test container accessing the local
+	 * DynamoDB
+	 */
 	@BeforeAll
 	static void beforeAll() throws Exception {
 		dynamodbTestUtils = new DynamodbTestUtils(localDynamo, network);
@@ -71,8 +71,13 @@ public class DynamodbAdapterTestLocalIT {
 		LOGGER.info("created schema");
 	}
 
-	private static final class SelectStringArrayResult{
-		public SelectStringArrayResult(final List<String> rows, final long duration){
+	@AfterAll
+	static void afterAll() {
+		network.close();
+	}
+
+	private static final class SelectStringArrayResult {
+		public SelectStringArrayResult(final List<String> rows, final long duration) {
 			this.rows = rows;
 			this.duration = duration;
 		}
@@ -80,45 +85,54 @@ public class DynamodbAdapterTestLocalIT {
 		public final long duration;
 	}
 
+	/**
+	 * Helper function that runs a SELECT * and return a single String column. In
+	 * addition the execution time is measured.
+	 */
 	private SelectStringArrayResult selectStringArray() throws SQLException {
 		final long start = System.currentTimeMillis();
 		final ResultSet actualResultSet = exasolTestUtils.getStatement()
 				.executeQuery("SELECT * FROM " + TEST_SCHEMA + ".\"testTable\";");
-
-		final long duration  = System.currentTimeMillis() -start;
-		assertNotNull(actualResultSet);
-
+		final long duration = System.currentTimeMillis() - start;
+		assertThat(actualResultSet, notNullValue());
 		final List<String> result = new ArrayList<>();
-		while(actualResultSet.next()){
+		while (actualResultSet.next()) {
 			result.add(actualResultSet.getString(1));
 		}
-
-		LOGGER.info("query execution time was: " + String.valueOf(duration));
+		LOGGER.info("query execution time was: " + duration);
 		return new SelectStringArrayResult(result, duration);
 	}
 
+	/**
+	 * Tests an select from an empty DynamoDB table
+	 */
 	@Test
 	void testEmptySelect() throws SQLException {
 		dynamodbTestUtils.createTable(DYNAMO_TABLE_NAME, "isbn");
 		final List<String> result = selectStringArray().rows;
-		assertEquals(0,result.size());
+		assertThat(result.size(), equalTo(0));
 	}
 
+	/**
+	 * Tests an select from an DynamoDB table with a single line
+	 */
 	@Test
 	void testSingleLineSelect() throws SQLException {
 		dynamodbTestUtils.createTable(DYNAMO_TABLE_NAME, "isbn");
 		final String ISBN = "12398439493";
 		dynamodbTestUtils.pushBook(ISBN, "test name");
-
 		final ResultSet actualResult = exasolTestUtils.getStatement()
 				.executeQuery("SELECT * FROM " + TEST_SCHEMA + ".\"testTable\";");// table name is hardcoded in adapter
 																					// definition (DynamodbAdapter)
-		assertNotNull(actualResult);
-		assertTrue(actualResult.next());
-		assertEquals(ISBN, actualResult.getString(1));
-		assertFalse(actualResult.next());
+		assertThat(actualResult, notNullValue());
+		assertThat(actualResult.next(), is(true));
+		assertThat(actualResult.getString(1), equalTo(ISBN));
+		assertThat(actualResult.next(), is(false));
 	}
 
+	/**
+	 * Tests a select from a DynamoDB table with multiple lines
+	 */
 	@Test
 	void testMultiLineSelect() throws IOException, InterruptedException, SQLException {
 		dynamodbTestUtils.createTable(DYNAMO_TABLE_NAME, "isbn");
@@ -127,29 +141,30 @@ public class DynamodbAdapterTestLocalIT {
 		dynamodbTestUtils.importData(new File(classLoader.getResource("books.json").getFile()));
 
 		final List<String> result = selectStringArray().rows;
-		assertThat(result,containsInAnyOrder("123567", "123254545", "1235673"));
-		assertEquals(3,result.size());
+		assertThat(result, containsInAnyOrder("123567", "123254545", "1235673"));
+		assertThat(result.size(), equalTo(3));
 	}
 
+	/**
+	 * Tests a select from a large DynamoDB table
+	 */
 	@Test
 	void testBigScan() throws SQLException {
 		dynamodbTestUtils.createTable(DYNAMO_TABLE_NAME, "isbn");
 		final int numBooks = 1000;
 		final List<String> actualBookNames = new ArrayList<>(numBooks);
-
-		for(int i = 0; i < numBooks; i++){
+		for (int i = 0; i < numBooks; i++) {
 			final String booksName = String.valueOf(i);
 			dynamodbTestUtils.pushBook(booksName, "name equal for all books");
 			actualBookNames.add(booksName);
 		}
-
 		final SelectStringArrayResult result = selectStringArray();
-		assertEquals(numBooks,result.rows.size());
-		assertThat(result.rows,containsInAnyOrder(actualBookNames.toArray()));
+		assertThat(result.rows.size(), equalTo(numBooks));
+		assertThat(result.rows, containsInAnyOrder(actualBookNames.toArray()));
 	}
 
 	@AfterEach
-	void after(){
+	void after() {
 		dynamodbTestUtils.deleteCreatedTables();
 	}
 

@@ -5,6 +5,7 @@ Using this Virtual Schema you can access to [Amazon DynamoDB](https://aws.amazon
 Upload the latest available release of this adapter to BucketFS.
 
 Then create a schema to hold the adapter script.
+
 ```
 CREATE SCHEMA ADAPTER;
 ```
@@ -21,7 +22,8 @@ CREATE OR REPLACE JAVA ADAPTER SCRIPT ADAPTER.DYNAMODB_ADAPTER AS
  
 For creating a Virtual Schema you need a connection either to AWS or to a local DynamoDB.
 
-For AWS use: 
+For AWS use:
+
  ```
 CREATE CONNECTION DYNAMO_CONNECTION
     TO 'aws'
@@ -30,6 +32,7 @@ CREATE CONNECTION DYNAMO_CONNECTION
 ```
 
 For creating a connection to a local [AWS testing instance](https://docs.aws.amazon.com/de_de/amazondynamodb/latest/developerguide/DynamoDBLocal.html) use:
+
 ```
 CREATE CONNECTION DYNAMO_CONNECTION
     TO 'http://localhost:8000'
@@ -39,20 +42,23 @@ CREATE CONNECTION DYNAMO_CONNECTION
 ```
 
 Finally create the Virtual Schema using:
+
 ```
 CREATE VIRTUAL SCHEMA DYNAMODB_TEST USING ADAPTER.DYNAMODB_ADAPTER WITH
     CONNECTION_NAME = 'DYNAMO_CONNECTION'
-    SQL_DIALECT     = 'Dynamodb';
+    SQL_DIALECT     = 'DynamoDB';
 ```
 
 ## First steps
 Start for example with:
+
 ```
 SELECT * FROM ASDF."testTable";
 ```
 
 # Debugging
 For receiving virtual schema logs during integration tests use:
+
 ```
     nc -lkp 3000
 ```

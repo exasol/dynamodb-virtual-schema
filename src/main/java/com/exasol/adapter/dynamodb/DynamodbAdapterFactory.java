@@ -1,6 +1,5 @@
 package com.exasol.adapter.dynamodb;
 
-import java.util.HashSet;
 import java.util.ServiceLoader;
 import java.util.Set;
 
