@@ -77,7 +77,7 @@ public class DynamodbAdapterTestLocalIT {
 	private static final class SelectStringArrayResult {
 		public SelectStringArrayResult(final List<String> rows, final long duration) {
 			this.rows = rows;
-git			this.duration = duration;
+			this.duration = duration;
 		}
 		public final List<String> rows;
 		public final long duration;
