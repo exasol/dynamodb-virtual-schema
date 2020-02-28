@@ -44,7 +44,10 @@ public class DynamodbTestUtils {
 	private static final Logger LOGGER = LoggerFactory.getLogger(DynamodbAdapterTestLocalIT.class);
 
 	/**
-	 * Creates a DynamodbTestUtils for aws with credentials from system aws configuration (use aws configure to set up)
+	 * Creates a DynamodbTestUtils for AWS with credentials from system AWS configuration.
+	 * <p>
+	 * Uuse {@code aws configure} to set up.
+	 * </p>
 	 */
 	public DynamodbTestUtils() {
 		this(DefaultCredentialsProvider.create().resolveCredentials());
@@ -66,7 +69,7 @@ public class DynamodbTestUtils {
 				LOCAL_DYNAMO_USER, LOCAL_DYNAMO_PASS);
 	}
 
-	private static String getDockerNetworkURlForLocalDynamodb(final GenericContainer localDynamo,
+	private static String getDockerNetworkUrlForLocalDynamodb(final GenericContainer localDynamo,
 			final Network thisNetwork) throws Exception {
 		final Map<String, ContainerNetwork> networks = localDynamo.getContainerInfo().getNetworkSettings()
 				.getNetworks();

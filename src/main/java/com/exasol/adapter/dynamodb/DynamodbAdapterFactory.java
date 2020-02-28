@@ -16,13 +16,11 @@ import com.exasol.logging.VersionCollector;
  * the {@link ServiceLoader} to find it.
  */
 public class DynamodbAdapterFactory implements AdapterFactory {
-	private static final String ADAPTER_NAME = "Dynamodb Adapter";
+	private static final String ADAPTER_NAME = "DynamoDB Adapter";
 
 	@Override
 	public Set<String> getSupportedAdapterNames() {
-		final Set<String> supportedNames = new HashSet<>();
-		supportedNames.add("Dynamodb");
-		return supportedNames;
+		return Set.of("DynamoDB");
 	}
 
 	@Override

@@ -22,7 +22,7 @@ import util.ExasolTestUtils;
 /*
   Tests using the aws DynamoDB.
   Setup credentials on your machine using: aws configure
-  Until no two factor authentication is NOT SUPPORTED!
+  For now two factor authentication is NOT SUPPORTED!
 
   Preparation:
   create a table JB_Books with primary key "isbn" and insert one item
@@ -32,8 +32,7 @@ public class DynamodbAdapterTestAwsITdisabled {
 	private static final Logger LOGGER = LoggerFactory.getLogger(DynamodbAdapterTestLocalIT.class);
 
 	@Container
-	private static final ExasolContainer<? extends ExasolContainer<?>> exasolContainer = new ExasolContainer<>(
-			ExasolContainerConstants.EXASOL_DOCKER_IMAGE_REFERENCE).withLogConsumer(new Slf4jLogConsumer(LOGGER));
+	private static final ExasolContainer<? extends ExasolContainer<?>> exasolContainer = new ExasolContainer<>().withLogConsumer(new Slf4jLogConsumer(LOGGER));
 
 	private static DynamodbTestUtils dynamodbTestUtils;
 	private static ExasolTestUtils exasolTestUtils;

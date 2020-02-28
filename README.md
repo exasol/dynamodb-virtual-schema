@@ -1,5 +1,5 @@
 # Virtual Schema for DynamoDB
-Using this Virtual Schema you can access to Amazons DynamoDB from Exasol 
+Using this Virtual Schema you can access to [Amazon DynamoDB](https://aws.amazon.com/dynamodb/) from Exasol.
 
  ## Installation
 Upload the latest available release of this adapter to BucketFS.
@@ -19,9 +19,9 @@ CREATE OR REPLACE JAVA ADAPTER SCRIPT ADAPTER.DYNAMODB_ADAPTER AS
 
 ## Creating a Virtual Schema
  
-For creating a virtual schema you need a connection either to aws or to a local DynamoDB.
+For creating a Virtual Schema you need a connection either to AWS or to a local DynamoDB.
 
-For aws use: 
+For AWS use: 
  ```
 CREATE CONNECTION DYNAMO_CONNECTION
     TO 'aws'
@@ -29,7 +29,7 @@ CREATE CONNECTION DYNAMO_CONNECTION
     IDENTIFIED BY '<AWS_SECRET_ACCESS_KEY>';
 ```
 
-For creating a connection to a local [aws testing instance](https://docs.aws.amazon.com/de_de/amazondynamodb/latest/developerguide/DynamoDBLocal.html) use:
+For creating a connection to a local [AWS testing instance](https://docs.aws.amazon.com/de_de/amazondynamodb/latest/developerguide/DynamoDBLocal.html) use:
 ```
 CREATE CONNECTION DYNAMO_CONNECTION
     TO 'http://localhost:8000'
@@ -45,8 +45,8 @@ CREATE VIRTUAL SCHEMA DYNAMODB_TEST USING ADAPTER.DYNAMODB_ADAPTER WITH
     SQL_DIALECT     = 'Dynamodb';
 ```
 
-## First steps:
-start for example with:
+## First steps
+Start for example with:
 ```
 SELECT * FROM ASDF."testTable";
 ```
@@ -56,4 +56,3 @@ For receiving virtual schema logs during integration tests use:
 ```
     nc -lkp 3000
 ```
-

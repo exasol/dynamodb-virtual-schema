@@ -5,7 +5,7 @@
         <format>jar</format>
     </formats>
     <includeBaseDirectory>false</includeBaseDirectory>
-    <!-- There is a bug caused by maven assembly. See http://stackoverflow.com/questions/17265002/hadoop-no-filesystem-for-scheme-file
+    <!-- There is a bug caused by Maven assembly. See http://stackoverflow.com/questions/17265002/hadoop-no-filesystem-for-scheme-file
         and https://jira.codehaus.org/browse/MASSEMBLY-209 -->
     <containerDescriptorHandlers>
         <containerDescriptorHandler>

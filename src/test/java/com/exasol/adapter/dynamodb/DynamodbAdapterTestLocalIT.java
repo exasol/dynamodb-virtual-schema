@@ -41,8 +41,7 @@ public class DynamodbAdapterTestLocalIT {
 	final static Network network = Network.newNetwork();
 
 	@Container
-	private static final ExasolContainer<? extends ExasolContainer<?>> exasolContainer = new ExasolContainer<>(
-			ExasolContainerConstants.EXASOL_DOCKER_IMAGE_REFERENCE).withNetwork(network)
+	private static final ExasolContainer<? extends ExasolContainer<?>> exasolContainer = new ExasolContainer<>().withNetwork(network)
 					.withLogConsumer(new Slf4jLogConsumer(LOGGER));
 
 	@Container
