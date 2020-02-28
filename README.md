@@ -14,7 +14,7 @@ Next create the Adapter Script:
  ```
 CREATE OR REPLACE JAVA ADAPTER SCRIPT ADAPTER.DYNAMODB_ADAPTER AS
     %scriptclass com.exasol.adapter.RequestDispatcher;
-    %jar /buckets/bfsdefault/default/dynamodb-virtual-schemas-adapter-dist-0.0.1.jar;
+    %jar /buckets/bfsdefault/default/dynamodb-virtual-schemas-adapter-dist-0.1.0.jar;
 /
 ```
 
