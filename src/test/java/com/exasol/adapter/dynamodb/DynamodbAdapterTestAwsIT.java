@@ -22,7 +22,7 @@ import com.exasol.containers.ExasolContainer;
  * {@code aws configure} For now two factor authentication is NOT SUPPORTED!
  * 
  * Preparation: create a table {@code JB_Books} with primary key {@code isbn} and insert one
- * item
+ * item.
  */
 @Testcontainers
 public class DynamodbAdapterTestAwsIT {
@@ -38,7 +38,7 @@ public class DynamodbAdapterTestAwsIT {
 
 	/**
 	 * Creates a Virtual Schema in the Exasol test container accessing DynamoDB on
-	 * AWS
+	 * AWS.
 	 */
 	@BeforeAll
 	static void beforeAll()
@@ -53,7 +53,7 @@ public class DynamodbAdapterTestAwsIT {
 	}
 
 	/**
-	 * Tests a simple {@code SELECT}
+	 * Tests a simple {@code SELECT}.
 	 */
 	@Test
 	void testSelect() throws SQLException {

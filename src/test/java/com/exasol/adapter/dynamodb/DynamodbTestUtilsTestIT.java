@@ -16,7 +16,7 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 /**
- * Tests the {@link DynamodbTestUtils}
+ * Tests the {@link DynamodbTestUtils}.
  */
 @Tag("integration")
 @Testcontainers
@@ -42,7 +42,7 @@ public class DynamodbTestUtilsTestIT {
 	}
 
 	/**
-	 * Test for {@link DynamodbTestUtils#importData(File)}
+	 * Test for {@link DynamodbTestUtils#importData(File)}.
 	 */
 	@Test
 	void testImportData() throws IOException, InterruptedException {

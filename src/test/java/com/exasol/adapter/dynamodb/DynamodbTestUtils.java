@@ -52,14 +52,14 @@ public class DynamodbTestUtils {
 	}
 
 	/**
-	 * Constructor using DynamoDB at AWS with given AWS credentials
+	 * Constructor using DynamoDB at AWS with given AWS credentials.
 	 */
 	private DynamodbTestUtils(final AwsCredentials awsCredentials) {
 		this(awsCredentials.accessKeyId(), awsCredentials.secretAccessKey());
 	}
 
 	/**
-	 * Constructor using DynamoDB at AWS with given user and pass
+	 * Constructor using DynamoDB at AWS with given user and pass.
 	 */
 	private DynamodbTestUtils(final String user, final String pass) {
 		this(AWS_LOCAL_URL, AWS_LOCAL_URL, user, pass);
@@ -67,7 +67,7 @@ public class DynamodbTestUtils {
 
 	/**
 	 * Constructor using default login credentials for the
-	 * local dynamodb docker instance
+	 * local dynamodb docker instance.
 	 */
 	public DynamodbTestUtils(final GenericContainer localDynamo, final Network dockerNetwork) throws Exception {
 		this(getLocalUrlForLocalDynamodb(localDynamo), getDockerNetworkUrlForLocalDynamodb(localDynamo, dockerNetwork),
@@ -91,7 +91,7 @@ public class DynamodbTestUtils {
 	}
 
 	/**
-	 * Constructor called by all other constructors
+	 * Constructor called by all other constructors.
 	 */
 	private DynamodbTestUtils(final String localUrl, final String dynamoUrl, final String user, final String pass) {
 		this.localUrl = localUrl;
@@ -102,7 +102,7 @@ public class DynamodbTestUtils {
 	}
 
 	/**
-	 * Adds a book to the table {@code JB_Books}
+	 * Adds a book to the table {@code JB_Books}.
 	 * 
 	 * @param isbn
 	 * @param name
@@ -128,7 +128,7 @@ public class DynamodbTestUtils {
 	}
 
 	/**
-	 * Creates a DynamoDB table
+	 * Creates a DynamoDB table.
 	 * 
 	 * @param tableName
 	 * @param keyName
@@ -147,7 +147,7 @@ public class DynamodbTestUtils {
 	}
 
 	/**
-	 * Deletes a DynamoDB table
+	 * Deletes a DynamoDB table.
 	 * 
 	 * @param tableName
 	 */
@@ -158,7 +158,7 @@ public class DynamodbTestUtils {
 	}
 
 	/**
-	 * Deletes all tables created with {@link #createTable(String, String)}
+	 * Deletes all tables created with {@link #createTable(String, String)}.
 	 */
 	public void deleteCreatedTables() {
 		for (final String tableName : this.tableNames) {

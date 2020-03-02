@@ -53,7 +53,7 @@ public class DynamodbAdapterTestLocalIT {
 
 	/**
 	 * Creates a Virtual Schema in the Exasol test container accessing the local
-	 * DynamoDB
+	 * DynamoDB.
 	 */
 	@BeforeAll
 	static void beforeAll() throws Exception {
@@ -102,7 +102,7 @@ public class DynamodbAdapterTestLocalIT {
 	}
 
 	/**
-	 * Tests an {@code SELECT *} from an empty DynamoDB table
+	 * Tests an {@code SELECT *} from an empty DynamoDB table.
 	 */
 	@Test
 	void testEmptySelect() throws SQLException {
@@ -112,7 +112,7 @@ public class DynamodbAdapterTestLocalIT {
 	}
 
 	/**
-	 * Tests an {@code SELECT *} from an DynamoDB table with a single line
+	 * Tests an {@code SELECT *} from an DynamoDB table with a single line.
 	 */
 	@Test
 	void testSingleLineSelect() throws SQLException {
@@ -125,7 +125,7 @@ public class DynamodbAdapterTestLocalIT {
 	}
 
 	/**
-	 * Tests an {@code SELECT *} from an DynamoDB table with a single line with string result
+	 * Tests an {@code SELECT *} from an DynamoDB table with a single line with string result.
 	 */
 	@Test
 	void testSingleLineSelectWithStringResult() throws SQLException {
@@ -138,7 +138,7 @@ public class DynamodbAdapterTestLocalIT {
 	}
 
 	/**
-	 * Tests a {@code SELECT *} from a DynamoDB table with multiple lines
+	 * Tests a {@code SELECT *} from a DynamoDB table with multiple lines.
 	 */
 	@Test
 	void testMultiLineSelect() throws IOException, InterruptedException, SQLException {
@@ -151,7 +151,7 @@ public class DynamodbAdapterTestLocalIT {
 	}
 
 	/**
-	 * Tests a {@code SELECT *} from a large DynamoDB table
+	 * Tests a {@code SELECT *} from a large DynamoDB table.
 	 */
 	@Test
 	void testBigScan() throws SQLException {

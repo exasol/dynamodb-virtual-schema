@@ -16,7 +16,7 @@ import com.exasol.containers.ExasolContainer;
 import com.github.dockerjava.api.model.ContainerNetwork;
 
 /**
- * Test utils for exasol database
+ * Test utils for the Exasol database.
  */
 public class ExasolTestUtils {
 
@@ -31,7 +31,7 @@ public class ExasolTestUtils {
 	private final Statement statement;
 
 	/**
-	 * Constructor
+	 * Constructor.
 	 * 
 	 * @param container
 	 *            exasol test container
@@ -53,7 +53,7 @@ public class ExasolTestUtils {
 	}
 
 	/**
-	 * Uploads the dynamodb adapter jar to the exasol test container
+	 * Uploads the dynamodb adapter jar to the exasol test container.
 	 * 
 	 * @throws InterruptedException
 	 * @throws BucketAccessException
@@ -65,7 +65,7 @@ public class ExasolTestUtils {
 	}
 
 	/**
-	 * Creates a schema on the exasol test container
+	 * Creates a schema on the exasol test container.
 	 * 
 	 * @param schemaName
 	 * @throws SQLException
@@ -75,7 +75,7 @@ public class ExasolTestUtils {
 	}
 
 	/**
-	 * Runs {@code CREATE CONNECTION} on the exasol test container
+	 * Runs {@code CREATE CONNECTION} on the exasol test container.
 	 * 
 	 * @param name
 	 * @param to
@@ -91,7 +91,7 @@ public class ExasolTestUtils {
 
 	/**
 	 * Runs {@code CREATE OR REPLACE JAVA ADAPTER SCRIPT} on the Exasol test container with
-	 * the DynamoDB Virtual Schema adapter jar
+	 * the DynamoDB Virtual Schema adapter jar.
 	 * 
 	 * @throws SQLException
 	 */
@@ -105,7 +105,7 @@ public class ExasolTestUtils {
 
 	/**
 	 * Hacky method for retrieving the host address for access from inside the
-	 * docker container
+	 * docker container.
 	 */
 	private String getTestHostIpAddress() {
 		final Map<String, ContainerNetwork> networks = this.container.getContainerInfo().getNetworkSettings()
@@ -116,7 +116,7 @@ public class ExasolTestUtils {
 	}
 
 	/**
-	 * Runs {@code CREATE VIRTUAL SCHEMA} on Exasol test container
+	 * Runs {@code CREATE VIRTUAL SCHEMA} on Exasol test container.
 	 * 
 	 * @param name
 	 *            name for the newly created schema
