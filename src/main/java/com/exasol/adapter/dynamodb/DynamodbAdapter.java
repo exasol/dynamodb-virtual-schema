@@ -35,10 +35,7 @@ public class DynamodbAdapter implements VirtualSchemaAdapter {
 
 	private static final Logger LOGGER = Logger.getLogger(DynamodbAdapter.class.getName());
 
-	/**
-	 * Creates a hard coded table {@code testTable} with only one column
-	 * {@code testCol}.
-	 **/
+
 	@Override
 	public CreateVirtualSchemaResponse createVirtualSchema(final ExaMetadata exaMetadata,
 			final CreateVirtualSchemaRequest request) {
@@ -54,10 +51,6 @@ public class DynamodbAdapter implements VirtualSchemaAdapter {
 	/**
 	 * Creates a connection to DynamoDB using the connection details set in
 	 * {@code CREATE CONNECTION}.
-	 * 
-	 * @param exaMetadata
-	 * @param request
-	 * @return DynamoDB client
 	 */
 	private DynamoDbClient getConnection(final ExaMetadata exaMetadata, final AbstractAdapterRequest request)
 			throws ExaConnectionAccessException {
@@ -117,7 +110,7 @@ public class DynamodbAdapter implements VirtualSchemaAdapter {
 	 * Runs the actual query. The data is fetched using a scan from DynamoDB and
 	 * then transformed into a {@code SELECT FROM VALUES} statement and passed back
 	 * to Exasol.
-	 * 
+	 *
 	 * @param exaMetadata
 	 * @param request
 	 * @return
