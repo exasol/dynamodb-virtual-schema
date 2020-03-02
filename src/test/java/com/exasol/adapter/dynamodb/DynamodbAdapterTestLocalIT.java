@@ -84,7 +84,7 @@ public class DynamodbAdapterTestLocalIT {
 	}
 
 	/**
-	 * Helper function that runs a SELECT * and return a single String column. In
+	 * Helper function that runs a {@code SELECT *} and return a single string column. In
 	 * addition the execution time is measured.
 	 */
 	private SelectStringArrayResult selectStringArray() throws SQLException {
@@ -102,7 +102,7 @@ public class DynamodbAdapterTestLocalIT {
 	}
 
 	/**
-	 * Tests an select from an empty DynamoDB table
+	 * Tests an {@code SELECT *} from an empty DynamoDB table
 	 */
 	@Test
 	void testEmptySelect() throws SQLException {
@@ -112,7 +112,7 @@ public class DynamodbAdapterTestLocalIT {
 	}
 
 	/**
-	 * Tests an select from an DynamoDB table with a single line
+	 * Tests an {@code SELECT *} from an DynamoDB table with a single line
 	 */
 	@Test
 	void testSingleLineSelect() throws SQLException {
@@ -125,7 +125,7 @@ public class DynamodbAdapterTestLocalIT {
 	}
 
 	/**
-	 * Tests an select from an DynamoDB table with a single line with string result
+	 * Tests an {@code SELECT *} from an DynamoDB table with a single line with string result
 	 */
 	@Test
 	void testSingleLineSelectWithStringResult() throws SQLException {
@@ -138,7 +138,7 @@ public class DynamodbAdapterTestLocalIT {
 	}
 
 	/**
-	 * Tests a select from a DynamoDB table with multiple lines
+	 * Tests a {@code SELECT *} from a DynamoDB table with multiple lines
 	 */
 	@Test
 	void testMultiLineSelect() throws IOException, InterruptedException, SQLException {
@@ -151,7 +151,7 @@ public class DynamodbAdapterTestLocalIT {
 	}
 
 	/**
-	 * Tests a select from a large DynamoDB table
+	 * Tests a {@code SELECT *} from a large DynamoDB table
 	 */
 	@Test
 	void testBigScan() throws SQLException {

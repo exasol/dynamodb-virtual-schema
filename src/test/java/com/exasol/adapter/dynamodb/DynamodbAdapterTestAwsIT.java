@@ -21,7 +21,7 @@ import com.exasol.containers.ExasolContainer;
  * Tests using the AWS DynamoDB. Setup credentials on your machine using:
  * {@code aws configure} For now two factor authentication is NOT SUPPORTED!
  * 
- * Preparation: create a table JB_Books with primary key "isbn" and insert one
+ * Preparation: create a table {@code JB_Books} with primary key {@code isbn} and insert one
  * item
  */
 @Testcontainers
@@ -53,7 +53,7 @@ public class DynamodbAdapterTestAwsIT {
 	}
 
 	/**
-	 * Tests a simple SELECT
+	 * Tests a simple {@code SELECT}
 	 */
 	@Test
 	void testSelect() throws SQLException {

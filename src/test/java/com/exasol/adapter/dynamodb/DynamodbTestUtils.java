@@ -19,10 +19,10 @@ import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 import software.amazon.awssdk.services.dynamodb.model.*;
 
 /*
-    Test utils for testing DynamoDB
+    Test utils for testing with DynamoDB
  */
 public class DynamodbTestUtils {
-	// default credentials for dynamodb docker
+	// Default credentials for dynamodb docker
 	private static final String LOCAL_DYNAMO_USER = "fakeMyKeyId";
 	private static final String LOCAL_DYNAMO_PASS = "fakeSecretAccessKey";
 	private static final String LOCAL_DYNAMO_PORT = "8000";
@@ -41,7 +41,7 @@ public class DynamodbTestUtils {
 	private static final Logger LOGGER = LoggerFactory.getLogger(DynamodbAdapterTestLocalIT.class);
 
 	/**
-	 * Creates a DynamodbTestUtils for AWS with credentials from system AWS
+	 * Constructor for DynamoDB at AWS with credentials from system AWS
 	 * configuration.
 	 * <p>
 	 * Use {@code aws configure} to set up.
@@ -51,22 +51,22 @@ public class DynamodbTestUtils {
 		this(DefaultCredentialsProvider.create().resolveCredentials());
 	}
 
-	/*
-	 * Creates a DynamodbTestUtils for AWS with given credentials
+	/**
+	 * Constructor using DynamoDB at AWS with given AWS credentials
 	 */
 	private DynamodbTestUtils(final AwsCredentials awsCredentials) {
 		this(awsCredentials.accessKeyId(), awsCredentials.secretAccessKey());
 	}
 
-	/*
-	 * Create DynamodbTestUtils for AWS connection
+	/**
+	 * Constructor using DynamoDB at AWS with given user and pass
 	 */
 	private DynamodbTestUtils(final String user, final String pass) {
 		this(AWS_LOCAL_URL, AWS_LOCAL_URL, user, pass);
 	}
 
-	/*
-	 * Creates an DynamodbTestUtils instance with default login credentials for the
+	/**
+	 * Constructor using default login credentials for the
 	 * local dynamodb docker instance
 	 */
 	public DynamodbTestUtils(final GenericContainer localDynamo, final Network dockerNetwork) throws Exception {
@@ -102,7 +102,7 @@ public class DynamodbTestUtils {
 	}
 
 	/**
-	 * Adds a book to the table JB_Books
+	 * Adds a book to the table {@code JB_Books}
 	 * 
 	 * @param isbn
 	 * @param name
@@ -147,7 +147,7 @@ public class DynamodbTestUtils {
 	}
 
 	/**
-	 * deletes a DynamoDB table
+	 * Deletes a DynamoDB table
 	 * 
 	 * @param tableName
 	 */
@@ -158,7 +158,7 @@ public class DynamodbTestUtils {
 	}
 
 	/**
-	 * deletes all tables created with {@link #createTable(String, String)}
+	 * Deletes all tables created with {@link #createTable(String, String)}
 	 */
 	public void deleteCreatedTables() {
 		for (final String tableName : this.tableNames) {
