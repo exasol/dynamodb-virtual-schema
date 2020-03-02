@@ -89,8 +89,8 @@ public class ExasolTestUtils {
 	}
 
 	/**
-	 * Runs {@code CREATE OR REPLACE JAVA ADAPTER SCRIPT} on the Exasol test container with
-	 * the DynamoDB Virtual Schema adapter jar.
+	 * Runs {@code CREATE OR REPLACE JAVA ADAPTER SCRIPT} on the Exasol test
+	 * container with the DynamoDB Virtual Schema adapter jar.
 	 * 
 	 * @throws SQLException
 	 */

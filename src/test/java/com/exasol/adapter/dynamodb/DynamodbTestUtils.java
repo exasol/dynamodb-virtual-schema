@@ -63,8 +63,8 @@ public class DynamodbTestUtils {
 	}
 
 	/**
-	 * Constructor using default login credentials for the
-	 * local dynamodb docker instance.
+	 * Constructor using default login credentials for the local dynamodb docker
+	 * instance.
 	 */
 	public DynamodbTestUtils(final GenericContainer localDynamo, final Network dockerNetwork) throws Exception {
 		this(getLocalUrlForLocalDynamodb(localDynamo), getDockerNetworkUrlForLocalDynamodb(localDynamo, dockerNetwork),

@@ -2,7 +2,6 @@ package com.exasol.adapter.dynamodb;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.collection.IsIterableContainingInAnyOrder.containsInAnyOrder;
 
 import java.io.File;
@@ -32,7 +31,7 @@ import com.exasol.containers.ExasolContainer;
 public class DynamodbAdapterTestLocalIT {
 	private static final Logger LOGGER = LoggerFactory.getLogger(DynamodbAdapterTestLocalIT.class);
 
-	private static final  Network NETWORK = Network.newNetwork();
+	private static final Network NETWORK = Network.newNetwork();
 
 	@Container
 	private static final ExasolContainer<? extends ExasolContainer<?>> EXASOL_CONTAINER = new ExasolContainer<>()
@@ -84,15 +83,14 @@ public class DynamodbAdapterTestLocalIT {
 	}
 
 	/**
-	 * Helper function that runs a {@code SELECT *} and return a single string column. In
-	 * addition the execution time is measured.
+	 * Helper function that runs a {@code SELECT *} and return a single string
+	 * column. In addition the execution time is measured.
 	 */
 	private SelectStringArrayResult selectStringArray() throws SQLException {
 		final long start = System.currentTimeMillis();
 		final ResultSet actualResultSet = exasolTestUtils.getStatement()
 				.executeQuery("SELECT * FROM " + TEST_SCHEMA + ".\"testTable\";");
 		final long duration = System.currentTimeMillis() - start;
-		assertThat(actualResultSet, notNullValue());
 		final List<String> result = new ArrayList<>();
 		while (actualResultSet.next()) {
 			result.add(actualResultSet.getString(1));
@@ -121,11 +119,11 @@ public class DynamodbAdapterTestLocalIT {
 		dynamodbTestUtils.pushBook(ISBN, "test name");
 		final SelectStringArrayResult result = selectStringArray();
 		assertThat(result.rows, containsInAnyOrder(ISBN));
-		assertThat(result.rows.size(), equalTo(1));
 	}
 
 	/**
-	 * Tests an {@code SELECT *} from an DynamoDB table with a single line with string result.
+	 * Tests an {@code SELECT *} from an DynamoDB table with a single line with
+	 * string result.
 	 */
 	@Test
 	void testSingleLineSelectWithStringResult() throws SQLException {
@@ -134,7 +132,6 @@ public class DynamodbAdapterTestLocalIT {
 		dynamodbTestUtils.pushBook(ISBN, "test name");
 		final SelectStringArrayResult result = selectStringArray();
 		assertThat(result.rows, containsInAnyOrder(ISBN));
-		assertThat(result.rows.size(), equalTo(1));
 	}
 
 	/**
@@ -147,7 +144,6 @@ public class DynamodbAdapterTestLocalIT {
 		dynamodbTestUtils.importData(new File(classLoader.getResource("books.json").getFile()));
 		final List<String> result = selectStringArray().rows;
 		assertThat(result, containsInAnyOrder("123567", "123254545", "1235673"));
-		assertThat(result.size(), equalTo(3));
 	}
 
 	/**
@@ -164,7 +160,6 @@ public class DynamodbAdapterTestLocalIT {
 			actualBookNames.add(booksName);
 		}
 		final SelectStringArrayResult result = selectStringArray();
-		assertThat(result.rows.size(), equalTo(numBooks));
 		assertThat(result.rows, containsInAnyOrder(actualBookNames.toArray()));
 	}
 

@@ -257,7 +257,8 @@
                         <include>**IT.java</include>
                     </includes>
                     <excludes>
-                        <exclude>DynamodbAdapterTestAwsIT</exclude><!-- automatic run makes no sense as cloud setup is needed -->
+                        <exclude>DynamodbAdapterTestAwsIT
+                        </exclude><!-- automatic run makes no sense as cloud setup is needed -->
                     </excludes>
                     <failIfNoTests>true</failIfNoTests>
                 </configuration>
