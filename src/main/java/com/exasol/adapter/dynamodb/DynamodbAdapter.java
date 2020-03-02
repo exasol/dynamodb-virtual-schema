@@ -36,7 +36,8 @@ public class DynamodbAdapter implements VirtualSchemaAdapter {
 	private static final Logger LOGGER = Logger.getLogger(DynamodbAdapter.class.getName());
 
 	/**
-	 * Creates a hard coded table {@code testTable} with only one column {@code testCol}.
+	 * Creates a hard coded table {@code testTable} with only one column
+	 * {@code testCol}.
 	 **/
 	@Override
 	public CreateVirtualSchemaResponse createVirtualSchema(final ExaMetadata exaMetadata,
@@ -51,7 +52,8 @@ public class DynamodbAdapter implements VirtualSchemaAdapter {
 	}
 
 	/**
-	 * Creates a connection to DynamoDB using the connection details set in {@code CREATE CONNECTION}.
+	 * Creates a connection to DynamoDB using the connection details set in
+	 * {@code CREATE CONNECTION}.
 	 * 
 	 * @param exaMetadata
 	 * @param request
@@ -95,12 +97,14 @@ public class DynamodbAdapter implements VirtualSchemaAdapter {
 	}
 
 	@Override
-	public DropVirtualSchemaResponse dropVirtualSchema(final ExaMetadata arg0, final DropVirtualSchemaRequest arg1) {
-		return null;
+	public DropVirtualSchemaResponse dropVirtualSchema(final ExaMetadata exaMetadata,
+			final DropVirtualSchemaRequest dropVirtualSchemaRequest) {
+		throw new UnsupportedOperationException("not yet implemented");
 	}
 
 	@Override
-	public GetCapabilitiesResponse getCapabilities(final ExaMetadata arg0, final GetCapabilitiesRequest arg1) {
+	public GetCapabilitiesResponse getCapabilities(final ExaMetadata exaMetadata,
+			final GetCapabilitiesRequest getCapabilitiesRequest) {
 		final Capabilities.Builder builder = Capabilities.builder();
 		final Capabilities capabilities = builder.build();
 		return GetCapabilitiesResponse //
@@ -111,8 +115,8 @@ public class DynamodbAdapter implements VirtualSchemaAdapter {
 
 	/**
 	 * Runs the actual query. The data is fetched using a scan from DynamoDB and
-	 * then transformed into a {@code SELECT FROM VALUES} statement and passed back to
-	 * Exasol.
+	 * then transformed into a {@code SELECT FROM VALUES} statement and passed back
+	 * to Exasol.
 	 * 
 	 * @param exaMetadata
 	 * @param request
@@ -126,9 +130,9 @@ public class DynamodbAdapter implements VirtualSchemaAdapter {
 			final DynamoDbClient client = getConnection(exaMetadata, request);
 			final ScanResponse scanResponse = client.scan(ScanRequest.builder().tableName("JB_Books").build());
 			final String selectFromValuesStatement = dynamodbResultToSelectFromValues(scanResponse);
-			final PushDownResponse.Builder responseBuilder = new PushDownResponse.Builder();
-			responseBuilder.pushDownSql(selectFromValuesStatement);
-			return responseBuilder.build();
+			return PushDownResponse.builder()//
+					.pushDownSql(selectFromValuesStatement)//
+					.build();
 		} catch (final ExaConnectionAccessException exception) {
 			throw new AdapterException("Unable create Virtual Schema \"" + request.getVirtualSchemaName()
 					+ "\". Cause: \"" + exception.getMessage(), exception);
@@ -154,12 +158,13 @@ public class DynamodbAdapter implements VirtualSchemaAdapter {
 	}
 
 	@Override
-	public RefreshResponse refresh(final ExaMetadata arg0, final RefreshRequest arg1) {
-		return null;
+	public RefreshResponse refresh(final ExaMetadata exaMetadata, final RefreshRequest refreshRequest) {
+		throw new UnsupportedOperationException("not yet implemented");
 	}
 
 	@Override
-	public SetPropertiesResponse setProperties(final ExaMetadata arg0, final SetPropertiesRequest arg1) {
-		return null;
+	public SetPropertiesResponse setProperties(final ExaMetadata exaMetadata,
+			final SetPropertiesRequest setPropertiesRequest) {
+		throw new UnsupportedOperationException("not yet implemented");
 	}
 }

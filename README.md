@@ -58,9 +58,6 @@ Start for example with:
 SELECT * FROM ASDF."testTable";
 ```
 
-# Debugging
-For receiving virtual schema logs during integration tests use:
-
-```
-    nc -lkp 3000
-```
+# Logging & Debugging
+* [Logging for Virtual Schemas](https://github.com/exasol/virtual-schemas/blob/master/doc/development/remote_logging.md)
+* [Remote debugging Virtual Schemas](https://github.com/exasol/virtual-schemas/blob/master/doc/development/remote_debugging.md)
