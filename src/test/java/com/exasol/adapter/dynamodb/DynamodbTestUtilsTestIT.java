@@ -22,23 +22,23 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 @Testcontainers
 public class DynamodbTestUtilsTestIT {
 
-	final static Network network = Network.newNetwork();
+	private static final Network NETWORK = Network.newNetwork();
 
 	@Container
-	public static final GenericContainer localDynamo = new GenericContainer<>("amazon/dynamodb-local")
-			.withExposedPorts(8000).withNetwork(network).withCommand("-jar DynamoDBLocal.jar -sharedDb -dbPath .");
+	public static final GenericContainer LOCAL_DYNAMO = new GenericContainer<>("amazon/dynamodb-local")
+			.withExposedPorts(8000).withNetwork(NETWORK).withCommand("-jar DynamoDBLocal.jar -sharedDb -dbPath .");
 
 	private static DynamodbTestUtils dynamodbTestUtils;
 
 	@BeforeAll
 	static void beforeAll() throws Exception {
-		dynamodbTestUtils = new DynamodbTestUtils(localDynamo, network);
+		dynamodbTestUtils = new DynamodbTestUtils(LOCAL_DYNAMO, NETWORK);
 		dynamodbTestUtils.createTable("JB_Books", "isbn");
 	}
 
 	@AfterAll
 	static void afterAll() {
-		network.close();
+		NETWORK.close();
 	}
 
 	/**

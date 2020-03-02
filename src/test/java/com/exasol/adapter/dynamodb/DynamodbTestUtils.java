@@ -28,17 +28,14 @@ public class DynamodbTestUtils {
 	private static final String LOCAL_DYNAMO_PORT = "8000";
 	private static final String LOCALHOST_IP = "127.0.0.1";
 	private static final String AWS_LOCAL_URL = "aws:eu-central-1";
+	private static final Logger LOGGER = LoggerFactory.getLogger(DynamodbAdapterTestLocalIT.class);
 
 	private final DynamoDbClient dynamoClient;
 	private final String dynamoUrl;
 	private final String localUrl;
-
 	private final String dynamoUser;
 	private final String dynamoPass;
-
 	private final List<String> tableNames = new LinkedList<>();
-
-	private static final Logger LOGGER = LoggerFactory.getLogger(DynamodbAdapterTestLocalIT.class);
 
 	/**
 	 * Constructor for DynamoDB at AWS with credentials from system AWS

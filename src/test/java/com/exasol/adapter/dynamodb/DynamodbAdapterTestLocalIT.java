@@ -32,15 +32,15 @@ import com.exasol.containers.ExasolContainer;
 public class DynamodbAdapterTestLocalIT {
 	private static final Logger LOGGER = LoggerFactory.getLogger(DynamodbAdapterTestLocalIT.class);
 
-	final static Network network = Network.newNetwork();
+	private static final  Network NETWORK = Network.newNetwork();
 
 	@Container
-	private static final ExasolContainer<? extends ExasolContainer<?>> exasolContainer = new ExasolContainer<>()
-			.withNetwork(network).withExposedPorts(8888).withLogConsumer(new Slf4jLogConsumer(LOGGER));
+	private static final ExasolContainer<? extends ExasolContainer<?>> EXASOL_CONTAINER = new ExasolContainer<>()
+			.withNetwork(NETWORK).withExposedPorts(8888).withLogConsumer(new Slf4jLogConsumer(LOGGER));
 
 	@Container
-	public static final GenericContainer localDynamo = new GenericContainer<>("amazon/dynamodb-local")
-			.withExposedPorts(8000).withNetwork(network).withNetworkAliases("dynamo")
+	public static final GenericContainer LOCAL_DYNAMO = new GenericContainer<>("amazon/dynamodb-local")
+			.withExposedPorts(8000).withNetwork(NETWORK).withNetworkAliases("dynamo")
 			.withCommand("-jar DynamoDBLocal.jar -sharedDb -dbPath .");
 
 	private static DynamodbTestUtils dynamodbTestUtils;
@@ -57,8 +57,8 @@ public class DynamodbAdapterTestLocalIT {
 	 */
 	@BeforeAll
 	static void beforeAll() throws Exception {
-		dynamodbTestUtils = new DynamodbTestUtils(localDynamo, network);
-		exasolTestUtils = new ExasolTestUtils(exasolContainer);
+		dynamodbTestUtils = new DynamodbTestUtils(LOCAL_DYNAMO, NETWORK);
+		exasolTestUtils = new ExasolTestUtils(EXASOL_CONTAINER);
 		exasolTestUtils.uploadDynamodbAdapterJar();
 		exasolTestUtils.createAdapterScript();
 		LOGGER.info("created adapter script");
@@ -71,7 +71,7 @@ public class DynamodbAdapterTestLocalIT {
 
 	@AfterAll
 	static void afterAll() {
-		network.close();
+		NETWORK.close();
 	}
 
 	private static final class SelectStringArrayResult {

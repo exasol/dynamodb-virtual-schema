@@ -29,7 +29,7 @@ public class DynamodbAdapterTestAwsIT {
 	private static final Logger LOGGER = LoggerFactory.getLogger(DynamodbAdapterTestLocalIT.class);
 
 	@Container
-	private static final ExasolContainer<? extends ExasolContainer<?>> exasolContainer = new ExasolContainer<>()
+	private static final ExasolContainer<? extends ExasolContainer<?>> EXASOL_CONTAINER = new ExasolContainer<>()
 			.withLogConsumer(new Slf4jLogConsumer(LOGGER));
 	private static DynamodbTestUtils dynamodbTestUtils;
 	private static ExasolTestUtils exasolTestUtils;
@@ -44,7 +44,7 @@ public class DynamodbAdapterTestAwsIT {
 	static void beforeAll()
 			throws SQLException, BucketAccessException, InterruptedException, java.util.concurrent.TimeoutException {
 		dynamodbTestUtils = new DynamodbTestUtils();
-		exasolTestUtils = new ExasolTestUtils(exasolContainer);
+		exasolTestUtils = new ExasolTestUtils(EXASOL_CONTAINER);
 		exasolTestUtils.uploadDynamodbAdapterJar();
 		exasolTestUtils.createAdapterScript();
 		exasolTestUtils.createConnection(DYNAMODB_CONNECTION, dynamodbTestUtils.getDynamoUrl(),
