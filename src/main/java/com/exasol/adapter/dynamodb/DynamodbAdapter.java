@@ -1,7 +1,6 @@
 package com.exasol.adapter.dynamodb;
 
 import java.util.List;
-import java.util.logging.Logger;
 
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.BasicAWSCredentials;
@@ -26,8 +25,6 @@ import com.exasol.adapter.response.*;
  * DynamoDB Virtual Schema adapter.
  */
 public class DynamodbAdapter implements VirtualSchemaAdapter {
-
-	private static final Logger LOGGER = Logger.getLogger(DynamodbAdapter.class.getName());
 
 	@Override
 	public CreateVirtualSchemaResponse createVirtualSchema(final ExaMetadata exaMetadata,
@@ -85,7 +82,7 @@ public class DynamodbAdapter implements VirtualSchemaAdapter {
 	@Override
 	public DropVirtualSchemaResponse dropVirtualSchema(final ExaMetadata exaMetadata,
 			final DropVirtualSchemaRequest dropVirtualSchemaRequest) {
-		throw new UnsupportedOperationException("not yet implemented");
+		throw new UnsupportedOperationException("not yet implemented");// NOSONAR (string constant)
 	}
 
 	@Override
@@ -145,12 +142,12 @@ public class DynamodbAdapter implements VirtualSchemaAdapter {
 
 	@Override
 	public RefreshResponse refresh(final ExaMetadata exaMetadata, final RefreshRequest refreshRequest) {
-		throw new UnsupportedOperationException("not yet implemented");
+		throw new UnsupportedOperationException("not yet implemented");// NOSONAR (string constant)
 	}
 
 	@Override
 	public SetPropertiesResponse setProperties(final ExaMetadata exaMetadata,
 			final SetPropertiesRequest setPropertiesRequest) {
-		throw new UnsupportedOperationException("not yet implemented");
+		throw new UnsupportedOperationException("not yet implemented");// NOSONAR (string constant)
 	}
 }
