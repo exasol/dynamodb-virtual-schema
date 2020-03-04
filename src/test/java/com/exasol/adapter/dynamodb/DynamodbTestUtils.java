@@ -3,6 +3,7 @@ package com.exasol.adapter.dynamodb;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -95,21 +96,25 @@ public class DynamodbTestUtils {
 	}
 
 	/**
-	 * Adds a book to the table {@code JB_Books}.
-	 * 
-	 * @param isbn
-	 * @param name
+	 * Puts an item to a given table.
 	 */
 	public void putItem(final String tableName, final String isbn, final String name) {
 		final Table table = this.dynamoClient.getTable(tableName);
 		table.putItem(new Item().withPrimaryKey("isbn", isbn).withString("name", name));
 	}
 
+	/**
+	 * Adds one ore more items to a given table define by a JSON string.
+	 * 
+	 * @param tableName
+	 *            the name of the table to put the items in
+	 * @param itemsJson
+	 *            the json definitions of the items
+	 */
 	public void putJson(final String tableName, final String... itemsJson) {
-		final Table table = this.dynamoClient.getTable(tableName);
-		for (final String json : itemsJson) {
-			table.putItem(Item.fromJSON(json));
-		}
+		final TableWriteItems writeRequest = new TableWriteItems(tableName)
+				.withItemsToPut(Arrays.stream(itemsJson).map(Item::fromJSON).toArray(Item[]::new));
+		this.dynamoClient.batchWriteItem(writeRequest);
 	}
 
 	/**
