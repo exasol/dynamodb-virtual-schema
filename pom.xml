@@ -9,7 +9,7 @@
     <description>Adapter for DynamoDB data access from Virtual Schemas.</description>
     <url>https://github.com/exasol/virtual-schema-dynamodb</url>
     <properties>
-        <product.version>0.1.0</product.version>
+        <product.version>0.1.1</product.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <java.version>11</java.version>
@@ -53,9 +53,9 @@
     <dependencyManagement>
         <dependencies>
             <dependency>
-                <groupId>software.amazon.awssdk</groupId>
-                <artifactId>bom</artifactId>
-                <version>2.10.61</version>
+                <groupId>com.amazonaws</groupId>
+                <artifactId>aws-java-sdk-bom</artifactId>
+                <version>1.11.327</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -171,10 +171,9 @@
             <version>${org.testcontainers.version}</version>
             <scope>test</scope>
         </dependency>
-        <!-- DynamoDB -->
         <dependency>
-            <groupId>software.amazon.awssdk</groupId>
-            <artifactId>dynamodb</artifactId>
+            <groupId>com.amazonaws</groupId>
+            <artifactId>aws-java-sdk-dynamodb</artifactId>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>

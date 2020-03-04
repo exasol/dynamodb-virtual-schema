@@ -1,10 +1,13 @@
 package com.exasol.adapter.dynamodb;
 
-import java.net.URI;
 import java.util.List;
-import java.util.Map;
 import java.util.logging.Logger;
 
+import com.amazonaws.auth.AWSStaticCredentialsProvider;
+import com.amazonaws.auth.BasicAWSCredentials;
+import com.amazonaws.client.builder.AwsClientBuilder;
+import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
+import com.amazonaws.services.dynamodbv2.document.*;
 import com.exasol.ExaConnectionAccessException;
 import com.exasol.ExaConnectionInformation;
 import com.exasol.ExaMetadata;
@@ -19,22 +22,12 @@ import com.exasol.adapter.metadata.TableMetadata;
 import com.exasol.adapter.request.*;
 import com.exasol.adapter.response.*;
 
-import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
-import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
-import software.amazon.awssdk.regions.Region;
-import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
-import software.amazon.awssdk.services.dynamodb.DynamoDbClientBuilder;
-import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
-import software.amazon.awssdk.services.dynamodb.model.ScanRequest;
-import software.amazon.awssdk.services.dynamodb.model.ScanResponse;
-
 /**
  * DynamoDB Virtual Schema adapter.
  */
 public class DynamodbAdapter implements VirtualSchemaAdapter {
 
 	private static final Logger LOGGER = Logger.getLogger(DynamodbAdapter.class.getName());
-
 
 	@Override
 	public CreateVirtualSchemaResponse createVirtualSchema(final ExaMetadata exaMetadata,
@@ -52,7 +45,7 @@ public class DynamodbAdapter implements VirtualSchemaAdapter {
 	 * Creates a connection to DynamoDB using the connection details set in
 	 * {@code CREATE CONNECTION}.
 	 */
-	private DynamoDbClient getConnection(final ExaMetadata exaMetadata, final AbstractAdapterRequest request)
+	private DynamoDB getConnection(final ExaMetadata exaMetadata, final AbstractAdapterRequest request)
 			throws ExaConnectionAccessException {
 		final AdapterProperties properties = getPropertiesFromRequest(request);
 		final ExaConnectionInformation connection = exaMetadata.getConnection(properties.getConnectionName());
@@ -71,18 +64,18 @@ public class DynamodbAdapter implements VirtualSchemaAdapter {
 	 *            aws credential key
 	 * @return DynamoDB client
 	 */
-	protected static DynamoDbClient getDynamodbConnection(final String uri, final String user, final String key) {
-		final StaticCredentialsProvider credentialsProvider = StaticCredentialsProvider
-				.create(AwsBasicCredentials.create(user, key));
-		final DynamoDbClientBuilder clientBuilder = DynamoDbClient.builder().credentialsProvider(credentialsProvider);
+	protected static DynamoDB getDynamodbConnection(final String uri, final String user, final String key) {
 		final String AWS_PREFIX = "aws:";
+		final String AWS_LOCAL_REGION = "eu-central-1";
+		final BasicAWSCredentials awsCredentials = new BasicAWSCredentials(user, key);
+		final AmazonDynamoDBClientBuilder clientBuilder = AmazonDynamoDBClientBuilder.standard()
+				.withCredentials(new AWSStaticCredentialsProvider(awsCredentials));
 		if (uri.startsWith(AWS_PREFIX)) {
-			clientBuilder.region(Region.of(uri.replace(AWS_PREFIX, "")));
+			clientBuilder.withRegion(uri.replace(AWS_PREFIX, ""));
 		} else {
-			clientBuilder.region(Region.EU_CENTRAL_1);
-			clientBuilder.endpointOverride(URI.create(uri));
+			clientBuilder.withEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration(uri, AWS_LOCAL_REGION));
 		}
-		return clientBuilder.build();
+		return new DynamoDB(clientBuilder.build());
 	}
 
 	private AdapterProperties getPropertiesFromRequest(final AdapterRequest request) {
@@ -120,9 +113,10 @@ public class DynamodbAdapter implements VirtualSchemaAdapter {
 	public PushDownResponse pushdown(final ExaMetadata exaMetadata, final PushDownRequest request)
 			throws AdapterException {
 		try {
-			final DynamoDbClient client = getConnection(exaMetadata, request);
-			final ScanResponse scanResponse = client.scan(ScanRequest.builder().tableName("JB_Books").build());
-			final String selectFromValuesStatement = dynamodbResultToSelectFromValues(scanResponse);
+			final DynamoDB client = getConnection(exaMetadata, request);
+			final Table table = client.getTable("JB_Books");
+			final ItemCollection<ScanOutcome> scanResult = table.scan();
+			final String selectFromValuesStatement = dynamodbResultToSelectFromValues(scanResult);
 			return PushDownResponse.builder()//
 					.pushDownSql(selectFromValuesStatement)//
 					.build();
@@ -132,19 +126,18 @@ public class DynamodbAdapter implements VirtualSchemaAdapter {
 		}
 	}
 
-	private String dynamodbResultToSelectFromValues(final ScanResponse scanResponse) {
-		final List<Map<String, AttributeValue>> scannedItems = scanResponse.items();
-		if (scannedItems.size() == 0) {
+	private String dynamodbResultToSelectFromValues(final ItemCollection<ScanOutcome> scanResult) {
+		if (!scanResult.iterator().hasNext()) {
 			return "SELECT * FROM VALUES('') WHERE 0 = 1;";
 		}
 		final StringBuilder responseBuilder = new StringBuilder("SELECT * FROM (VALUES");
 		boolean isFirst = true;
-		for (final Map<String, AttributeValue> item : scannedItems) {
+		for (final Item item : scanResult) {
 			if (!isFirst) {
 				responseBuilder.append(", ");
 			}
 			isFirst = false;
-			responseBuilder.append("('").append(item.get("isbn").s()).append("')");
+			responseBuilder.append("('").append(item.getString("isbn")).append("')");
 		}
 		responseBuilder.append(");");
 		return responseBuilder.toString();
