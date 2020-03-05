@@ -20,12 +20,21 @@ public class DynamodbAdapterProperties {
 		this.properties = properties;
 	}
 
+	/**
+	 * Check if the schema definition property is set.
+	 *
+	 * @return <code>true</code> if schema definition property is set
+	 */
 	public boolean hasSchemaDefinition() {
 		return this.properties.containsKey(DYNAMODB_SCHEMA);
 	}
 
+	/**
+	 * Get schema definition property.
+	 *
+	 * @return schema definition
+	 */
 	public String getSchemaDefinition() {
 		return this.properties.get(DYNAMODB_SCHEMA);
 	}
-
 }

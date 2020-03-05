@@ -115,10 +115,10 @@ public class DynamodbAdapterTestLocalIT {
 	@Test
 	void testSingleLineSelect() throws SQLException {
 		dynamodbTestUtils.createTable(DYNAMO_TABLE_NAME, "isbn");
-		final String ISBN = "12398439493";
-		dynamodbTestUtils.putItem(DYNAMO_TABLE_NAME, ISBN, "test name");
+		final String Isbn = "12398439493";
+		dynamodbTestUtils.putItem(DYNAMO_TABLE_NAME, Isbn, "test name");
 		final SelectStringArrayResult result = selectStringArray();
-		assertThat(result.rows, containsInAnyOrder(ISBN));
+		assertThat(result.rows, containsInAnyOrder(Isbn));
 	}
 
 	/**
@@ -128,10 +128,10 @@ public class DynamodbAdapterTestLocalIT {
 	@Test
 	void testSingleLineSelectWithStringResult() throws SQLException {
 		dynamodbTestUtils.createTable(DYNAMO_TABLE_NAME, "isbn");
-		final String ISBN = "abc";
-		dynamodbTestUtils.putItem(DYNAMO_TABLE_NAME, ISBN, "test name");
+		final String Isbn = "abc";
+		dynamodbTestUtils.putItem(DYNAMO_TABLE_NAME, Isbn, "test name");
 		final SelectStringArrayResult result = selectStringArray();
-		assertThat(result.rows, containsInAnyOrder(ISBN));
+		assertThat(result.rows, containsInAnyOrder(Isbn));
 	}
 
 	/**
@@ -167,5 +167,4 @@ public class DynamodbAdapterTestLocalIT {
 	void after() {
 		dynamodbTestUtils.deleteCreatedTables();
 	}
-
 }

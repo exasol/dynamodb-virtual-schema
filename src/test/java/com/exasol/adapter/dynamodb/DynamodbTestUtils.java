@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.json.Json;
+import javax.json.JsonArray;
 import javax.json.JsonReader;
 import javax.json.JsonValue;
 
@@ -104,12 +105,12 @@ public class DynamodbTestUtils {
 	}
 
 	/**
-	 * Adds one ore more items to a given table define by a JSON string.
+	 * Adds one ore more items to a given table defined by a JSON string.
 	 * 
 	 * @param tableName
-	 *            the name of the table to put the items in
+	 *            name of the table to put the items in
 	 * @param itemsJson
-	 *            the json definitions of the items
+	 *            json definitions of the items
 	 */
 	public void putJson(final String tableName, final String... itemsJson) {
 		final TableWriteItems writeRequest = new TableWriteItems(tableName)
@@ -126,11 +127,22 @@ public class DynamodbTestUtils {
 	public int scan(final String tableName) {
 		final Table table = this.dynamoClient.getTable(tableName);
 		final ItemCollection<ScanOutcome> scanResult = table.scan();
-		for (final Item item : scanResult) {// it is important to scan all items here for getAccumulatedScannedCount to
-											// work
+		return this.logAndCountItems(scanResult);
+	}
+
+	/**
+	 * Logs all items to {@code LOGGER} and returns the count.
+	 * 
+	 * @param items
+	 * @return number of items
+	 */
+	private int logAndCountItems(final Iterable<Item> items) {
+		int counter = 0;
+		for (final Item item : items) {
 			LOGGER.trace(item.toString());
+			counter++;
 		}
-		return scanResult.getAccumulatedScannedCount();
+		return counter;
 	}
 
 	/**
@@ -176,11 +188,14 @@ public class DynamodbTestUtils {
 	 */
 	public void importData(final String tableNames, final File asset) throws IOException {
 		final JsonReader jsonReader = Json.createReader(new FileReader(asset));
-		// split array of object into multiple json strings
-		final String[] itemsJson = jsonReader.readArray().stream()//
+		final String[] itemsJson = splitJsonArrayInArrayOfJsonStrings(jsonReader.readArray());
+		this.putJson(tableNames, itemsJson);
+	}
+
+	private String[] splitJsonArrayInArrayOfJsonStrings(final JsonArray jsonArray) {
+		return jsonArray.stream()//
 				.map(JsonValue::toString)//
 				.toArray(String[]::new);
-		this.putJson(tableNames, itemsJson);
 	}
 
 	public String getDynamoUrl() {

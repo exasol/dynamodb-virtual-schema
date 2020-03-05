@@ -18,7 +18,6 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 @Tag("integration")
 @Testcontainers
 public class DynamodbTestUtilsTestIT {
-
 	private static final Network NETWORK = Network.newNetwork();
 	private static final String TABLE_NAME = "TEST";
 

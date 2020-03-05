@@ -6,7 +6,10 @@ import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.client.builder.AwsClientBuilder;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
-import com.amazonaws.services.dynamodbv2.document.*;
+import com.amazonaws.services.dynamodbv2.document.DynamoDB;
+import com.amazonaws.services.dynamodbv2.document.ItemCollection;
+import com.amazonaws.services.dynamodbv2.document.ScanOutcome;
+import com.amazonaws.services.dynamodbv2.document.Table;
 import com.exasol.ExaConnectionAccessException;
 import com.exasol.ExaConnectionInformation;
 import com.exasol.ExaMetadata;
@@ -113,7 +116,8 @@ public class DynamodbAdapter implements VirtualSchemaAdapter {
 			final DynamoDB client = getConnection(exaMetadata, request);
 			final Table table = client.getTable("JB_Books");
 			final ItemCollection<ScanOutcome> scanResult = table.scan();
-			final String selectFromValuesStatement = dynamodbResultToSelectFromValues(scanResult);
+			final String selectFromValuesStatement = new DynamodbResultToSqlSelectFromValuesConverter()
+					.convert(scanResult);
 			return PushDownResponse.builder()//
 					.pushDownSql(selectFromValuesStatement)//
 					.build();
@@ -121,23 +125,6 @@ public class DynamodbAdapter implements VirtualSchemaAdapter {
 			throw new AdapterException("Unable create Virtual Schema \"" + request.getVirtualSchemaName()
 					+ "\". Cause: \"" + exception.getMessage(), exception);
 		}
-	}
-
-	private String dynamodbResultToSelectFromValues(final ItemCollection<ScanOutcome> scanResult) {
-		if (!scanResult.iterator().hasNext()) {
-			return "SELECT * FROM VALUES('') WHERE 0 = 1;";
-		}
-		final StringBuilder responseBuilder = new StringBuilder("SELECT * FROM (VALUES");
-		boolean isFirst = true;
-		for (final Item item : scanResult) {
-			if (!isFirst) {
-				responseBuilder.append(", ");
-			}
-			isFirst = false;
-			responseBuilder.append("('").append(item.getString("isbn")).append("')");
-		}
-		responseBuilder.append(");");
-		return responseBuilder.toString();
 	}
 
 	@Override
