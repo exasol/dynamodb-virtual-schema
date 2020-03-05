@@ -9,7 +9,7 @@ import com.amazonaws.services.dynamodbv2.document.spec.GetItemSpec;
  * Interface for converting a DynamoDB response into a SQL Statement for
  * pushdown response.
  */
-public abstract class DynamodbResultToSqlConverter {
+public interface DynamodbResultToSqlConverter {
 	/**
 	 * Converts the DynamoDB result into an SQL Statement.
 	 * 
@@ -17,7 +17,7 @@ public abstract class DynamodbResultToSqlConverter {
 	 *            for example: {@code ItemCollection<ScanOutcome> }
 	 * @return SQL Statement
 	 */
-	public abstract String convert(final Iterable<Item> items);
+	String convert(final Iterable<Item> items);
 
 	/**
 	 * Converts a single Item result into an SQL Statement.
@@ -27,7 +27,7 @@ public abstract class DynamodbResultToSqlConverter {
 	 *            {@link com.amazonaws.services.dynamodbv2.document.Table#getItem(GetItemSpec)}
 	 * @return SQL Statement
 	 */
-	public String convert(final Item item) {
+	default String convert(final Item item) {
 		return this.convert(List.of(item));
 	}
 }

@@ -2,7 +2,7 @@ package com.exasol.adapter.dynamodb;
 
 import com.amazonaws.services.dynamodbv2.document.Item;
 
-public class DynamodbResultToSqlSelectFromValuesConverter extends DynamodbResultToSqlConverter {
+public class DynamodbResultToSqlSelectFromValuesConverter implements DynamodbResultToSqlConverter {
 	@Override
 	public String convert(final Iterable<Item> items) {
 		if (!items.iterator().hasNext()) {
