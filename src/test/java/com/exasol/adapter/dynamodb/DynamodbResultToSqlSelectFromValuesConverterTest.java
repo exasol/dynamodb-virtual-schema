@@ -16,7 +16,7 @@ public class DynamodbResultToSqlSelectFromValuesConverterTest {
 	@Test
 	public void testEmptyConvert() {
 		final DynamodbResultToSqlSelectFromValuesConverter converter = new DynamodbResultToSqlSelectFromValuesConverter();
-		final String sql = converter.convert(List.of());
+		final String sql = converter.convert(Collections.emptyList());
 		assertThat(sql, equalTo("SELECT * FROM VALUES('') WHERE 0 = 1;"));
 	}
 

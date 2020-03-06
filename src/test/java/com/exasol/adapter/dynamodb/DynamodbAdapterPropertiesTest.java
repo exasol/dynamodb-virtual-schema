@@ -15,7 +15,7 @@ import com.exasol.adapter.AdapterProperties;
 public class DynamodbAdapterPropertiesTest {
 	@Test
 	public void testEmptySchema() {
-		final AdapterProperties adapterProperties = new AdapterProperties(Map.of());
+		final AdapterProperties adapterProperties = new AdapterProperties(Collections.emtpyMap());
 		final DynamodbAdapterProperties dynamodbAdapterProperties = new DynamodbAdapterProperties(adapterProperties);
 		assertThat(dynamodbAdapterProperties.hasSchemaDefinition(), equalTo(false));
 	}
