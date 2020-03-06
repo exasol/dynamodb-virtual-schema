@@ -1,40 +1,14 @@
-{
-  "JB_Books": [
-    {
-      "PutRequest": {
-        "Item": {
-          "isbn": {
-            "S": "123567"
-          },
-          "name": {
-            "S": "bad book 1"
-          }
-        }
-      }
-    },
-    {
-      "PutRequest": {
-        "Item": {
-          "isbn": {
-            "S": "123254545"
-          },
-          "name": {
-            "S": "bad book 2"
-          }
-        }
-      }
-    },
-    {
-      "PutRequest": {
-        "Item": {
-          "isbn": {
-            "S": "1235673"
-          },
-          "name": {
-            "S": "boring book"
-          }
-        }
-      }
-    }
-  ]
-}
+[
+  {
+    "isbn": "123567",
+    "name": "bad book 1"
+  },
+  {
+    "isbn": "123254545",
+    "name": "bad book 2"
+  },
+  {
+    "isbn": "1235673",
+    "name": "boring book"
+  }
+]

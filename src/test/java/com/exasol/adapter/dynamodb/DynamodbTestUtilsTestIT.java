@@ -6,10 +6,7 @@ import static org.hamcrest.Matchers.equalTo;
 import java.io.File;
 import java.io.IOException;
 
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Tag;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.Network;
 import org.testcontainers.junit.jupiter.Container;
@@ -21,8 +18,8 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 @Tag("integration")
 @Testcontainers
 public class DynamodbTestUtilsTestIT {
-
 	private static final Network NETWORK = Network.newNetwork();
+	private static final String TABLE_NAME = "TEST";
 
 	@Container
 	public static final GenericContainer LOCAL_DYNAMO = new GenericContainer<>("amazon/dynamodb-local")
@@ -33,7 +30,6 @@ public class DynamodbTestUtilsTestIT {
 	@BeforeAll
 	static void beforeAll() throws Exception {
 		dynamodbTestUtils = new DynamodbTestUtils(LOCAL_DYNAMO, NETWORK);
-		dynamodbTestUtils.createTable("JB_Books", "isbn");
 	}
 
 	@AfterAll
@@ -42,13 +38,26 @@ public class DynamodbTestUtilsTestIT {
 	}
 
 	/**
-	 * Test for {@link DynamodbTestUtils#importData(File)}.
+	 * Test for {@link DynamodbTestUtils#importData(String, File)}
 	 */
 	@Test
-	void testImportData() throws IOException, InterruptedException {
+	void testImportData() throws IOException {
+		dynamodbTestUtils.createTable(TABLE_NAME, "isbn");
 		final ClassLoader classLoader = DynamodbTestUtilsTestIT.class.getClassLoader();
 		final File books = new File(classLoader.getResource("books.json").getFile());
-		dynamodbTestUtils.importData(books);
-		assertThat(dynamodbTestUtils.scan("JB_Books"), equalTo(3));
+		dynamodbTestUtils.importData(TABLE_NAME, books);
+		assertThat(dynamodbTestUtils.scan(TABLE_NAME), equalTo(3));
+	}
+
+	@Test
+	void testPutJson() {
+		dynamodbTestUtils.createTable(TABLE_NAME, "isbn");
+		dynamodbTestUtils.putJson(TABLE_NAME, "{\n" + "\"isbn\": \"1234\",\n" + " \"name\":\"book1\"\n" + "}");
+		assertThat(dynamodbTestUtils.scan(TABLE_NAME), equalTo(1));
+	}
+
+	@AfterEach
+	void after() {
+		dynamodbTestUtils.deleteCreatedTables();
 	}
 }

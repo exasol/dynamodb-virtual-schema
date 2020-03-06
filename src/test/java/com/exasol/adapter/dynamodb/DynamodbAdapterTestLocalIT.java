@@ -115,10 +115,10 @@ public class DynamodbAdapterTestLocalIT {
 	@Test
 	void testSingleLineSelect() throws SQLException {
 		dynamodbTestUtils.createTable(DYNAMO_TABLE_NAME, "isbn");
-		final String ISBN = "12398439493";
-		dynamodbTestUtils.pushBook(ISBN, "test name");
+		final String Isbn = "12398439493";
+		dynamodbTestUtils.putItem(DYNAMO_TABLE_NAME, Isbn, "test name");
 		final SelectStringArrayResult result = selectStringArray();
-		assertThat(result.rows, containsInAnyOrder(ISBN));
+		assertThat(result.rows, containsInAnyOrder(Isbn));
 	}
 
 	/**
@@ -128,20 +128,20 @@ public class DynamodbAdapterTestLocalIT {
 	@Test
 	void testSingleLineSelectWithStringResult() throws SQLException {
 		dynamodbTestUtils.createTable(DYNAMO_TABLE_NAME, "isbn");
-		final String ISBN = "abc";
-		dynamodbTestUtils.pushBook(ISBN, "test name");
+		final String Isbn = "abc";
+		dynamodbTestUtils.putItem(DYNAMO_TABLE_NAME, Isbn, "test name");
 		final SelectStringArrayResult result = selectStringArray();
-		assertThat(result.rows, containsInAnyOrder(ISBN));
+		assertThat(result.rows, containsInAnyOrder(Isbn));
 	}
 
 	/**
 	 * Tests a {@code SELECT *} from a DynamoDB table with multiple lines.
 	 */
 	@Test
-	void testMultiLineSelect() throws IOException, InterruptedException, SQLException {
+	void testMultiLineSelect() throws IOException, SQLException {
 		dynamodbTestUtils.createTable(DYNAMO_TABLE_NAME, "isbn");
 		final ClassLoader classLoader = DynamodbTestUtilsTestIT.class.getClassLoader();
-		dynamodbTestUtils.importData(new File(classLoader.getResource("books.json").getFile()));
+		dynamodbTestUtils.importData(DYNAMO_TABLE_NAME, new File(classLoader.getResource("books.json").getFile()));
 		final List<String> result = selectStringArray().rows;
 		assertThat(result, containsInAnyOrder("123567", "123254545", "1235673"));
 	}
@@ -156,7 +156,7 @@ public class DynamodbAdapterTestLocalIT {
 		final List<String> actualBookNames = new ArrayList<>(numBooks);
 		for (int i = 0; i < numBooks; i++) {
 			final String booksName = String.valueOf(i);
-			dynamodbTestUtils.pushBook(booksName, "name equal for all books");
+			dynamodbTestUtils.putItem(DYNAMO_TABLE_NAME, booksName, "name equal for all books");
 			actualBookNames.add(booksName);
 		}
 		final SelectStringArrayResult result = selectStringArray();
@@ -167,5 +167,4 @@ public class DynamodbAdapterTestLocalIT {
 	void after() {
 		dynamodbTestUtils.deleteCreatedTables();
 	}
-
 }

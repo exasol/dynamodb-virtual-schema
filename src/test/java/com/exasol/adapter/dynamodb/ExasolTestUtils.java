@@ -19,9 +19,8 @@ import com.github.dockerjava.api.model.ContainerNetwork;
  * Test utils for the Exasol database.
  */
 public class ExasolTestUtils {
-
 	private static final Logger LOGGER = LoggerFactory.getLogger(DynamodbAdapterTestLocalIT.class);
-	private static final String VIRTUAL_SCHEMAS_JAR_NAME_AND_VERSION = "dynamodb-virtual-schemas-adapter-dist-0.1.0.jar";
+	private static final String VIRTUAL_SCHEMAS_JAR_NAME_AND_VERSION = "dynamodb-virtual-schemas-adapter-dist-0.1.1.jar";
 	private static final Path PATH_TO_VIRTUAL_SCHEMAS_JAR = Path.of("target", VIRTUAL_SCHEMAS_JAR_NAME_AND_VERSION);
 	public static final String ADAPTER_SCHEMA = "ADAPTER";
 	public static final String DYNAMODB_ADAPTER = "DYNAMODB_ADAPTER";
