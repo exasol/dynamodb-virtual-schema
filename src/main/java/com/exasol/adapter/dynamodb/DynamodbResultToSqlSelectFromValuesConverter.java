@@ -2,6 +2,10 @@ package com.exasol.adapter.dynamodb;
 
 import com.amazonaws.services.dynamodbv2.document.Item;
 
+/**
+ * This implementation of {@link DynamodbResultToSqlConverter} converts a
+ * DynamoDB result into an {@code SELECT FROM VALUES} statement.
+ */
 public class DynamodbResultToSqlSelectFromValuesConverter implements DynamodbResultToSqlConverter {
 	@Override
 	public String convert(final Iterable<Item> items) {

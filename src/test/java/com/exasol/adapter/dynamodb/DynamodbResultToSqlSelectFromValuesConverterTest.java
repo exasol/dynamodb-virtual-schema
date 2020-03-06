@@ -3,6 +3,7 @@ package com.exasol.adapter.dynamodb;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 
+import java.util.Collections;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
