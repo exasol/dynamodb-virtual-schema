@@ -27,15 +27,14 @@ import com.exasol.containers.ExasolContainer;
  */
 @Testcontainers
 public class DynamodbAdapterTestAwsIT {
-	private static final Logger LOGGER = LoggerFactory.getLogger(DynamodbAdapterTestLocalIT.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(DynamodbAdapterTestAwsIT.class);
 
 	@Container
 	private static final ExasolContainer<? extends ExasolContainer<?>> EXASOL_CONTAINER = new ExasolContainer<>()
 			.withLogConsumer(new Slf4jLogConsumer(LOGGER));
-	private static DynamodbTestUtils dynamodbTestUtils;
-	private static ExasolTestUtils exasolTestUtils;
 	private static final String TEST_SCHEMA = "TEST";
 	private static final String DYNAMODB_CONNECTION = "DYNAMODB_CONNECTION";
+	private static ExasolTestUtils exasolTestUtils;
 
 	/**
 	 * Creates a Virtual Schema in the Exasol test container accessing DynamoDB on
@@ -44,7 +43,7 @@ public class DynamodbAdapterTestAwsIT {
 	@BeforeAll
 	static void beforeAll()
 			throws SQLException, BucketAccessException, InterruptedException, java.util.concurrent.TimeoutException {
-		dynamodbTestUtils = new DynamodbTestUtils();
+		final DynamodbTestUtils dynamodbTestUtils = new DynamodbTestUtils();
 		exasolTestUtils = new ExasolTestUtils(EXASOL_CONTAINER);
 		exasolTestUtils.uploadDynamodbAdapterJar();
 		exasolTestUtils.createAdapterScript();

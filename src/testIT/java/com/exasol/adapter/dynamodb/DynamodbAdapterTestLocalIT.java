@@ -9,8 +9,12 @@ import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.TimeoutException;
 
+import com.exasol.bucketfs.BucketAccessException;
 import org.junit.jupiter.api.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,30 +36,25 @@ public class DynamodbAdapterTestLocalIT {
 	private static final Logger LOGGER = LoggerFactory.getLogger(DynamodbAdapterTestLocalIT.class);
 
 	private static final Network NETWORK = Network.newNetwork();
-
-	@Container
-	private static final ExasolContainer<? extends ExasolContainer<?>> EXASOL_CONTAINER = new ExasolContainer<>()
-			.withNetwork(NETWORK).withExposedPorts(8888).withLogConsumer(new Slf4jLogConsumer(LOGGER));
-
 	@Container
 	public static final GenericContainer LOCAL_DYNAMO = new GenericContainer<>("amazon/dynamodb-local")
 			.withExposedPorts(8000).withNetwork(NETWORK).withNetworkAliases("dynamo")
 			.withCommand("-jar DynamoDBLocal.jar -sharedDb -dbPath .");
-
-	private static DynamodbTestUtils dynamodbTestUtils;
-	private static ExasolTestUtils exasolTestUtils;
-
+	@Container
+	private static final ExasolContainer<? extends ExasolContainer<?>> EXASOL_CONTAINER = new ExasolContainer<>()
+			.withNetwork(NETWORK).withExposedPorts(8888).withLogConsumer(new Slf4jLogConsumer(LOGGER));
 	private static final String TEST_SCHEMA = "TEST";
 	private static final String DYNAMODB_CONNECTION = "DYNAMODB_CONNECTION";
-
 	private static final String DYNAMO_TABLE_NAME = "JB_Books";
+	private static DynamodbTestUtils dynamodbTestUtils;
+	private static ExasolTestUtils exasolTestUtils;
 
 	/**
 	 * Creates a Virtual Schema in the Exasol test container accessing the local
 	 * DynamoDB.
 	 */
 	@BeforeAll
-	static void beforeAll() throws Exception {
+	static void beforeAll() throws DynamodbTestUtils.NoNetworkFoundException, SQLException, InterruptedException, BucketAccessException, TimeoutException {
 		dynamodbTestUtils = new DynamodbTestUtils(LOCAL_DYNAMO, NETWORK);
 		exasolTestUtils = new ExasolTestUtils(EXASOL_CONTAINER);
 		exasolTestUtils.uploadDynamodbAdapterJar();
@@ -73,13 +72,15 @@ public class DynamodbAdapterTestLocalIT {
 		NETWORK.close();
 	}
 
-	private static final class SelectStringArrayResult {
-		public SelectStringArrayResult(final List<String> rows, final long duration) {
-			this.rows = rows;
-			this.duration = duration;
+	@Test
+	public void testSchemaDefinition() throws SQLException {
+		final ResultSet describeResult = exasolTestUtils.getStatement()
+				.executeQuery("DESCRIBE " + TEST_SCHEMA + ".\"testTable\";");
+		final Map<String, String> rowNames = new HashMap<>();
+		while (describeResult.next()) {
+			rowNames.put(describeResult.getString(1), describeResult.getString(2));
 		}
-		public final List<String> rows;
-		public final long duration;
+		assertThat(rowNames, equalTo(Map.of("json", "VARCHAR(10000) UTF8")));
 	}
 
 	/**
@@ -95,7 +96,7 @@ public class DynamodbAdapterTestLocalIT {
 		while (actualResultSet.next()) {
 			result.add(actualResultSet.getString(1));
 		}
-		LOGGER.info("query execution time was: " + duration);
+		LOGGER.info("query execution time was: {}", duration);
 		return new SelectStringArrayResult(result, duration);
 	}
 
@@ -166,5 +167,14 @@ public class DynamodbAdapterTestLocalIT {
 	@AfterEach
 	void after() {
 		dynamodbTestUtils.deleteCreatedTables();
+	}
+
+	private static final class SelectStringArrayResult {
+		public final List<String> rows;
+		public final long duration;
+		public SelectStringArrayResult(final List<String> rows, final long duration) {
+			this.rows = rows;
+			this.duration = duration;
+		}
 	}
 }

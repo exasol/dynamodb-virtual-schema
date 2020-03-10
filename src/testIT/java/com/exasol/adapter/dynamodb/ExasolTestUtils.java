@@ -19,12 +19,11 @@ import com.github.dockerjava.api.model.ContainerNetwork;
  * Test utils for the Exasol database.
  */
 public class ExasolTestUtils {
-	private static final Logger LOGGER = LoggerFactory.getLogger(DynamodbAdapterTestLocalIT.class);
-	private static final String VIRTUAL_SCHEMAS_JAR_NAME_AND_VERSION = "dynamodb-virtual-schemas-adapter-dist-0.1.1.jar";
-	private static final Path PATH_TO_VIRTUAL_SCHEMAS_JAR = Path.of("target", VIRTUAL_SCHEMAS_JAR_NAME_AND_VERSION);
 	public static final String ADAPTER_SCHEMA = "ADAPTER";
 	public static final String DYNAMODB_ADAPTER = "DYNAMODB_ADAPTER";
-
+	private static final Logger LOGGER = LoggerFactory.getLogger(ExasolTestUtils.class);
+	private static final String VIRTUAL_SCHEMAS_JAR_NAME_AND_VERSION = "dynamodb-virtual-schemas-adapter-dist-0.1.1.jar";
+	private static final Path PATH_TO_VIRTUAL_SCHEMAS_JAR = Path.of("target", VIRTUAL_SCHEMAS_JAR_NAME_AND_VERSION);
 	private final ExasolContainer<? extends ExasolContainer<?>> container;
 	private final Statement statement;
 
@@ -40,6 +39,7 @@ public class ExasolTestUtils {
 				container.getPassword());
 		this.statement = connection.createStatement();
 		this.container = container;
+
 	}
 
 	/**
@@ -95,10 +95,32 @@ public class ExasolTestUtils {
 	 */
 	public void createAdapterScript() throws SQLException {
 		this.createTestSchema(ADAPTER_SCHEMA);
+		final StringBuilder statementBuilder = new StringBuilder(
+				"CREATE OR REPLACE JAVA ADAPTER SCRIPT " + ADAPTER_SCHEMA + "." + DYNAMODB_ADAPTER + " AS\n");
+		final String hostIp = getTestHostIpAddress();
+
+		if (hostIp != null && !isNoDebugSystemPropertySet()) {
+			// noinspection SpellCheckingInspection
+			statementBuilder.append("  %jvmoption -agentlib:jdwp=transport=dt_socket,server=n,address=").append(hostIp)
+					.append(":8000,suspend=y;\n");
+		}
 		// noinspection SpellCheckingInspection
-		this.statement.execute("CREATE OR REPLACE JAVA ADAPTER SCRIPT " + ADAPTER_SCHEMA + "." + DYNAMODB_ADAPTER
-				+ " AS\n" + "    %scriptclass com.exasol.adapter.RequestDispatcher;\n"
-				+ "    %jar /buckets/bfsdefault/default/" + VIRTUAL_SCHEMAS_JAR_NAME_AND_VERSION + ";\n" + "/");
+		statementBuilder.append("    %scriptclass com.exasol.adapter.RequestDispatcher;\n");
+		// noinspection SpellCheckingInspection
+		statementBuilder.append("    %jar /buckets/bfsdefault/default/" + VIRTUAL_SCHEMAS_JAR_NAME_AND_VERSION + ";\n");
+		statementBuilder.append("/");
+		final String sql = statementBuilder.toString();
+		LOGGER.info(sql);
+		this.statement.execute(sql);
+	}
+
+	/**
+	 * This property is set by fail safe plugin, configured in the pom.xml file.
+	 * @return {@code <true>} if set property {@code NO_DEBUG} is equal to "true"
+	 */
+	private boolean isNoDebugSystemPropertySet(){
+		final String noDebugProperty = System.getProperty("tests.noDebug");
+		return noDebugProperty != null && noDebugProperty != "true";
 	}
 
 	/**
@@ -108,8 +130,9 @@ public class ExasolTestUtils {
 	private String getTestHostIpAddress() {
 		final Map<String, ContainerNetwork> networks = this.container.getContainerInfo().getNetworkSettings()
 				.getNetworks();
-		if (networks.size() == 0)
+		if (networks.size() == 0) {
 			return null;
+		}
 		return networks.values().iterator().next().getGateway();
 	}
 
@@ -123,14 +146,12 @@ public class ExasolTestUtils {
 	 * @throws SQLException
 	 */
 	public void createDynamodbVirtualSchema(final String name, final String dynamodbConnection) throws SQLException {
-		LOGGER.info(getTestHostIpAddress());
 		String createStatement = "CREATE VIRTUAL SCHEMA " + name + "\n" + "    USING " + ADAPTER_SCHEMA + "."
 				+ DYNAMODB_ADAPTER + " WITH\n" + "    CONNECTION_NAME = '" + dynamodbConnection + "'\n"
 				+ "   SQL_DIALECT     = 'DynamoDB'";
 		final String hostIp = getTestHostIpAddress();
 		if (hostIp != null) {
-			createStatement += "\n   DEBUG_ADDRESS   = '" + getTestHostIpAddress() + ":3000'\n"
-					+ "   LOG_LEVEL       =  'ALL'";
+			createStatement += "\n   DEBUG_ADDRESS   = '" + hostIp + ":3000'\n" + "   LOG_LEVEL       =  'ALL'";
 		}
 		createStatement += ";";
 		this.statement.execute(createStatement);

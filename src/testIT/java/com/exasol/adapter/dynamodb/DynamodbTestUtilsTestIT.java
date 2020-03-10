@@ -19,16 +19,14 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 @Testcontainers
 public class DynamodbTestUtilsTestIT {
 	private static final Network NETWORK = Network.newNetwork();
-	private static final String TABLE_NAME = "TEST";
-
 	@Container
 	public static final GenericContainer LOCAL_DYNAMO = new GenericContainer<>("amazon/dynamodb-local")
 			.withExposedPorts(8000).withNetwork(NETWORK).withCommand("-jar DynamoDBLocal.jar -sharedDb -dbPath .");
-
+	private static final String TABLE_NAME = "TEST";
 	private static DynamodbTestUtils dynamodbTestUtils;
 
 	@BeforeAll
-	static void beforeAll() throws Exception {
+	static void beforeAll() throws DynamodbTestUtils.NoNetworkFoundException {
 		dynamodbTestUtils = new DynamodbTestUtils(LOCAL_DYNAMO, NETWORK);
 	}
 

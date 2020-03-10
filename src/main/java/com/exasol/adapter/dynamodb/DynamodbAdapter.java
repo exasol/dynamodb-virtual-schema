@@ -1,15 +1,19 @@
 package com.exasol.adapter.dynamodb;
 
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.client.builder.AwsClientBuilder;
+import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
 import com.amazonaws.services.dynamodbv2.document.DynamoDB;
-import com.amazonaws.services.dynamodbv2.document.ItemCollection;
-import com.amazonaws.services.dynamodbv2.document.ScanOutcome;
-import com.amazonaws.services.dynamodbv2.document.Table;
+import com.amazonaws.services.dynamodbv2.model.AttributeValue;
+import com.amazonaws.services.dynamodbv2.model.ScanRequest;
+import com.amazonaws.services.dynamodbv2.model.ScanResult;
 import com.exasol.ExaConnectionAccessException;
 import com.exasol.ExaConnectionInformation;
 import com.exasol.ExaMetadata;
@@ -17,10 +21,9 @@ import com.exasol.adapter.AdapterException;
 import com.exasol.adapter.AdapterProperties;
 import com.exasol.adapter.VirtualSchemaAdapter;
 import com.exasol.adapter.capabilities.Capabilities;
-import com.exasol.adapter.metadata.ColumnMetadata;
-import com.exasol.adapter.metadata.DataType;
+import com.exasol.adapter.dynamodb.exasol_dataframe.ExasolDataFrame;
+import com.exasol.adapter.dynamodb.mapping_definition.result_walker.DynamodbResultWalker;
 import com.exasol.adapter.metadata.SchemaMetadata;
-import com.exasol.adapter.metadata.TableMetadata;
 import com.exasol.adapter.request.*;
 import com.exasol.adapter.response.*;
 
@@ -28,33 +31,20 @@ import com.exasol.adapter.response.*;
  * DynamoDB Virtual Schema adapter.
  */
 public class DynamodbAdapter implements VirtualSchemaAdapter {
-
-	@Override
-	public CreateVirtualSchemaResponse createVirtualSchema(final ExaMetadata exaMetadata,
-			final CreateVirtualSchemaRequest request) {
-		final ColumnMetadata.Builder colBuilder = new ColumnMetadata.Builder();
-		colBuilder.name("isbn");
-		colBuilder.type(DataType.createVarChar(100, DataType.ExaCharset.ASCII));
-		final List<ColumnMetadata> cols = List.of(colBuilder.build());
-		final List<TableMetadata> tables = List.of(new TableMetadata("testTable", "", cols, ""));
-		final SchemaMetadata remoteMeta = new SchemaMetadata("", tables);
-		return CreateVirtualSchemaResponse.builder().schemaMetadata(remoteMeta).build();
-	}
-
 	/**
-	 * Creates a connection to DynamoDB using the connection details set in
-	 * {@code CREATE CONNECTION}.
+	 * Creates a DynamoDB (document api client) for a given uri, user and key. for
+	 * details see {@link #getDynamodbLowLevelConnection(String, String, String)}.
+	 *
+	 * @return DynamoDB (document api client)
 	 */
-	private DynamoDB getConnection(final ExaMetadata exaMetadata, final AbstractAdapterRequest request)
-			throws ExaConnectionAccessException {
-		final AdapterProperties properties = getPropertiesFromRequest(request);
-		final ExaConnectionInformation connection = exaMetadata.getConnection(properties.getConnectionName());
-		return getDynamodbConnection(connection.getAddress(), connection.getUser(), connection.getPassword());
+	protected static DynamoDB getDynamodbDocumentConnection(final String uri, final String user, final String key) {
+		return new DynamoDB(getDynamodbLowLevelConnection(uri, user, key));
 	}
 
 	/**
-	 * Creates a DynamoDB client for a given uri, user and key.
-	 * 
+	 * Creates a AmazonDynamoDB (low level api client) for a given uri, user and
+	 * key.
+	 *
 	 * @param uri
 	 *            either aws:<REGION> or address of local DynamoDB server (e.g.
 	 *            http://localhost:8000)
@@ -62,9 +52,10 @@ public class DynamodbAdapter implements VirtualSchemaAdapter {
 	 *            aws credential id
 	 * @param key
 	 *            aws credential key
-	 * @return DynamoDB client
+	 * @return AmazonDynamoDB (low level api client)
 	 */
-	protected static DynamoDB getDynamodbConnection(final String uri, final String user, final String key) {
+	private static AmazonDynamoDB getDynamodbLowLevelConnection(final String uri, final String user, final String key) {
+
 		final String AWS_PREFIX = "aws:";
 		final String AWS_LOCAL_REGION = "eu-central-1";
 		final BasicAWSCredentials awsCredentials = new BasicAWSCredentials(user, key);
@@ -75,7 +66,32 @@ public class DynamodbAdapter implements VirtualSchemaAdapter {
 		} else {
 			clientBuilder.withEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration(uri, AWS_LOCAL_REGION));
 		}
-		return new DynamoDB(clientBuilder.build());
+		return clientBuilder.build();
+	}
+
+	@Override
+	public CreateVirtualSchemaResponse createVirtualSchema(final ExaMetadata exaMetadata,
+			final CreateVirtualSchemaRequest request) throws AdapterException {
+		try {
+			final MappingProvider mappingProvider = new HardCodedMappingProvider();
+			final SchemaMappingDefinition schemaMappingDefinition = mappingProvider.getSchemaMapping();
+			final SchemaMetadata schemaMetadata = schemaMappingDefinition.getDestinationSchema();
+			return CreateVirtualSchemaResponse.builder().schemaMetadata(schemaMetadata).build();
+		} catch (final IOException e) {
+			throw new AdapterException("Unable create Virtual Schema \"" + request.getVirtualSchemaName()
+					+ "\". Cause: \"" + e.getMessage(), e);
+		}
+	}
+
+	/**
+	 * Creates a connection to DynamoDB using the connection details set in
+	 * {@code CREATE CONNECTION}.
+	 */
+	private AmazonDynamoDB getConnection(final ExaMetadata exaMetadata, final AbstractAdapterRequest request)
+			throws ExaConnectionAccessException {
+		final AdapterProperties properties = getPropertiesFromRequest(request);
+		final ExaConnectionInformation connection = exaMetadata.getConnection(properties.getConnectionName());
+		return getDynamodbLowLevelConnection(connection.getAddress(), connection.getUser(), connection.getPassword());
 	}
 
 	private AdapterProperties getPropertiesFromRequest(final AdapterRequest request) {
@@ -112,16 +128,23 @@ public class DynamodbAdapter implements VirtualSchemaAdapter {
 	@Override
 	public PushDownResponse pushdown(final ExaMetadata exaMetadata, final PushDownRequest request)
 			throws AdapterException {
+
+		final QueryResultTableBuilder queryResultTableBuilder = new QueryResultTableBuilder();
+		request.getSelect().accept(queryResultTableBuilder);
+		final QueryResultTable queryResultTable = queryResultTableBuilder.getQueryResultTable();
 		try {
-			final DynamoDB client = getConnection(exaMetadata, request);
-			final Table table = client.getTable("JB_Books");
-			final ItemCollection<ScanOutcome> scanResult = table.scan();
+			final AmazonDynamoDB client = getConnection(exaMetadata, request);
+			final ScanResult scanResult = client.scan(new ScanRequest("JB_Books"));
+			final List<List<ExasolDataFrame>> resultRows = new ArrayList<>();
+			for (final Map<String, AttributeValue> dynamodbItem : scanResult.getItems()) {
+				resultRows.add(queryResultTable.handleRow(dynamodbItem));
+			}
 			final String selectFromValuesStatement = new DynamodbResultToSqlSelectFromValuesConverter()
-					.convert(scanResult);
+					.convert(queryResultTable, resultRows);
 			return PushDownResponse.builder()//
 					.pushDownSql(selectFromValuesStatement)//
 					.build();
-		} catch (final ExaConnectionAccessException exception) {
+		} catch (final ExaConnectionAccessException | DynamodbResultWalker.DynamodbResultWalkerException exception) {
 			throw new AdapterException("Unable create Virtual Schema \"" + request.getVirtualSchemaName()
 					+ "\". Cause: \"" + exception.getMessage(), exception);
 		}

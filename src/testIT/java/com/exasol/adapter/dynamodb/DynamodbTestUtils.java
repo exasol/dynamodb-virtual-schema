@@ -33,7 +33,7 @@ public class DynamodbTestUtils {
 	private static final String LOCAL_DYNAMO_PASS = "fakeSecretAccessKey";
 	private static final String LOCAL_DYNAMO_PORT = "8000";
 	private static final String AWS_LOCAL_URL = "aws:eu-central-1";
-	private static final Logger LOGGER = LoggerFactory.getLogger(DynamodbAdapterTestLocalIT.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(DynamodbTestUtils.class);
 
 	private final DynamoDB dynamoClient;
 	private final String dynamoUrl;
@@ -70,20 +70,8 @@ public class DynamodbTestUtils {
 	 * Constructor using default login credentials for the local dynamodb docker
 	 * instance.
 	 */
-	public DynamodbTestUtils(final GenericContainer localDynamo, final Network dockerNetwork) throws Exception {
+	public DynamodbTestUtils(final GenericContainer localDynamo, final Network dockerNetwork) throws NoNetworkFoundException {
 		this(getDockerNetworkUrlForLocalDynamodb(localDynamo, dockerNetwork), LOCAL_DYNAMO_USER, LOCAL_DYNAMO_PASS);
-	}
-
-	private static String getDockerNetworkUrlForLocalDynamodb(final GenericContainer localDynamo,
-			final Network thisNetwork) throws Exception {
-		final Map<String, ContainerNetwork> networks = localDynamo.getContainerInfo().getNetworkSettings()
-				.getNetworks();
-		for (final ContainerNetwork network : networks.values()) {
-			if (thisNetwork.getId().equals(network.getNetworkID())) {
-				return "http://" + network.getIpAddress() + ":" + LOCAL_DYNAMO_PORT;
-			}
-		}
-		throw new Exception("no network found");
 	}
 
 	/**
@@ -93,7 +81,19 @@ public class DynamodbTestUtils {
 		this.dynamoUrl = dynamoUrl;
 		this.dynamoUser = user;
 		this.dynamoPass = pass;
-		this.dynamoClient = DynamodbAdapter.getDynamodbConnection(dynamoUrl, user, pass);
+		this.dynamoClient = DynamodbAdapter.getDynamodbDocumentConnection(dynamoUrl, user, pass);
+	}
+
+	private static String getDockerNetworkUrlForLocalDynamodb(final GenericContainer localDynamo,
+			final Network thisNetwork) throws NoNetworkFoundException {
+		final Map<String, ContainerNetwork> networks = localDynamo.getContainerInfo().getNetworkSettings()
+				.getNetworks();
+		for (final ContainerNetwork network : networks.values()) {
+			if (thisNetwork.getId().equals(network.getNetworkID())) {
+				return "http://" + network.getIpAddress() + ":" + LOCAL_DYNAMO_PORT;
+			}
+		}
+		throw new NoNetworkFoundException();
 	}
 
 	/**
@@ -139,7 +139,7 @@ public class DynamodbTestUtils {
 	private int logAndCountItems(final Iterable<Item> items) {
 		int counter = 0;
 		for (final Item item : items) {
-			LOGGER.trace(item.toString());
+			LOGGER.trace("scanned item: {}", item);
 			counter++;
 		}
 		return counter;
@@ -187,9 +187,10 @@ public class DynamodbTestUtils {
 	 * @throws InterruptedException
 	 */
 	public void importData(final String tableNames, final File asset) throws IOException {
-		final JsonReader jsonReader = Json.createReader(new FileReader(asset));
-		final String[] itemsJson = splitJsonArrayInArrayOfJsonStrings(jsonReader.readArray());
-		this.putJson(tableNames, itemsJson);
+		try (final JsonReader jsonReader = Json.createReader(new FileReader(asset))) {
+			final String[] itemsJson = splitJsonArrayInArrayOfJsonStrings(jsonReader.readArray());
+			this.putJson(tableNames, itemsJson);
+		}
 	}
 
 	private String[] splitJsonArrayInArrayOfJsonStrings(final JsonArray jsonArray) {
@@ -208,5 +209,12 @@ public class DynamodbTestUtils {
 
 	public String getDynamoPass() {
 		return this.dynamoPass;
+	}
+
+	@SuppressWarnings("serial")
+	public static class NoNetworkFoundException extends Exception{
+		public NoNetworkFoundException(){
+			super("no matching network was found");
+		}
 	}
 }
