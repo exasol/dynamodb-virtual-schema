@@ -58,13 +58,17 @@ CREATE CONNECTION DYNAMO_CONNECTION
 
 ```
 
+Before creating a virtual schema you need to [create mapping definitions](doc/schemaMappingLanguageReference.md) and upload them to bucketfs.
+
 Finally create the Virtual Schema using:
 
 ```
 CREATE VIRTUAL SCHEMA DYNAMODB_TEST USING ADAPTER.DYNAMODB_ADAPTER WITH
     CONNECTION_NAME = 'DYNAMO_CONNECTION'
-    SQL_DIALECT     = 'DynamoDB';
+    SQL_DIALECT     = 'DynamoDB'
+    MAPPING         = '/path/to/mappings/in/bucketfs';
 ```
+ 
 
 ## First steps
 Start for example with:

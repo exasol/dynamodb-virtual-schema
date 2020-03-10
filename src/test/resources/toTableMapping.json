@@ -1,0 +1,28 @@
+{
+  "$schema": "https://github.com/exasol/dynamodb-virtual-schema/tree/master/schemaMapping/schema",
+  "srcTable": "MY_BOOKS",
+  "destTableName": "BOOKS",
+  "description": "Maps MY_BOOKS to BOOKS with toJSON",
+  "children": {
+    "isbn": {
+      "mapping": "toString",
+      "maxLength": 20,
+      "overflow": "ABORT"
+    },
+    "name": {
+      "mapping": "toString",
+      "maxLength": 100,
+      "overflow": "TRUNCATE"
+    },
+    "topics":{
+      "mapping": "toTable",
+      "description": "Maps the strings in this list to rows in the separate table BOOKS_TOPICS",
+      "children": {
+        "name": {
+          "mapping": "toString",
+          "maxLength": 20
+        }
+      }
+    }
+  }
+}
