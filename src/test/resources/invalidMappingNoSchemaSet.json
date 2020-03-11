@@ -1,0 +1,13 @@
+{
+  "srcTable": "MY_BOOKS",
+  "destTableName": "BOOKS",
+  "description": "Maps MY_BOOKS to BOOKS",
+  "children": {
+    "isbn": {
+      "mapping": "toString",
+      "maxLength": 20,
+      "description": "The isbn is mapped to a string with max length of 20",
+      "overflow": "ABORT"
+    }
+  }
+}

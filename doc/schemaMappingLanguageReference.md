@@ -122,7 +122,7 @@ The root object has the following special properties:
  | name | required | default | description |
  |---|:---:|---|---|
  | `maxLength` | | 254 | length of the exasol `VARCHAR`; If result is to long column will be set to NULL.
- | `overflow`  | | `TRUNCATE` | Behaviour if the result JSON is longer than the specified maxLength. Possible values: `NULL` (set result column to `NULL`); `ABORT` aborts the query
+ | `overflow`  | | `NULL` | Behaviour if the result JSON is longer than the specified maxLength. Possible values: `NULL` (set result column to `NULL`); `ABORT` aborts the query
  | `destName` | | name of the DynamoDB property | Name of the destination column. Must be unique.
  
  #### `toTable` 

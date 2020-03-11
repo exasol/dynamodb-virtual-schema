@@ -18,10 +18,6 @@
       "mapping": "toTable",
       "description": "Maps the strings in this list to rows in the separate table BOOKS_TOPICS",
       "children": {
-        "name": {
-          "mapping": "toString",
-          "maxLength": 20
-        }
       }
     }
   }
