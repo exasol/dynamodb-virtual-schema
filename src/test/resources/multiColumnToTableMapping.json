@@ -4,10 +4,16 @@
   "destTableName": "BOOKS",
   "description": "Maps MY_BOOKS to BOOKS",
   "children": {
-    "topics": {
+    "chapters": {
       "toTableMapping": {
         "mapping": {
-
+          "children": {
+            "name": {
+              "toStringMapping": {
+                "destName": "chapterName"
+              }
+            }
+          }
         }
       }
     }

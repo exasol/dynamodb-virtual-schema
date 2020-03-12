@@ -18,81 +18,77 @@
       "title": "",
       "description": "An explanation about the purpose of this instance.",
       "minProperties": 1,
-      "additionalProperties": {
-        "type": "object",
-        "anyOf": [
-          {
-            "title": "object with no mapping",
-            "properties": {
-              "description":{
-                "$ref": "#/definitions/description"
-              },
-              "children": {
-                "$ref": "#/definitions/children"
-              }
+      "additionalProperties": {"$ref": "#/definitions/child"}
+    },
+    "child": {
+      "type": "object",
+      "minProperties": 1,
+      "maxProperties": 1,
+      "properties": {
+        "children": {
+          "title": "object with no mapping",
+          "$ref": "#/definitions/children"
+        },
+        "toStringMapping": {
+          "type": "object",
+          "title": "toString mapping definition",
+          "properties": {
+            "maxLength": {
+              "$ref": "#/definitions/maxLength"
             },
-            "additionalProperties":false
+            "overflow": {
+              "default": "TRUNCATE",
+              "enum": [
+                "TRUNCATE",
+                "ABORT"
+              ]
+            },
+            "destName": {
+              "type": "string"
+            },
+            "description": {
+              "$ref": "#/definitions/description"
+            }
           },
-          {
-            "title": "toString mapping definition",
-            "properties": {
-              "mapping": {
-                "const": "toString"
-              },
-              "maxLength": {"$ref": "#/definitions/maxLength"},
-              "overflow": {
-                "default": "TRUNCATE",
-                "enum": ["TRUNCATE", "ABORT"]
-              },
-              "destName": {
-                "type": "string"
-              },
-              "description":{
-                "$ref": "#/definitions/description"
-              }
+          "additionalProperties": false
+        },
+        "toJsonMapping": {
+          "title": "toJSON mapping definition",
+          "properties": {
+            "maxLength": {
+              "$ref": "#/definitions/maxLength"
             },
-            "required": ["mapping"],
-            "additionalProperties":false
+            "overflow": {
+              "default": "NULL",
+              "enum": [
+                "NULL",
+                "ABORT"
+              ]
+            },
+            "description": {
+              "$ref": "#/definitions/description"
+            }
           },
-          {
-            "title": "toJSON mapping definition",
-            "properties": {
-              "mapping": {
-                "const": "toJSON"
-              },
-              "maxLength": {"$ref": "#/definitions/maxLength"},
-              "overflow": {
-                "default": "NULL",
-                "enum": ["NULL", "ABORT"]
-              },
-              "description":{
-                "$ref": "#/definitions/description"
-              }
+          "additionalProperties": false
+        },
+        "toTableMapping": {
+          "title": "toTable mapping definition",
+          "properties": {
+            "destTableName": {
+              "type": "string"
             },
-            "required": ["mapping"],
-            "additionalProperties":false
+            "mapping": {
+              "$ref": "#/definitions/child"
+            },
+            "description": {
+              "$ref": "#/definitions/description"
+            }
           },
-          {
-            "title": "toTable mapping definition",
-            "properties": {
-              "mapping": {
-                "const": "toTable"
-              },
-              "destTableName": {
-                "type": "string"
-              },
-              "children": {
-                "$ref": "#/definitions/children"
-              },
-              "description":{
-                "$ref": "#/definitions/description"
-              }
-            },
-            "required": ["mapping"],
-            "additionalProperties":false
-          }
-        ]
-      }
+          "required": ["mapping"],
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
     }
   },
   "type": "object",

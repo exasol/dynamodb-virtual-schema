@@ -2,11 +2,15 @@
   "$schema": "../../main/resources/mappingLanguageSchema.json",
   "srcTable": "MY_BOOKS",
   "destTableName": "BOOKS",
-  "unknownProperty": "value",
   "description": "Maps MY_BOOKS to BOOKS",
   "children": {
-    "isbn": {
-      "toStringMapping": {
+    "topics": {
+      "toTableMapping": {
+        "mapping": {
+          "toStringMapping": {
+            "destName": "topicName"
+          }
+        }
       }
     }
   }

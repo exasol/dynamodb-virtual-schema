@@ -5,19 +5,22 @@
   "description": "Maps MY_BOOKS to BOOKS with toJSON",
   "children": {
     "isbn": {
-      "mapping": "toString",
-      "maxLength": 20,
-      "overflow": "ABORT"
+      "toStringMapping": {
+        "maxLength": 20,
+        "overflow": "ABORT"
+      }
     },
     "name": {
-      "mapping": "toString",
-      "maxLength": 100,
-      "overflow": "TRUNCATE"
+      "toStringMapping": {
+        "maxLength": 100,
+        "overflow": "TRUNCATE"
+      }
     },
     "topics":{
-      "mapping": "toJSON",
-      "description": "Maps the sub document of this property to a JSON string",
-      "maxLength": 200
+      "toJsonMapping": {
+        "description": "Maps the sub document of this property to a JSON string",
+        "maxLength": 200
+      }
     }
   }
 }

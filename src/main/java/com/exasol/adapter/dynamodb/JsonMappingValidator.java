@@ -1,45 +1,84 @@
 package com.exasol.adapter.dynamodb;
 
-import com.exasol.adapter.AdapterException;
-import org.everit.json.schema.Schema;
-import org.everit.json.schema.ValidationException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import org.everit.json.schema.*;
 import org.everit.json.schema.loader.SchemaLoader;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.List;
-
 public class JsonMappingValidator {
-    public void validate(final JSONObject schemaMappingDefinition) throws IOException, MappingException {
-        final ClassLoader classLoader = JsonMappingProvider.class.getClassLoader();
-        try (final InputStream inputStream = classLoader.getResourceAsStream("mappingLanguageSchema.json")) {
-            final JSONObject rawSchema = new JSONObject(new JSONTokener(inputStream));
-            final Schema schema = SchemaLoader.load(rawSchema);
-            schema.validate(schemaMappingDefinition);
-        }catch (final ValidationException e){
-            throw new MappingException(extractReadableErrorMessage(e));
-        }
-    }
+	public void validate(final JSONObject schemaMappingDefinition) throws IOException, MappingException {
+		final ClassLoader classLoader = JsonMappingProvider.class.getClassLoader();
+		try (final InputStream inputStream = classLoader.getResourceAsStream("mappingLanguageSchema.json")) {
+			final JSONObject rawSchema = new JSONObject(new JSONTokener(inputStream));
+			final Schema schema = SchemaLoader.load(rawSchema);
+			final Validator validator = Validator.builder().build();
+			validator.performValidation(schema, schemaMappingDefinition);
+		} catch (final ValidationException e) {
+			throw new MappingException(extractReadableErrorMessage(e));
+		}
+	}
 
-    private String extractReadableErrorMessage(final ValidationException e){
-        final List<ValidationException> causingExceptions = e.getCausingExceptions();
-        if(!causingExceptions.isEmpty()){
-            final ValidationException firstException = causingExceptions.get(0);
-            if(firstException.getKeyword().equals("anyOf")){
-                return  firstException.getPointerToViolation() + " unknown mapping type";
+	private String extractReadableErrorMessage(final ValidationException e) {
+		final List<ValidationException> causingExceptions = e.getCausingExceptions();
+		if (!causingExceptions.isEmpty()) {
+			final ValidationException firstException = causingExceptions.get(0);
+			return extractReadableErrorMessage(firstException);
+		}
+		if (e.getErrorMessage().startsWith("extraneous key")
+				&& e.getViolatedSchema().getId().equals("#/properties/children")) {
+            final String possibleProperties = possibleObjectProperties(e.getViolatedSchema());
+            if(!possibleProperties.isEmpty()) {
+                return e.getMessage() + ", use one of the following mapping definitions here: "
+                        +  possibleProperties;
             }
-            return firstException.getMessage();
-        }
-        return e.getErrorMessage();
-    }
+		}
+		if (e.getMessage().startsWith("#/$schema:") && e.getMessage().endsWith("is not a valid enum value")) {
+			return e.getPointerToViolation()
+					+ " $schema must be set  to https://github.com/exasol/dynamodb-virtual-schema/blob/develop/src/main/resources/mappingLanguageSchema.json";
+		}
+		if (e.getPointerToViolation().endsWith("/mapping") && e.getKeyword().equals("minProperties")) {
+            final String possibleProperties = possibleObjectProperties(e.getViolatedSchema());
+			return e.getPointerToViolation() + " please specify at least one mapping here. Possible are: " + possibleProperties;
+		}
+		return e.getMessage();
+	}
 
-    public static class MappingException extends Exception{
-        private MappingException(){}
-        public MappingException(final String message){
-            super(message);
-        }
-    }
+	private String possibleObjectProperties(final Schema schema) {
+		final Set<String> possibleProperties = new HashSet<>();
+		try {
+			final ObjectSchema objectSchema = (ObjectSchema) schema;
+			possibleProperties.addAll(objectSchema.getPropertySchemas().keySet());
+			try {
+				final ObjectSchema additionalPropertiesSchema = getObjectSchema(
+						objectSchema.getSchemaOfAdditionalProperties());
+				possibleProperties.addAll(additionalPropertiesSchema.getPropertySchemas().keySet());
+			} catch (final ClassCastException ignored) {
+			}
+		} catch (final ClassCastException ignored) {
+		}
+		return String.join(", ", possibleProperties);
+	}
+
+	private ObjectSchema getObjectSchema(final Schema schema) {
+		if (schema instanceof ObjectSchema) {
+			return (ObjectSchema) schema;
+		}
+		final ReferenceSchema referenceSchema = (ReferenceSchema) schema;
+		return (ObjectSchema) referenceSchema.getReferredSchema();
+	}
+
+	public static class MappingException extends Exception {
+		private MappingException() {
+		}
+		public MappingException(final String message) {
+			super(message);
+		}
+	}
 
 }

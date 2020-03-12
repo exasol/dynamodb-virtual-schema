@@ -1,0 +1,6 @@
+{
+  "$schema": "../../main/resources/mappingLanguageSchema.json",
+  "srcTable": "MY_BOOKS",
+  "destTableName": "BOOKS",
+  "description": "Maps MY_BOOKS to BOOKS"
+}
