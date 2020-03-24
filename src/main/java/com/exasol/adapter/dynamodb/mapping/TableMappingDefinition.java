@@ -26,6 +26,14 @@ public class TableMappingDefinition {
 		this.columns = columns;
 	}
 
+	public String getDestName() {
+		return this.destName;
+	}
+
+	public List<ColumnMappingDefinition> getColumns() {
+		return this.columns;
+	}
+
 	/**
 	 * Gives an instance of the Builder.
 	 * 
@@ -48,16 +56,6 @@ public class TableMappingDefinition {
 	 */
 	boolean isRootTable() {
 		return this.isRootTable;
-	}
-
-	public TableMetadata getDestinationTable() throws IOException {
-		final List<ColumnMetadata> columnDefinitions = new ArrayList<>();
-		for (final ColumnMappingDefinition column : this.columns) {
-			final ColumnMetadata destinationColumn = column.getDestinationColumn();
-			columnDefinitions.add(destinationColumn);
-		}
-		final String adapterNotes = "";// Due to a bug in exasol core adapter notes are not stored for tables
-		return new TableMetadata(this.destName, adapterNotes, columnDefinitions, "");
 	}
 
 	/**

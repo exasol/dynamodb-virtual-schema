@@ -36,26 +36,24 @@ public class JsonMappingProviderTest {
 	@Test
 	void testBasicMapping() throws IOException, JsonMappingProvider.SchemaMappingException {
 		final SchemaMappingDefinition schemaMapping = getMappingDefinitionForFileName("basicMapping.json");
-		final List<TableMetadata> tables = schemaMapping.getDestinationSchema().getTables();
+		final List<TableMappingDefinition> tables = schemaMapping.getTableMappings();
 		assertThat(tables.size(), equalTo(1));
-		final TableMetadata table = tables.get(0);
-		final String tableName = table.getName();
-		assertThat(tableName, equalTo("BOOKS"));
-		final List<ColumnMetadata> columns = table.getColumns();
-		final List<String> columnNames = columns.stream().map(ColumnMetadata::getName).collect(Collectors.toList());
+		final TableMappingDefinition table = tables.get(0);
+		assertThat(table.getDestName(), equalTo("BOOKS"));
+		final List<ColumnMappingDefinition> columns = table.getColumns();
+		final List<String> columnNames = columns.stream().map(ColumnMappingDefinition::getDestinationName).collect(Collectors.toList());
 		assertThat(columnNames, containsInAnyOrder("isbn", "name", "authorName"));
 	}
 
 	@Test
 	void testToJsonMapping() throws IOException, JsonMappingProvider.SchemaMappingException {
 		final SchemaMappingDefinition schemaMapping = getMappingDefinitionForFileName("toJsonMapping.json");
-		final List<TableMetadata> tables = schemaMapping.getDestinationSchema().getTables();
+		final List<TableMappingDefinition> tables = schemaMapping.getTableMappings();
 		assertThat(tables.size(), equalTo(1));
-		final TableMetadata table = tables.get(0);
-		final String tableName = table.getName();
-		assertThat(tableName, equalTo("BOOKS"));
-		final List<ColumnMetadata> columns = table.getColumns();
-		final List<String> columnNames = columns.stream().map(ColumnMetadata::getName).collect(Collectors.toList());
+		final TableMappingDefinition table = tables.get(0);
+		assertThat(table.getDestName(), equalTo("BOOKS"));
+		final List<ColumnMappingDefinition> columns = table.getColumns();
+		final List<String> columnNames = columns.stream().map(ColumnMappingDefinition::getDestinationName).collect(Collectors.toList());
 		assertThat(columnNames, containsInAnyOrder("isbn", "name", "topics"));
 	}
 

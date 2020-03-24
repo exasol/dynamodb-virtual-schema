@@ -7,6 +7,8 @@ import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.exasol.adapter.dynamodb.mapping.SchemaMappingDefinitionToSchemaMetadataConverter;
+import com.exasol.adapter.dynamodb.mapping.SchemaMappingDefinitionToSchemaMetadataConverterTest;
 import org.junit.jupiter.api.Test;
 
 import com.exasol.adapter.AdapterException;
@@ -23,7 +25,7 @@ import com.exasol.adapter.sql.SqlTable;
 public class QueryResultTableBuilderTest {
 	@Test
 	void testBuildSelectStar() throws IOException, AdapterException {
-		final TableMetadata tableMetadata = new HardCodedMappingProvider().getSchemaMapping().getDestinationSchema()
+		final TableMetadata tableMetadata = SchemaMappingDefinitionToSchemaMetadataConverter.convert(new HardCodedMappingProvider().getSchemaMapping())
 				.getTables().get(0);
 		final SqlStatementSelect statement = SqlStatementSelect.builder()
 				.fromClause(new SqlTable(tableMetadata.getName(), tableMetadata))

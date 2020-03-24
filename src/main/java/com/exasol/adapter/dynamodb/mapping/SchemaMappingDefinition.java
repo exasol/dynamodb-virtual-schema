@@ -19,18 +19,7 @@ public class SchemaMappingDefinition {
 		this.tableMappings = tableMappings;
 	}
 
-	/**
-	 * Creates the {@link SchemaMetadata} for this schema.
-	 * 
-	 * @return {@link SchemaMetadata} for this schema
-	 * @throws IOException
-	 */
-	public SchemaMetadata getDestinationSchema() throws IOException {
-		final List<TableMetadata> tableMetadata = new ArrayList<>();
-		for (final TableMappingDefinition table : this.tableMappings) {
-			final TableMetadata destinationTable = table.getDestinationTable();
-			tableMetadata.add(destinationTable);
-		}
-		return new SchemaMetadata("", tableMetadata);
+	public List<TableMappingDefinition> getTableMappings() {
+		return this.tableMappings;
 	}
 }

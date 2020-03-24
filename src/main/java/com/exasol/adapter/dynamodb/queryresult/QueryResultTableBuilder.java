@@ -7,6 +7,7 @@ import java.util.List;
 
 import com.exasol.adapter.AdapterException;
 import com.exasol.adapter.dynamodb.mapping.ColumnMappingDefinition;
+import com.exasol.adapter.dynamodb.mapping.SchemaMappingDefinitionToSchemaMetadataConverter;
 import com.exasol.adapter.metadata.ColumnMetadata;
 import com.exasol.adapter.metadata.TableMetadata;
 import com.exasol.adapter.sql.GenericSchemaMappingVisitor;
@@ -60,8 +61,8 @@ public class QueryResultTableBuilder extends GenericSchemaMappingVisitor {
 	private void selectAllColumns() throws AdapterException {
 		try {
 			for (final ColumnMetadata columnMetadata : this.tableMetadata.getColumns()) {
-				final ColumnMappingDefinition columnMappingDefinition = ColumnMappingDefinition
-						.fromColumnMetadata(columnMetadata);
+				final ColumnMappingDefinition columnMappingDefinition = SchemaMappingDefinitionToSchemaMetadataConverter
+						.convertBackColumn(columnMetadata);
 				final QueryResultColumn resultColumn = new QueryResultColumn(columnMappingDefinition);
 				this.resultColumns.add(resultColumn);
 			}

@@ -30,19 +30,6 @@ public abstract class ColumnMappingDefinition implements Serializable {
 		this.destinationName = destinationName;
 	}
 
-	/**
-	 * Deserialization.
-	 * 
-	 * @param columnMetadata
-	 * @return ColumnMappingDefinition
-	 * @throws IOException
-	 * @throws ClassNotFoundException
-	 */
-	public static ColumnMappingDefinition fromColumnMetadata(final ColumnMetadata columnMetadata)
-			throws IOException, ClassNotFoundException {
-		final String serialized = columnMetadata.getAdapterNotes();
-		return (ColumnMappingDefinition) StringSerializer.deserializeFromString(serialized);
-	}
 
 	/**
 	 * Get the name of the column in the Exasol table.
@@ -53,20 +40,6 @@ public abstract class ColumnMappingDefinition implements Serializable {
 		return this.destinationName;
 	}
 
-	/**
-	 * Builds the {@link ColumnMetadata}, including serialized self in adapter
-	 * properties.
-	 * 
-	 * @return {@link ColumnMetadata}
-	 * @throws IOException
-	 */
-	public ColumnMetadata getDestinationColumn() throws IOException {
-		final String serialized = StringSerializer.serializeToString(this);
-		return ColumnMetadata.builder()//
-				.name(this.destinationName).type(this.getDestinationDataType())//
-				.defaultValue(this.getDestinationDefaultValue()).nullable(this.isDestinationNullable())
-				.adapterNotes(serialized).build();
-	}
 
 	abstract DataType getDestinationDataType();
 	abstract String getDestinationDefaultValue();
