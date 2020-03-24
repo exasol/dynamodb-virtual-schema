@@ -47,6 +47,6 @@ public class DynamodbAdapterPropertiesTest {
 		final String value = "/../etc/secrets.conf";
 		final AdapterProperties adapterProperties = new AdapterProperties(Map.of("MAPPING", value));
 		final DynamodbAdapterProperties dynamodbAdapterProperties = new DynamodbAdapterProperties(adapterProperties);
-		assertThrows(AdapterException.class, () -> dynamodbAdapterProperties.getMappingDefinition());
+		assertThrows(AdapterException.class, dynamodbAdapterProperties::getMappingDefinition);
 	}
 }

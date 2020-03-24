@@ -1,10 +1,11 @@
-package com.exasol.dynamodb.resultwalker;
+package com.exasol.adapter.dynamodb.mapping;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 
 import java.io.IOException;
 
+import com.exasol.dynamodb.resultwalker.IdentityDynamodbResultWalker;
 import org.junit.jupiter.api.Test;
 
 import com.exasol.adapter.dynamodb.mapping.ColumnMappingDefinition;
