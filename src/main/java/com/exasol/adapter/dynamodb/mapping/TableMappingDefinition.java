@@ -1,12 +1,8 @@
 package com.exasol.adapter.dynamodb.mapping;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
-import com.exasol.adapter.metadata.ColumnMetadata;
-import com.exasol.adapter.metadata.TableMetadata;
 
 /**
  * Definition of a table mapping from DynamoDB table to Exasol Virtual Schema.
@@ -26,17 +22,9 @@ public class TableMappingDefinition {
 		this.columns = columns;
 	}
 
-	public String getDestName() {
-		return this.destName;
-	}
-
-	public List<ColumnMappingDefinition> getColumns() {
-		return this.columns;
-	}
-
 	/**
 	 * Gives an instance of the Builder.
-	 * 
+	 *
 	 * @param destName
 	 *            Name of the Exasol table
 	 * @param isRootTable
@@ -45,6 +33,14 @@ public class TableMappingDefinition {
 	 */
 	public static Builder builder(final String destName, final boolean isRootTable) {
 		return new Builder(destName, isRootTable);
+	}
+
+	public String getDestName() {
+		return this.destName;
+	}
+
+	public List<ColumnMappingDefinition> getColumns() {
+		return this.columns;
 	}
 
 	/**

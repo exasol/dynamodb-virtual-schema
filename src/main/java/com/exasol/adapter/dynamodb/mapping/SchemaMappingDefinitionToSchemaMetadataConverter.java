@@ -16,12 +16,19 @@ import com.exasol.adapter.metadata.TableMetadata;
  * {@link #convertBackColumn(ColumnMetadata)} it can get deserialized again.
  */
 public class SchemaMappingDefinitionToSchemaMetadataConverter {
-    /**
-     * Creates a {@link SchemaMetadata} for a given {@link SchemaMappingDefinition}
-     * @param schemaMappingDefinition the {@link SchemaMappingDefinition} to be converted
-     * @return {@link SchemaMetadata}
-     * @throws IOException if {@link ColumnMappingDefinition} could not get serialized
-     */
+	private SchemaMappingDefinitionToSchemaMetadataConverter() {
+
+	}
+
+	/**
+	 * Creates a {@link SchemaMetadata} for a given {@link SchemaMappingDefinition}
+	 *
+	 * @param schemaMappingDefinition
+	 *            the {@link SchemaMappingDefinition} to be converted
+	 * @return {@link SchemaMetadata}
+	 * @throws IOException
+	 *             if {@link ColumnMappingDefinition} could not get serialized
+	 */
 	public static SchemaMetadata convert(final SchemaMappingDefinition schemaMappingDefinition) throws IOException {
 		final List<TableMetadata> tableMetadata = new ArrayList<>();
 		for (final TableMappingDefinition table : schemaMappingDefinition.getTableMappings()) {
@@ -63,8 +70,4 @@ public class SchemaMappingDefinitionToSchemaMetadataConverter {
 		final String serialized = columnMetadata.getAdapterNotes();
 		return (ColumnMappingDefinition) StringSerializer.deserializeFromString(serialized);
 	}
-
-	private SchemaMappingDefinitionToSchemaMetadataConverter(){
-
-    }
 }

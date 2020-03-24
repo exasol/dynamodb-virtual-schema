@@ -51,7 +51,7 @@ public class DynamodbAdapterTestAwsIT {
 		exasolTestUtils.createAdapterScript();
 		exasolTestUtils.createConnection(DYNAMODB_CONNECTION, dynamodbTestUtils.getDynamoUrl(),
 				dynamodbTestUtils.getDynamoUser(), dynamodbTestUtils.getDynamoPass());
-		exasolTestUtils.createDynamodbVirtualSchema(TEST_SCHEMA, DYNAMODB_CONNECTION);
+		exasolTestUtils.createDynamodbVirtualSchema(TEST_SCHEMA, DYNAMODB_CONNECTION, "");
 	}
 
 	/**

@@ -33,7 +33,7 @@ public class StringColumnMappingDefinition extends ColumnMappingDefinition {
 
 	@Override
 	String getDestinationDefaultValue() {
-		return null;
+		return "";
 	}
 
 	@Override

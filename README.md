@@ -66,7 +66,7 @@ Finally create the Virtual Schema using:
 CREATE VIRTUAL SCHEMA DYNAMODB_TEST USING ADAPTER.DYNAMODB_ADAPTER WITH
     CONNECTION_NAME = 'DYNAMO_CONNECTION'
     SQL_DIALECT     = 'DynamoDB'
-    MAPPING         = '/path/to/mappings/in/bucketfs';
+    MAPPING         = '/bfsdefault/default/path/to/mappings/in/bucketfs';
 ```
  
 

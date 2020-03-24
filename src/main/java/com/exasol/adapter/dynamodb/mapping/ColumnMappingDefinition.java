@@ -1,13 +1,10 @@
 package com.exasol.adapter.dynamodb.mapping;
 
-import java.io.IOException;
 import java.io.Serializable;
 import java.util.Map;
 
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.exasol.adapter.AdapterException;
-import com.exasol.adapter.dynamodb.StringSerializer;
-import com.exasol.adapter.metadata.ColumnMetadata;
 import com.exasol.adapter.metadata.DataType;
 import com.exasol.cellvalue.ExasolCellValue;
 
@@ -30,7 +27,6 @@ public abstract class ColumnMappingDefinition implements Serializable {
 		this.destinationName = destinationName;
 	}
 
-
 	/**
 	 * Get the name of the column in the Exasol table.
 	 * 
@@ -39,7 +35,6 @@ public abstract class ColumnMappingDefinition implements Serializable {
 	public String getDestinationName() {
 		return this.destinationName;
 	}
-
 
 	abstract DataType getDestinationDataType();
 	abstract String getDestinationDefaultValue();

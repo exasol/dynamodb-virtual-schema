@@ -3,13 +3,13 @@ package com.exasol.adapter.dynamodb;
 import java.io.*;
 import java.util.Base64;
 
+//TODO move to more general package
 /**
  * Helper class for serialization to a base64 strings.
  */
 public class StringSerializer {
 	private StringSerializer() {
 	}
-
 	/**
 	 * Serializes a given object to a base64 string.
 	 * 

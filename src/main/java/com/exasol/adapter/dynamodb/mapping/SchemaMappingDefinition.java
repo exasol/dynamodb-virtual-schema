@@ -1,11 +1,6 @@
 package com.exasol.adapter.dynamodb.mapping;
 
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
-
-import com.exasol.adapter.metadata.SchemaMetadata;
-import com.exasol.adapter.metadata.TableMetadata;
 
 /**
  * Definition of a whole schema (consisting of table definitions) mapping from

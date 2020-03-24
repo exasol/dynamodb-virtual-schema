@@ -62,6 +62,16 @@ public class ExasolTestUtils {
 		bucket.uploadFile(PATH_TO_VIRTUAL_SCHEMAS_JAR, VIRTUAL_SCHEMAS_JAR_NAME_AND_VERSION);
 	}
 
+	public void uploadMapping(final String name) throws InterruptedException, BucketAccessException, TimeoutException {
+		this.uploadMapping(name, "mappings/" + name);
+	}
+
+	public void uploadMapping(final String name, final String destName)
+			throws InterruptedException, BucketAccessException, TimeoutException {
+		final Bucket bucket = this.container.getDefaultBucket();
+		bucket.uploadFile(Path.of("src", "test", "resources", name), destName);
+	}
+
 	/**
 	 * Creates a schema on the exasol test container.
 	 * 
@@ -117,11 +127,12 @@ public class ExasolTestUtils {
 	/**
 	 * This property is set by fail safe plugin, configured in the pom.xml file.
 	 * 
-	 * @return {@code <true>} if set property {@code NO_DEBUG} is equal to "true"
+	 * @return {@code <true>} if set property {@code tests.noDebug} is equal to
+	 *         "true"
 	 */
 	private boolean isNoDebugSystemPropertySet() {
 		final String noDebugProperty = System.getProperty("tests.noDebug");
-		return noDebugProperty != null && noDebugProperty != "true";
+		return noDebugProperty != null && noDebugProperty.equals("true");
 	}
 
 	/**
@@ -146,10 +157,11 @@ public class ExasolTestUtils {
 	 *            name of the connection to use
 	 * @throws SQLException
 	 */
-	public void createDynamodbVirtualSchema(final String name, final String dynamodbConnection) throws SQLException {
+	public void createDynamodbVirtualSchema(final String name, final String dynamodbConnection, final String mapping)
+			throws SQLException {
 		String createStatement = "CREATE VIRTUAL SCHEMA " + name + "\n" + "    USING " + ADAPTER_SCHEMA + "."
 				+ DYNAMODB_ADAPTER + " WITH\n" + "    CONNECTION_NAME = '" + dynamodbConnection + "'\n"
-				+ "   SQL_DIALECT     = 'DynamoDB'";
+				+ "   SQL_DIALECT     = 'DynamoDB'\n" + "	  MAPPING = '" + mapping + "'";
 		final String hostIp = getTestHostIpAddress();
 		if (hostIp != null) {
 			createStatement += "\n   DEBUG_ADDRESS   = '" + hostIp + ":3000'\n" + "   LOG_LEVEL       =  'ALL'";

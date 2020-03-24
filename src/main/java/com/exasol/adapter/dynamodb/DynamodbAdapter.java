@@ -1,5 +1,6 @@
 package com.exasol.adapter.dynamodb;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -21,7 +22,7 @@ import com.exasol.adapter.AdapterException;
 import com.exasol.adapter.AdapterProperties;
 import com.exasol.adapter.VirtualSchemaAdapter;
 import com.exasol.adapter.capabilities.Capabilities;
-import com.exasol.adapter.dynamodb.mapping.HardCodedMappingProvider;
+import com.exasol.adapter.dynamodb.mapping.JsonMappingProvider;
 import com.exasol.adapter.dynamodb.mapping.SchemaMappingDefinition;
 import com.exasol.adapter.dynamodb.mapping.SchemaMappingDefinitionToSchemaMetadataConverter;
 import com.exasol.adapter.dynamodb.queryresult.QueryResultTable;
@@ -79,20 +80,27 @@ public class DynamodbAdapter implements VirtualSchemaAdapter {
 	public CreateVirtualSchemaResponse createVirtualSchema(final ExaMetadata exaMetadata,
 			final CreateVirtualSchemaRequest request) throws AdapterException {
 		try {
-			final AdapterProperties adapterProperties = new AdapterProperties(
-					request.getSchemaMetadataInfo().getProperties());
-			final DynamodbAdapterProperties dynamodbAdapterProperties = new DynamodbAdapterProperties(
-					adapterProperties);
-
-			// new JsonMappingProvider();
-			final MappingProvider mappingProvider = new HardCodedMappingProvider();
-			final SchemaMappingDefinition schemaMappingDefinition = mappingProvider.getSchemaMapping();
-			final SchemaMetadata schemaMetadata = SchemaMappingDefinitionToSchemaMetadataConverter.convert(schemaMappingDefinition);
+			final SchemaMappingDefinition schemaMappingDefinition = getSchemaMappingDefinition(request);
+			final SchemaMetadata schemaMetadata = SchemaMappingDefinitionToSchemaMetadataConverter
+					.convert(schemaMappingDefinition);
 			return CreateVirtualSchemaResponse.builder().schemaMetadata(schemaMetadata).build();
 		} catch (final IOException e) {
 			throw new AdapterException("Unable create Virtual Schema \"" + request.getVirtualSchemaName()
 					+ "\". Cause: \"" + e.getMessage(), e);
 		}
+	}
+
+	private SchemaMappingDefinition getSchemaMappingDefinition(final CreateVirtualSchemaRequest request)
+			throws AdapterException, IOException {
+		final AdapterProperties adapterProperties = new AdapterProperties(
+				request.getSchemaMetadataInfo().getProperties());
+		final DynamodbAdapterProperties dynamodbAdapterProperties = new DynamodbAdapterProperties(adapterProperties);
+		final File path = dynamodbAdapterProperties.getMappingDefinition();
+		if (!path.exists()) {
+			throw new AdapterException(String.format("the specified mapping file (%s) could not be found.", path));
+		}
+		final MappingProvider mappingProvider = new JsonMappingProvider(path);
+		return mappingProvider.getSchemaMapping();
 	}
 
 	/**

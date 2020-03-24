@@ -59,12 +59,14 @@ public class DynamodbAdapterTestLocalIT {
 		dynamodbTestUtils = new DynamodbTestUtils(LOCAL_DYNAMO, NETWORK);
 		exasolTestUtils = new ExasolTestUtils(EXASOL_CONTAINER);
 		exasolTestUtils.uploadDynamodbAdapterJar();
+		exasolTestUtils.uploadMapping("basicMapping.json");
 		exasolTestUtils.createAdapterScript();
 		LOGGER.info("created adapter script");
 		exasolTestUtils.createConnection(DYNAMODB_CONNECTION, dynamodbTestUtils.getDynamoUrl(),
 				dynamodbTestUtils.getDynamoUser(), dynamodbTestUtils.getDynamoPass());
 		LOGGER.info("created connection");
-		exasolTestUtils.createDynamodbVirtualSchema(TEST_SCHEMA, DYNAMODB_CONNECTION);
+		exasolTestUtils.createDynamodbVirtualSchema(TEST_SCHEMA, DYNAMODB_CONNECTION,
+				"/bfsdefault/default/mappings/basicMapping.json");
 		LOGGER.info("created schema");
 	}
 
@@ -142,7 +144,7 @@ public class DynamodbAdapterTestLocalIT {
 	@Test
 	void testMultiLineSelect() throws IOException, SQLException {
 		dynamodbTestUtils.createTable(DYNAMO_TABLE_NAME, "isbn");
-		final ClassLoader classLoader = DynamodbTestUtilsTestIT.class.getClassLoader();
+		final ClassLoader classLoader = DynamodbAdapterTestLocalIT.class.getClassLoader();
 		dynamodbTestUtils.importData(DYNAMO_TABLE_NAME, new File(classLoader.getResource("books.json").getFile()));
 		final List<String> result = selectStringArray().rows;
 		assertThat(result, containsInAnyOrder("123567", "123254545", "1235673"));

@@ -16,7 +16,7 @@ import com.exasol.adapter.AdapterProperties;
  * Tests for {@link DynamodbAdapterProperties}.
  */
 public class DynamodbAdapterPropertiesTest {
-	private static final String BUCKETFS_BASIC_PATH = "/exa/data/bucketfs/bfsdefault";
+	private static final String BUCKETFS_BASIC_PATH = "/buckets";
 
 	@Test
 	public void testEmptySchema() {
@@ -27,7 +27,7 @@ public class DynamodbAdapterPropertiesTest {
 
 	@Test
 	public void testHasSchemaDefinitionProperty() {
-		final String value = "/default/mappings/mapping.json";
+		final String value = "/bfsdefault/default/mappings/mapping.json";
 		final AdapterProperties adapterProperties = new AdapterProperties(Map.of("MAPPING", value));
 		final DynamodbAdapterProperties dynamodbAdapterProperties = new DynamodbAdapterProperties(adapterProperties);
 		assertThat(dynamodbAdapterProperties.hasMappingDefinition(), equalTo(true));
@@ -35,11 +35,11 @@ public class DynamodbAdapterPropertiesTest {
 
 	@Test
 	public void testGetSchemaDefinitionProperty() throws AdapterException {
-		final String value = "/default/mappings/mapping.json";
+		final String value = "/bfsdefault/default/mappings/mapping.json";
 		final AdapterProperties adapterProperties = new AdapterProperties(Map.of("MAPPING", value));
 		final DynamodbAdapterProperties dynamodbAdapterProperties = new DynamodbAdapterProperties(adapterProperties);
 		assertThat(dynamodbAdapterProperties.getMappingDefinition().getAbsolutePath(),
-				equalTo(BUCKETFS_BASIC_PATH + value));
+				equalTo(BUCKETFS_BASIC_PATH + "/bfsdefault/default/mappings/mapping.json"));
 	}
 
 	@Test

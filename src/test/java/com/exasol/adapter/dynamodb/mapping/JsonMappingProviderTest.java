@@ -12,8 +12,6 @@ import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
 
 import com.exasol.adapter.dynamodb.MappingProvider;
-import com.exasol.adapter.metadata.ColumnMetadata;
-import com.exasol.adapter.metadata.TableMetadata;
 
 /**
  * Tests for {@link JsonMappingProvider}
@@ -41,7 +39,8 @@ public class JsonMappingProviderTest {
 		final TableMappingDefinition table = tables.get(0);
 		assertThat(table.getDestName(), equalTo("BOOKS"));
 		final List<ColumnMappingDefinition> columns = table.getColumns();
-		final List<String> columnNames = columns.stream().map(ColumnMappingDefinition::getDestinationName).collect(Collectors.toList());
+		final List<String> columnNames = columns.stream().map(ColumnMappingDefinition::getDestinationName)
+				.collect(Collectors.toList());
 		assertThat(columnNames, containsInAnyOrder("isbn", "name", "authorName"));
 	}
 
@@ -53,7 +52,8 @@ public class JsonMappingProviderTest {
 		final TableMappingDefinition table = tables.get(0);
 		assertThat(table.getDestName(), equalTo("BOOKS"));
 		final List<ColumnMappingDefinition> columns = table.getColumns();
-		final List<String> columnNames = columns.stream().map(ColumnMappingDefinition::getDestinationName).collect(Collectors.toList());
+		final List<String> columnNames = columns.stream().map(ColumnMappingDefinition::getDestinationName)
+				.collect(Collectors.toList());
 		assertThat(columnNames, containsInAnyOrder("isbn", "name", "topics"));
 	}
 
