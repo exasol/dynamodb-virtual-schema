@@ -44,10 +44,9 @@ public class DynamodbAdapterPropertiesTest {
 
 	@Test
 	public void testGetSchemaDefinitionPropertyInjection() {
-		final String value = "../etc/secrets.conf";
+		final String value = "/../etc/secrets.conf";
 		final AdapterProperties adapterProperties = new AdapterProperties(Map.of("MAPPING", value));
 		final DynamodbAdapterProperties dynamodbAdapterProperties = new DynamodbAdapterProperties(adapterProperties);
 		assertThrows(AdapterException.class, () -> dynamodbAdapterProperties.getMappingDefinition());
 	}
-
 }

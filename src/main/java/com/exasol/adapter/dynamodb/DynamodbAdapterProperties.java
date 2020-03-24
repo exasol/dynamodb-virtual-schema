@@ -1,6 +1,7 @@
 package com.exasol.adapter.dynamodb;
 
 import java.io.File;
+import java.io.IOException;
 
 import com.exasol.adapter.AdapterException;
 import com.exasol.adapter.AdapterProperties;
@@ -49,7 +50,21 @@ public class DynamodbAdapterProperties {
 					"%s must not be empty. Provide the path to your schema mapping files on bucketfs here.",
 					MAPPING_KEY));
 		}
-		return null;
+		final File selectedFile = new File(BUCKETFS_BASIC_PATH + property);
+		preventInjection(selectedFile);
+		return selectedFile;
+	}
+
+	private void preventInjection(final File file) throws AdapterException {
+		try {
+			final String absolute;
+			absolute = file.getCanonicalPath();
+			if (!absolute.startsWith(BUCKETFS_BASIC_PATH)) {
+				throw new AdapterException("given path is outside of bucketfs");
+			}
+		} catch (final IOException e) {
+			throw new AdapterException(String.format("error in file path: %s", file.getAbsolutePath()), e);
+		}
 	}
 
 }
