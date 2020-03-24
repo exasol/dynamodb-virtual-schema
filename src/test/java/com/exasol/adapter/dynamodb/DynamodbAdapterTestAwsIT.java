@@ -8,6 +8,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,6 +26,7 @@ import com.exasol.containers.ExasolContainer;
  * Preparation: create a table {@code JB_Books} with primary key {@code isbn}
  * and insert one item.
  */
+@Tag("integration")
 @Testcontainers
 public class DynamodbAdapterTestAwsIT {
 	private static final Logger LOGGER = LoggerFactory.getLogger(DynamodbAdapterTestAwsIT.class);

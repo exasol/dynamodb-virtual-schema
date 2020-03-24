@@ -24,7 +24,7 @@ public class DynamodbAdapterPropertiesTest {
 	@Test
 	public void testHasSchemaDefinitionProperty() {
 		final String value = "(myString VARCHAR(255))";
-		final AdapterProperties adapterProperties = new AdapterProperties(Map.of("DYNAMODB_SCHEMA", value));
+		final AdapterProperties adapterProperties = new AdapterProperties(Map.of("MAPPING", value));
 		final DynamodbAdapterProperties dynamodbAdapterProperties = new DynamodbAdapterProperties(adapterProperties);
 		assertThat(dynamodbAdapterProperties.hasMappingDefinition(), equalTo(true));
 	}
@@ -32,7 +32,7 @@ public class DynamodbAdapterPropertiesTest {
 	@Test
 	public void testGetSchemaDefinitionProperty() {
 		final String value = "(myString VARCHAR(255))";
-		final AdapterProperties adapterProperties = new AdapterProperties(Map.of("DYNAMODB_SCHEMA", value));
+		final AdapterProperties adapterProperties = new AdapterProperties(Map.of("MAPPING", value));
 		final DynamodbAdapterProperties dynamodbAdapterProperties = new DynamodbAdapterProperties(adapterProperties);
 		assertThat(dynamodbAdapterProperties.getMappingDefinition(), equalTo(value));
 	}

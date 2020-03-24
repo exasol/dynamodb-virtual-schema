@@ -3,17 +3,17 @@ package com.exasol.adapter.dynamodb;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.equalTo;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.junit.jupiter.api.Test;
+
 import com.exasol.adapter.dynamodb.mapping_definition.SchemaMappingDefinition;
 import com.exasol.adapter.metadata.ColumnMetadata;
 import com.exasol.adapter.metadata.TableMetadata;
-import org.junit.jupiter.api.Test;
 
 /**
  * Tests for {@link JsonMappingProvider}
@@ -59,10 +59,12 @@ public class JsonMappingProviderTest {
 		assertThat(columnNames, containsInAnyOrder("isbn", "name", "topics"));
 	}
 
-/*	@Test
-	void testSingleColumnToJsonMapping() throws IOException, JsonMappingProvider.SchemaMappingException {
-		final SchemaMappingDefinition schemaMapping = getMappingDefinitionForFileName("singleColumnToTableMapping.json");
-	}*/
+	/*
+	 * @Test void testSingleColumnToJsonMapping() throws IOException,
+	 * JsonMappingProvider.SchemaMappingException { final SchemaMappingDefinition
+	 * schemaMapping =
+	 * getMappingDefinitionForFileName("singleColumnToTableMapping.json"); }
+	 */
 
 	void testDirectoryRead() {
 		// todo

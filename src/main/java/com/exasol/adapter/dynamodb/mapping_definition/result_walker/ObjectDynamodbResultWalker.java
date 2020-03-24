@@ -24,24 +24,6 @@ public class ObjectDynamodbResultWalker extends DynamodbResultWalker {
 		this.lookupKey = lookupKey;
 	}
 
-	public static class Builder extends DynamodbResultWalkerBuilder{
-
-		private final DynamodbResultWalkerBuilder previousBuilder;
-		private final LookupFailBehaviour lookupFailBehaviour;
-		private final String lookupKey;
-
-		public Builder(final DynamodbResultWalkerBuilder previousBuilder, final LookupFailBehaviour lookupFailBehaviour, final String lookupKey) {
-			this.previousBuilder = previousBuilder;
-			this.lookupFailBehaviour = lookupFailBehaviour;
-			this.lookupKey = lookupKey;
-		}
-
-		@Override
-		public DynamodbResultWalker buildChain(final DynamodbResultWalker next) {
-			return this.previousBuilder.buildChain(new ObjectDynamodbResultWalker(this.lookupFailBehaviour, this.lookupKey,next));
-		}
-	}
-
 	@Override
 	AttributeValue applyThis(final AttributeValue attributeValue) throws DynamodbResultWalkerException {
 		if (attributeValue.getM() == null) {
@@ -61,5 +43,25 @@ public class ObjectDynamodbResultWalker extends DynamodbResultWalker {
 			}
 		}
 		return nextAttributeValue;
+	}
+
+	public static class Builder extends DynamodbResultWalkerBuilder {
+
+		private final DynamodbResultWalkerBuilder previousBuilder;
+		private final LookupFailBehaviour lookupFailBehaviour;
+		private final String lookupKey;
+
+		public Builder(final DynamodbResultWalkerBuilder previousBuilder, final LookupFailBehaviour lookupFailBehaviour,
+				final String lookupKey) {
+			this.previousBuilder = previousBuilder;
+			this.lookupFailBehaviour = lookupFailBehaviour;
+			this.lookupKey = lookupKey;
+		}
+
+		@Override
+		public DynamodbResultWalker buildChain(final DynamodbResultWalker next) {
+			return this.previousBuilder
+					.buildChain(new ObjectDynamodbResultWalker(this.lookupFailBehaviour, this.lookupKey, next));
+		}
 	}
 }

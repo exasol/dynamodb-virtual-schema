@@ -5,7 +5,6 @@
   "description": "Maps MY_BOOKS to BOOKS",
   "mapping": {
     "toJsonMapping": {
-
     }
   }
 }

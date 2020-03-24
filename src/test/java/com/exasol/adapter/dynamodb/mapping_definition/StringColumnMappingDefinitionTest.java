@@ -63,7 +63,8 @@ public class StringColumnMappingDefinitionTest {
 	void testConvertRowAccessToNonExistingProperty() throws AdapterException {
 		final StringColumnMappingDefinition stringColumnMappingDefinition = new StringColumnMappingDefinition(
 				DEST_COLUMN, TEST_STRING.length() - 1,
-				new ObjectDynamodbResultWalker(DynamodbResultWalker.LookupFailBehaviour.NULL, "nonExistingColumn", null),
+				new ObjectDynamodbResultWalker(DynamodbResultWalker.LookupFailBehaviour.NULL, "nonExistingColumn",
+						null),
 				StringColumnMappingDefinition.OverflowBehaviour.EXCEPTION);
 		final ExasolDataFrame exasolDataframe = stringColumnMappingDefinition.convertRow(getDynamodbRow());
 		assertThat(exasolDataframe.toLiteral(), equalTo("NULL"));

@@ -70,7 +70,8 @@ public class DynamodbTestUtils {
 	 * Constructor using default login credentials for the local dynamodb docker
 	 * instance.
 	 */
-	public DynamodbTestUtils(final GenericContainer localDynamo, final Network dockerNetwork) throws NoNetworkFoundException {
+	public DynamodbTestUtils(final GenericContainer localDynamo, final Network dockerNetwork)
+			throws NoNetworkFoundException {
 		this(getDockerNetworkUrlForLocalDynamodb(localDynamo, dockerNetwork), LOCAL_DYNAMO_USER, LOCAL_DYNAMO_PASS);
 	}
 
@@ -212,8 +213,8 @@ public class DynamodbTestUtils {
 	}
 
 	@SuppressWarnings("serial")
-	public static class NoNetworkFoundException extends Exception{
-		public NoNetworkFoundException(){
+	public static class NoNetworkFoundException extends Exception {
+		public NoNetworkFoundException() {
 			super("no matching network was found");
 		}
 	}

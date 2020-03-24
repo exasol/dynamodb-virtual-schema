@@ -116,9 +116,10 @@ public class ExasolTestUtils {
 
 	/**
 	 * This property is set by fail safe plugin, configured in the pom.xml file.
+	 * 
 	 * @return {@code <true>} if set property {@code NO_DEBUG} is equal to "true"
 	 */
-	private boolean isNoDebugSystemPropertySet(){
+	private boolean isNoDebugSystemPropertySet() {
 		final String noDebugProperty = System.getProperty("tests.noDebug");
 		return noDebugProperty != null && noDebugProperty != "true";
 	}

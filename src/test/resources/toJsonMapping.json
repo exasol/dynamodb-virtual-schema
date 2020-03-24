@@ -17,7 +17,7 @@
           "overflow": "TRUNCATE"
         }
       },
-      "topics":{
+      "topics": {
         "toJsonMapping": {
           "description": "Maps the sub document of this property to a JSON string",
           "maxLength": 200

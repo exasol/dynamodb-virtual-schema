@@ -74,10 +74,12 @@ public class DynamodbAdapter implements VirtualSchemaAdapter {
 	public CreateVirtualSchemaResponse createVirtualSchema(final ExaMetadata exaMetadata,
 			final CreateVirtualSchemaRequest request) throws AdapterException {
 		try {
-			final AdapterProperties adapterProperties = new AdapterProperties(request.getSchemaMetadataInfo().getProperties());
-			final DynamodbAdapterProperties dynamodbAdapterProperties = new DynamodbAdapterProperties(adapterProperties);
+			final AdapterProperties adapterProperties = new AdapterProperties(
+					request.getSchemaMetadataInfo().getProperties());
+			final DynamodbAdapterProperties dynamodbAdapterProperties = new DynamodbAdapterProperties(
+					adapterProperties);
 			dynamodbAdapterProperties.verifyMappingDefinition();
-			new JsonMappingProvider();
+			// new JsonMappingProvider();
 			final MappingProvider mappingProvider = new HardCodedMappingProvider();
 			final SchemaMappingDefinition schemaMappingDefinition = mappingProvider.getSchemaMapping();
 			final SchemaMetadata schemaMetadata = schemaMappingDefinition.getDestinationSchema();

@@ -16,14 +16,6 @@ public class IdentityDynamodbResultWalker extends DynamodbResultWalker {
 		super();
 	}
 
-
-	public static class Builder extends DynamodbResultWalkerBuilder {
-
-		@Override
-		public DynamodbResultWalker buildChain(final DynamodbResultWalker next) {
-			return new IdentityDynamodbResultWalker(next);
-		}
-	}
 	/**
 	 * Constructor as non last part of the {@link DynamodbResultWalker} chain.
 	 */
@@ -34,5 +26,13 @@ public class IdentityDynamodbResultWalker extends DynamodbResultWalker {
 	@Override
 	AttributeValue applyThis(final AttributeValue attributeValue) {
 		return attributeValue;
+	}
+
+	public static class Builder extends DynamodbResultWalkerBuilder {
+
+		@Override
+		public DynamodbResultWalker buildChain(final DynamodbResultWalker next) {
+			return new IdentityDynamodbResultWalker(next);
+		}
 	}
 }

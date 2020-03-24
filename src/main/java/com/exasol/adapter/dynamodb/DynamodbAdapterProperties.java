@@ -31,15 +31,21 @@ public class DynamodbAdapterProperties {
 	}
 
 	/**
-	 * Verifies that mapping definition is set and not empty. Else an exception is thrown.
-	 * @throws AdapterException thrown if mapping definition is not set or empty
+	 * Verifies that mapping definition is set and not empty. Else an exception is
+	 * thrown.
+	 * 
+	 * @throws AdapterException
+	 *             thrown if mapping definition is not set or empty
 	 */
 	public void verifyMappingDefinition() throws AdapterException {
-		if(!this.hasMappingDefinition()){
-			throw new AdapterException(String.format("%s is mandatory. Provide the path to your schema mapping files on bucketfs here.", MAPPING_KEY));
+		if (!this.hasMappingDefinition()) {
+			throw new AdapterException(String.format(
+					"%s is mandatory. Provide the path to your schema mapping files on bucketfs here.", MAPPING_KEY));
 		}
-		if(this.getMappingDefinition().isEmpty()){
-			throw new AdapterException(String.format("%s must nit be empty. Provide the path to your schema mapping files on bucketfs here.", MAPPING_KEY));
+		if (this.getMappingDefinition().isEmpty()) {
+			throw new AdapterException(String.format(
+					"%s must nit be empty. Provide the path to your schema mapping files on bucketfs here.",
+					MAPPING_KEY));
 		}
 	}
 

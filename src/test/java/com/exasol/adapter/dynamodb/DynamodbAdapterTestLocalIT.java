@@ -14,7 +14,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeoutException;
 
-import com.exasol.bucketfs.BucketAccessException;
 import org.junit.jupiter.api.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,6 +23,7 @@ import org.testcontainers.containers.output.Slf4jLogConsumer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
+import com.exasol.bucketfs.BucketAccessException;
 import com.exasol.containers.ExasolContainer;
 
 /**
@@ -54,7 +54,8 @@ public class DynamodbAdapterTestLocalIT {
 	 * DynamoDB.
 	 */
 	@BeforeAll
-	static void beforeAll() throws DynamodbTestUtils.NoNetworkFoundException, SQLException, InterruptedException, BucketAccessException, TimeoutException {
+	static void beforeAll() throws DynamodbTestUtils.NoNetworkFoundException, SQLException, InterruptedException,
+			BucketAccessException, TimeoutException {
 		dynamodbTestUtils = new DynamodbTestUtils(LOCAL_DYNAMO, NETWORK);
 		exasolTestUtils = new ExasolTestUtils(EXASOL_CONTAINER);
 		exasolTestUtils.uploadDynamodbAdapterJar();

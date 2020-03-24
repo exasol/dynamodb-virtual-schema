@@ -48,7 +48,7 @@ public class DynamodbResultWalkerTest {
 	void testObjectWalker() throws DynamodbResultWalker.DynamodbResultWalkerException {
 		final Map<String, AttributeValue> testData = getTestData();
 		final ObjectDynamodbResultWalker walker = new ObjectDynamodbResultWalker(
-				DynamodbResultWalker.LookupFailBehaviour.NULL, "isbn",null);
+				DynamodbResultWalker.LookupFailBehaviour.NULL, "isbn", null);
 		assertThat(walker.walk(testData), equalTo(testData.get("isbn")));
 	}
 
