@@ -1,5 +1,7 @@
 package com.exasol.adapter.dynamodb;
 
+import java.io.File;
+
 import com.exasol.adapter.AdapterException;
 import com.exasol.adapter.AdapterProperties;
 
@@ -8,6 +10,7 @@ import com.exasol.adapter.AdapterProperties;
  * specific properties.
  */
 public class DynamodbAdapterProperties {
+	private static final String BUCKETFS_BASIC_PATH = "/exa/data/bucketfs/bfsdefault";
 	private static final String MAPPING_KEY = "MAPPING";
 	private final AdapterProperties properties;
 
@@ -31,31 +34,22 @@ public class DynamodbAdapterProperties {
 	}
 
 	/**
-	 * Verifies that mapping definition is set and not empty. Else an exception is
-	 * thrown.
-	 * 
-	 * @throws AdapterException
-	 *             thrown if mapping definition is not set or empty
-	 */
-	public void verifyMappingDefinition() throws AdapterException {
-		if (!this.hasMappingDefinition()) {
-			throw new AdapterException(String.format(
-					"%s is mandatory. Provide the path to your schema mapping files on bucketfs here.", MAPPING_KEY));
-		}
-		if (this.getMappingDefinition().isEmpty()) {
-			throw new AdapterException(String.format(
-					"%s must nit be empty. Provide the path to your schema mapping files on bucketfs here.",
-					MAPPING_KEY));
-		}
-	}
-
-	/**
 	 * Get mapping definition property.
 	 *
 	 * @return String path to mapping definition files on bucketfs
 	 */
-	public String getMappingDefinition() {
-		return this.properties.get(MAPPING_KEY);
+	public File getMappingDefinition() throws AdapterException {
+		if (!this.hasMappingDefinition()) {
+			throw new AdapterException(String.format(
+					"%s is mandatory. Provide the path to your schema mapping files on bucketfs here.", MAPPING_KEY));
+		}
+		final String property = this.properties.get(MAPPING_KEY);
+		if (property.isEmpty()) {
+			throw new AdapterException(String.format(
+					"%s must not be empty. Provide the path to your schema mapping files on bucketfs here.",
+					MAPPING_KEY));
+		}
+		return null;
 	}
 
 }
