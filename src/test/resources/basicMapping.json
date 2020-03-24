@@ -3,28 +3,30 @@
   "srcTable": "MY_BOOKS",
   "destTableName": "BOOKS",
   "description": "Maps MY_BOOKS to BOOKS",
-  "children": {
-    "isbn": {
-      "toStringMapping": {
-        "maxLength": 20,
-        "description": "The isbn is mapped to a string with max length of 20",
-        "overflow": "ABORT"
-      }
-    },
-    "name": {
-      "toStringMapping": {
-        "maxLength": 100,
-        "description": "The name is mapped to a string with max length of 100",
-        "overflow": "TRUNCATE"
-      }
-    },
-    "author": {
-      "children": {
-        "name": {
-          "toStringMapping": {
-            "maxLength": 20,
-            "destName": "authorName",
-            "description": "Maps the nested property authors.name to column authorName"
+  "mapping": {
+    "children": {
+      "isbn": {
+        "toStringMapping": {
+          "maxLength": 20,
+          "description": "The isbn is mapped to a string with max length of 20",
+          "overflow": "ABORT"
+        }
+      },
+      "name": {
+        "toStringMapping": {
+          "maxLength": 100,
+          "description": "The name is mapped to a string with max length of 100",
+          "overflow": "TRUNCATE"
+        }
+      },
+      "author": {
+        "children": {
+          "name": {
+            "toStringMapping": {
+              "maxLength": 20,
+              "destName": "authorName",
+              "description": "Maps the nested property authors.name to column authorName"
+            }
           }
         }
       }

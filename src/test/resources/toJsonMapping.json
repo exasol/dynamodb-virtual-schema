@@ -3,23 +3,25 @@
   "srcTable": "MY_BOOKS",
   "destTableName": "BOOKS",
   "description": "Maps MY_BOOKS to BOOKS with toJSON",
-  "children": {
-    "isbn": {
-      "toStringMapping": {
-        "maxLength": 20,
-        "overflow": "ABORT"
-      }
-    },
-    "name": {
-      "toStringMapping": {
-        "maxLength": 100,
-        "overflow": "TRUNCATE"
-      }
-    },
-    "topics":{
-      "toJsonMapping": {
-        "description": "Maps the sub document of this property to a JSON string",
-        "maxLength": 200
+  "mapping": {
+    "children": {
+      "isbn": {
+        "toStringMapping": {
+          "maxLength": 20,
+          "overflow": "ABORT"
+        }
+      },
+      "name": {
+        "toStringMapping": {
+          "maxLength": 100,
+          "overflow": "TRUNCATE"
+        }
+      },
+      "topics":{
+        "toJsonMapping": {
+          "description": "Maps the sub document of this property to a JSON string",
+          "maxLength": 200
+        }
       }
     }
   }

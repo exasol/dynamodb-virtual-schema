@@ -12,7 +12,7 @@ import org.json.JSONObject;
 import org.json.JSONTokener;
 
 public class JsonMappingValidator {
-	public void validate(final JSONObject schemaMappingDefinition) throws IOException, MappingException {
+	public void validate(final JSONObject schemaMappingDefinition) throws IOException, JsonMappingProvider.MappingException {
 		final ClassLoader classLoader = JsonMappingProvider.class.getClassLoader();
 		try (final InputStream inputStream = classLoader.getResourceAsStream("mappingLanguageSchema.json")) {
 			final JSONObject rawSchema = new JSONObject(new JSONTokener(inputStream));
@@ -20,7 +20,7 @@ public class JsonMappingValidator {
 			final Validator validator = Validator.builder().build();
 			validator.performValidation(schema, schemaMappingDefinition);
 		} catch (final ValidationException e) {
-			throw new MappingException(extractReadableErrorMessage(e));
+			throw new JsonMappingProvider.MappingException(extractReadableErrorMessage(e));
 		}
 	}
 
@@ -31,7 +31,7 @@ public class JsonMappingValidator {
 			return extractReadableErrorMessage(firstException);
 		}
 		if (e.getErrorMessage().startsWith("extraneous key")
-				&& e.getViolatedSchema().getId().equals("#/properties/children")) {
+				&& e.getSchemaLocation().equals("#/definitions/mappingDefinition")) {
             final String possibleProperties = possibleObjectProperties(e.getViolatedSchema());
             if(!possibleProperties.isEmpty()) {
                 return e.getMessage() + ", use one of the following mapping definitions here: "
@@ -71,14 +71,6 @@ public class JsonMappingValidator {
 		}
 		final ReferenceSchema referenceSchema = (ReferenceSchema) schema;
 		return (ObjectSchema) referenceSchema.getReferredSchema();
-	}
-
-	public static class MappingException extends Exception {
-		private MappingException() {
-		}
-		public MappingException(final String message) {
-			super(message);
-		}
 	}
 
 }

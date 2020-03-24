@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="main.css">
+    <meta charset="UTF-8">
+    <title>Bootprint</title>
+                                                         </head>
+<body>
+<div class="container">
+    <div id="definition-The-Root-Schema---Represents-the-mapping-from-a-DynamoDB-table-to-an-Exasol-Virtual-Schema-table" class="panel panel-definition">
+            <div class="panel-heading">
+                    <h3 class="panel-title">The Root Schema - Represents the mapping from a DynamoDB table to an Exasol Virtual Schema table</h3>
+            </div>
+        <div class="panel-body">
+                    <section class="json-schema-description">
+                        <p>The structure of this mapping definition follows the structure of the data in the DynamoDB. This object represents a DynamoDB table. Its properties are modeled in the children property of this object. Only properties of the DynamoDB table that shall be mapped are modeled. </p>
+                <p> Each of this objects must be stored in a single .json file an get uploaded to an directory in bucketfs.</p>
+                
+                    </section>
+                
+                        <section class="json-schema-properties">
+                            <dl>
+                                    <dt data-property-name="-schema">
+                                        <span class="json-property-name">$schema:</span>
+                                        
+                                        <span class="json-property-type">string</span>    <span class="json-property-enum" title="Possible values">, x &isin; {
+                                                        <span class="json-property-enum-item">https://github.com/exasol/dynamodb-virtual-schema/blob/develop/src/main/resources/mappingLanguageSchema.json</span>
+                                                    ,
+                                                        <span class="json-property-enum-item">../../main/resources/mappingLanguageSchema.json</span>
+                                                    
+                                                }
+                                                </span>
+                                        <span class="json-property-range" title="Value limits"></span>
+                                        
+                                            <span class="json-property-required"></span>
+                                    </dt>
+                                    <dd>
+                                        <p>Reference to the mapping language schema. Setting this is required so that IDEs can help you when writing your definition.</p>
+                        
+                                        <div class="json-inner-schema">
+                                            
+                                        </div>
+                                    </dd>
+                                    <dt data-property-name="srcTable">
+                                        <span class="json-property-name">srcTable:</span>
+                                        
+                                        <span class="json-property-type">string</span>
+                                        <span class="json-property-range" title="Value limits"></span>
+                                        
+                                            <span class="json-property-required"></span>
+                                    </dt>
+                                    <dd>
+                                        <p>The identifier of the DynamoDB table.</p>
+                        
+                                        <div class="json-inner-schema">
+                                            
+                                        </div>
+                                    </dd>
+                                    <dt data-property-name="destTableName">
+                                        <span class="json-property-name">destTableName:</span>
+                                        
+                                        <span class="json-property-type">string</span>
+                                        <span class="json-property-range" title="Value limits"></span>
+                                        
+                                            <span class="json-property-pattern" title="String pattern">, must match <span class="json-schema--regex">^[a-zA-Z0-9]+$</span></span>
+                                            <span class="json-property-required"></span>
+                                    </dt>
+                                    <dd>
+                                        <p>The name of the resulting table in Exasol.</p>
+                        
+                                        <div class="json-inner-schema">
+                                            
+                                        </div>
+                                    </dd>
+                                    <dt data-property-name="description">
+                                        <span class="json-property-name">description:</span>
+                                        
+                                        <span class="json-property-type">    <a class="json-schema-ref" href="#/definitions/description">description</a>
+                                        </span>
+                                        <span class="json-property-range" title="Value limits"></span>
+                                        
+                                    </dt>
+                                    <dd>
+                                        
+                                        <div class="json-inner-schema">
+                                            
+                                        </div>
+                                    </dd>
+                                    <dt data-property-name="children">
+                                        <span class="json-property-name">children:</span>
+                                        
+                                        <span class="json-property-type">    <a class="json-schema-ref" href="#/definitions/children">children</a>
+                                        </span>
+                                        <span class="json-property-range" title="Value limits"></span>
+                                        
+                                            <span class="json-property-required"></span>
+                                    </dt>
+                                    <dd>
+                                        
+                                        <div class="json-inner-schema">
+                                            
+                                        </div>
+                                    </dd>
+                            </dl>
+                        </section>
+        </div>
+    </div>    <h2>Definitions</h2>
+                <div id="definition-children" class="panel panel-definition">
+                        <div class="panel-heading">
+                                <h3 class="panel-title"><a name="/definitions/children"></a>children:
+                                    <span class="json-property-type">
+                <span class="json-property-type">object</span>
+                <span class="json-property-range" title="Value limits"></span>
+                
+                </span>
+                                </h3>
+                        </div>
+                    <div class="panel-body">
+                                <section class="json-schema-description">
+                                    <p>Using the children object definition a step down into the property tree is modeled. </p>
+                            <p><strong>Properties</strong>:</p>
+                            <p>NAME_OF_DYNAMODB_COLUMN: mappingDefinition</p>
+                            <p>It must be specified a least one column.</p>
+                            
+                                </section>
+                            
+                                        <section class="json-schema-additionalProperties">
+                                            <span class="json-property-type">
+                                        <span class="json-property-type">    <a class="json-schema-ref" href="#/definitions/mappingDefinition">mappingDefinition</a>
+                                        </span>
+                                        <span class="json-property-range" title="Value limits"></span>
+                                        
+                                        </span>
+                                            
+                                        </section>
+                    </div>
+                </div>        <div id="definition-description" class="panel panel-definition">
+                        <div class="panel-heading">
+                                <h3 class="panel-title"><a name="/definitions/description"></a>description:
+                                    <span class="json-property-type">
+                <span class="json-property-type">string</span>
+                <span class="json-property-range" title="Value limits"></span>
+                
+                </span>
+                                </h3>
+                        </div>
+                    <div class="panel-body">
+                                <section class="json-schema-description">
+                                    <p>Using this property you can provide documentation.</p>
+                            
+                                </section>
+                            
+                    </div>
+                </div>        <div id="definition-mappingDefinition" class="panel panel-definition">
+                        <div class="panel-heading">
+                                <h3 class="panel-title"><a name="/definitions/mappingDefinition"></a>mappingDefinition:
+                                    <span class="json-property-type">
+                <span class="json-property-type">object</span>
+                <span class="json-property-range" title="Value limits"></span>
+                
+                </span>
+                                </h3>
+                        </div>
+                    <div class="panel-body">
+                                <section class="json-schema-description">
+                                    <p>A mapping definition can either be:</p>
+                            <ul>
+                            <li>a mapping to a column or table</li>
+                            <li>an step  into the property tree of the DynamoDB table</li>
+                            </ul>
+                            
+                                </section>
+                            
+                                    <section class="json-schema-properties">
+                                        <dl>
+                                                <dt data-property-name="children">
+                                                    <span class="json-property-name">children:</span>
+                                                    
+                                                    <span class="json-property-type">    <a class="json-schema-ref" href="#/definitions/children">children</a>
+                                                    </span>
+                                                    <span class="json-property-range" title="Value limits"></span>
+                                                    
+                                                </dt>
+                                                <dd>
+                                                    
+                                                    <div class="json-inner-schema">
+                                                        
+                                                    </div>
+                                                </dd>
+                                                <dt data-property-name="toStringMapping">
+                                                    <span class="json-property-name">toStringMapping:</span>
+                                                    
+                                                    <span class="json-property-type">object</span>
+                                                    <span class="json-property-range" title="Value limits"></span>
+                                                    
+                                                </dt>
+                                                <dd>
+                                                    <p>Maps the selected DynamoDB property to a string.</p>
+                                    <p><em>Supported DynamoDB types:</em> String (S), Number (N), Boolean (BOOL)</p>
+                                    
+                                                    <div class="json-inner-schema">
+                                                        
+                                                                <section class="json-schema-properties">
+                                                                    <dl>
+                                                                            <dt data-property-name="maxLength">
+                                                                                <span class="json-property-name">maxLength:</span>
+                                                                                
+                                                                                <span class="json-property-type">    <a class="json-schema-ref" href="#/definitions/maxLength">maxLength</a>
+                                                                                </span>
+                                                                                <span class="json-property-range" title="Value limits"></span>
+                                                                                
+                                                                            </dt>
+                                                                            <dd>
+                                                                                
+                                                                                <div class="json-inner-schema">
+                                                                                    
+                                                                                </div>
+                                                                            </dd>
+                                                                            <dt data-property-name="overflow">
+                                                                                <span class="json-property-name">overflow:</span>
+                                                                                
+                                                                                <span class="json-property-type">object</span>    <span class="json-property-enum" title="Possible values">, x &isin; {
+                                                                                                <span class="json-property-enum-item">TRUNCATE</span>
+                                                                                                (default)
+                                                                                            ,
+                                                                                                <span class="json-property-enum-item">ABORT</span>
+                                                                                            
+                                                                                        }
+                                                                                        </span>
+                                                                                <span class="json-property-range" title="Value limits"></span>
+                                                                                
+                                                                            </dt>
+                                                                            <dd>
+                                                                                
+                                                                                <div class="json-inner-schema">
+                                                                                    
+                                                                                </div>
+                                                                            </dd>
+                                                                            <dt data-property-name="destName">
+                                                                                <span class="json-property-name">destName:</span>
+                                                                                
+                                                                                <span class="json-property-type">string</span>
+                                                                                <span class="json-property-range" title="Value limits"></span>
+                                                                                
+                                                                            </dt>
+                                                                            <dd>
+                                                                                
+                                                                                <div class="json-inner-schema">
+                                                                                    
+                                                                                </div>
+                                                                            </dd>
+                                                                            <dt data-property-name="description">
+                                                                                <span class="json-property-name">description:</span>
+                                                                                
+                                                                                <span class="json-property-type">    <a class="json-schema-ref" href="#/definitions/description">description</a>
+                                                                                </span>
+                                                                                <span class="json-property-range" title="Value limits"></span>
+                                                                                
+                                                                            </dt>
+                                                                            <dd>
+                                                                                
+                                                                                <div class="json-inner-schema">
+                                                                                    
+                                                                                </div>
+                                                                            </dd>
+                                                                    </dl>
+                                                                </section>
+                                                    </div>
+                                                </dd>
+                                                <dt data-property-name="toJsonMapping">
+                                                    <span class="json-property-name">toJsonMapping:</span>
+                                                    
+                                                    <span class="json-property-type">object</span>
+                                                    <span class="json-property-range" title="Value limits"></span>
+                                                    
+                                                </dt>
+                                                <dd>
+                                                    <p>Maps the selected DynamoDB property and all its descendants to a JSON string.</p>
+                                    <p><em>Supported DynamoDB types:</em> Map (M), List (L). The root document is also supported.</p>
+                                    
+                                                    <div class="json-inner-schema">
+                                                        
+                                                            <section class="json-schema-properties">
+                                                                <dl>
+                                                                        <dt data-property-name="maxLength">
+                                                                            <span class="json-property-name">maxLength:</span>
+                                                                            
+                                                                            <span class="json-property-type">    <a class="json-schema-ref" href="#/definitions/maxLength">maxLength</a>
+                                                                            </span>
+                                                                            <span class="json-property-range" title="Value limits"></span>
+                                                                            
+                                                                        </dt>
+                                                                        <dd>
+                                                                            
+                                                                            <div class="json-inner-schema">
+                                                                                
+                                                                            </div>
+                                                                        </dd>
+                                                                        <dt data-property-name="overflow">
+                                                                            <span class="json-property-name">overflow:</span>
+                                                                            
+                                                                            <span class="json-property-type">object</span>    <span class="json-property-enum" title="Possible values">, x &isin; {
+                                                                                            <span class="json-property-enum-item">NULL</span>
+                                                                                            (default)
+                                                                                        ,
+                                                                                            <span class="json-property-enum-item">ABORT</span>
+                                                                                        
+                                                                                    }
+                                                                                    </span>
+                                                                            <span class="json-property-range" title="Value limits"></span>
+                                                                            
+                                                                        </dt>
+                                                                        <dd>
+                                                                            
+                                                                            <div class="json-inner-schema">
+                                                                                
+                                                                            </div>
+                                                                        </dd>
+                                                                        <dt data-property-name="description">
+                                                                            <span class="json-property-name">description:</span>
+                                                                            
+                                                                            <span class="json-property-type">    <a class="json-schema-ref" href="#/definitions/description">description</a>
+                                                                            </span>
+                                                                            <span class="json-property-range" title="Value limits"></span>
+                                                                            
+                                                                        </dt>
+                                                                        <dd>
+                                                                            
+                                                                            <div class="json-inner-schema">
+                                                                                
+                                                                            </div>
+                                                                        </dd>
+                                                                </dl>
+                                                            </section>
+                                                    </div>
+                                                </dd>
+                                                <dt data-property-name="toTableMapping">
+                                                    <span class="json-property-name">toTableMapping:</span>
+                                                    
+                                                    <span class="json-property-type">object</span>
+                                                    <span class="json-property-range" title="Value limits"></span>
+                                                    
+                                                </dt>
+                                                <dd>
+                                                    <p>This mapping is used for normalizing documents from DynamoDB. It creates a new table in the resulting virtual schema named: &lt;NAME_OF_PARENT&gt;_&lt;GIVEN_NAME&gt;.</p>
+                                    <p> The columns of that new table are defined using the mapping property. If the parent table defined a key using one or more toString mappings for a DynamoDB primary key or secondary index this will be used as foreign key.</p>
+                                    <p><em>Supported DynamoDB types:</em> List (L).</p>
+                                    
+                                                    <div class="json-inner-schema">
+                                                        
+                                                            <section class="json-schema-properties">
+                                                                <dl>
+                                                                        <dt data-property-name="destTableName">
+                                                                            <span class="json-property-name">destTableName:</span>
+                                                                            
+                                                                            <span class="json-property-type">string</span>
+                                                                            <span class="json-property-range" title="Value limits"></span>
+                                                                            
+                                                                        </dt>
+                                                                        <dd>
+                                                                            
+                                                                            <div class="json-inner-schema">
+                                                                                
+                                                                            </div>
+                                                                        </dd>
+                                                                        <dt data-property-name="mapping">
+                                                                            <span class="json-property-name">mapping:</span>
+                                                                            
+                                                                            <span class="json-property-type">    <a class="json-schema-ref" href="#/definitions/mappingDefinition">mappingDefinition</a>
+                                                                            </span>
+                                                                            <span class="json-property-range" title="Value limits"></span>
+                                                                            
+                                                                                <span class="json-property-required"></span>
+                                                                        </dt>
+                                                                        <dd>
+                                                                            <p>Defines the mapping for the columns of the new table. If the DynamoDB list contains non objects like strings here directly a toString mapping can be applied. Otherwise, if the list contains objects, you can navigate through its properties using children.</p>
+                                                            
+                                                                            <div class="json-inner-schema">
+                                                                                
+                                                                            </div>
+                                                                        </dd>
+                                                                        <dt data-property-name="description">
+                                                                            <span class="json-property-name">description:</span>
+                                                                            
+                                                                            <span class="json-property-type">    <a class="json-schema-ref" href="#/definitions/description">description</a>
+                                                                            </span>
+                                                                            <span class="json-property-range" title="Value limits"></span>
+                                                                            
+                                                                        </dt>
+                                                                        <dd>
+                                                                            
+                                                                            <div class="json-inner-schema">
+                                                                                
+                                                                            </div>
+                                                                        </dd>
+                                                                </dl>
+                                                            </section>
+                                                    </div>
+                                                </dd>
+                                        </dl>
+                                    </section>
+                    </div>
+                </div>        <div id="definition-maxLength" class="panel panel-definition">
+                        <div class="panel-heading">
+                                <h3 class="panel-title"><a name="/definitions/maxLength"></a>maxLength:
+                                    <span class="json-property-type">
+                <span class="json-property-type">integer</span>
+                <span class="json-property-range" title="Value limits"></span>
+                
+                        <span class="json-property-default-value">254</span>
+                </span>
+                                </h3>
+                        </div>
+                    <div class="panel-body">
+                            
+                    </div>
+                </div></div>
+
+</body>
+</html>

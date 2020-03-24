@@ -3,14 +3,16 @@
   "srcTable": "MY_BOOKS",
   "destTableName": "BOOKS",
   "description": "Maps MY_BOOKS to BOOKS",
-  "children": {
-    "chapters": {
-      "toTableMapping": {
-        "mapping": {
-          "children": {
-            "name": {
-              "toStringMapping": {
-                "destName": "chapterName"
+  "mapping": {
+    "children": {
+      "chapters": {
+        "toTableMapping": {
+          "mapping": {
+            "children": {
+              "name": {
+                "toStringMapping": {
+                  "destName": "chapterName"
+                }
               }
             }
           }

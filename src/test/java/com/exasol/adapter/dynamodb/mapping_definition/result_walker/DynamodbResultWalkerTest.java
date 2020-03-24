@@ -48,7 +48,7 @@ public class DynamodbResultWalkerTest {
 	void testObjectWalker() throws DynamodbResultWalker.DynamodbResultWalkerException {
 		final Map<String, AttributeValue> testData = getTestData();
 		final ObjectDynamodbResultWalker walker = new ObjectDynamodbResultWalker(
-				DynamodbResultWalker.LookupFailBehaviour.NULL, "isbn");
+				DynamodbResultWalker.LookupFailBehaviour.NULL, "isbn",null);
 		assertThat(walker.walk(testData), equalTo(testData.get("isbn")));
 	}
 
@@ -57,14 +57,14 @@ public class DynamodbResultWalkerTest {
 		final Map<String, AttributeValue> testData = getTestData();
 		final ObjectDynamodbResultWalker walker = new ObjectDynamodbResultWalker(
 				DynamodbResultWalker.LookupFailBehaviour.NULL, "publisher",
-				new ObjectDynamodbResultWalker(DynamodbResultWalker.LookupFailBehaviour.NULL, "name"));
+				new ObjectDynamodbResultWalker(DynamodbResultWalker.LookupFailBehaviour.NULL, "name", null));
 		assertThat(walker.walk(testData), equalTo(testData.get("publisher").getM().get("name")));
 	}
 
 	@Test
 	void testObjectWalkerException() {
 		final ObjectDynamodbResultWalker walker = new ObjectDynamodbResultWalker(
-				DynamodbResultWalker.LookupFailBehaviour.EXCEPTION, "isbn");
+				DynamodbResultWalker.LookupFailBehaviour.EXCEPTION, "isbn", null);
 		assertThrows(DynamodbResultWalker.DynamodbResultWalkerException.class,
 				() -> walker.walk(Collections.emptyMap()));
 	}
@@ -72,7 +72,7 @@ public class DynamodbResultWalkerTest {
 	@Test
 	void testObjectWalkerNull() throws DynamodbResultWalker.DynamodbResultWalkerException {
 		final ObjectDynamodbResultWalker walker = new ObjectDynamodbResultWalker(
-				DynamodbResultWalker.LookupFailBehaviour.NULL, "isbn");
+				DynamodbResultWalker.LookupFailBehaviour.NULL, "isbn", null);
 		assertThat(walker.walk(Collections.emptyMap()), equalTo(null));
 	}
 }

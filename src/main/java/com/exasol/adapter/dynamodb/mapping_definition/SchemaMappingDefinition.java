@@ -1,4 +1,4 @@
-package com.exasol.adapter.dynamodb;
+package com.exasol.adapter.dynamodb.mapping_definition;
 
 import java.io.IOException;
 import java.util.ArrayList;

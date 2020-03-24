@@ -2,6 +2,7 @@ package com.exasol.adapter.dynamodb;
 
 import java.util.List;
 
+import com.exasol.adapter.dynamodb.mapping_definition.SchemaMappingDefinition;
 import com.exasol.adapter.dynamodb.mapping_definition.TableMappingDefinition;
 import com.exasol.adapter.dynamodb.mapping_definition.ToJsonColumnMappingDefinition;
 import com.exasol.adapter.dynamodb.mapping_definition.result_walker.IdentityDynamodbResultWalker;

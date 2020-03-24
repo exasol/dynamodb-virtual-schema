@@ -1,37 +1,33 @@
 {
-  "$schema": "http://json-schema.org/draft-07/schema",
+  "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://github.com/exasol/dynamodb-virtual-schema/blob/develop/src/main/resources/mappingLanguageSchema.json",
   "definitions": {
-    "description": {
-      "$id": "#/properties/description",
-      "type": "string",
-      "title": "The Description Schema",
-      "description": "An explanation about the purpose of this instance."
-    },
     "maxLength": {
       "type": "integer",
-      "default": 254
+      "default": 254,
+      "minimum": 1
     },
     "children": {
-      "$id": "#/properties/children",
       "type": "object",
       "title": "",
-      "description": "An explanation about the purpose of this instance.",
+      "description": "Using the children object definition a step down into the property tree is modeled. \n\n**Properties**:\n\nNAME_OF_DYNAMODB_COLUMN: mappingDefinition\n\nIt must be specified a least one column.",
       "minProperties": 1,
-      "additionalProperties": {"$ref": "#/definitions/child"}
+      "additionalProperties": {
+        "$ref": "#/definitions/mappingDefinition"
+      }
     },
-    "child": {
+    "mappingDefinition": {
       "type": "object",
+      "description": "A mapping definition can either be:\n - a mapping to a column or table\n - an step  into the property tree of the DynamoDB table",
       "minProperties": 1,
       "maxProperties": 1,
       "properties": {
         "children": {
-          "title": "object with no mapping",
           "$ref": "#/definitions/children"
         },
         "toStringMapping": {
           "type": "object",
-          "title": "toString mapping definition",
+          "description": "Maps the selected DynamoDB property to a string.\n\n*Supported DynamoDB types:* String (S), Number (N), Boolean (BOOL)",
           "properties": {
             "maxLength": {
               "$ref": "#/definitions/maxLength"
@@ -54,6 +50,7 @@
         },
         "toJsonMapping": {
           "title": "toJSON mapping definition",
+          "description": "Maps the selected DynamoDB property and all its descendants to a JSON string.\n\n*Supported DynamoDB types:* Map (M), List (L). The root document is also supported.",
           "properties": {
             "maxLength": {
               "$ref": "#/definitions/maxLength"
@@ -65,6 +62,10 @@
                 "ABORT"
               ]
             },
+            "destName": {
+              "type": "string",
+              "description": "required if used at root level. Else the name of the DynamoDB property is used."
+            },
             "description": {
               "$ref": "#/definitions/description"
             }
@@ -73,66 +74,69 @@
         },
         "toTableMapping": {
           "title": "toTable mapping definition",
+          "description": "This mapping is used for normalizing documents from DynamoDB. It creates a new table in the resulting virtual schema named: \\<NAME_OF_PARENT\\>_\\<GIVEN_NAME\\>.\n\n The columns of that new table are defined using the mapping property. If the parent table defined a key using one or more toString mappings for a DynamoDB primary key or secondary index this will be used as foreign key.\n\n*Supported DynamoDB types:* List (L).",
           "properties": {
             "destTableName": {
               "type": "string"
             },
             "mapping": {
-              "$ref": "#/definitions/child"
+              "$ref": "#/definitions/mappingDefinition",
+              "description": "Defines the mapping for the columns of the new table. If the DynamoDB list contains non objects like strings here directly a toString mapping can be applied. Otherwise, if the list contains objects, you can navigate through its properties using children."
             },
             "description": {
               "$ref": "#/definitions/description"
             }
           },
-          "required": ["mapping"],
+          "required": [
+            "mapping"
+          ],
           "additionalProperties": false
         }
       },
       "additionalProperties": false
+    },
+    "description": {
+      "type": "string",
+      "title": "Optional description",
+      "description": "Using this property you can provide documentation."
     }
   },
   "type": "object",
-  "title": "The Root Schema - Represents the mapping rom a DynamoDB table to an Exasol Virtual Schema table",
-  "description": "The root schema comprises the entire JSON document.",
+  "title": "The Root Schema - Represents the mapping from a DynamoDB table to an Exasol Virtual Schema table",
+  "description": "The structure of this mapping definition follows the structure of the data in the DynamoDB. This object represents a DynamoDB table. Its properties are modeled in the children property of this object. Only properties of the DynamoDB table that shall be mapped are modeled. \n\n Each of this objects must be stored in a single .json file an get uploaded to an directory in bucketfs.",
   "additionalProperties": false,
   "required": [
     "$schema",
     "srcTable",
     "destTableName",
-    "children"
+    "mapping"
   ],
   "properties": {
     "$schema": {
-      "$id": "#/properties/$schema",
       "type": "string",
+      "description": "Reference to the mapping language schema. Setting this is required so that IDEs can help you when writing your definition.",
       "enum": [
         "https://github.com/exasol/dynamodb-virtual-schema/blob/develop/src/main/resources/mappingLanguageSchema.json",
         "../../main/resources/mappingLanguageSchema.json"
       ]
     },
     "srcTable": {
-      "$id": "#/properties/srcTable",
       "type": "string",
       "title": "DynamoDB table name",
-      "description": "the identifier of the DynamoDB table",
-      "examples": [
-        "MY_BOOKS"
-      ]
+      "description": "The identifier of the DynamoDB table."
     },
     "destTableName": {
-      "$id": "#/properties/destTableName",
       "type": "string",
-      "title": "name of the table in Exasol Virtual Schema",
-      "description": "the name of the resulting table in Exasol. The name must only contain [a-z A-Z 0-9]",
-      "examples": [
-        "BOOKS"
-      ]
+      "title": "name of the destination table in Exasol Virtual Schema",
+      "description": "The name of the resulting table in Exasol.",
+      "pattern": "^[a-zA-Z0-9]+$"
     },
     "description": {
       "$ref": "#/definitions/description"
     },
-    "children": {
-      "$ref": "#/definitions/children"
+    "mapping": {
+      "$ref": "#/definitions/mappingDefinition",
+      "description": "Defines the mapping for the columns of the table. Typically children is set here to navigate the DynamoDB tables properties. But also toJson mapping is possible here. In that case the whole document is mapped to a JSON string."
     }
   }
 }
