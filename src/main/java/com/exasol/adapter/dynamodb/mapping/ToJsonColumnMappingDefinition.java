@@ -1,7 +1,5 @@
 package com.exasol.adapter.dynamodb.mapping;
 
-import java.util.Map;
-
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.exasol.adapter.metadata.DataType;
 import com.exasol.cellvalue.ExasolCellValue;
@@ -13,19 +11,18 @@ import com.exasol.dynamodb.resultwalker.DynamodbResultWalker;
  */
 public class ToJsonColumnMappingDefinition extends ColumnMappingDefinition {
 	private static final long serialVersionUID = 7687302490848045236L;
-	private final DynamodbResultWalker sourceWalker;
 
 	/**
 	 * Constructor.
 	 * 
 	 * @param destinationName
 	 *            name of the column in Exasol table.
-	 * @param sourceWalker
+	 * @param resultWalker
 	 *            source walker defining the path in DynamoDB documents.
 	 */
-	public ToJsonColumnMappingDefinition(final String destinationName, final DynamodbResultWalker sourceWalker) {
-		super(destinationName);
-		this.sourceWalker = sourceWalker;
+	public ToJsonColumnMappingDefinition(final String destinationName, final DynamodbResultWalker resultWalker,
+			final LookupFailBehaviour lookupFailBehaviour) {
+		super(destinationName, resultWalker, lookupFailBehaviour);
 	}
 
 	@Override
@@ -34,8 +31,8 @@ public class ToJsonColumnMappingDefinition extends ColumnMappingDefinition {
 	}
 
 	@Override
-	String getDestinationDefaultValue() {
-		return "";
+	ExasolCellValue getDestinationDefaultValue() {
+		return new StringExasolCellValue("");
 	}
 
 	@Override
@@ -44,9 +41,7 @@ public class ToJsonColumnMappingDefinition extends ColumnMappingDefinition {
 	}
 
 	@Override
-	public ExasolCellValue convertRow(final Map<String, AttributeValue> dynamodbRow)
-			throws DynamodbResultWalker.DynamodbResultWalkerException {
-		final AttributeValue source = this.sourceWalker.walk(dynamodbRow);
+	protected ExasolCellValue convertValue(final AttributeValue dynamodbProperty) throws ColumnMappingException {
 		// TODO convert to json
 		return new StringExasolCellValue("dummy value");
 	}

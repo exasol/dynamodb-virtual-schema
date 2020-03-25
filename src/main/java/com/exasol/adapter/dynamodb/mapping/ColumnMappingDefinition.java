@@ -7,6 +7,7 @@ import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.exasol.adapter.AdapterException;
 import com.exasol.adapter.metadata.DataType;
 import com.exasol.cellvalue.ExasolCellValue;
+import com.exasol.dynamodb.resultwalker.DynamodbResultWalker;
 
 /**
  * Definition of a column mapping from DynamoDB table to Exasol Virtual Schema.
@@ -22,9 +23,14 @@ import com.exasol.cellvalue.ExasolCellValue;
 public abstract class ColumnMappingDefinition implements Serializable {
 	private static final long serialVersionUID = 48342992735371252L;
 	private final String destinationName;
+	private final DynamodbResultWalker resultWalker;
+	private final LookupFailBehaviour lookupFailBehaviour;
 
-	public ColumnMappingDefinition(final String destinationName) {
+	public ColumnMappingDefinition(final String destinationName, final DynamodbResultWalker resultWalker,
+			final LookupFailBehaviour lookupFailBehaviour) {
 		this.destinationName = destinationName;
+		this.resultWalker = resultWalker;
+		this.lookupFailBehaviour = lookupFailBehaviour;
 	}
 
 	/**
@@ -37,15 +43,53 @@ public abstract class ColumnMappingDefinition implements Serializable {
 	}
 
 	abstract DataType getDestinationDataType();
-	abstract String getDestinationDefaultValue();
+	abstract ExasolCellValue getDestinationDefaultValue();
 	abstract boolean isDestinationNullable();
+
+	public LookupFailBehaviour getLookupFailBehaviour() {
+		return this.lookupFailBehaviour;
+	}
 
 	/**
 	 * Extracts this columns value from DynamoDB's result row.
-	 * 
+	 *
 	 * @param dynamodbRow
 	 * @return {@link ExasolCellValue}
 	 * @throws AdapterException
 	 */
-	public abstract ExasolCellValue convertRow(final Map<String, AttributeValue> dynamodbRow) throws AdapterException;
+	public ExasolCellValue convertRow(final Map<String, AttributeValue> dynamodbRow)
+			throws DynamodbResultWalker.DynamodbResultWalkerException, ColumnMappingException {
+		try {
+			final AttributeValue dynamodbProperty = this.resultWalker.walk(dynamodbRow);
+			return convertValue(dynamodbProperty);
+		} catch (final DynamodbResultWalker.DynamodbResultWalkerException e) {
+			if (this.lookupFailBehaviour == LookupFailBehaviour.DEFAULT_VALUE) {
+				return this.getDestinationDefaultValue();
+			}
+			throw e;
+		}
+	}
+
+	protected abstract ExasolCellValue convertValue(AttributeValue dynamodbProperty) throws ColumnMappingException;
+
+	/**
+	 * Behaviour if the requested property is not set in a given DynamoDB row.
+	 */
+	public enum LookupFailBehaviour {
+		/**
+		 * Break the whole query.
+		 */
+		EXCEPTION,
+		/**
+		 * Set column value to null.
+		 */
+		DEFAULT_VALUE
+	}
+
+	public static class ColumnMappingException extends AdapterException {
+
+		public ColumnMappingException(final String message) {
+			super(message);
+		}
+	}
 }

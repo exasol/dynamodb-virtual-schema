@@ -13,7 +13,6 @@ import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.exasol.adapter.AdapterException;
 import com.exasol.adapter.metadata.DataType;
 import com.exasol.cellvalue.ExasolCellValue;
-import com.exasol.dynamodb.resultwalker.DynamodbResultWalker;
 import com.exasol.dynamodb.resultwalker.IdentityDynamodbResultWalker;
 import com.exasol.dynamodb.resultwalker.ObjectDynamodbResultWalker;
 
@@ -31,8 +30,8 @@ public class StringColumnMappingDefinitionTest {
 	@Test
 	void testConvertRowBasic() throws AdapterException {
 		final StringColumnMappingDefinition stringColumnMappingDefinition = new StringColumnMappingDefinition(
-				DEST_COLUMN, TEST_STRING.length(),
-				new ObjectDynamodbResultWalker(DynamodbResultWalker.LookupFailBehaviour.NULL, TEST_SOURCE_COLUMN, null),
+				DEST_COLUMN, TEST_STRING.length(), new ObjectDynamodbResultWalker(TEST_SOURCE_COLUMN, null),
+				ColumnMappingDefinition.LookupFailBehaviour.DEFAULT_VALUE,
 				StringColumnMappingDefinition.OverflowBehaviour.EXCEPTION);
 		final ExasolCellValue exasolDataframe = stringColumnMappingDefinition.convertRow(getDynamodbRow());
 		assertThat(exasolDataframe.toLiteral(), equalTo("'" + TEST_STRING + "'"));
@@ -41,8 +40,8 @@ public class StringColumnMappingDefinitionTest {
 	@Test
 	void testConvertRowOverflowTruncate() throws AdapterException {
 		final StringColumnMappingDefinition stringColumnMappingDefinition = new StringColumnMappingDefinition(
-				DEST_COLUMN, TEST_STRING.length() - 1,
-				new ObjectDynamodbResultWalker(DynamodbResultWalker.LookupFailBehaviour.NULL, TEST_SOURCE_COLUMN, null),
+				DEST_COLUMN, TEST_STRING.length() - 1, new ObjectDynamodbResultWalker(TEST_SOURCE_COLUMN, null),
+				ColumnMappingDefinition.LookupFailBehaviour.DEFAULT_VALUE,
 				StringColumnMappingDefinition.OverflowBehaviour.TRUNCATE);
 		final ExasolCellValue exasolDataframe = stringColumnMappingDefinition.convertRow(getDynamodbRow());
 		final String expected = TEST_STRING.substring(0, TEST_STRING.length() - 1);
@@ -52,22 +51,11 @@ public class StringColumnMappingDefinitionTest {
 	@Test
 	void testConvertRowOverflowException() {
 		final StringColumnMappingDefinition stringColumnMappingDefinition = new StringColumnMappingDefinition(
-				DEST_COLUMN, TEST_STRING.length() - 1,
-				new ObjectDynamodbResultWalker(DynamodbResultWalker.LookupFailBehaviour.NULL, TEST_SOURCE_COLUMN, null),
+				DEST_COLUMN, TEST_STRING.length() - 1, new ObjectDynamodbResultWalker(TEST_SOURCE_COLUMN, null),
+				ColumnMappingDefinition.LookupFailBehaviour.DEFAULT_VALUE,
 				StringColumnMappingDefinition.OverflowBehaviour.EXCEPTION);
 		assertThrows(StringColumnMappingDefinition.OverflowException.class,
 				() -> stringColumnMappingDefinition.convertRow(getDynamodbRow()));
-	}
-
-	@Test
-	void testConvertRowAccessToNonExistingProperty() throws AdapterException {
-		final StringColumnMappingDefinition stringColumnMappingDefinition = new StringColumnMappingDefinition(
-				DEST_COLUMN, TEST_STRING.length() - 1,
-				new ObjectDynamodbResultWalker(DynamodbResultWalker.LookupFailBehaviour.NULL, "nonExistingColumn",
-						null),
-				StringColumnMappingDefinition.OverflowBehaviour.EXCEPTION);
-		final ExasolCellValue exasolDataframe = stringColumnMappingDefinition.convertRow(getDynamodbRow());
-		assertThat(exasolDataframe.toLiteral(), equalTo("NULL"));
 	}
 
 	@Test
@@ -75,6 +63,7 @@ public class StringColumnMappingDefinitionTest {
 		final int stringLength = 10;
 		final StringColumnMappingDefinition stringColumnMappingDefinition = new StringColumnMappingDefinition(
 				DEST_COLUMN, stringLength, new IdentityDynamodbResultWalker(),
+				ColumnMappingDefinition.LookupFailBehaviour.DEFAULT_VALUE,
 				StringColumnMappingDefinition.OverflowBehaviour.TRUNCATE);
 		assertAll(
 				() -> assertThat(stringColumnMappingDefinition.getDestinationDataType().getExaDataType(),

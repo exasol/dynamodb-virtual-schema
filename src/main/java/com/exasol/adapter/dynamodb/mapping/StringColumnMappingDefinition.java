@@ -3,7 +3,6 @@ package com.exasol.adapter.dynamodb.mapping;
 import java.util.Map;
 
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
-import com.exasol.adapter.AdapterException;
 import com.exasol.adapter.metadata.DataType;
 import com.exasol.cellvalue.ExasolCellValue;
 import com.exasol.cellvalue.StringExasolCellValue;
@@ -15,14 +14,21 @@ import com.exasol.dynamodb.resultwalker.DynamodbResultWalker;
 public class StringColumnMappingDefinition extends ColumnMappingDefinition {
 	private static final long serialVersionUID = -6772281079326146978L;
 	private final int destinationStringSize;
-	private final DynamodbResultWalker resultWalker;
 	private final OverflowBehaviour overflowBehaviour;
 	public StringColumnMappingDefinition(final String destinationName, final int destinationStringSize,
-			final DynamodbResultWalker resultWalker, final OverflowBehaviour overflowBehaviour) {
-		super(destinationName);
+			final DynamodbResultWalker resultWalker, final LookupFailBehaviour lookupFailBehaviour,
+			final OverflowBehaviour overflowBehaviour) {
+		super(destinationName, resultWalker, lookupFailBehaviour);
 		this.destinationStringSize = destinationStringSize;
-		this.resultWalker = resultWalker;
 		this.overflowBehaviour = overflowBehaviour;
+	}
+
+	public int getDestinationStringSize() {
+		return this.destinationStringSize;
+	}
+
+	public OverflowBehaviour getOverflowBehaviour() {
+		return this.overflowBehaviour;
 	}
 
 	@Override
@@ -32,8 +38,8 @@ public class StringColumnMappingDefinition extends ColumnMappingDefinition {
 	}
 
 	@Override
-	String getDestinationDefaultValue() {
-		return "";
+	ExasolCellValue getDestinationDefaultValue() {
+		return new StringExasolCellValue("");
 	}
 
 	@Override
@@ -42,14 +48,12 @@ public class StringColumnMappingDefinition extends ColumnMappingDefinition {
 	}
 
 	@Override
-	public ExasolCellValue convertRow(final Map<String, AttributeValue> dynamodbRow) throws AdapterException {
-		final String sourceString = walkToString(dynamodbRow);
+	protected ExasolCellValue convertValue(final AttributeValue dynamodbProperty) throws OverflowException {
+		final String sourceString = walkToString(dynamodbProperty);
 		return new StringExasolCellValue(handleOverflow(sourceString));
 	}
 
-	private String walkToString(final Map<String, AttributeValue> dynamodbRow)
-			throws DynamodbResultWalker.DynamodbResultWalkerException {
-		final AttributeValue attributeValue = this.resultWalker.walk(dynamodbRow);
+	private String walkToString(final AttributeValue attributeValue) {
 		if (attributeValue == null) {
 			return null;
 		}
@@ -98,7 +102,7 @@ public class StringColumnMappingDefinition extends ColumnMappingDefinition {
 	 * configured size.
 	 */
 	@SuppressWarnings("serial")
-	public static class OverflowException extends AdapterException {
+	public static class OverflowException extends ColumnMappingException {
 		public OverflowException(final String message) {
 			super(message);
 		}

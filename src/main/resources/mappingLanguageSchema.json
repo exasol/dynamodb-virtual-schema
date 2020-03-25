@@ -44,6 +44,9 @@
             },
             "description": {
               "$ref": "#/definitions/description"
+            },
+            "required": {
+              "$ref": "#/definitions/required"
             }
           },
           "additionalProperties": false
@@ -99,6 +102,11 @@
       "type": "string",
       "title": "Optional description",
       "description": "Using this property you can provide documentation."
+    },
+    "required": {
+      "type": "boolean",
+      "default": false,
+      "description": "If this property is set to true, queries will abort if the given mapping can't be found a single document. Else, the query will continue and set this cell to a default value. By default this is property is set to false."
     }
   },
   "type": "object",

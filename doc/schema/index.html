@@ -86,17 +86,18 @@
                                             
                                         </div>
                                     </dd>
-                                    <dt data-property-name="children">
-                                        <span class="json-property-name">children:</span>
+                                    <dt data-property-name="mapping">
+                                        <span class="json-property-name">mapping:</span>
                                         
-                                        <span class="json-property-type">    <a class="json-schema-ref" href="#/definitions/children">children</a>
+                                        <span class="json-property-type">    <a class="json-schema-ref" href="#/definitions/mappingDefinition">mappingDefinition</a>
                                         </span>
                                         <span class="json-property-range" title="Value limits"></span>
                                         
                                             <span class="json-property-required"></span>
                                     </dt>
                                     <dd>
-                                        
+                                        <p>Defines the mapping for the columns of the table. Typically children is set here to navigate the DynamoDB tables properties. But also toJson mapping is possible here. In that case the whole document is mapped to a JSON string.</p>
+                        
                                         <div class="json-inner-schema">
                                             
                                         </div>
@@ -263,6 +264,20 @@
                                                                                     
                                                                                 </div>
                                                                             </dd>
+                                                                            <dt data-property-name="required">
+                                                                                <span class="json-property-name">required:</span>
+                                                                                
+                                                                                <span class="json-property-type">    <a class="json-schema-ref" href="#/definitions/required">required</a>
+                                                                                </span>
+                                                                                <span class="json-property-range" title="Value limits"></span>
+                                                                                
+                                                                            </dt>
+                                                                            <dd>
+                                                                                
+                                                                                <div class="json-inner-schema">
+                                                                                    
+                                                                                </div>
+                                                                            </dd>
                                                                     </dl>
                                                                 </section>
                                                     </div>
@@ -312,6 +327,20 @@
                                                                         </dt>
                                                                         <dd>
                                                                             
+                                                                            <div class="json-inner-schema">
+                                                                                
+                                                                            </div>
+                                                                        </dd>
+                                                                        <dt data-property-name="destName">
+                                                                            <span class="json-property-name">destName:</span>
+                                                                            
+                                                                            <span class="json-property-type">string</span>
+                                                                            <span class="json-property-range" title="Value limits"></span>
+                                                                            
+                                                                        </dt>
+                                                                        <dd>
+                                                                            <p>required if used at root level. Else the name of the DynamoDB property is used.</p>
+                                                            
                                                                             <div class="json-inner-schema">
                                                                                 
                                                                             </div>
@@ -405,13 +434,30 @@
                                 <h3 class="panel-title"><a name="/definitions/maxLength"></a>maxLength:
                                     <span class="json-property-type">
                 <span class="json-property-type">integer</span>
-                <span class="json-property-range" title="Value limits"></span>
+                <span class="json-property-range" title="Value limits">, { x ∈ ℤ | x ≥ 1 }</span>
                 
                         <span class="json-property-default-value">254</span>
                 </span>
                                 </h3>
                         </div>
                     <div class="panel-body">
+                            
+                    </div>
+                </div>        <div id="definition-required" class="panel panel-definition">
+                        <div class="panel-heading">
+                                <h3 class="panel-title"><a name="/definitions/required"></a>required:
+                                    <span class="json-property-type">
+                <span class="json-property-type">boolean</span>
+                <span class="json-property-range" title="Value limits"></span>
+                
+                </span>
+                                </h3>
+                        </div>
+                    <div class="panel-body">
+                                <section class="json-schema-description">
+                                    <p>If this property is set to true, queries will abort if the given mapping can&#39;t be found a single document. Else, the query will continue and set this cell to a default value. By default this is property is set to false.</p>
+                            
+                                </section>
                             
                     </div>
                 </div></div>

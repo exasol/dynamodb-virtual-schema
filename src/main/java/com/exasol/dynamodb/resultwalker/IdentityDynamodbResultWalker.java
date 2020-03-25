@@ -24,7 +24,12 @@ public class IdentityDynamodbResultWalker extends DynamodbResultWalker {
 	}
 
 	@Override
-	AttributeValue applyThis(final AttributeValue attributeValue) {
+	String stepDescription() {
+		return "";
+	}
+
+	@Override
+	AttributeValue applyThis(final AttributeValue attributeValue, final String path) {
 		return attributeValue;
 	}
 

@@ -39,35 +39,23 @@ public abstract class DynamodbResultWalker implements Serializable {
 	public AttributeValue walk(final Map<String, AttributeValue> item) throws DynamodbResultWalkerException {
 		final AttributeValue attributeValueRepresentingItem = new AttributeValue();
 		attributeValueRepresentingItem.setM(item);
-		return this.walk(attributeValueRepresentingItem);
+		return this.walk(attributeValueRepresentingItem, "");
 	}
 
-	private AttributeValue walk(final AttributeValue attributeValue) throws DynamodbResultWalkerException {
-		return applyNext(applyThis(attributeValue));
+	private AttributeValue walk(final AttributeValue attributeValue, final String path)
+			throws DynamodbResultWalkerException {
+		return applyNext(applyThis(attributeValue, path), path);
 	}
 
-	abstract AttributeValue applyThis(AttributeValue attributeValue) throws DynamodbResultWalkerException;
+	abstract AttributeValue applyThis(AttributeValue attributeValue, String path) throws DynamodbResultWalkerException;
+	abstract String stepDescription();
 
-	private AttributeValue applyNext(final AttributeValue attributeValue) throws DynamodbResultWalkerException {
+	private AttributeValue applyNext(final AttributeValue attributeValue, final String path)
+			throws DynamodbResultWalkerException {
 		if (this.next != null) {
-			return this.next.walk(attributeValue);
+			return this.next.walk(attributeValue, path + stepDescription());
 		}
 		return attributeValue;
-	}
-
-	/**
-	 * Enum defining the behavior of {@link #walk(AttributeValue)} if the modeled
-	 * path does not exist:
-	 */
-	public enum LookupFailBehaviour {
-		/**
-		 * an {@link DynamodbResultWalkerException} is thrown
-		 */
-		EXCEPTION,
-		/**
-		 * {@code null} is returned
-		 */
-		NULL
 	}
 
 	/**
@@ -75,8 +63,14 @@ public abstract class DynamodbResultWalker implements Serializable {
 	 */
 	@SuppressWarnings("serial")
 	public static class DynamodbResultWalkerException extends AdapterException {
-		DynamodbResultWalkerException(final String message) {
+		private final String currentPath;
+		DynamodbResultWalkerException(final String message, final String currentPath) {
 			super(message);
+			this.currentPath = currentPath;
+		}
+
+		public String getCurrentPath() {
+			return this.currentPath;
 		}
 	}
 }

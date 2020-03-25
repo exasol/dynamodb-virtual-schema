@@ -52,7 +52,7 @@ public class SchemaMappingDefinitionToSchemaMetadataConverter {
 		return ColumnMetadata.builder()//
 				.name(columnMappingDefinition.getDestinationName())//
 				.type(columnMappingDefinition.getDestinationDataType())//
-				.defaultValue(columnMappingDefinition.getDestinationDefaultValue())//
+				.defaultValue(columnMappingDefinition.getDestinationDefaultValue().toLiteral())//
 				.nullable(columnMappingDefinition.isDestinationNullable())//
 				.adapterNotes(serialized).build();
 	}

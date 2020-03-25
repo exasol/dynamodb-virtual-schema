@@ -47,32 +47,44 @@ public class DynamodbResultWalkerTest {
 	@Test
 	void testObjectWalker() throws DynamodbResultWalker.DynamodbResultWalkerException {
 		final Map<String, AttributeValue> testData = getTestData();
-		final ObjectDynamodbResultWalker walker = new ObjectDynamodbResultWalker(
-				DynamodbResultWalker.LookupFailBehaviour.NULL, "isbn", null);
+		final ObjectDynamodbResultWalker walker = new ObjectDynamodbResultWalker("isbn", null);
 		assertThat(walker.walk(testData), equalTo(testData.get("isbn")));
 	}
 
 	@Test
 	void testChainedObjectWalker() throws DynamodbResultWalker.DynamodbResultWalkerException {
 		final Map<String, AttributeValue> testData = getTestData();
-		final ObjectDynamodbResultWalker walker = new ObjectDynamodbResultWalker(
-				DynamodbResultWalker.LookupFailBehaviour.NULL, "publisher",
-				new ObjectDynamodbResultWalker(DynamodbResultWalker.LookupFailBehaviour.NULL, "name", null));
+		final ObjectDynamodbResultWalker walker = new ObjectDynamodbResultWalker("publisher",
+				new ObjectDynamodbResultWalker("name", null));
 		assertThat(walker.walk(testData), equalTo(testData.get("publisher").getM().get("name")));
 	}
 
 	@Test
 	void testObjectWalkerException() {
-		final ObjectDynamodbResultWalker walker = new ObjectDynamodbResultWalker(
-				DynamodbResultWalker.LookupFailBehaviour.EXCEPTION, "isbn", null);
-		assertThrows(DynamodbResultWalker.DynamodbResultWalkerException.class,
-				() -> walker.walk(Collections.emptyMap()));
+		final ObjectDynamodbResultWalker walker = new ObjectDynamodbResultWalker("isbn", null);
+		final DynamodbResultWalker.DynamodbResultWalkerException exception = assertThrows(
+				DynamodbResultWalker.DynamodbResultWalkerException.class, () -> walker.walk(Collections.emptyMap()));
+		assertThat(exception.getCurrentPath(), equalTo(""));
 	}
 
 	@Test
-	void testObjectWalkerNull() throws DynamodbResultWalker.DynamodbResultWalkerException {
-		final ObjectDynamodbResultWalker walker = new ObjectDynamodbResultWalker(
-				DynamodbResultWalker.LookupFailBehaviour.NULL, "isbn", null);
-		assertThat(walker.walk(Collections.emptyMap()), equalTo(null));
+	void testObjectWalkerLookupExceptionInChainedObjectWalker() {
+		final Map<String, AttributeValue> testData = getTestData();
+		final ObjectDynamodbResultWalker walker = new ObjectDynamodbResultWalker("publisher",
+				new ObjectDynamodbResultWalker("unknownProperty", null));
+		final ObjectDynamodbResultWalker.LookupException exception = assertThrows(
+				ObjectDynamodbResultWalker.LookupException.class, () -> walker.walk(getTestData()));
+		assertThat(exception.getCurrentPath(), equalTo("/publisher"));
+		assertThat(exception.getMissingLookupKey(), equalTo("unknownProperty"));
+	}
+
+	@Test
+	void testObjectWalkerExceptionInChainedObjectWalker() {
+		final Map<String, AttributeValue> testData = getTestData();
+		final ObjectDynamodbResultWalker walker = new ObjectDynamodbResultWalker("publisher",
+				new ObjectDynamodbResultWalker("name", new ObjectDynamodbResultWalker("unknownProperty", null)));
+		final DynamodbResultWalker.DynamodbResultWalkerException exception = assertThrows(
+				DynamodbResultWalker.DynamodbResultWalkerException.class, () -> walker.walk(getTestData()));
+		assertThat(exception.getCurrentPath(), equalTo("/publisher/name"));
 	}
 }

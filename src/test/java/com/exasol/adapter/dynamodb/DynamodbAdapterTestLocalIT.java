@@ -78,12 +78,13 @@ public class DynamodbAdapterTestLocalIT {
 	@Test
 	public void testSchemaDefinition() throws SQLException {
 		final ResultSet describeResult = exasolTestUtils.getStatement()
-				.executeQuery("DESCRIBE " + TEST_SCHEMA + ".\"testTable\";");
+				.executeQuery("DESCRIBE " + TEST_SCHEMA + ".\"BOOKS\";");
 		final Map<String, String> rowNames = new HashMap<>();
 		while (describeResult.next()) {
 			rowNames.put(describeResult.getString(1), describeResult.getString(2));
 		}
-		assertThat(rowNames, equalTo(Map.of("json", "VARCHAR(10000) UTF8")));
+		assertThat(rowNames, equalTo(
+				Map.of("isbn", "VARCHAR(20) UTF8", "name", "VARCHAR(100) UTF8", "authorName", "VARCHAR(20) UTF8")));
 	}
 
 	/**
@@ -93,11 +94,11 @@ public class DynamodbAdapterTestLocalIT {
 	private SelectStringArrayResult selectStringArray() throws SQLException {
 		final long start = System.currentTimeMillis();
 		final ResultSet actualResultSet = exasolTestUtils.getStatement()
-				.executeQuery("SELECT * FROM " + TEST_SCHEMA + ".\"testTable\";");
+				.executeQuery("SELECT \"isbn\" FROM " + TEST_SCHEMA + ".\"BOOKS\";");
 		final long duration = System.currentTimeMillis() - start;
 		final List<String> result = new ArrayList<>();
 		while (actualResultSet.next()) {
-			result.add(actualResultSet.getString(1));
+			result.add(actualResultSet.getString("isbn"));
 		}
 		LOGGER.info("query execution time was: {}", duration);
 		return new SelectStringArrayResult(result, duration);

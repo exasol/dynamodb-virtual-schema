@@ -12,7 +12,6 @@ import org.json.JSONTokener;
 
 import com.exasol.adapter.AdapterException;
 import com.exasol.adapter.dynamodb.MappingProvider;
-import com.exasol.dynamodb.resultwalker.DynamodbResultWalker;
 import com.exasol.dynamodb.resultwalker.DynamodbResultWalkerBuilder;
 import com.exasol.dynamodb.resultwalker.IdentityDynamodbResultWalker;
 import com.exasol.dynamodb.resultwalker.ObjectDynamodbResultWalker;
@@ -34,6 +33,7 @@ public class JsonMappingProvider implements MappingProvider {
 	private static final int DEFAULT_MAX_LENGTH = 254;
 	private static final String OVERFLOW_KEY = "overflow";
 	private static final String DEST_NAME_KEY = "destName";
+	private static final String REQUIRED_KEY = "required";
 	private static final StringColumnMappingDefinition.OverflowBehaviour DEFAULT_TO_STRING_OVERFLOW = StringColumnMappingDefinition.OverflowBehaviour.TRUNCATE;
 
 	private final List<TableMappingDefinition> tables = new ArrayList<>();
@@ -107,8 +107,7 @@ public class JsonMappingProvider implements MappingProvider {
 			final TableMappingDefinition.Builder tableBuilder) throws MappingException {
 		for (final String dynamodbPropertyName : definition.keySet()) {
 			final ObjectDynamodbResultWalker.Builder walker = new ObjectDynamodbResultWalker.Builder(walkerToThisPath,
-					DynamodbResultWalker.LookupFailBehaviour.EXCEPTION, dynamodbPropertyName);// TODO: add lookup fail
-																								// behaviour to language
+					dynamodbPropertyName);
 			this.walkMapping(definition.getJSONObject(dynamodbPropertyName), walker, tableBuilder, dynamodbPropertyName,
 					false);
 		}
@@ -120,6 +119,7 @@ public class JsonMappingProvider implements MappingProvider {
 		String destinationColumnName = dynamodbPropertyName;
 		int maxLength = DEFAULT_MAX_LENGTH;
 		StringColumnMappingDefinition.OverflowBehaviour overflowBehaviour = StringColumnMappingDefinition.OverflowBehaviour.TRUNCATE;
+		ColumnMappingDefinition.LookupFailBehaviour lookupFailBehaviour = ColumnMappingDefinition.LookupFailBehaviour.DEFAULT_VALUE;
 		if (definition.has(DEST_NAME_KEY)) {
 			destinationColumnName = definition.getString(DEST_NAME_KEY);
 		}
@@ -129,8 +129,12 @@ public class JsonMappingProvider implements MappingProvider {
 		if (definition.has(OVERFLOW_KEY) && definition.getString(OVERFLOW_KEY).equals("ABORT")) {
 			overflowBehaviour = StringColumnMappingDefinition.OverflowBehaviour.EXCEPTION;
 		}
+		if (definition.has(REQUIRED_KEY) && definition.getBoolean(REQUIRED_KEY)) {
+			lookupFailBehaviour = ColumnMappingDefinition.LookupFailBehaviour.EXCEPTION;
+		}
+
 		tableBuilder.withColumnMappingDefinition(new StringColumnMappingDefinition(destinationColumnName, maxLength,
-				resultWalker.build(), overflowBehaviour));
+				resultWalker.build(), lookupFailBehaviour, overflowBehaviour));
 	}
 
 	private void addToJsonColumn(final JSONObject definition, final DynamodbResultWalkerBuilder resultWalker,
@@ -143,8 +147,8 @@ public class JsonMappingProvider implements MappingProvider {
 		if (destinationColumnName == null) {
 			throw new MappingException(String.format("please set %s property", DEST_NAME_KEY));
 		}
-		tableBuilder.withColumnMappingDefinition(
-				new ToJsonColumnMappingDefinition(destinationColumnName, resultWalker.build()));
+		tableBuilder.withColumnMappingDefinition(new ToJsonColumnMappingDefinition(destinationColumnName,
+				resultWalker.build(), ColumnMappingDefinition.LookupFailBehaviour.DEFAULT_VALUE));
 	}
 
 	@Override
