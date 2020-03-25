@@ -4,10 +4,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.exasol.adapter.dynamodb.StringSerializer;
 import com.exasol.adapter.metadata.ColumnMetadata;
 import com.exasol.adapter.metadata.SchemaMetadata;
 import com.exasol.adapter.metadata.TableMetadata;
+import com.exasol.utils.StringSerializer;
 
 /**
  * This class converts a {@link SchemaMappingDefinition} into a

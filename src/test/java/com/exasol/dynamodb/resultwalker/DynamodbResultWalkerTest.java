@@ -69,7 +69,6 @@ public class DynamodbResultWalkerTest {
 
 	@Test
 	void testObjectWalkerLookupExceptionInChainedObjectWalker() {
-		final Map<String, AttributeValue> testData = getTestData();
 		final ObjectDynamodbResultWalker walker = new ObjectDynamodbResultWalker("publisher",
 				new ObjectDynamodbResultWalker("unknownProperty", null));
 		final ObjectDynamodbResultWalker.LookupException exception = assertThrows(
@@ -80,7 +79,6 @@ public class DynamodbResultWalkerTest {
 
 	@Test
 	void testObjectWalkerExceptionInChainedObjectWalker() {
-		final Map<String, AttributeValue> testData = getTestData();
 		final ObjectDynamodbResultWalker walker = new ObjectDynamodbResultWalker("publisher",
 				new ObjectDynamodbResultWalker("name", new ObjectDynamodbResultWalker("unknownProperty", null)));
 		final DynamodbResultWalker.DynamodbResultWalkerException exception = assertThrows(

@@ -47,8 +47,7 @@ public class ColumnMappingDefinitionTest {
 	}
 
 	@Test
-	void testExceptionLookupFailBehaviour()
-			throws ColumnMappingDefinition.ColumnMappingException, DynamodbResultWalker.DynamodbResultWalkerException {
+	void testExceptionLookupFailBehaviour() {
 		final ObjectDynamodbResultWalker resultWalker = new ObjectDynamodbResultWalker("nonExistingColumn", null);
 		final MocColumnMappingDefinition columnMappingDefinition = new MocColumnMappingDefinition("d", resultWalker,
 				ColumnMappingDefinition.LookupFailBehaviour.EXCEPTION);

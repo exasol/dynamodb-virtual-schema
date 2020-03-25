@@ -22,7 +22,8 @@ import com.exasol.adapter.AdapterException;
 import com.exasol.adapter.AdapterProperties;
 import com.exasol.adapter.VirtualSchemaAdapter;
 import com.exasol.adapter.capabilities.Capabilities;
-import com.exasol.adapter.dynamodb.mapping.JsonMappingProvider;
+import com.exasol.adapter.dynamodb.mapping.JsonMappingFactory;
+import com.exasol.adapter.dynamodb.mapping.MappingFactory;
 import com.exasol.adapter.dynamodb.mapping.SchemaMappingDefinition;
 import com.exasol.adapter.dynamodb.mapping.SchemaMappingDefinitionToSchemaMetadataConverter;
 import com.exasol.adapter.dynamodb.queryresult.QueryResultTable;
@@ -99,8 +100,8 @@ public class DynamodbAdapter implements VirtualSchemaAdapter {
 		if (!path.exists()) {
 			throw new AdapterException(String.format("the specified mapping file (%s) could not be found.", path));
 		}
-		final MappingProvider mappingProvider = new JsonMappingProvider(path);
-		return mappingProvider.getSchemaMapping();
+		final MappingFactory mappingFactory = new JsonMappingFactory(path);
+		return mappingFactory.getSchemaMapping();
 	}
 
 	/**

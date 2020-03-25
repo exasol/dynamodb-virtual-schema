@@ -12,19 +12,16 @@ import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Test;
 
-import com.exasol.adapter.dynamodb.MappingProvider;
-
 /**
- * Tests for {@link JsonMappingProvider}
+ * Tests for {@link JsonMappingFactory}
  */
-public class JsonMappingProviderTest {
+public class JsonMappingFactoryTest {
 
 	private SchemaMappingDefinition getMappingDefinitionForFileName(final String name)
-			throws IOException, JsonMappingProvider.SchemaMappingException {
-		final ClassLoader classLoader = JsonMappingProvider.class.getClassLoader();
-		final MappingProvider mappingProvider = new JsonMappingProvider(
-				new File(classLoader.getResource(name).getFile()));
-		return mappingProvider.getSchemaMapping();
+			throws IOException, JsonMappingFactory.SchemaMappingException {
+		final ClassLoader classLoader = JsonMappingFactory.class.getClassLoader();
+		final MappingFactory mappingFactory = new JsonMappingFactory(new File(classLoader.getResource(name).getFile()));
+		return mappingFactory.getSchemaMapping();
 	}
 
 	/**
@@ -33,7 +30,7 @@ public class JsonMappingProviderTest {
 	 * @throws IOException
 	 */
 	@Test
-	void testBasicMapping() throws IOException, JsonMappingProvider.SchemaMappingException {
+	void testBasicMapping() throws IOException, JsonMappingFactory.SchemaMappingException {
 		final SchemaMappingDefinition schemaMapping = getMappingDefinitionForFileName("basicMapping.json");
 		final List<TableMappingDefinition> tables = schemaMapping.getTableMappings();
 		final TableMappingDefinition table = tables.get(0);
@@ -60,7 +57,7 @@ public class JsonMappingProviderTest {
 	}
 
 	@Test
-	void testToJsonMapping() throws IOException, JsonMappingProvider.SchemaMappingException {
+	void testToJsonMapping() throws IOException, JsonMappingFactory.SchemaMappingException {
 		final SchemaMappingDefinition schemaMapping = getMappingDefinitionForFileName("toJsonMapping.json");
 		final List<TableMappingDefinition> tables = schemaMapping.getTableMappings();
 		final TableMappingDefinition table = tables.get(0);
@@ -70,9 +67,5 @@ public class JsonMappingProviderTest {
 		assertAll(() -> assertThat(tables.size(), equalTo(1)), //
 				() -> assertThat(table.getDestName(), equalTo("BOOKS")),
 				() -> assertThat(columnNames, containsInAnyOrder("isbn", "name", "topics")));
-	}
-
-	void testDirectoryRead() {
-		// todo
 	}
 }

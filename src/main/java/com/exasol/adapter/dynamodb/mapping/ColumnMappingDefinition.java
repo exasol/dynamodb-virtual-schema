@@ -13,12 +13,12 @@ import com.exasol.dynamodb.resultwalker.DynamodbResultWalker;
  * Definition of a column mapping from DynamoDB table to Exasol Virtual Schema.
  * Each instance of this class represents one column in the Exasol table.
  * Objects of this class get serialized into the column adapter notes. They are
- * created using a {@link com.exasol.adapter.dynamodb.MappingProvider}. The
- * serialization can't be replaced by retrieving the mapping at query execution
- * time form the {@link com.exasol.adapter.dynamodb.MappingProvider} as the
- * definition (from bucketfs) could have changed but not been refreshed. Just
- * reloading the schema would lead to inconsistencies between the schema known
- * to the database and the one used by this adapter.
+ * created using a {@link MappingFactory}. The serialization can't be replaced
+ * by retrieving the mapping at query execution time form the
+ * {@link MappingFactory} as the definition (from bucketfs) could have changed
+ * but not been refreshed. Just reloading the schema would lead to
+ * inconsistencies between the schema known to the database and the one used by
+ * this adapter.
  */
 public abstract class ColumnMappingDefinition implements Serializable {
 	private static final long serialVersionUID = 48342992735371252L;

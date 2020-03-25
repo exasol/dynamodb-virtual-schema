@@ -32,7 +32,7 @@ public class SchemaMappingDefinitionToSchemaMetadataConverterTest {
 		assertThat(tables.size(), equalTo(1));
 		final TableMetadata firstTable = tables.get(0);
 		assertThat(firstTable.getName(), equalTo("testTable"));
-		final List<String> columnNames = firstTable.getColumns().stream().map(column -> column.getName())
+		final List<String> columnNames = firstTable.getColumns().stream().map(ColumnMetadata::getName)
 				.collect(Collectors.toList());
 		assertThat(columnNames, containsInAnyOrder("json"));
 	}

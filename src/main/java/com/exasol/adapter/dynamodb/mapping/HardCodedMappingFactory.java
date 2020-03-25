@@ -2,14 +2,13 @@ package com.exasol.adapter.dynamodb.mapping;
 
 import java.util.List;
 
-import com.exasol.adapter.dynamodb.MappingProvider;
 import com.exasol.dynamodb.resultwalker.IdentityDynamodbResultWalker;
 
 /**
- * A {@link MappingProvider} giving a hard coded mapping, with on single column
+ * A {@link MappingFactory} giving a hard coded mapping, with on single column
  * mapping the whole document to a json string.
  */
-public class HardCodedMappingProvider implements MappingProvider {
+public class HardCodedMappingFactory implements MappingFactory {
 	@Override
 	public SchemaMappingDefinition getSchemaMapping() {
 		final TableMappingDefinition table = TableMappingDefinition.builder("testTable", true)

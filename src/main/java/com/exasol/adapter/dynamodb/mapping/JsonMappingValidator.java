@@ -13,15 +13,15 @@ import org.json.JSONTokener;
 
 public class JsonMappingValidator {
 	public void validate(final JSONObject schemaMappingDefinition)
-			throws IOException, JsonMappingProvider.MappingException {
-		final ClassLoader classLoader = JsonMappingProvider.class.getClassLoader();
+			throws IOException, JsonMappingFactory.MappingException {
+		final ClassLoader classLoader = JsonMappingFactory.class.getClassLoader();
 		try (final InputStream inputStream = classLoader.getResourceAsStream("mappingLanguageSchema.json")) {
 			final JSONObject rawSchema = new JSONObject(new JSONTokener(inputStream));
 			final Schema schema = SchemaLoader.load(rawSchema);
 			final Validator validator = Validator.builder().build();
 			validator.performValidation(schema, schemaMappingDefinition);
 		} catch (final ValidationException e) {
-			throw new JsonMappingProvider.MappingException(extractReadableErrorMessage(e));
+			throw new JsonMappingFactory.MappingException(extractReadableErrorMessage(e));
 		}
 	}
 
@@ -55,15 +55,20 @@ public class JsonMappingValidator {
 		try {
 			final ObjectSchema objectSchema = (ObjectSchema) schema;
 			possibleProperties.addAll(objectSchema.getPropertySchemas().keySet());
-			try {
-				final ObjectSchema additionalPropertiesSchema = getObjectSchema(
-						objectSchema.getSchemaOfAdditionalProperties());
-				possibleProperties.addAll(additionalPropertiesSchema.getPropertySchemas().keySet());
-			} catch (final ClassCastException ignored) {
-			}
+			possibleProperties.addAll(possibleAdditionalObjectProperties(objectSchema));
 		} catch (final ClassCastException ignored) {
 		}
 		return String.join(", ", possibleProperties);
+	}
+
+	private Set<String> possibleAdditionalObjectProperties(final ObjectSchema objectSchema) {
+		try {
+			final ObjectSchema additionalPropertiesSchema = getObjectSchema(
+					objectSchema.getSchemaOfAdditionalProperties());
+			return additionalPropertiesSchema.getPropertySchemas().keySet();
+		} catch (final ClassCastException ignored) {
+			return Set.of();
+		}
 	}
 
 	private ObjectSchema getObjectSchema(final Schema schema) {

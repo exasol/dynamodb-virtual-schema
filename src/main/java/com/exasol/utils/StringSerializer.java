@@ -1,9 +1,8 @@
-package com.exasol.adapter.dynamodb;
+package com.exasol.utils;
 
 import java.io.*;
 import java.util.Base64;
 
-//TODO move to more general package
 /**
  * Helper class for serialization to a base64 strings.
  */

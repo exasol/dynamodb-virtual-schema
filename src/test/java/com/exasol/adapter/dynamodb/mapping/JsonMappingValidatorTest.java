@@ -18,97 +18,97 @@ import com.exasol.adapter.dynamodb.DynamodbTestUtilsTestIT;
 public class JsonMappingValidatorTest {
 	private static final Logger LOGGER = LoggerFactory.getLogger(JsonMappingValidatorTest.class);
 
-	void runValidation(final String fileName) throws IOException, JsonMappingProvider.MappingException {
+	void runValidation(final String fileName) throws IOException, JsonMappingFactory.MappingException {
 		final ClassLoader classLoader = DynamodbTestUtilsTestIT.class.getClassLoader();
 		final JsonMappingValidator jsonMappingValidator = new JsonMappingValidator();
 		try (final InputStream inputStream = classLoader.getResourceAsStream(fileName)) {
 			jsonMappingValidator.validate(new JSONObject(new JSONTokener(inputStream)));
-		} catch (final JsonMappingProvider.MappingException e) {
+		} catch (final JsonMappingFactory.MappingException e) {
 			LOGGER.info(e.getMessage());
 			throw e;
 		}
 	}
 
 	@Test
-	void testValidBasicMapping() throws IOException, JsonMappingProvider.MappingException {
+	void testValidBasicMapping() throws IOException, JsonMappingFactory.MappingException {
 		runValidation("basicMapping.json");
 	}
 
 	@Test
-	void testValidToJsonMapping() throws IOException, JsonMappingProvider.MappingException {
+	void testValidToJsonMapping() throws IOException, JsonMappingFactory.MappingException {
 		runValidation("toJsonMapping.json");
 	}
 
 	@Test
-	void testValidSingleColumnToTableMapping() throws IOException, JsonMappingProvider.MappingException {
+	void testValidSingleColumnToTableMapping() throws IOException, JsonMappingFactory.MappingException {
 		runValidation("singleColumnToTableMapping.json");
 	}
 
 	@Test
-	void testValidMultiColumnToTableMapping() throws IOException, JsonMappingProvider.MappingException {
+	void testValidMultiColumnToTableMapping() throws IOException, JsonMappingFactory.MappingException {
 		runValidation("multiColumnToTableMapping.json");
 	}
 
 	@Test
-	void testValidWholeTableToJsonMapping() throws IOException, JsonMappingProvider.MappingException {
-		runValidation("wholeTableTojsonMapping.json");
+	void testValidWholeTableToJsonMapping() throws IOException, JsonMappingFactory.MappingException {
+		runValidation("wholeTableToJsonMapping.json");
 	}
 
 	@Test
-	void testInvalidNoDestName() throws IOException {
-		final JsonMappingProvider.MappingException exception = assertThrows(JsonMappingProvider.MappingException.class,
+	void testInvalidNoDestName() {
+		final JsonMappingFactory.MappingException exception = assertThrows(JsonMappingFactory.MappingException.class,
 				() -> runValidation("invalidMappingNoDestTableName.json"));
 		assertThat(exception.getMessage(), equalTo("#: required key [destTableName] not found"));
 	}
 
 	@Test
-	void testInvalidNoSchemaSet() throws IOException {
-		final JsonMappingProvider.MappingException exception = assertThrows(JsonMappingProvider.MappingException.class,
+	void testInvalidNoSchemaSet() {
+		final JsonMappingFactory.MappingException exception = assertThrows(JsonMappingFactory.MappingException.class,
 				() -> runValidation("invalidMappingNoSchemaSet.json"));
 		assertThat(exception.getMessage(), equalTo("#: required key [$schema] not found"));
 	}
 
 	@Test
-	void testInvalidWrongSchemaSet() throws IOException {
-		final JsonMappingProvider.MappingException exception = assertThrows(JsonMappingProvider.MappingException.class,
+	void testInvalidWrongSchemaSet() {
+		final JsonMappingFactory.MappingException exception = assertThrows(JsonMappingFactory.MappingException.class,
 				() -> runValidation("invalidMappingWrongSchemaSet.json"));
 		assertThat(exception.getMessage(), equalTo(
 				"#/$schema $schema must be set  to https://github.com/exasol/dynamodb-virtual-schema/blob/develop/src/main/resources/mappingLanguageSchema.json"));
 	}
 
 	@Test
-	void testInvalidUnknownRootProperty() throws IOException {
-		final JsonMappingProvider.MappingException exception = assertThrows(JsonMappingProvider.MappingException.class,
+	void testInvalidUnknownRootProperty() {
+		final JsonMappingFactory.MappingException exception = assertThrows(JsonMappingFactory.MappingException.class,
 				() -> runValidation("invalidMappingUnknownRootProperty.json"));
 		assertThat(exception.getMessage(), equalTo("#: extraneous key [unknownProperty] is not permitted"));
 	}
 
 	@Test
-	void testInvalidUnknownMappingType() throws IOException {
-		final JsonMappingProvider.MappingException exception = assertThrows(JsonMappingProvider.MappingException.class,
+	void testInvalidUnknownMappingType() {
+		final JsonMappingFactory.MappingException exception = assertThrows(JsonMappingFactory.MappingException.class,
 				() -> runValidation("invalidMappingUnknownMappingType.json"));
 		assertThat(exception.getMessage(), equalTo(
 				"#/mapping/children/isbn: extraneous key [toStriiiiiiingMapping] is not permitted, use one of the following mapping definitions here: toTableMapping, children, toJsonMapping, toStringMapping"));
 	}
 
 	@Test
-	void testInvalidToTableWithNoChildren() throws IOException {
-		final JsonMappingProvider.MappingException exception = assertThrows(JsonMappingProvider.MappingException.class,
+	void testInvalidToTableWithNoChildren() {
+		final JsonMappingFactory.MappingException exception = assertThrows(JsonMappingFactory.MappingException.class,
 				() -> runValidation("invalidToTableMappingWithNoChildren.json"));
 		assertThat(exception.getMessage(), equalTo(
 				"#/mapping/children/topics/toTableMapping/mapping please specify at least one mapping here. Possible are: toTableMapping, children, toJsonMapping, toStringMapping"));
 	}
 
 	@Test
-	void testInvalidNoChildren() throws IOException {
-		final JsonMappingProvider.MappingException exception = assertThrows(JsonMappingProvider.MappingException.class,
+	void testInvalidNoChildren() {
+		final JsonMappingFactory.MappingException exception = assertThrows(JsonMappingFactory.MappingException.class,
 				() -> runValidation("invalidMappingNoMapping.json"));
 		assertThat(exception.getMessage(), equalTo("#: required key [mapping] not found"));
 	}
 
 	@Test
-	void testInvalidUnknownMappingInToTable() throws IOException {
-		final JsonMappingProvider.MappingException exception = assertThrows(JsonMappingProvider.MappingException.class,
+	void testInvalidUnknownMappingInToTable() {
+		final JsonMappingFactory.MappingException exception = assertThrows(JsonMappingFactory.MappingException.class,
 				() -> runValidation("invalidMappingUnknownMappingTypeInToTable.json"));
 		assertThat(exception.getMessage(), equalTo(
 				"#/mapping/children/topics/toTableMapping/mapping: extraneous key [toStriiiiingMapping] is not permitted, use one of the following mapping definitions here: toTableMapping, children, toJsonMapping, toStringMapping"));

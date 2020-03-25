@@ -33,8 +33,8 @@ public class StringColumnMappingDefinitionTest {
 				DEST_COLUMN, TEST_STRING.length(), new ObjectDynamodbResultWalker(TEST_SOURCE_COLUMN, null),
 				ColumnMappingDefinition.LookupFailBehaviour.DEFAULT_VALUE,
 				StringColumnMappingDefinition.OverflowBehaviour.EXCEPTION);
-		final ExasolCellValue exasolDataframe = stringColumnMappingDefinition.convertRow(getDynamodbRow());
-		assertThat(exasolDataframe.toLiteral(), equalTo("'" + TEST_STRING + "'"));
+		final ExasolCellValue exasolCellValue = stringColumnMappingDefinition.convertRow(getDynamodbRow());
+		assertThat(exasolCellValue.toLiteral(), equalTo("'" + TEST_STRING + "'"));
 	}
 
 	@Test

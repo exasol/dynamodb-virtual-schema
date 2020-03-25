@@ -1,13 +1,9 @@
-package com.exasol.adapter.dynamodb;
-
-import com.exasol.adapter.dynamodb.mapping.SchemaMappingDefinition;
+package com.exasol.adapter.dynamodb.mapping;
 
 /**
  * Interface for {@link SchemaMappingDefinition} providers.
  */
-// TODO rename to factory
-// TODO move in mapping package
-public interface MappingProvider {
+public interface MappingFactory {
 	/**
 	 * Gives a {@link SchemaMappingDefinition}
 	 * 

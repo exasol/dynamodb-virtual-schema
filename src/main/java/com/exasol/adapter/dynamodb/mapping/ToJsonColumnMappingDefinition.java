@@ -41,7 +41,7 @@ public class ToJsonColumnMappingDefinition extends ColumnMappingDefinition {
 	}
 
 	@Override
-	protected ExasolCellValue convertValue(final AttributeValue dynamodbProperty) throws ColumnMappingException {
+	protected ExasolCellValue convertValue(final AttributeValue dynamodbProperty) {
 		// TODO convert to json
 		return new StringExasolCellValue("dummy value");
 	}

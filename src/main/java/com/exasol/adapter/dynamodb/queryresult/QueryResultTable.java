@@ -8,7 +8,6 @@ import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.exasol.adapter.AdapterException;
 import com.exasol.cellvalue.ExasolCellValue;
 
-//TODO eigenes package
 public class QueryResultTable {
 	private final List<QueryResultColumn> columns;
 
