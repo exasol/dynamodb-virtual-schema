@@ -26,17 +26,17 @@ public class ToJsonColumnMappingDefinition extends ColumnMappingDefinition {
 	}
 
 	@Override
-	DataType getDestinationDataType() {
+	public DataType getDestinationDataType() {
 		return DataType.createVarChar(10000, DataType.ExaCharset.UTF8);
 	}
 
 	@Override
-	ExasolCellValue getDestinationDefaultValue() {
+	public ExasolCellValue getDestinationDefaultValue() {
 		return new StringExasolCellValue("");
 	}
 
 	@Override
-	boolean isDestinationNullable() {
+	public boolean isDestinationNullable() {
 		return true;
 	}
 

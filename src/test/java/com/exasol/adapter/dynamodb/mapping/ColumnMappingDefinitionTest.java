@@ -75,17 +75,17 @@ public class ColumnMappingDefinitionTest {
 		}
 
 		@Override
-		DataType getDestinationDataType() {
+		public DataType getDestinationDataType() {
 			return null;
 		}
 
 		@Override
-		ExasolCellValue getDestinationDefaultValue() {
+		public ExasolCellValue getDestinationDefaultValue() {
 			return new MocExasolCellValue("default");
 		}
 
 		@Override
-		boolean isDestinationNullable() {
+		public boolean isDestinationNullable() {
 			return false;
 		}
 

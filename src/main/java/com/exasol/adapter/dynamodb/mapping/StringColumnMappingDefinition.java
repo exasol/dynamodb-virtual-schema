@@ -32,18 +32,18 @@ public class StringColumnMappingDefinition extends ColumnMappingDefinition {
 	}
 
 	@Override
-	DataType getDestinationDataType() {
+	public DataType getDestinationDataType() {
 		return DataType.createVarChar(this.destinationStringSize, DataType.ExaCharset.UTF8);// TODO @sebastian is ASCII
 																							// intended?
 	}
 
 	@Override
-	ExasolCellValue getDestinationDefaultValue() {
+	public ExasolCellValue getDestinationDefaultValue() {
 		return new StringExasolCellValue("");
 	}
 
 	@Override
-	boolean isDestinationNullable() {
+	public boolean isDestinationNullable() {
 		return true;
 	}
 

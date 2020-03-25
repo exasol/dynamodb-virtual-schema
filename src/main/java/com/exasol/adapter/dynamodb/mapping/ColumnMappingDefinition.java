@@ -42,9 +42,9 @@ public abstract class ColumnMappingDefinition implements Serializable {
 		return this.destinationName;
 	}
 
-	abstract DataType getDestinationDataType();
-	abstract ExasolCellValue getDestinationDefaultValue();
-	abstract boolean isDestinationNullable();
+	public abstract DataType getDestinationDataType();
+	public abstract ExasolCellValue getDestinationDefaultValue();
+	public abstract boolean isDestinationNullable();
 
 	public LookupFailBehaviour getLookupFailBehaviour() {
 		return this.lookupFailBehaviour;
