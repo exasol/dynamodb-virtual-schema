@@ -24,7 +24,7 @@ readonly schema_path=$TRAVIS_BUILD_DIR/src/main/resources/mappingLanguageSchema.
 bootprint json-schema $schema_path ./schema_doc/
 
 
-if [ -d "html" ] && [ -f "html/index.html" ]; then
+if [ -d "schema_doc" ] && [ -f "schema_doc/index.html" ]; then
     echo 'Uploading documentation to the gh-pages branch...'
     # Add everything in this directory (the Doxygen code documentation) to the
     # gh-pages branch.
