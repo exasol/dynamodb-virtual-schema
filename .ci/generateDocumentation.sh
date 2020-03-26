@@ -21,7 +21,7 @@ git reset --hard `git rev-list --max-parents=0 --abbrev-commit HEAD`
 
 #generate documentation
 readonly schema_path=$TRAVIS_BUILD_DIR/src/main/resources/mappingLanguageSchema.json
-bootprint json-schema $schema_path ./html/
+bootprint json-schema $schema_path ./schema_doc/
 
 
 if [ -d "html" ] && [ -f "html/index.html" ]; then

@@ -82,5 +82,4 @@ Mapping definition:
 * [Example for toTable mapping](exampleWithToTable.md)
 
 ## Reference
-[Full reference](schema/index.html)
-  
+[Full reference](https://exasol.github.io/dynamodb-virtual-schema/schema_doc/index.html)
