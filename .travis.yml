@@ -9,12 +9,10 @@ addons:
 before_script:
 - tools/version.sh verify
 - |-
-  echo $PROJECT_DIR_ABS;
   if [[ "$TRAVIS_BRANCH" = "develop" && "$TRAVIS_PULL_REQUEST" = "false" ]] ; then
-    cd $PROJECT_DIR_ABS;
     ls -a ./
-    ls $PROJECT_DIR_ABS/.ci/
-    source $PROJECT_DIR_ABS/.ci/setup-ssh.sh || travis_terminate 1
+    ls .ci/
+    source .ci/setup-ssh.sh || travis_terminate 1
     .ci/generateDocumentation.sh || travis_terminate 1
   fi
 install:
