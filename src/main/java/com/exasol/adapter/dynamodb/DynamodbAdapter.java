@@ -6,12 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import com.amazonaws.auth.AWSStaticCredentialsProvider;
-import com.amazonaws.auth.BasicAWSCredentials;
-import com.amazonaws.client.builder.AwsClientBuilder;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
-import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
-import com.amazonaws.services.dynamodbv2.document.DynamoDB;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.amazonaws.services.dynamodbv2.model.ScanRequest;
 import com.amazonaws.services.dynamodbv2.model.ScanResult;
@@ -33,49 +28,13 @@ import com.exasol.adapter.request.*;
 import com.exasol.adapter.response.*;
 import com.exasol.cellvalue.CellValuesToSqlSelectFromValuesConverter;
 import com.exasol.cellvalue.ExasolCellValue;
+import com.exasol.dynamodb.DynamodbConnectionUtil;
 import com.exasol.dynamodb.resultwalker.DynamodbResultWalker;
 
 /**
  * DynamoDB Virtual Schema adapter.
  */
 public class DynamodbAdapter implements VirtualSchemaAdapter {
-	/**
-	 * Creates a DynamoDB (document api client) for a given uri, user and key. for
-	 * details see {@link #getDynamodbLowLevelConnection(String, String, String)}.
-	 *
-	 * @return DynamoDB (document api client)
-	 */
-	protected static DynamoDB getDynamodbDocumentConnection(final String uri, final String user, final String key) {
-		return new DynamoDB(getDynamodbLowLevelConnection(uri, user, key));
-	}
-
-	/**
-	 * Creates a AmazonDynamoDB (low level api client) for a given uri, user and
-	 * key.
-	 *
-	 * @param uri
-	 *            either aws:<REGION> or address of local DynamoDB server (e.g.
-	 *            http://localhost:8000)
-	 * @param user
-	 *            aws credential id
-	 * @param key
-	 *            aws credential key
-	 * @return AmazonDynamoDB (low level api client)
-	 */
-	private static AmazonDynamoDB getDynamodbLowLevelConnection(final String uri, final String user, final String key) {
-
-		final String AWS_PREFIX = "aws:";
-		final String AWS_LOCAL_REGION = "eu-central-1";
-		final BasicAWSCredentials awsCredentials = new BasicAWSCredentials(user, key);
-		final AmazonDynamoDBClientBuilder clientBuilder = AmazonDynamoDBClientBuilder.standard()
-				.withCredentials(new AWSStaticCredentialsProvider(awsCredentials));
-		if (uri.startsWith(AWS_PREFIX)) {
-			clientBuilder.withRegion(uri.replace(AWS_PREFIX, ""));
-		} else {
-			clientBuilder.withEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration(uri, AWS_LOCAL_REGION));
-		}
-		return clientBuilder.build();
-	}
 
 	@Override
 	public CreateVirtualSchemaResponse createVirtualSchema(final ExaMetadata exaMetadata,
@@ -112,7 +71,8 @@ public class DynamodbAdapter implements VirtualSchemaAdapter {
 			throws ExaConnectionAccessException {
 		final AdapterProperties properties = getPropertiesFromRequest(request);
 		final ExaConnectionInformation connection = exaMetadata.getConnection(properties.getConnectionName());
-		return getDynamodbLowLevelConnection(connection.getAddress(), connection.getUser(), connection.getPassword());
+		return DynamodbConnectionUtil.getLowLevelConnection(connection.getAddress(), connection.getUser(),
+				connection.getPassword());
 	}
 
 	private AdapterProperties getPropertiesFromRequest(final AdapterRequest request) {
