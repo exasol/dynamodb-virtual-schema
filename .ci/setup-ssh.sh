@@ -5,6 +5,8 @@ set -ev
 eval "$(ssh-agent -s)"
 declare -r SSH_FILE="$(mktemp -u $HOME/.ssh/travis_temp_ssh_key_XXXX)"
 # Decrypt the file containing the private key (put the real name of the variables)
+cat .ci/travis_deploy_key.enc
+echo $encrypted_63a949b43279_key
 openssl aes-256-cbc \
   -K $encrypted_63a949b43279_key \
   -iv $encrypted_63a949b43279_iv \
