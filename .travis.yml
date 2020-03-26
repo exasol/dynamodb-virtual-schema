@@ -13,6 +13,8 @@ before_script:
   ls $PROJECT_DIR_ABS;
   if [[ "$TRAVIS_BRANCH" = "develop" && "$TRAVIS_PULL_REQUEST" = "false" ]] ; then
     cd $PROJECT_DIR_ABS
+    ls ./
+    ls .ci/
     source .ci/setup-ssh.sh || travis_terminate 1
     .ci/generateDocumentation.sh || travis_terminate 1
   fi
