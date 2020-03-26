@@ -10,7 +10,6 @@ before_script:
 - tools/version.sh verify
 - |-
   echo $TRAVIS_BRANCH;
-  echo
   if [[ "$TRAVIS_BRANCH" = "develop" && "$TRAVIS_PULL_REQUEST" = "false" ]] ; then
     cd $PROJECT_DIR_ABS
     source .ci/setup-ssh.sh || travis_terminate 1
