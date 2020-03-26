@@ -20,7 +20,7 @@ install:
 script:
 - mvn clean org.jacoco:jacoco-maven-plugin:prepare-agent org.jacoco:jacoco-maven-plugin:prepare-agent-integration
   verify sonar:sonar -Dsonar.login=${SONAR_TOKEN}
-%after_success:
+#after_success:
 
 cache:
   directories:
