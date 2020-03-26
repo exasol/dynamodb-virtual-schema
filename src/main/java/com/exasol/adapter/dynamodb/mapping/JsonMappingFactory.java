@@ -32,7 +32,7 @@ public class JsonMappingFactory implements MappingFactory {
 	private static final String OVERFLOW_KEY = "overflow";
 	private static final String DEST_NAME_KEY = "destName";
 	private static final String REQUIRED_KEY = "required";
-	private static final StringColumnMappingDefinition.OverflowBehaviour DEFAULT_TO_STRING_OVERFLOW = StringColumnMappingDefinition.OverflowBehaviour.TRUNCATE;
+	private static final ToStringColumnMappingDefinition.OverflowBehaviour DEFAULT_TO_STRING_OVERFLOW = ToStringColumnMappingDefinition.OverflowBehaviour.TRUNCATE;
 	private static final ColumnMappingDefinition.LookupFailBehaviour DEFAULT_LOOKUP_BEHAVIOUR = ColumnMappingDefinition.LookupFailBehaviour.DEFAULT_VALUE;
 
 	private final List<TableMappingDefinition> tables = new ArrayList<>();
@@ -117,7 +117,7 @@ public class JsonMappingFactory implements MappingFactory {
 			final TableMappingDefinition.Builder tableBuilder, final String dynamodbPropertyName) {
 		String destinationColumnName = dynamodbPropertyName;
 		int maxLength = DEFAULT_MAX_LENGTH;
-		StringColumnMappingDefinition.OverflowBehaviour overflowBehaviour = DEFAULT_TO_STRING_OVERFLOW;
+		ToStringColumnMappingDefinition.OverflowBehaviour overflowBehaviour = DEFAULT_TO_STRING_OVERFLOW;
 		ColumnMappingDefinition.LookupFailBehaviour lookupFailBehaviour = DEFAULT_LOOKUP_BEHAVIOUR;
 		if (definition.has(DEST_NAME_KEY)) {
 			destinationColumnName = definition.getString(DEST_NAME_KEY);
@@ -126,13 +126,13 @@ public class JsonMappingFactory implements MappingFactory {
 			maxLength = definition.getInt(MAX_LENGTH_KEY);
 		}
 		if (definition.has(OVERFLOW_KEY) && definition.getString(OVERFLOW_KEY).equals("ABORT")) {
-			overflowBehaviour = StringColumnMappingDefinition.OverflowBehaviour.EXCEPTION;
+			overflowBehaviour = ToStringColumnMappingDefinition.OverflowBehaviour.EXCEPTION;
 		}
 		if (definition.has(REQUIRED_KEY) && definition.getBoolean(REQUIRED_KEY)) {
 			lookupFailBehaviour = ColumnMappingDefinition.LookupFailBehaviour.EXCEPTION;
 		}
 
-		tableBuilder.withColumnMappingDefinition(new StringColumnMappingDefinition(destinationColumnName, maxLength,
+		tableBuilder.withColumnMappingDefinition(new ToStringColumnMappingDefinition(destinationColumnName, maxLength,
 				resultWalker.build(), lookupFailBehaviour, overflowBehaviour));
 	}
 
@@ -172,9 +172,7 @@ public class JsonMappingFactory implements MappingFactory {
 		}
 	}
 
-	public static class MappingException extends Exception {
-		private MappingException() {
-		}
+	public static class MappingException extends AdapterException {
 		public MappingException(final String message) {
 			super(message);
 		}

@@ -4,6 +4,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.File;
 import java.io.IOException;
@@ -37,23 +38,23 @@ public class JsonMappingFactoryTest {
 		final List<ColumnMappingDefinition> columns = table.getColumns();
 		final List<String> columnNames = columns.stream().map(ColumnMappingDefinition::getDestinationName)
 				.collect(Collectors.toList());
-		final StringColumnMappingDefinition isbnColumn = (StringColumnMappingDefinition) columns.stream()
+		final ToStringColumnMappingDefinition isbnColumn = (ToStringColumnMappingDefinition) columns.stream()
 				.filter(column -> column.getDestinationName().equals("isbn")).findAny().get();
-		final StringColumnMappingDefinition nameColumn = (StringColumnMappingDefinition) columns.stream()
+		final ToStringColumnMappingDefinition nameColumn = (ToStringColumnMappingDefinition) columns.stream()
 				.filter(column -> column.getDestinationName().equals("name")).findAny().get();
 		assertAll(() -> assertThat(tables.size(), equalTo(1)), //
 				() -> assertThat(table.getDestName(), equalTo("BOOKS")),
 				() -> assertThat(columnNames, containsInAnyOrder("isbn", "name", "authorName")),
 				() -> assertThat(isbnColumn.getDestinationStringSize(), equalTo(20)),
 				() -> assertThat(isbnColumn.getOverflowBehaviour(),
-						equalTo(StringColumnMappingDefinition.OverflowBehaviour.EXCEPTION)),
+						equalTo(ToStringColumnMappingDefinition.OverflowBehaviour.EXCEPTION)),
 				() -> assertThat(isbnColumn.getLookupFailBehaviour(),
 						equalTo(ColumnMappingDefinition.LookupFailBehaviour.EXCEPTION)),
 				() -> assertThat(nameColumn.getLookupFailBehaviour(),
 						equalTo(ColumnMappingDefinition.LookupFailBehaviour.DEFAULT_VALUE)),
 				() -> assertThat(nameColumn.getDestinationStringSize(), equalTo(100)),
 				() -> assertThat(nameColumn.getOverflowBehaviour(),
-						equalTo(StringColumnMappingDefinition.OverflowBehaviour.TRUNCATE)));
+						equalTo(ToStringColumnMappingDefinition.OverflowBehaviour.TRUNCATE)));
 	}
 
 	@Test
@@ -67,5 +68,17 @@ public class JsonMappingFactoryTest {
 		assertAll(() -> assertThat(tables.size(), equalTo(1)), //
 				() -> assertThat(table.getDestName(), equalTo("BOOKS")),
 				() -> assertThat(columnNames, containsInAnyOrder("isbn", "name", "topics")));
+	}
+
+	@Test
+	void testException() {
+		final String fileName = "invalidToStringMappingAtRootLevel.json";
+		final JsonMappingFactory.SchemaMappingException exception = assertThrows(
+				JsonMappingFactory.SchemaMappingException.class, () -> getMappingDefinitionForFileName(fileName));
+		assertAll(() -> assertThat(exception.getCausingMappingDefinitionFileName(), equalTo(fileName)),
+				() -> assertThat(exception.getMessage(),
+						equalTo("Error in schema mapping invalidToStringMappingAtRootLevel.json:")),
+				() -> assertThat(exception.getCause().getMessage(),
+						equalTo("ToString mapping is not allowed at root level")));
 	}
 }

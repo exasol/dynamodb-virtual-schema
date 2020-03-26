@@ -62,7 +62,7 @@ public abstract class ColumnMappingDefinition implements Serializable {
 		try {
 			final AttributeValue dynamodbProperty = this.resultWalker.walk(dynamodbRow);
 			return convertValue(dynamodbProperty);
-		} catch (final DynamodbResultWalker.DynamodbResultWalkerException e) {
+		} catch (final DynamodbResultWalker.DynamodbResultWalkerException | UnsupportedDynamodbTypeException e) {
 			if (this.lookupFailBehaviour == LookupFailBehaviour.DEFAULT_VALUE) {
 				return this.getDestinationDefaultValue();
 			}
@@ -87,9 +87,20 @@ public abstract class ColumnMappingDefinition implements Serializable {
 	}
 
 	public static class ColumnMappingException extends AdapterException {
-
-		public ColumnMappingException(final String message) {
+		private final ColumnMappingDefinition causingColumn;
+		public ColumnMappingException(final String message, final ColumnMappingDefinition column) {
 			super(message);
+			this.causingColumn = column;
+		}
+
+		public ColumnMappingDefinition getCausingColumn() {
+			return this.causingColumn;
+		}
+	}
+
+	public static class UnsupportedDynamodbTypeException extends ColumnMappingException {
+		public UnsupportedDynamodbTypeException(final String message, final ColumnMappingDefinition column) {
+			super(message, column);
 		}
 	}
 }

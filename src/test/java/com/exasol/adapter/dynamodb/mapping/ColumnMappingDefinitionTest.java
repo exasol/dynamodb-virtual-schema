@@ -12,6 +12,7 @@ import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.exasol.adapter.metadata.DataType;
 import com.exasol.cellvalue.ExasolCellValue;
 import com.exasol.dynamodb.resultwalker.DynamodbResultWalker;
+import com.exasol.dynamodb.resultwalker.IdentityDynamodbResultWalker;
 import com.exasol.dynamodb.resultwalker.ObjectDynamodbResultWalker;
 
 public class ColumnMappingDefinitionTest {
@@ -53,6 +54,16 @@ public class ColumnMappingDefinitionTest {
 				ColumnMappingDefinition.LookupFailBehaviour.EXCEPTION);
 		assertThrows(DynamodbResultWalker.DynamodbResultWalkerException.class,
 				() -> columnMappingDefinition.convertRow(Map.of()));
+	}
+
+	@Test
+	public void testColumnMappingException() {
+		final String columnName = "name";
+		final ExceptionMocColumnMappingDefinition mappingDefinition = new ExceptionMocColumnMappingDefinition(
+				columnName, new IdentityDynamodbResultWalker(), ColumnMappingDefinition.LookupFailBehaviour.EXCEPTION);
+		final ColumnMappingDefinition.ColumnMappingException exception = assertThrows(
+				ColumnMappingDefinition.ColumnMappingException.class, () -> mappingDefinition.convertRow(Map.of()));
+		assertThat(exception.getCausingColumn().getDestinationName(), equalTo(columnName));
 	}
 
 	private static class MocExasolCellValue implements ExasolCellValue {
@@ -100,4 +111,32 @@ public class ColumnMappingDefinitionTest {
 			return new MocExasolCellValue(dynamodbProperty.getS());
 		}
 	}
+
+	private static class ExceptionMocColumnMappingDefinition extends ColumnMappingDefinition {
+		public ExceptionMocColumnMappingDefinition(final String destinationName,
+				final DynamodbResultWalker resultWalker, final LookupFailBehaviour lookupFailBehaviour) {
+			super(destinationName, resultWalker, lookupFailBehaviour);
+		}
+
+		@Override
+		public DataType getDestinationDataType() {
+			return null;
+		}
+
+		@Override
+		public ExasolCellValue getDestinationDefaultValue() {
+			return null;
+		}
+
+		@Override
+		public boolean isDestinationNullable() {
+			return false;
+		}
+
+		@Override
+		protected ExasolCellValue convertValue(final AttributeValue dynamodbProperty) throws ColumnMappingException {
+			throw new ColumnMappingException("message", this);
+		}
+	}
+
 }

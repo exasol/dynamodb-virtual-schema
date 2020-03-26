@@ -11,11 +11,11 @@ import com.exasol.dynamodb.resultwalker.DynamodbResultWalker;
 /**
  * Extracts a string from a DynamoDB table
  */
-public class StringColumnMappingDefinition extends ColumnMappingDefinition {
+public class ToStringColumnMappingDefinition extends ColumnMappingDefinition {
 	private static final long serialVersionUID = -6772281079326146978L;
 	private final int destinationStringSize;
 	private final OverflowBehaviour overflowBehaviour;
-	public StringColumnMappingDefinition(final String destinationName, final int destinationStringSize,
+	public ToStringColumnMappingDefinition(final String destinationName, final int destinationStringSize,
 			final DynamodbResultWalker resultWalker, final LookupFailBehaviour lookupFailBehaviour,
 			final OverflowBehaviour overflowBehaviour) {
 		super(destinationName, resultWalker, lookupFailBehaviour);
@@ -48,15 +48,12 @@ public class StringColumnMappingDefinition extends ColumnMappingDefinition {
 	}
 
 	@Override
-	protected ExasolCellValue convertValue(final AttributeValue dynamodbProperty) throws OverflowException {
+	protected ExasolCellValue convertValue(final AttributeValue dynamodbProperty) throws ColumnMappingException {
 		final String sourceString = walkToString(dynamodbProperty);
 		return new StringExasolCellValue(handleOverflow(sourceString));
 	}
 
-	private String walkToString(final AttributeValue attributeValue) {
-		if (attributeValue == null) {
-			return null;
-		}
+	private String walkToString(final AttributeValue attributeValue) throws ColumnMappingException {
 		if (attributeValue.getS() != null) {
 			return attributeValue.getS();
 		} else if (attributeValue.getN() != null) {
@@ -64,18 +61,15 @@ public class StringColumnMappingDefinition extends ColumnMappingDefinition {
 		} else if (attributeValue.getBOOL() != null) {
 			return Boolean.TRUE.equals(attributeValue.getBOOL()) ? "true" : "false";
 		}
-		return null;
+		throw new UnsupportedDynamodbTypeException("this attribute value type can't be converted to string", this);
 	}
 
 	private String handleOverflow(final String sourceString) throws OverflowException {
-		if (sourceString == null) {
-			return null;
-		}
 		if (sourceString.length() > this.destinationStringSize) {
 			if (this.overflowBehaviour == OverflowBehaviour.TRUNCATE) {
 				return sourceString.substring(0, this.destinationStringSize);
 			} else {
-				throw new OverflowException("String overflow");
+				throw new OverflowException("String overflow", this);
 			}
 		}
 		return sourceString;
@@ -103,8 +97,8 @@ public class StringColumnMappingDefinition extends ColumnMappingDefinition {
 	 */
 	@SuppressWarnings("serial")
 	public static class OverflowException extends ColumnMappingException {
-		public OverflowException(final String message) {
-			super(message);
+		public OverflowException(final String message, final ToStringColumnMappingDefinition column) {
+			super(message, column);
 		}
 	}
 }
