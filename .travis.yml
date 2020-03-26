@@ -11,9 +11,9 @@ before_script:
 - |-
   echo $PROJECT_DIR_ABS;
   if [[ "$TRAVIS_BRANCH" = "develop" && "$TRAVIS_PULL_REQUEST" = "false" ]] ; then
-    cd $PROJECT_DIR_ABS
+    cd $PROJECT_DIR_ABS;
     ls -a ./
-    ls .ci/
+    ls $PROJECT_DIR_ABS/.ci/
     source $PROJECT_DIR_ABS/.ci/setup-ssh.sh || travis_terminate 1
     .ci/generateDocumentation.sh || travis_terminate 1
   fi
