@@ -10,9 +10,8 @@ before_script:
 - tools/version.sh verify
 - |-
   if [[ "$TRAVIS_BRANCH" = "develop" && "$TRAVIS_PULL_REQUEST" = "false" ]] ; then
-    ls -a ./
-    ls .ci/
     source .ci/setup-ssh.sh || travis_terminate 1
+    cat ~/.ssh/config
     .ci/generateDocumentation.sh || travis_terminate 1
   fi
 install:
