@@ -11,10 +11,10 @@ import org.junit.jupiter.api.Test;
 
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.exasol.adapter.AdapterException;
-import com.exasol.adapter.dynamodb.mapping.ColumnMappingDefinition;
+import com.exasol.adapter.dynamodb.mapping.AbstractColumnMappingDefinition;
 import com.exasol.adapter.metadata.DataType;
 import com.exasol.cellvalue.ExasolCellValue;
-import com.exasol.dynamodb.resultwalker.DynamodbResultWalker;
+import com.exasol.dynamodb.resultwalker.AbstractDynamodbResultWalker;
 import com.exasol.dynamodb.resultwalker.IdentityDynamodbResultWalker;
 
 /**
@@ -31,16 +31,16 @@ public class QueryResultTableTest {
 	@Test
 	void testConvertRow() throws AdapterException {
 		final QueryResultColumn queryResultColumn = new QueryResultColumn(new MocColumnMappingDefinition("d",
-				new IdentityDynamodbResultWalker(), ColumnMappingDefinition.LookupFailBehaviour.EXCEPTION));
+				new IdentityDynamodbResultWalker(), AbstractColumnMappingDefinition.LookupFailBehaviour.EXCEPTION));
 		final QueryResultTable queryResultTable = new QueryResultTable(List.of(queryResultColumn));
 		final List<ExasolCellValue> cellValues = queryResultTable.convertRow(Map.of("isbn", new AttributeValue()));
 		final List<String> literals = cellValues.stream().map(ExasolCellValue::toLiteral).collect(Collectors.toList());
 		assertThat(literals, containsInAnyOrder("testValue"));
 	}
 
-	private static class MocColumnMappingDefinition extends ColumnMappingDefinition {
+	private static class MocColumnMappingDefinition extends AbstractColumnMappingDefinition {
 
-		public MocColumnMappingDefinition(final String destinationName, final DynamodbResultWalker resultWalker,
+		public MocColumnMappingDefinition(final String destinationName, final AbstractDynamodbResultWalker resultWalker,
 				final LookupFailBehaviour lookupFailBehaviour) {
 			super(destinationName, resultWalker, lookupFailBehaviour);
 		}

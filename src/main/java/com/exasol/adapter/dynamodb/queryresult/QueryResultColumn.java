@@ -4,7 +4,7 @@ import java.util.Map;
 
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.exasol.adapter.AdapterException;
-import com.exasol.adapter.dynamodb.mapping.ColumnMappingDefinition;
+import com.exasol.adapter.dynamodb.mapping.AbstractColumnMappingDefinition;
 import com.exasol.cellvalue.ExasolCellValue;
 
 /**
@@ -12,20 +12,20 @@ import com.exasol.cellvalue.ExasolCellValue;
  * the actual result using calls to {@link #convertRow(Map)}.
  *
  * Right now this class seems unnecessary as
- * {@link ColumnMappingDefinition#convertRow(Map)} could be used directly. It
+ * {@link AbstractColumnMappingDefinition#convertRow(Map)} could be used directly. It
  * will be needed in the future for representing constant values from the
  * {@code SELECT}.
  */
 public class QueryResultColumn {
-	private final ColumnMappingDefinition columnMapping;
+	private final AbstractColumnMappingDefinition columnMapping;
 
 	/**
 	 * Constructor
 	 * 
 	 * @param columnMapping
-	 *            the {@link ColumnMappingDefinition} for this column
+	 *            the {@link AbstractColumnMappingDefinition} for this column
 	 */
-	public QueryResultColumn(final ColumnMappingDefinition columnMapping) {
+	public QueryResultColumn(final AbstractColumnMappingDefinition columnMapping) {
 		this.columnMapping = columnMapping;
 	}
 
@@ -42,7 +42,7 @@ public class QueryResultColumn {
 		return this.columnMapping.convertRow(dynamodbRow);
 	}
 
-	ColumnMappingDefinition getColumnMapping() {
+	AbstractColumnMappingDefinition getColumnMapping() {
 		return this.columnMapping;
 	}
 }

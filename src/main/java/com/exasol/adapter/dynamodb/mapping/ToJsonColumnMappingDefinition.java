@@ -4,12 +4,12 @@ import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.exasol.adapter.metadata.DataType;
 import com.exasol.cellvalue.ExasolCellValue;
 import com.exasol.cellvalue.StringExasolCellValue;
-import com.exasol.dynamodb.resultwalker.DynamodbResultWalker;
+import com.exasol.dynamodb.resultwalker.AbstractDynamodbResultWalker;
 
 /**
  * Maps a property of a DynamoDB table and all it's descendants to a JSON string
  */
-public class ToJsonColumnMappingDefinition extends ColumnMappingDefinition {
+public class ToJsonColumnMappingDefinition extends AbstractColumnMappingDefinition {
 	private static final long serialVersionUID = 7687302490848045236L;
 
 	/**
@@ -20,7 +20,7 @@ public class ToJsonColumnMappingDefinition extends ColumnMappingDefinition {
 	 * @param resultWalker
 	 *            source walker defining the path in DynamoDB documents.
 	 */
-	public ToJsonColumnMappingDefinition(final String destinationName, final DynamodbResultWalker resultWalker,
+	public ToJsonColumnMappingDefinition(final String destinationName, final AbstractDynamodbResultWalker resultWalker,
 			final LookupFailBehaviour lookupFailBehaviour) {
 		super(destinationName, resultWalker, lookupFailBehaviour);
 	}

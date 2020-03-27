@@ -11,21 +11,21 @@ import com.exasol.adapter.AdapterException;
  * {@code author.name} could be model by:
  * {@code ObjectDynamodbResultWalker("author", ObjectDynamodbResultWalker("name"))}
  */
-public abstract class DynamodbResultWalker implements Serializable {
+public abstract class AbstractDynamodbResultWalker implements Serializable {
 	private static final long serialVersionUID = 7478280663406355912L;
-	private final DynamodbResultWalker next;
+	private final AbstractDynamodbResultWalker next;
 
 	/**
-	 * Constructor as last part of the {@link DynamodbResultWalker} chain.
+	 * Constructor as last part of the {@link AbstractDynamodbResultWalker} chain.
 	 */
-	DynamodbResultWalker() {
+	public AbstractDynamodbResultWalker() {
 		this.next = null;
 	}
 
 	/**
-	 * Constructor as non last part of the {@link DynamodbResultWalker} chain.
+	 * Constructor as non last part of the {@link AbstractDynamodbResultWalker} chain.
 	 */
-	DynamodbResultWalker(final DynamodbResultWalker next) {
+	public AbstractDynamodbResultWalker(final AbstractDynamodbResultWalker next) {
 		this.next = next;
 	}
 
@@ -47,8 +47,8 @@ public abstract class DynamodbResultWalker implements Serializable {
 		return applyNext(applyThis(attributeValue, path), path);
 	}
 
-	abstract AttributeValue applyThis(AttributeValue attributeValue, String path) throws DynamodbResultWalkerException;
-	abstract String stepDescription();
+	protected abstract AttributeValue applyThis(AttributeValue attributeValue, String path) throws DynamodbResultWalkerException;
+	protected abstract String stepDescription();
 
 	private AttributeValue applyNext(final AttributeValue attributeValue, final String path)
 			throws DynamodbResultWalkerException {

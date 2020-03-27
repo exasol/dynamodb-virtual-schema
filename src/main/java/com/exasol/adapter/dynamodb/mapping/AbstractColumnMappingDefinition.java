@@ -7,7 +7,7 @@ import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.exasol.adapter.AdapterException;
 import com.exasol.adapter.metadata.DataType;
 import com.exasol.cellvalue.ExasolCellValue;
-import com.exasol.dynamodb.resultwalker.DynamodbResultWalker;
+import com.exasol.dynamodb.resultwalker.AbstractDynamodbResultWalker;
 
 /**
  * Definition of a column mapping from DynamoDB table to Exasol Virtual Schema.
@@ -20,10 +20,10 @@ import com.exasol.dynamodb.resultwalker.DynamodbResultWalker;
  * inconsistencies between the schema known to the database and the one used by
  * this adapter.
  */
-public abstract class ColumnMappingDefinition implements Serializable {
+public abstract class AbstractColumnMappingDefinition implements Serializable {
 	private static final long serialVersionUID = 48342992735371252L;
 	private final String destinationName;
-	private final DynamodbResultWalker resultWalker;
+	private final AbstractDynamodbResultWalker resultWalker;
 	private final LookupFailBehaviour lookupFailBehaviour;
 
 	/**
@@ -32,13 +32,13 @@ public abstract class ColumnMappingDefinition implements Serializable {
 	 * @param destinationName
 	 *            name of the Exasol column
 	 * @param resultWalker
-	 *            {@link DynamodbResultWalker} representing the path to the source
+	 *            {@link AbstractDynamodbResultWalker} representing the path to the source
 	 *            property
 	 * @param lookupFailBehaviour
 	 *            {@link LookupFailBehaviour} if the defined path does not exist
 	 */
-	public ColumnMappingDefinition(final String destinationName, final DynamodbResultWalker resultWalker,
-			final LookupFailBehaviour lookupFailBehaviour) {
+	public AbstractColumnMappingDefinition(final String destinationName, final AbstractDynamodbResultWalker resultWalker,
+										   final LookupFailBehaviour lookupFailBehaviour) {
 		this.destinationName = destinationName;
 		this.resultWalker = resultWalker;
 		this.lookupFailBehaviour = lookupFailBehaviour;
@@ -91,11 +91,11 @@ public abstract class ColumnMappingDefinition implements Serializable {
 	 * @throws AdapterException
 	 */
 	public ExasolCellValue convertRow(final Map<String, AttributeValue> dynamodbRow)
-			throws DynamodbResultWalker.DynamodbResultWalkerException, ColumnMappingException {
+			throws AbstractDynamodbResultWalker.DynamodbResultWalkerException, ColumnMappingException {
 		try {
 			final AttributeValue dynamodbProperty = this.resultWalker.walk(dynamodbRow);
 			return convertValue(dynamodbProperty);
-		} catch (final DynamodbResultWalker.DynamodbResultWalkerException | UnsupportedDynamodbTypeException e) {
+		} catch (final AbstractDynamodbResultWalker.DynamodbResultWalkerException | UnsupportedDynamodbTypeException e) {
 			if (this.lookupFailBehaviour == LookupFailBehaviour.DEFAULT_VALUE) {
 				return this.getDestinationDefaultValue();
 			}
@@ -131,7 +131,7 @@ public abstract class ColumnMappingDefinition implements Serializable {
 	 * Exception of failures in column mapping
 	 */
 	public static class ColumnMappingException extends AdapterException {
-		private final ColumnMappingDefinition causingColumn;
+		private final AbstractColumnMappingDefinition causingColumn;
 
 		/**
 		 * Constructor.
@@ -139,9 +139,9 @@ public abstract class ColumnMappingDefinition implements Serializable {
 		 * @param message
 		 *            Exception message
 		 * @param column
-		 *            {@link ColumnMappingDefinition} that caused exception
+		 *            {@link AbstractColumnMappingDefinition} that caused exception
 		 */
-		public ColumnMappingException(final String message, final ColumnMappingDefinition column) {
+		public ColumnMappingException(final String message, final AbstractColumnMappingDefinition column) {
 			super(message);
 			this.causingColumn = column;
 		}
@@ -149,9 +149,9 @@ public abstract class ColumnMappingDefinition implements Serializable {
 		/**
 		 * Get the column that caused this exception.
 		 * 
-		 * @return {@link ColumnMappingDefinition} that caused exception
+		 * @return {@link AbstractColumnMappingDefinition} that caused exception
 		 */
-		public ColumnMappingDefinition getCausingColumn() {
+		public AbstractColumnMappingDefinition getCausingColumn() {
 			return this.causingColumn;
 		}
 	}
@@ -161,7 +161,7 @@ public abstract class ColumnMappingDefinition implements Serializable {
 	 * supported by a specific mapping.
 	 */
 	public static class UnsupportedDynamodbTypeException extends ColumnMappingException {
-		public UnsupportedDynamodbTypeException(final String message, final ColumnMappingDefinition column) {
+		public UnsupportedDynamodbTypeException(final String message, final AbstractColumnMappingDefinition column) {
 			super(message, column);
 		}
 	}

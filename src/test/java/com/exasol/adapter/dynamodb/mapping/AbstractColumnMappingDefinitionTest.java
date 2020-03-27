@@ -11,11 +11,11 @@ import org.junit.jupiter.api.Test;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.exasol.adapter.metadata.DataType;
 import com.exasol.cellvalue.ExasolCellValue;
-import com.exasol.dynamodb.resultwalker.DynamodbResultWalker;
+import com.exasol.dynamodb.resultwalker.AbstractDynamodbResultWalker;
 import com.exasol.dynamodb.resultwalker.IdentityDynamodbResultWalker;
 import com.exasol.dynamodb.resultwalker.ObjectDynamodbResultWalker;
 
-public class ColumnMappingDefinitionTest {
+public class AbstractColumnMappingDefinitionTest {
 	@Test
 	void testDestinationName() {
 		final String destinationName = "destinationName";
@@ -26,10 +26,10 @@ public class ColumnMappingDefinitionTest {
 
 	@Test
 	void testLookup()
-			throws DynamodbResultWalker.DynamodbResultWalkerException, ColumnMappingDefinition.ColumnMappingException {
+			throws AbstractDynamodbResultWalker.DynamodbResultWalkerException, AbstractColumnMappingDefinition.ColumnMappingException {
 		final ObjectDynamodbResultWalker resultWalker = new ObjectDynamodbResultWalker("isbn", null);
 		final MocColumnMappingDefinition columnMappingDefinition = new MocColumnMappingDefinition("d", resultWalker,
-				ColumnMappingDefinition.LookupFailBehaviour.EXCEPTION);
+				AbstractColumnMappingDefinition.LookupFailBehaviour.EXCEPTION);
 		final String isbn = "123456789";
 		final AttributeValue isbnValue = new AttributeValue();
 		isbnValue.setS(isbn);
@@ -39,10 +39,10 @@ public class ColumnMappingDefinitionTest {
 
 	@Test
 	void testNullLookupFailBehaviour()
-			throws ColumnMappingDefinition.ColumnMappingException, DynamodbResultWalker.DynamodbResultWalkerException {
+			throws AbstractColumnMappingDefinition.ColumnMappingException, AbstractDynamodbResultWalker.DynamodbResultWalkerException {
 		final ObjectDynamodbResultWalker resultWalker = new ObjectDynamodbResultWalker("nonExistingColumn", null);
 		final MocColumnMappingDefinition columnMappingDefinition = new MocColumnMappingDefinition("d", resultWalker,
-				ColumnMappingDefinition.LookupFailBehaviour.DEFAULT_VALUE);
+				AbstractColumnMappingDefinition.LookupFailBehaviour.DEFAULT_VALUE);
 		final ExasolCellValue exasolCellValue = columnMappingDefinition.convertRow(Map.of());
 		assertThat(exasolCellValue.toLiteral(), equalTo("default"));
 	}
@@ -51,8 +51,8 @@ public class ColumnMappingDefinitionTest {
 	void testExceptionLookupFailBehaviour() {
 		final ObjectDynamodbResultWalker resultWalker = new ObjectDynamodbResultWalker("nonExistingColumn", null);
 		final MocColumnMappingDefinition columnMappingDefinition = new MocColumnMappingDefinition("d", resultWalker,
-				ColumnMappingDefinition.LookupFailBehaviour.EXCEPTION);
-		assertThrows(DynamodbResultWalker.DynamodbResultWalkerException.class,
+				AbstractColumnMappingDefinition.LookupFailBehaviour.EXCEPTION);
+		assertThrows(AbstractDynamodbResultWalker.DynamodbResultWalkerException.class,
 				() -> columnMappingDefinition.convertRow(Map.of()));
 	}
 
@@ -60,9 +60,9 @@ public class ColumnMappingDefinitionTest {
 	public void testColumnMappingException() {
 		final String columnName = "name";
 		final ExceptionMocColumnMappingDefinition mappingDefinition = new ExceptionMocColumnMappingDefinition(
-				columnName, new IdentityDynamodbResultWalker(), ColumnMappingDefinition.LookupFailBehaviour.EXCEPTION);
-		final ColumnMappingDefinition.ColumnMappingException exception = assertThrows(
-				ColumnMappingDefinition.ColumnMappingException.class, () -> mappingDefinition.convertRow(Map.of()));
+				columnName, new IdentityDynamodbResultWalker(), AbstractColumnMappingDefinition.LookupFailBehaviour.EXCEPTION);
+		final AbstractColumnMappingDefinition.ColumnMappingException exception = assertThrows(
+				AbstractColumnMappingDefinition.ColumnMappingException.class, () -> mappingDefinition.convertRow(Map.of()));
 		assertThat(exception.getCausingColumn().getDestinationName(), equalTo(columnName));
 	}
 
@@ -79,8 +79,8 @@ public class ColumnMappingDefinitionTest {
 		}
 	}
 
-	private static class MocColumnMappingDefinition extends ColumnMappingDefinition {
-		public MocColumnMappingDefinition(final String destinationName, final DynamodbResultWalker resultWalker,
+	private static class MocColumnMappingDefinition extends AbstractColumnMappingDefinition {
+		public MocColumnMappingDefinition(final String destinationName, final AbstractDynamodbResultWalker resultWalker,
 				final LookupFailBehaviour lookupFailBehaviour) {
 			super(destinationName, resultWalker, lookupFailBehaviour);
 		}
@@ -112,9 +112,9 @@ public class ColumnMappingDefinitionTest {
 		}
 	}
 
-	private static class ExceptionMocColumnMappingDefinition extends ColumnMappingDefinition {
+	private static class ExceptionMocColumnMappingDefinition extends AbstractColumnMappingDefinition {
 		public ExceptionMocColumnMappingDefinition(final String destinationName,
-				final DynamodbResultWalker resultWalker, final LookupFailBehaviour lookupFailBehaviour) {
+                                                   final AbstractDynamodbResultWalker resultWalker, final LookupFailBehaviour lookupFailBehaviour) {
 			super(destinationName, resultWalker, lookupFailBehaviour);
 		}
 

@@ -6,11 +6,11 @@ import java.util.Collections;
 import java.util.List;
 
 import com.exasol.adapter.AdapterException;
-import com.exasol.adapter.dynamodb.mapping.ColumnMappingDefinition;
+import com.exasol.adapter.dynamodb.mapping.AbstractColumnMappingDefinition;
 import com.exasol.adapter.dynamodb.mapping.SchemaMappingDefinitionToSchemaMetadataConverter;
 import com.exasol.adapter.metadata.ColumnMetadata;
 import com.exasol.adapter.metadata.TableMetadata;
-import com.exasol.adapter.sql.GenericSchemaMappingVisitor;
+import com.exasol.adapter.sql.VoidSqlNodeVisitor;
 import com.exasol.adapter.sql.SqlSelectList;
 import com.exasol.adapter.sql.SqlStatementSelect;
 import com.exasol.adapter.sql.SqlTable;
@@ -19,7 +19,7 @@ import com.exasol.adapter.sql.SqlTable;
  * Visitor for {@link com.exasol.adapter.sql.SqlStatementSelect} building a
  * {@link QueryResultTable}
  */
-public class QueryResultTableBuilder extends GenericSchemaMappingVisitor {
+public class QueryResultTableBuilder extends VoidSqlNodeVisitor {
 	private final List<QueryResultColumn> resultColumns = new ArrayList<>();
 	private String tableName;
 	private TableMetadata tableMetadata;
@@ -61,7 +61,7 @@ public class QueryResultTableBuilder extends GenericSchemaMappingVisitor {
 	private void selectAllColumns() throws AdapterException {
 		try {
 			for (final ColumnMetadata columnMetadata : this.tableMetadata.getColumns()) {
-				final ColumnMappingDefinition columnMappingDefinition = SchemaMappingDefinitionToSchemaMetadataConverter
+				final AbstractColumnMappingDefinition columnMappingDefinition = SchemaMappingDefinitionToSchemaMetadataConverter
 						.convertBackColumn(columnMetadata);
 				final QueryResultColumn resultColumn = new QueryResultColumn(columnMappingDefinition);
 				this.resultColumns.add(resultColumn);

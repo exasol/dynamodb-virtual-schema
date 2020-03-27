@@ -8,7 +8,7 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
-import com.exasol.adapter.dynamodb.mapping.ColumnMappingDefinition;
+import com.exasol.adapter.dynamodb.mapping.AbstractColumnMappingDefinition;
 import com.exasol.adapter.dynamodb.mapping.ToJsonColumnMappingDefinition;
 import com.exasol.adapter.dynamodb.queryresult.QueryResultColumn;
 import com.exasol.adapter.dynamodb.queryresult.QueryResultTable;
@@ -20,7 +20,7 @@ import com.exasol.dynamodb.resultwalker.IdentityDynamodbResultWalker;
 public class CellValuesToSqlSelectFromValuesConverterTest {
 	QueryResultTable getTestTable() {
 		return new QueryResultTable(List.of(new QueryResultColumn(new ToJsonColumnMappingDefinition("json",
-				new IdentityDynamodbResultWalker(), ColumnMappingDefinition.LookupFailBehaviour.DEFAULT_VALUE))));
+				new IdentityDynamodbResultWalker(), AbstractColumnMappingDefinition.LookupFailBehaviour.DEFAULT_VALUE))));
 	}
 
 	@Test

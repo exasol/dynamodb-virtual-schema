@@ -48,7 +48,7 @@ public class ToStringColumnMappingDefinitionTest {
 	void testConvertStringRowBasic() throws AdapterException {
 		final ToStringColumnMappingDefinition toStringColumnMappingDefinition = new ToStringColumnMappingDefinition(
 				DEST_COLUMN, TEST_STRING.length(), new ObjectDynamodbResultWalker(TEST_SOURCE_COLUMN, null),
-				ColumnMappingDefinition.LookupFailBehaviour.DEFAULT_VALUE,
+				AbstractColumnMappingDefinition.LookupFailBehaviour.DEFAULT_VALUE,
 				ToStringColumnMappingDefinition.OverflowBehaviour.EXCEPTION);
 		final ExasolCellValue exasolCellValue = toStringColumnMappingDefinition.convertRow(getDynamodbStringRow());
 		assertThat(exasolCellValue.toLiteral(), equalTo("'" + TEST_STRING + "'"));
@@ -59,7 +59,7 @@ public class ToStringColumnMappingDefinitionTest {
 		final ToStringColumnMappingDefinition toStringColumnMappingDefinition = new ToStringColumnMappingDefinition(
 				DEST_COLUMN, String.valueOf(TEST_NUMBER).length(),
 				new ObjectDynamodbResultWalker(TEST_SOURCE_COLUMN, null),
-				ColumnMappingDefinition.LookupFailBehaviour.DEFAULT_VALUE,
+				AbstractColumnMappingDefinition.LookupFailBehaviour.DEFAULT_VALUE,
 				ToStringColumnMappingDefinition.OverflowBehaviour.EXCEPTION);
 		final ExasolCellValue exasolCellValue = toStringColumnMappingDefinition.convertRow(getDynamodbNumberRow());
 		assertThat(exasolCellValue.toLiteral(), equalTo("'" + String.valueOf(TEST_NUMBER) + "'"));
@@ -69,9 +69,9 @@ public class ToStringColumnMappingDefinitionTest {
 	void testConvertUnsupportedDynamodbType() throws AdapterException {
 		final ToStringColumnMappingDefinition toStringColumnMappingDefinition = new ToStringColumnMappingDefinition(
 				DEST_COLUMN, 2, new ObjectDynamodbResultWalker(TEST_SOURCE_COLUMN, null),
-				ColumnMappingDefinition.LookupFailBehaviour.EXCEPTION,
+				AbstractColumnMappingDefinition.LookupFailBehaviour.EXCEPTION,
 				ToStringColumnMappingDefinition.OverflowBehaviour.EXCEPTION);
-		assertThrows(ColumnMappingDefinition.UnsupportedDynamodbTypeException.class,
+		assertThrows(AbstractColumnMappingDefinition.UnsupportedDynamodbTypeException.class,
 				() -> toStringColumnMappingDefinition.convertRow(getDynamodbListRow()));
 	}
 
@@ -79,7 +79,7 @@ public class ToStringColumnMappingDefinitionTest {
 	void testConvertRowOverflowTruncate() throws AdapterException {
 		final ToStringColumnMappingDefinition toStringColumnMappingDefinition = new ToStringColumnMappingDefinition(
 				DEST_COLUMN, TEST_STRING.length() - 1, new ObjectDynamodbResultWalker(TEST_SOURCE_COLUMN, null),
-				ColumnMappingDefinition.LookupFailBehaviour.DEFAULT_VALUE,
+				AbstractColumnMappingDefinition.LookupFailBehaviour.DEFAULT_VALUE,
 				ToStringColumnMappingDefinition.OverflowBehaviour.TRUNCATE);
 		final ExasolCellValue exasolCellValue = toStringColumnMappingDefinition.convertRow(getDynamodbStringRow());
 		final String expected = TEST_STRING.substring(0, TEST_STRING.length() - 1);
@@ -90,7 +90,7 @@ public class ToStringColumnMappingDefinitionTest {
 	void testConvertRowOverflowException() {
 		final ToStringColumnMappingDefinition toStringColumnMappingDefinition = new ToStringColumnMappingDefinition(
 				DEST_COLUMN, TEST_STRING.length() - 1, new ObjectDynamodbResultWalker(TEST_SOURCE_COLUMN, null),
-				ColumnMappingDefinition.LookupFailBehaviour.DEFAULT_VALUE,
+				AbstractColumnMappingDefinition.LookupFailBehaviour.DEFAULT_VALUE,
 				ToStringColumnMappingDefinition.OverflowBehaviour.EXCEPTION);
 		assertThrows(ToStringColumnMappingDefinition.OverflowException.class,
 				() -> toStringColumnMappingDefinition.convertRow(getDynamodbStringRow()));
@@ -101,7 +101,7 @@ public class ToStringColumnMappingDefinitionTest {
 		final int stringLength = 10;
 		final ToStringColumnMappingDefinition toStringColumnMappingDefinition = new ToStringColumnMappingDefinition(
 				DEST_COLUMN, stringLength, new IdentityDynamodbResultWalker(),
-				ColumnMappingDefinition.LookupFailBehaviour.DEFAULT_VALUE,
+				AbstractColumnMappingDefinition.LookupFailBehaviour.DEFAULT_VALUE,
 				ToStringColumnMappingDefinition.OverflowBehaviour.TRUNCATE);
 		assertAll(
 				() -> assertThat(toStringColumnMappingDefinition.getDestinationDataType().getExaDataType(),

@@ -12,12 +12,12 @@ import org.junit.jupiter.api.Test;
 import com.exasol.adapter.AdapterException;
 
 /**
- * Tests for {@link GenericSchemaMappingVisitor}
+ * Tests for {@link VoidSqlNodeVisitor}
  */
-public class GenericSchemaMappingVisitorTest {
+public class VoidSqlNodeVisitorTest {
 	@Test
 	void testUnimplementedException() {
-		final Method[] methods = GenericSchemaMappingVisitor.class.getDeclaredMethods();
+		final Method[] methods = VoidSqlNodeVisitor.class.getDeclaredMethods();
 		for (final Method method : methods) {
 			final Moc moc = new Moc();
 			if (!method.getName().equals("visit"))
@@ -28,7 +28,7 @@ public class GenericSchemaMappingVisitorTest {
 		}
 	}
 
-	private static class Moc extends GenericSchemaMappingVisitor {
+	private static class Moc extends VoidSqlNodeVisitor {
 
 		@Override
 		public Void visit(final SqlStatementSelect select) throws AdapterException {

@@ -35,8 +35,8 @@ public class JsonMappingFactoryTest {
 		final SchemaMappingDefinition schemaMapping = getMappingDefinitionForFileName("basicMapping.json");
 		final List<TableMappingDefinition> tables = schemaMapping.getTableMappings();
 		final TableMappingDefinition table = tables.get(0);
-		final List<ColumnMappingDefinition> columns = table.getColumns();
-		final List<String> columnNames = columns.stream().map(ColumnMappingDefinition::getDestinationName)
+		final List<AbstractColumnMappingDefinition> columns = table.getColumns();
+		final List<String> columnNames = columns.stream().map(AbstractColumnMappingDefinition::getDestinationName)
 				.collect(Collectors.toList());
 		final ToStringColumnMappingDefinition isbnColumn = (ToStringColumnMappingDefinition) columns.stream()
 				.filter(column -> column.getDestinationName().equals("isbn")).findAny().get();
@@ -49,9 +49,9 @@ public class JsonMappingFactoryTest {
 				() -> assertThat(isbnColumn.getOverflowBehaviour(),
 						equalTo(ToStringColumnMappingDefinition.OverflowBehaviour.EXCEPTION)),
 				() -> assertThat(isbnColumn.getLookupFailBehaviour(),
-						equalTo(ColumnMappingDefinition.LookupFailBehaviour.EXCEPTION)),
+						equalTo(AbstractColumnMappingDefinition.LookupFailBehaviour.EXCEPTION)),
 				() -> assertThat(nameColumn.getLookupFailBehaviour(),
-						equalTo(ColumnMappingDefinition.LookupFailBehaviour.DEFAULT_VALUE)),
+						equalTo(AbstractColumnMappingDefinition.LookupFailBehaviour.DEFAULT_VALUE)),
 				() -> assertThat(nameColumn.getDestinationStringSize(), equalTo(100)),
 				() -> assertThat(nameColumn.getOverflowBehaviour(),
 						equalTo(ToStringColumnMappingDefinition.OverflowBehaviour.TRUNCATE)));
@@ -62,8 +62,8 @@ public class JsonMappingFactoryTest {
 		final SchemaMappingDefinition schemaMapping = getMappingDefinitionForFileName("toJsonMapping.json");
 		final List<TableMappingDefinition> tables = schemaMapping.getTableMappings();
 		final TableMappingDefinition table = tables.get(0);
-		final List<ColumnMappingDefinition> columns = table.getColumns();
-		final List<String> columnNames = columns.stream().map(ColumnMappingDefinition::getDestinationName)
+		final List<AbstractColumnMappingDefinition> columns = table.getColumns();
+		final List<String> columnNames = columns.stream().map(AbstractColumnMappingDefinition::getDestinationName)
 				.collect(Collectors.toList());
 		assertAll(() -> assertThat(tables.size(), equalTo(1)), //
 				() -> assertThat(table.getDestName(), equalTo("BOOKS")),

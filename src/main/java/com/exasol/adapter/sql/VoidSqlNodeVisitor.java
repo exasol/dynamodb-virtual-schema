@@ -8,7 +8,7 @@ import com.exasol.adapter.dynamodb.queryresult.QueryResultTableBuilder;
  * unsupported exception. This class is used for keeping
  * {@link QueryResultTableBuilder} short and readable.
  */
-public abstract class GenericSchemaMappingVisitor implements SqlNodeVisitor<Void> {
+public abstract class VoidSqlNodeVisitor implements SqlNodeVisitor<Void> {
 	private static final String UNSUPPORTED_MESSAGE = "not yet supported";
 	@Override
 	public Void visit(final SqlSelectList selectList) throws AdapterException {

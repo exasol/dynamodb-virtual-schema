@@ -19,7 +19,7 @@ public class SchemaMappingDefinitionToSchemaMetadataConverterTest {
 	public SchemaMappingDefinition getSchemaMapping() {
 		final TableMappingDefinition table = TableMappingDefinition.builder("testTable", true)
 				.withColumnMappingDefinition(new ToJsonColumnMappingDefinition("json",
-						new IdentityDynamodbResultWalker(), ColumnMappingDefinition.LookupFailBehaviour.DEFAULT_VALUE))
+						new IdentityDynamodbResultWalker(), AbstractColumnMappingDefinition.LookupFailBehaviour.DEFAULT_VALUE))
 				.build();
 		return new SchemaMappingDefinition(List.of(table));
 	}
@@ -42,7 +42,7 @@ public class SchemaMappingDefinitionToSchemaMetadataConverterTest {
 		final SchemaMappingDefinition schemaMapping = getSchemaMapping();
 		final SchemaMetadata schemaMetadata = SchemaMappingDefinitionToSchemaMetadataConverter.convert(schemaMapping);
 		final ColumnMetadata firstColumnMetadata = schemaMetadata.getTables().get(0).getColumns().get(0);
-		final ColumnMappingDefinition columnMappingDefinition = SchemaMappingDefinitionToSchemaMetadataConverter
+		final AbstractColumnMappingDefinition columnMappingDefinition = SchemaMappingDefinitionToSchemaMetadataConverter
 				.convertBackColumn(firstColumnMetadata);
 		assertThat(columnMappingDefinition.getDestinationName(), equalTo("json"));
 	}

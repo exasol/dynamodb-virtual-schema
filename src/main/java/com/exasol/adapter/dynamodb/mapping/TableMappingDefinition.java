@@ -13,10 +13,10 @@ import java.util.List;
 public class TableMappingDefinition {
 	private final String destName;
 	private final boolean isRootTable;
-	private final List<ColumnMappingDefinition> columns;
+	private final List<AbstractColumnMappingDefinition> columns;
 
 	private TableMappingDefinition(final String destName, final boolean isRootTable,
-			final List<ColumnMappingDefinition> columns) {
+			final List<AbstractColumnMappingDefinition> columns) {
 		this.destName = destName;
 		this.isRootTable = isRootTable;
 		this.columns = columns;
@@ -47,9 +47,9 @@ public class TableMappingDefinition {
 	/**
 	 * Get the columns of this table
 	 * 
-	 * @return List of {@link ColumnMappingDefinition}s
+	 * @return List of {@link AbstractColumnMappingDefinition}s
 	 */
-	public List<ColumnMappingDefinition> getColumns() {
+	public List<AbstractColumnMappingDefinition> getColumns() {
 		return this.columns;
 	}
 
@@ -60,7 +60,7 @@ public class TableMappingDefinition {
 	 *         {@code <false>} if this table represents a nested list or map from
 	 *         DynamoDB
 	 */
-	boolean isRootTable() {
+	public boolean isRootTable() {
 		return this.isRootTable;
 	}
 
@@ -70,19 +70,19 @@ public class TableMappingDefinition {
 	public static class Builder {
 		private final String destName;
 		private final boolean isRootTable;
-		private final List<ColumnMappingDefinition> columns = new ArrayList<>();
+		private final List<AbstractColumnMappingDefinition> columns = new ArrayList<>();
 		private Builder(final String destName, final boolean isRootTable) {
 			this.destName = destName;
 			this.isRootTable = isRootTable;
 		}
 
 		/**
-		 * Adds a {@link ColumnMappingDefinition}
+		 * Adds a {@link AbstractColumnMappingDefinition}
 		 * 
 		 * @param columnMappingDefinition
 		 * @return self
 		 */
-		public Builder withColumnMappingDefinition(final ColumnMappingDefinition columnMappingDefinition) {
+		public Builder withColumnMappingDefinition(final AbstractColumnMappingDefinition columnMappingDefinition) {
 			this.columns.add(columnMappingDefinition);
 			return this;
 		}

@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Test;
 
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 
-public class DynamodbResultWalkerTest {
+public class AbstractDynamodbResultWalkerTest {
 	Map<String, AttributeValue> getTestData() {
 		final AttributeValue isbn = new AttributeValue();
 		isbn.setS("1234");
@@ -30,14 +30,14 @@ public class DynamodbResultWalkerTest {
 	}
 
 	@Test
-	void testIdentityWalker() throws DynamodbResultWalker.DynamodbResultWalkerException {
+	void testIdentityWalker() throws AbstractDynamodbResultWalker.DynamodbResultWalkerException {
 		final Map<String, AttributeValue> testData = getTestData();
 		final IdentityDynamodbResultWalker walker = new IdentityDynamodbResultWalker();
 		assertThat(walker.walk(testData).getM(), equalTo(testData));
 	}
 
 	@Test
-	void testChainedIdentityWalker() throws DynamodbResultWalker.DynamodbResultWalkerException {
+	void testChainedIdentityWalker() throws AbstractDynamodbResultWalker.DynamodbResultWalkerException {
 		final Map<String, AttributeValue> testData = getTestData();
 		final IdentityDynamodbResultWalker walker = new IdentityDynamodbResultWalker(
 				new IdentityDynamodbResultWalker());
@@ -45,14 +45,14 @@ public class DynamodbResultWalkerTest {
 	}
 
 	@Test
-	void testObjectWalker() throws DynamodbResultWalker.DynamodbResultWalkerException {
+	void testObjectWalker() throws AbstractDynamodbResultWalker.DynamodbResultWalkerException {
 		final Map<String, AttributeValue> testData = getTestData();
 		final ObjectDynamodbResultWalker walker = new ObjectDynamodbResultWalker("isbn", null);
 		assertThat(walker.walk(testData), equalTo(testData.get("isbn")));
 	}
 
 	@Test
-	void testChainedObjectWalker() throws DynamodbResultWalker.DynamodbResultWalkerException {
+	void testChainedObjectWalker() throws AbstractDynamodbResultWalker.DynamodbResultWalkerException {
 		final Map<String, AttributeValue> testData = getTestData();
 		final ObjectDynamodbResultWalker walker = new ObjectDynamodbResultWalker("publisher",
 				new ObjectDynamodbResultWalker("name", null));
@@ -62,8 +62,8 @@ public class DynamodbResultWalkerTest {
 	@Test
 	void testObjectWalkerException() {
 		final ObjectDynamodbResultWalker walker = new ObjectDynamodbResultWalker("isbn", null);
-		final DynamodbResultWalker.DynamodbResultWalkerException exception = assertThrows(
-				DynamodbResultWalker.DynamodbResultWalkerException.class, () -> walker.walk(Collections.emptyMap()));
+		final AbstractDynamodbResultWalker.DynamodbResultWalkerException exception = assertThrows(
+				AbstractDynamodbResultWalker.DynamodbResultWalkerException.class, () -> walker.walk(Collections.emptyMap()));
 		assertThat(exception.getCurrentPath(), equalTo(""));
 	}
 
@@ -81,8 +81,8 @@ public class DynamodbResultWalkerTest {
 	void testObjectWalkerExceptionInChainedObjectWalker() {
 		final ObjectDynamodbResultWalker walker = new ObjectDynamodbResultWalker("publisher",
 				new ObjectDynamodbResultWalker("name", new ObjectDynamodbResultWalker("unknownProperty", null)));
-		final DynamodbResultWalker.DynamodbResultWalkerException exception = assertThrows(
-				DynamodbResultWalker.DynamodbResultWalkerException.class, () -> walker.walk(getTestData()));
+		final AbstractDynamodbResultWalker.DynamodbResultWalkerException exception = assertThrows(
+				AbstractDynamodbResultWalker.DynamodbResultWalkerException.class, () -> walker.walk(getTestData()));
 		assertThat(exception.getCurrentPath(), equalTo("/publisher/name"));
 	}
 }

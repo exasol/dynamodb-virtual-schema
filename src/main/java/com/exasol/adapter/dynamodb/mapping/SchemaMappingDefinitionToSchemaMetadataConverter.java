@@ -11,7 +11,7 @@ import com.exasol.utils.StringSerializer;
 
 /**
  * This class converts a {@link SchemaMappingDefinition} into a
- * {@link SchemaMetadata}. The {@link ColumnMappingDefinition}s are serialized
+ * {@link SchemaMetadata}. The {@link AbstractColumnMappingDefinition}s are serialized
  * into {@link ColumnMetadata#getAdapterNotes()}. Using
  * {@link #convertBackColumn(ColumnMetadata)} it can get deserialized again.
  */
@@ -27,7 +27,7 @@ public class SchemaMappingDefinitionToSchemaMetadataConverter {
 	 *            the {@link SchemaMappingDefinition} to be converted
 	 * @return {@link SchemaMetadata}
 	 * @throws IOException
-	 *             if {@link ColumnMappingDefinition} could not get serialized
+	 *             if {@link AbstractColumnMappingDefinition} could not get serialized
 	 */
 	public static SchemaMetadata convert(final SchemaMappingDefinition schemaMappingDefinition) throws IOException {
 		final List<TableMetadata> tableMetadata = new ArrayList<>();
@@ -39,14 +39,14 @@ public class SchemaMappingDefinitionToSchemaMetadataConverter {
 
 	private static TableMetadata convertTable(final TableMappingDefinition tableMappingDefinition) throws IOException {
 		final List<ColumnMetadata> columnDefinitions = new ArrayList<>();
-		for (final ColumnMappingDefinition column : tableMappingDefinition.getColumns()) {
+		for (final AbstractColumnMappingDefinition column : tableMappingDefinition.getColumns()) {
 			columnDefinitions.add(convertColumn(column));
 		}
 		final String adapterNotes = "";// Due to a bug in exasol core adapter notes are not stored for tables
 		return new TableMetadata(tableMappingDefinition.getDestName(), adapterNotes, columnDefinitions, "");
 	}
 
-	private static ColumnMetadata convertColumn(final ColumnMappingDefinition columnMappingDefinition)
+	private static ColumnMetadata convertColumn(final AbstractColumnMappingDefinition columnMappingDefinition)
 			throws IOException {
 		final String serialized = StringSerializer.serializeToString(columnMappingDefinition);
 		return ColumnMetadata.builder()//
@@ -58,16 +58,16 @@ public class SchemaMappingDefinitionToSchemaMetadataConverter {
 	}
 
 	/**
-	 * Build a {@link ColumnMappingDefinition} from ColumnMetadata.
+	 * Build a {@link AbstractColumnMappingDefinition} from ColumnMetadata.
 	 *
 	 * @param columnMetadata
 	 * @return ColumnMappingDefinition
 	 * @throws IOException
 	 * @throws ClassNotFoundException
 	 */
-	public static ColumnMappingDefinition convertBackColumn(final ColumnMetadata columnMetadata)
+	public static AbstractColumnMappingDefinition convertBackColumn(final ColumnMetadata columnMetadata)
 			throws IOException, ClassNotFoundException {
 		final String serialized = columnMetadata.getAdapterNotes();
-		return (ColumnMappingDefinition) StringSerializer.deserializeFromString(serialized);
+		return (AbstractColumnMappingDefinition) StringSerializer.deserializeFromString(serialized);
 	}
 }

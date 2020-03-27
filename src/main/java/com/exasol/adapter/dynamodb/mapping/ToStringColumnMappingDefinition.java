@@ -6,12 +6,12 @@ import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.exasol.adapter.metadata.DataType;
 import com.exasol.cellvalue.ExasolCellValue;
 import com.exasol.cellvalue.StringExasolCellValue;
-import com.exasol.dynamodb.resultwalker.DynamodbResultWalker;
+import com.exasol.dynamodb.resultwalker.AbstractDynamodbResultWalker;
 
 /**
  * Extracts a string from a DynamoDB table and maps to a Exasol VarChar column
  */
-public class ToStringColumnMappingDefinition extends ColumnMappingDefinition {
+public class ToStringColumnMappingDefinition extends AbstractColumnMappingDefinition {
 	private static final long serialVersionUID = -6772281079326146978L;
 	private final int destinationStringSize;
 	private final OverflowBehaviour overflowBehaviour;
@@ -24,7 +24,7 @@ public class ToStringColumnMappingDefinition extends ColumnMappingDefinition {
 	 * @param destinationStringSize
 	 *            Length of the Exasol VARCHAR
 	 * @param resultWalker
-	 *            {@link DynamodbResultWalker} representing the path to the source *
+	 *            {@link AbstractDynamodbResultWalker} representing the path to the source *
 	 *            property
 	 * @param lookupFailBehaviour
 	 *            {@link LookupFailBehaviour} if the defined path does not exist
@@ -33,8 +33,8 @@ public class ToStringColumnMappingDefinition extends ColumnMappingDefinition {
 	 *            {@link #destinationStringSize}
 	 */
 	public ToStringColumnMappingDefinition(final String destinationName, final int destinationStringSize,
-			final DynamodbResultWalker resultWalker, final LookupFailBehaviour lookupFailBehaviour,
-			final OverflowBehaviour overflowBehaviour) {
+										   final AbstractDynamodbResultWalker resultWalker, final LookupFailBehaviour lookupFailBehaviour,
+										   final OverflowBehaviour overflowBehaviour) {
 		super(destinationName, resultWalker, lookupFailBehaviour);
 		this.destinationStringSize = destinationStringSize;
 		this.overflowBehaviour = overflowBehaviour;
@@ -60,8 +60,7 @@ public class ToStringColumnMappingDefinition extends ColumnMappingDefinition {
 
 	@Override
 	public DataType getDestinationDataType() {
-		return DataType.createVarChar(this.destinationStringSize, DataType.ExaCharset.UTF8);// TODO @sebastian is ASCII
-																							// intended?
+		return DataType.createVarChar(this.destinationStringSize, DataType.ExaCharset.UTF8);
 	}
 
 	@Override

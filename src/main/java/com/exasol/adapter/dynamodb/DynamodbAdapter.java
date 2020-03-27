@@ -29,7 +29,7 @@ import com.exasol.adapter.response.*;
 import com.exasol.cellvalue.CellValuesToSqlSelectFromValuesConverter;
 import com.exasol.cellvalue.ExasolCellValue;
 import com.exasol.dynamodb.DynamodbConnectionUtil;
-import com.exasol.dynamodb.resultwalker.DynamodbResultWalker;
+import com.exasol.dynamodb.resultwalker.AbstractDynamodbResultWalker;
 
 /**
  * DynamoDB Virtual Schema adapter.
@@ -125,7 +125,7 @@ public class DynamodbAdapter implements VirtualSchemaAdapter {
 			return PushDownResponse.builder()//
 					.pushDownSql(selectFromValuesStatement)//
 					.build();
-		} catch (final ExaConnectionAccessException | DynamodbResultWalker.DynamodbResultWalkerException exception) {
+		} catch (final ExaConnectionAccessException | AbstractDynamodbResultWalker.DynamodbResultWalkerException exception) {
 			throw new AdapterException("Unable create Virtual Schema \"" + request.getVirtualSchemaName()
 					+ "\". Cause: \"" + exception.getMessage(), exception);
 		}
