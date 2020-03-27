@@ -4,7 +4,7 @@
   "destTableName": "BOOKS",
   "description": "Maps MY_BOOKS to BOOKS",
   "mapping": {
-    "children": {
+    "fields": {
       "topics": {
         "toTableMapping": {
           "mapping": {

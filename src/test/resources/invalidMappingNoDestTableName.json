@@ -2,7 +2,7 @@
   "$schema": "../../main/resources/mappingLanguageSchema.json",
   "srcTable": "MY_BOOKS",
   "description": "Maps MY_BOOKS to BOOKS",
-  "children": {
+  "fields": {
     "isbn": {
       "toStringMapping": {
       }

@@ -4,11 +4,11 @@
   "destTableName": "BOOKS",
   "description": "Maps MY_BOOKS to BOOKS",
   "mapping": {
-    "children": {
+    "fields": {
       "chapters": {
         "toTableMapping": {
           "mapping": {
-            "children": {
+            "fields": {
               "name": {
                 "toStringMapping": {
                   "destName": "chapterName"

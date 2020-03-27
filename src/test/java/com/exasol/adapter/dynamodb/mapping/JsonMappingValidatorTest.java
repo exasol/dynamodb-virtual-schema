@@ -88,19 +88,19 @@ public class JsonMappingValidatorTest {
 		final JsonMappingFactory.MappingException exception = assertThrows(JsonMappingFactory.MappingException.class,
 				() -> runValidation("invalidMappingUnknownMappingType.json"));
 		assertThat(exception.getMessage(), equalTo(
-				"#/mapping/children/isbn: extraneous key [toStriiiiiiingMapping] is not permitted, use one of the following mapping definitions here: toTableMapping, children, toJsonMapping, toStringMapping"));
+				"#/mapping/fields/isbn: extraneous key [toStriiiiiiingMapping] is not permitted, use one of the following mapping definitions here: toTableMapping, toJsonMapping, fields, toStringMapping"));
 	}
 
 	@Test
-	void testInvalidToTableWithNoChildren() {
+	void testInvalidToTableWithNoFields() {
 		final JsonMappingFactory.MappingException exception = assertThrows(JsonMappingFactory.MappingException.class,
-				() -> runValidation("invalidToTableMappingWithNoChildren.json"));
+				() -> runValidation("invalidToTableMappingWithNoFields.json"));
 		assertThat(exception.getMessage(), equalTo(
-				"#/mapping/children/topics/toTableMapping/mapping please specify at least one mapping here. Possible are: toTableMapping, children, toJsonMapping, toStringMapping"));
+				"#/mapping/fields/topics/toTableMapping/mapping please specify at least one mapping here. Possible are: toTableMapping, toJsonMapping, fields, toStringMapping"));
 	}
 
 	@Test
-	void testInvalidNoChildren() {
+	void testInvalidNoMapping() {
 		final JsonMappingFactory.MappingException exception = assertThrows(JsonMappingFactory.MappingException.class,
 				() -> runValidation("invalidMappingNoMapping.json"));
 		assertThat(exception.getMessage(), equalTo("#: required key [mapping] not found"));
@@ -111,6 +111,6 @@ public class JsonMappingValidatorTest {
 		final JsonMappingFactory.MappingException exception = assertThrows(JsonMappingFactory.MappingException.class,
 				() -> runValidation("invalidMappingUnknownMappingTypeInToTable.json"));
 		assertThat(exception.getMessage(), equalTo(
-				"#/mapping/children/topics/toTableMapping/mapping: extraneous key [toStriiiiingMapping] is not permitted, use one of the following mapping definitions here: toTableMapping, children, toJsonMapping, toStringMapping"));
+				"#/mapping/fields/topics/toTableMapping/mapping: extraneous key [toStriiiiingMapping] is not permitted, use one of the following mapping definitions here: toTableMapping, toJsonMapping, fields, toStringMapping"));
 	}
 }

@@ -7,10 +7,10 @@
       "default": 254,
       "minimum": 1
     },
-    "children": {
+    "fields": {
       "type": "object",
       "title": "",
-      "description": "Using the children object definition a step down into the property tree is modeled. \n\n**Properties**:\n\nNAME_OF_DYNAMODB_COLUMN: mappingDefinition\n\nIt must be specified a least one column.",
+      "description": "Using the fields object definition a step down into the property tree is modeled. \n\n**Properties**:\n\nNAME_OF_DYNAMODB_COLUMN: mappingDefinition\n\nIt must be specified a least one column.",
       "minProperties": 1,
       "additionalProperties": {
         "$ref": "#/definitions/mappingDefinition"
@@ -22,8 +22,8 @@
       "minProperties": 1,
       "maxProperties": 1,
       "properties": {
-        "children": {
-          "$ref": "#/definitions/children"
+        "fields": {
+          "$ref": "#/definitions/fields"
         },
         "toStringMapping": {
           "type": "object",
@@ -84,7 +84,7 @@
             },
             "mapping": {
               "$ref": "#/definitions/mappingDefinition",
-              "description": "Defines the mapping for the columns of the new table. If the DynamoDB list contains non objects like strings here directly a toString mapping can be applied. Otherwise, if the list contains objects, you can navigate through its properties using children."
+              "description": "Defines the mapping for the columns of the new table. If the DynamoDB list contains non objects like strings here directly a toString mapping can be applied. Otherwise, if the list contains objects, you can navigate through its properties using fields."
             },
             "description": {
               "$ref": "#/definitions/description"
@@ -111,7 +111,7 @@
   },
   "type": "object",
   "title": "The Root Schema - Represents the mapping from a DynamoDB table to an Exasol Virtual Schema table",
-  "description": "The structure of this mapping definition follows the structure of the data in the DynamoDB. This object represents a DynamoDB table. Its properties are modeled in the children property of this object. Only properties of the DynamoDB table that shall be mapped are modeled. \n\n Each of this objects must be stored in a single .json file an get uploaded to an directory in bucketfs.",
+  "description": "The structure of this mapping definition follows the structure of the data in the DynamoDB. This object represents a DynamoDB table. Its properties are modeled in the fields property of this object. Only properties of the DynamoDB table that shall be mapped are modeled. \n\n Each of this objects must be stored in a single .json file an get uploaded to an directory in bucketfs.",
   "additionalProperties": false,
   "required": [
     "$schema",
@@ -144,7 +144,7 @@
     },
     "mapping": {
       "$ref": "#/definitions/mappingDefinition",
-      "description": "Defines the mapping for the columns of the table. Typically children is set here to navigate the DynamoDB tables properties. But also toJson mapping is possible here. In that case the whole document is mapped to a JSON string."
+      "description": "Defines the mapping for the columns of the table. Typically fields is set here to navigate the DynamoDB tables properties. But also toJson mapping is possible here. In that case the whole document is mapped to a JSON string."
     }
   }
 }

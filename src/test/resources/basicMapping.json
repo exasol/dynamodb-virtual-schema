@@ -4,7 +4,7 @@
   "destTableName": "BOOKS",
   "description": "Maps MY_BOOKS to BOOKS",
   "mapping": {
-    "children": {
+    "fields": {
       "isbn": {
         "toStringMapping": {
           "maxLength": 20,
@@ -21,7 +21,7 @@
         }
       },
       "author": {
-        "children": {
+        "fields": {
           "name": {
             "toStringMapping": {
               "maxLength": 20,

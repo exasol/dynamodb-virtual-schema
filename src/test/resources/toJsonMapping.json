@@ -4,7 +4,7 @@
   "destTableName": "BOOKS",
   "description": "Maps MY_BOOKS to BOOKS with toJSON",
   "mapping": {
-    "children": {
+    "fields": {
       "isbn": {
         "toStringMapping": {
           "maxLength": 20,

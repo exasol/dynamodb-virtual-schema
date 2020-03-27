@@ -24,7 +24,7 @@ import com.exasol.dynamodb.resultwalker.ObjectDynamodbResultWalker;
 public class JsonMappingFactory implements MappingFactory {
 	private static final String DEST_TABLE_NAME_KEY = "destTableName";
 	private static final String MAPPING_KEY = "mapping";
-	private static final String CHILDREN_KEY = "children";
+	private static final String FIELDS_KEY = "fields";
 	private static final String TO_STRING_MAPPING_KEY = "toStringMapping";
 	private static final String TO_JSON_MAPPING_KEY = "toJsonMapping";
 	private static final String MAX_LENGTH_KEY = "maxLength";
@@ -108,8 +108,8 @@ public class JsonMappingFactory implements MappingFactory {
 		} else if (definition.has(TO_JSON_MAPPING_KEY)) {
 			addToJsonColumn(definition.getJSONObject(TO_JSON_MAPPING_KEY), walkerToThisPath, tableBuilder,
 					propertyName);
-		} else if (definition.has(CHILDREN_KEY)) {
-			walkChildren(definition.getJSONObject(CHILDREN_KEY), walkerToThisPath, tableBuilder);
+		} else if (definition.has(FIELDS_KEY)) {
+			walkChildren(definition.getJSONObject(FIELDS_KEY), walkerToThisPath, tableBuilder);
 		} else {
 			throw new UnsupportedOperationException("not yet implemented");
 		}

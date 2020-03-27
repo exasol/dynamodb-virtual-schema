@@ -5,7 +5,7 @@
   "unknownProperty": "value",
   "description": "Maps MY_BOOKS to BOOKS",
   "mapping": {
-    "children": {
+    "fields": {
       "isbn": {
         "toStringMapping": {
         }
