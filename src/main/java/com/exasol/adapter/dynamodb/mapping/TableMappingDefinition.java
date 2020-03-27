@@ -35,10 +35,20 @@ public class TableMappingDefinition {
 		return new Builder(destName, isRootTable);
 	}
 
+	/**
+	 * Get the name of the Exasol table
+	 * 
+	 * @return name of the Exasol table
+	 */
 	public String getDestName() {
 		return this.destName;
 	}
 
+	/**
+	 * Get the columns of this table
+	 * 
+	 * @return List of {@link ColumnMappingDefinition}s
+	 */
 	public List<ColumnMappingDefinition> getColumns() {
 		return this.columns;
 	}

@@ -10,10 +10,21 @@ import java.util.List;
 public class SchemaMappingDefinition {
 	private final List<TableMappingDefinition> tableMappings;
 
+	/**
+	 * Constructor.
+	 * 
+	 * @param tableMappings
+	 *            List of {@link TableMappingDefinition}s
+	 */
 	public SchemaMappingDefinition(final List<TableMappingDefinition> tableMappings) {
 		this.tableMappings = tableMappings;
 	}
 
+	/**
+	 * Gets the {@link TableMappingDefinition}s
+	 * 
+	 * @return List of {@link TableMappingDefinition}s
+	 */
 	public List<TableMappingDefinition> getTableMappings() {
 		return this.tableMappings;
 	}

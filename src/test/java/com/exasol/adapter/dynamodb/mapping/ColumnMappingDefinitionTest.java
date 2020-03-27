@@ -138,5 +138,4 @@ public class ColumnMappingDefinitionTest {
 			throw new ColumnMappingException("message", this);
 		}
 	}
-
 }

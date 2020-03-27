@@ -81,9 +81,9 @@ public class ToStringColumnMappingDefinitionTest {
 				DEST_COLUMN, TEST_STRING.length() - 1, new ObjectDynamodbResultWalker(TEST_SOURCE_COLUMN, null),
 				ColumnMappingDefinition.LookupFailBehaviour.DEFAULT_VALUE,
 				ToStringColumnMappingDefinition.OverflowBehaviour.TRUNCATE);
-		final ExasolCellValue exasolDataframe = toStringColumnMappingDefinition.convertRow(getDynamodbStringRow());
+		final ExasolCellValue exasolCellValue = toStringColumnMappingDefinition.convertRow(getDynamodbStringRow());
 		final String expected = TEST_STRING.substring(0, TEST_STRING.length() - 1);
-		assertThat(exasolDataframe.toLiteral(), equalTo("'" + expected + "'"));
+		assertThat(exasolCellValue.toLiteral(), equalTo("'" + expected + "'"));
 	}
 
 	@Test

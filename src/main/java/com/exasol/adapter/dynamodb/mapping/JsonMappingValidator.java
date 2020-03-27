@@ -11,7 +11,20 @@ import org.everit.json.schema.loader.SchemaLoader;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 
+/**
+ * Validator for mapping definitions using a JSON-schema validator.
+ */
 public class JsonMappingValidator {
+	/**
+	 * Validates the given schema using a JSON-schema validator.
+	 * 
+	 * @param schemaMappingDefinition
+	 *            schema mapping definition to validate
+	 * @throws IOException
+	 *             if schema definition could not be opened
+	 * @throws JsonMappingFactory.MappingException
+	 *             if schema is violated
+	 */
 	public void validate(final JSONObject schemaMappingDefinition)
 			throws IOException, JsonMappingFactory.MappingException {
 		final ClassLoader classLoader = JsonMappingFactory.class.getClassLoader();
@@ -78,5 +91,4 @@ public class JsonMappingValidator {
 		final ReferenceSchema referenceSchema = (ReferenceSchema) schema;
 		return (ObjectSchema) referenceSchema.getReferredSchema();
 	}
-
 }

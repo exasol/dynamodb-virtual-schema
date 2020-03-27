@@ -46,5 +46,4 @@ public class SchemaMappingDefinitionToSchemaMetadataConverterTest {
 				.convertBackColumn(firstColumnMetadata);
 		assertThat(columnMappingDefinition.getDestinationName(), equalTo("json"));
 	}
-
 }

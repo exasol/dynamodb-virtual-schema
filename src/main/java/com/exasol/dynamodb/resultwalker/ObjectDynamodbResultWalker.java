@@ -40,11 +40,21 @@ public class ObjectDynamodbResultWalker extends DynamodbResultWalker {
 		return "/" + this.lookupKey;
 	}
 
+	/**
+	 * Builder for {@link ObjectDynamodbResultWalker}
+	 */
 	public static class Builder extends DynamodbResultWalkerBuilder {
-
 		private final DynamodbResultWalkerBuilder previousBuilder;
 		private final String lookupKey;
 
+		/**
+		 * Constructor.
+		 * 
+		 * @param previousBuilder
+		 *            previous builder in chain
+		 * @param lookupKey
+		 *            DynamoDB property name
+		 */
 		public Builder(final DynamodbResultWalkerBuilder previousBuilder, final String lookupKey) {
 			this.previousBuilder = previousBuilder;
 			this.lookupKey = lookupKey;
@@ -56,6 +66,10 @@ public class ObjectDynamodbResultWalker extends DynamodbResultWalker {
 		}
 	}
 
+	/**
+	 * Exception that is thrown if the defined DynamoDB property is not present in a
+	 * document.
+	 */
 	public static class LookupException extends DynamodbResultWalkerException {
 		private final String missingLookupKey;
 		LookupException(final String message, final String currentPath, final String missingKey) {

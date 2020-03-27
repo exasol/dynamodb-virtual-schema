@@ -19,10 +19,25 @@ import com.exasol.cellvalue.ExasolCellValue;
 public class QueryResultColumn {
 	private final ColumnMappingDefinition columnMapping;
 
+	/**
+	 * Constructor
+	 * 
+	 * @param columnMapping
+	 *            the {@link ColumnMappingDefinition} for this column
+	 */
 	public QueryResultColumn(final ColumnMappingDefinition columnMapping) {
 		this.columnMapping = columnMapping;
 	}
 
+	/**
+	 * Converts a DynamoDB row into a Exasol row
+	 * 
+	 * @param dynamodbRow
+	 *            DynamoDB row
+	 * @return Exasol row
+	 * @throws AdapterException
+	 *             if query abort was configured on conversion errors.
+	 */
 	public ExasolCellValue convertRow(final Map<String, AttributeValue> dynamodbRow) throws AdapterException {
 		return this.columnMapping.convertRow(dynamodbRow);
 	}

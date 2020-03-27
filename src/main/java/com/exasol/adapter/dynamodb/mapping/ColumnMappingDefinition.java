@@ -26,6 +26,17 @@ public abstract class ColumnMappingDefinition implements Serializable {
 	private final DynamodbResultWalker resultWalker;
 	private final LookupFailBehaviour lookupFailBehaviour;
 
+	/**
+	 * Constructor.
+	 * 
+	 * @param destinationName
+	 *            name of the Exasol column
+	 * @param resultWalker
+	 *            {@link DynamodbResultWalker} representing the path to the source
+	 *            property
+	 * @param lookupFailBehaviour
+	 *            {@link LookupFailBehaviour} if the defined path does not exist
+	 */
 	public ColumnMappingDefinition(final String destinationName, final DynamodbResultWalker resultWalker,
 			final LookupFailBehaviour lookupFailBehaviour) {
 		this.destinationName = destinationName;
@@ -42,10 +53,32 @@ public abstract class ColumnMappingDefinition implements Serializable {
 		return this.destinationName;
 	}
 
+	/**
+	 * Get the Exasol data type.
+	 * 
+	 * @return Exasol data type
+	 */
 	public abstract DataType getDestinationDataType();
+
+	/**
+	 * Get the default value of this column.
+	 * 
+	 * @return {@link ExasolCellValue} holding default value
+	 */
 	public abstract ExasolCellValue getDestinationDefaultValue();
+
+	/**
+	 * Is Exasol column nullable.
+	 * 
+	 * @return {@code <true>} if Exasol column is nullable
+	 */
 	public abstract boolean isDestinationNullable();
 
+	/**
+	 * Get the {@link LookupFailBehaviour}
+	 * 
+	 * @return {@link LookupFailBehaviour}
+	 */
 	public LookupFailBehaviour getLookupFailBehaviour() {
 		return this.lookupFailBehaviour;
 	}
@@ -70,6 +103,14 @@ public abstract class ColumnMappingDefinition implements Serializable {
 		}
 	}
 
+	/**
+	 * Converts the DynamoDB property into an Exasol cell value.
+	 * 
+	 * @param dynamodbProperty
+	 *            the DynamoDB property specified using {@link #resultWalker}
+	 * @return the conversion result
+	 * @throws ColumnMappingException
+	 */
 	protected abstract ExasolCellValue convertValue(AttributeValue dynamodbProperty) throws ColumnMappingException;
 
 	/**
@@ -86,18 +127,39 @@ public abstract class ColumnMappingDefinition implements Serializable {
 		DEFAULT_VALUE
 	}
 
+	/**
+	 * Exception of failures in column mapping
+	 */
 	public static class ColumnMappingException extends AdapterException {
 		private final ColumnMappingDefinition causingColumn;
+
+		/**
+		 * Constructor.
+		 * 
+		 * @param message
+		 *            Exception message
+		 * @param column
+		 *            {@link ColumnMappingDefinition} that caused exception
+		 */
 		public ColumnMappingException(final String message, final ColumnMappingDefinition column) {
 			super(message);
 			this.causingColumn = column;
 		}
 
+		/**
+		 * Get the column that caused this exception.
+		 * 
+		 * @return {@link ColumnMappingDefinition} that caused exception
+		 */
 		public ColumnMappingDefinition getCausingColumn() {
 			return this.causingColumn;
 		}
 	}
 
+	/**
+	 * Exception that is thrown if a DynamoDB type shall be converted that is not
+	 * supported by a specific mapping.
+	 */
 	public static class UnsupportedDynamodbTypeException extends ColumnMappingException {
 		public UnsupportedDynamodbTypeException(final String message, final ColumnMappingDefinition column) {
 			super(message, column);

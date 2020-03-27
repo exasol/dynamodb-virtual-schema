@@ -33,8 +33,10 @@ public class IdentityDynamodbResultWalker extends DynamodbResultWalker {
 		return attributeValue;
 	}
 
+	/**
+	 * Builder for {@link IdentityDynamodbResultWalker}
+	 */
 	public static class Builder extends DynamodbResultWalkerBuilder {
-
 		@Override
 		public DynamodbResultWalker buildChain(final DynamodbResultWalker next) {
 			return new IdentityDynamodbResultWalker(next);

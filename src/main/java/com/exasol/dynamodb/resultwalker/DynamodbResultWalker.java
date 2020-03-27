@@ -64,11 +64,25 @@ public abstract class DynamodbResultWalker implements Serializable {
 	@SuppressWarnings("serial")
 	public static class DynamodbResultWalkerException extends AdapterException {
 		private final String currentPath;
+
+		/**
+		 * Constructor.
+		 * 
+		 * @param message
+		 *            Exception message.
+		 * @param currentPath
+		 *            path to the result walker step that caused the exception
+		 */
 		DynamodbResultWalkerException(final String message, final String currentPath) {
 			super(message);
 			this.currentPath = currentPath;
 		}
 
+		/**
+		 * Gives the path to the result walker step that caused the exception.
+		 * 
+		 * @return String describing the path.
+		 */
 		public String getCurrentPath() {
 			return this.currentPath;
 		}

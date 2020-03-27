@@ -16,10 +16,10 @@ import com.exasol.dynamodb.resultwalker.IdentityDynamodbResultWalker;
 import com.exasol.dynamodb.resultwalker.ObjectDynamodbResultWalker;
 
 /**
- * This {@link MappingFactory} reads a {@link SchemaMappingDefinition} from json
- * files. The json files must follow the schema defined at
- * /schemaMapping/schema. Documentation on schema mapping definitions can be
- * found at /doc/schemaMappingLanguageReference.md
+ * This {@link MappingFactory} reads a {@link SchemaMappingDefinition} from JSON
+ * files. The JSON files must follow the schema defined at
+ * resources/mappingLanguageSchema.json. Documentation on schema mapping
+ * definitions can be found at /doc/schemaMappingLanguageReference.md
  */
 public class JsonMappingFactory implements MappingFactory {
 	private static final String DEST_TABLE_NAME_KEY = "destTableName";
@@ -37,6 +37,18 @@ public class JsonMappingFactory implements MappingFactory {
 
 	private final List<TableMappingDefinition> tables = new ArrayList<>();
 
+	/**
+	 * Constructor.
+	 * 
+	 * @param definitionsPath
+	 *            path to the definition. Can either be a .json file or an
+	 *            directory. If it points to an directory, all .json files are
+	 *            loaded.
+	 * @throws IOException
+	 *             if could not open file
+	 * @throws SchemaMappingException
+	 *             if schema mapping invalid
+	 */
 	public JsonMappingFactory(final File definitionsPath) throws IOException, SchemaMappingException {
 		this(splitIfDirectory(definitionsPath));
 	}
@@ -58,7 +70,8 @@ public class JsonMappingFactory implements MappingFactory {
 	 * If the given definitionsPath is an directory all json files are returned.
 	 *
 	 * @param definitionsPath
-	 * @return
+	 *            path to file or directory
+	 * @return array of definition files
 	 */
 	private static File[] splitIfDirectory(final File definitionsPath) {
 		final String jsonFileEnding = ".json";
@@ -155,10 +168,23 @@ public class JsonMappingFactory implements MappingFactory {
 		return new SchemaMappingDefinition(this.tables);
 	}
 
+	/**
+	 * Exception thrown if schema mapping definition is invalid.
+	 */
 	public static class SchemaMappingException extends AdapterException {
 		private final String causingMappingDefinitionFileName;
-		public SchemaMappingException(final String causingMappingDefinitionFileName, final MappingException e) {
-			super(String.format("Error in schema mapping %s:", causingMappingDefinitionFileName), e);
+
+		/**
+		 * Constructor.
+		 * 
+		 * @param causingMappingDefinitionFileName
+		 *            mapping definition file that contains the mistake
+		 * @param mappingException
+		 *            causing {@link MappingException}
+		 */
+		public SchemaMappingException(final String causingMappingDefinitionFileName,
+				final MappingException mappingException) {
+			super(String.format("Error in schema mapping %s:", causingMappingDefinitionFileName), mappingException);
 			this.causingMappingDefinitionFileName = causingMappingDefinitionFileName;
 		}
 
@@ -172,7 +198,18 @@ public class JsonMappingFactory implements MappingFactory {
 		}
 	}
 
+	/**
+	 * Exception that is thrown on mapping failures. This exceptions are caught and
+	 * encapsulated into a {@link SchemaMappingException} with additional info for
+	 * the causing definition file.
+	 */
 	public static class MappingException extends AdapterException {
+		/**
+		 * Constructor.
+		 * 
+		 * @param message
+		 *            Exception message
+		 */
 		public MappingException(final String message) {
 			super(message);
 		}

@@ -81,5 +81,4 @@ public class QueryResultTableBuilder extends GenericSchemaMappingVisitor {
 		this.tableMetadata = sqlTable.getMetadata();
 		return null;
 	}
-
 }

@@ -8,6 +8,10 @@ import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.exasol.adapter.AdapterException;
 import com.exasol.cellvalue.ExasolCellValue;
 
+/**
+ * Represents the result of a query. Using {@link #convertRow(Map)} the rows of
+ * the result can be converted.
+ */
 public class QueryResultTable {
 	private final List<QueryResultColumn> columns;
 
@@ -21,15 +25,21 @@ public class QueryResultTable {
 		this.columns = columns;
 	}
 
+	/**
+	 * Get the result columns
+	 * 
+	 * @return result columns
+	 */
 	public List<QueryResultColumn> getColumns() {
 		return this.columns;
 	}
 
 	/**
-	 * Processes a row according to the given schema definition and gives an exasol
-	 * result row
+	 * Processes a row according to the given schema definition and gives an Exasol
+	 * result row.
 	 * 
 	 * @param dynamodbRow
+	 *            DynamoDB row
 	 */
 	public List<ExasolCellValue> convertRow(final Map<String, AttributeValue> dynamodbRow) throws AdapterException {
 		final List<ExasolCellValue> resultValues = new ArrayList<>(this.columns.size());
