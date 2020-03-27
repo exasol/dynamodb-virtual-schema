@@ -14,7 +14,7 @@ import com.exasol.cellvalue.ExasolCellValue;
  * Right now this class seems unnecessary as
  * {@link ColumnMappingDefinition#convertRow(Map)} could be used directly. It
  * will be needed in the future for representing constant values from the
- * {@code SELECT}.//TODO
+ * {@code SELECT}.
  */
 public class QueryResultColumn {
 	private final ColumnMappingDefinition columnMapping;
