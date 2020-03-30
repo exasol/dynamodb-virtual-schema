@@ -3,8 +3,8 @@ package com.exasol.dynamodb.resultwalker;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 
 /**
- * This {@link AbstractDynamodbResultWalker} does no step in the path. It is used for
- * representing the root node.
+ * This {@link AbstractDynamodbResultWalker} does no step in the path. It is
+ * used for representing the root node.
  */
 public class IdentityDynamodbResultWalker extends AbstractDynamodbResultWalker {
 	private static final long serialVersionUID = -4471805229610023302L;
@@ -17,7 +17,8 @@ public class IdentityDynamodbResultWalker extends AbstractDynamodbResultWalker {
 	}
 
 	/**
-	 * Constructor as non last part of the {@link AbstractDynamodbResultWalker} chain.
+	 * Constructor as non last part of the {@link AbstractDynamodbResultWalker}
+	 * chain.
 	 */
 	public IdentityDynamodbResultWalker(final AbstractDynamodbResultWalker next) {
 		super(next);

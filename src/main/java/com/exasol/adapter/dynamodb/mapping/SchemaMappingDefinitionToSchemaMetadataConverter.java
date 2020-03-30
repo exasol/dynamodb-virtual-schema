@@ -11,8 +11,8 @@ import com.exasol.utils.StringSerializer;
 
 /**
  * This class converts a {@link SchemaMappingDefinition} into a
- * {@link SchemaMetadata}. The {@link AbstractColumnMappingDefinition}s are serialized
- * into {@link ColumnMetadata#getAdapterNotes()}. Using
+ * {@link SchemaMetadata}. The {@link AbstractColumnMappingDefinition}s are
+ * serialized into {@link ColumnMetadata#getAdapterNotes()}. Using
  * {@link #convertBackColumn(ColumnMetadata)} it can get deserialized again.
  */
 public class SchemaMappingDefinitionToSchemaMetadataConverter {
@@ -27,7 +27,8 @@ public class SchemaMappingDefinitionToSchemaMetadataConverter {
 	 *            the {@link SchemaMappingDefinition} to be converted
 	 * @return {@link SchemaMetadata}
 	 * @throws IOException
-	 *             if {@link AbstractColumnMappingDefinition} could not get serialized
+	 *             if {@link AbstractColumnMappingDefinition} could not get
+	 *             serialized
 	 */
 	public static SchemaMetadata convert(final SchemaMappingDefinition schemaMappingDefinition) throws IOException {
 		final List<TableMetadata> tableMetadata = new ArrayList<>();
@@ -52,7 +53,7 @@ public class SchemaMappingDefinitionToSchemaMetadataConverter {
 		return ColumnMetadata.builder()//
 				.name(columnMappingDefinition.getDestinationName())//
 				.type(columnMappingDefinition.getDestinationDataType())//
-				.defaultValue(columnMappingDefinition.getDestinationDefaultValue().toLiteral())//
+				.defaultValue(columnMappingDefinition.getDestinationDefaultValueLiteral())//
 				.nullable(columnMappingDefinition.isDestinationNullable())//
 				.adapterNotes(serialized).build();
 	}

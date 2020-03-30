@@ -91,7 +91,8 @@ public class JsonMappingFactory implements MappingFactory {
 		this.tables.add(tableBuilder.build());
 	}
 
-	private void walkRootMapping(final JSONObject definition, final AbstractDynamodbResultWalkerBuilder walkerToThisPath,
+	private void walkRootMapping(final JSONObject definition,
+			final AbstractDynamodbResultWalkerBuilder walkerToThisPath,
 			final TableMappingDefinition.Builder tableBuilder) throws MappingException {
 		walkMapping(definition, walkerToThisPath, tableBuilder, null, true);
 	}

@@ -23,7 +23,8 @@ public abstract class AbstractDynamodbResultWalker implements Serializable {
 	}
 
 	/**
-	 * Constructor as non last part of the {@link AbstractDynamodbResultWalker} chain.
+	 * Constructor as non last part of the {@link AbstractDynamodbResultWalker}
+	 * chain.
 	 */
 	public AbstractDynamodbResultWalker(final AbstractDynamodbResultWalker next) {
 		this.next = next;
@@ -47,7 +48,8 @@ public abstract class AbstractDynamodbResultWalker implements Serializable {
 		return applyNext(applyThis(attributeValue, path), path);
 	}
 
-	protected abstract AttributeValue applyThis(AttributeValue attributeValue, String path) throws DynamodbResultWalkerException;
+	protected abstract AttributeValue applyThis(AttributeValue attributeValue, String path)
+			throws DynamodbResultWalkerException;
 	protected abstract String stepDescription();
 
 	private AttributeValue applyNext(final AttributeValue attributeValue, final String path)

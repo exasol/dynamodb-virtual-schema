@@ -6,8 +6,10 @@ import java.util.Map;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.exasol.adapter.AdapterException;
 import com.exasol.adapter.metadata.DataType;
-import com.exasol.cellvalue.ExasolCellValue;
 import com.exasol.dynamodb.resultwalker.AbstractDynamodbResultWalker;
+import com.exasol.sql.expression.ValueExpression;
+import com.exasol.sql.expression.rendering.ValueExpressionRenderer;
+import com.exasol.sql.rendering.StringRendererConfig;
 
 /**
  * Definition of a column mapping from DynamoDB table to Exasol Virtual Schema.
@@ -32,13 +34,13 @@ public abstract class AbstractColumnMappingDefinition implements Serializable {
 	 * @param destinationName
 	 *            name of the Exasol column
 	 * @param resultWalker
-	 *            {@link AbstractDynamodbResultWalker} representing the path to the source
-	 *            property
+	 *            {@link AbstractDynamodbResultWalker} representing the path to the
+	 *            source property
 	 * @param lookupFailBehaviour
 	 *            {@link LookupFailBehaviour} if the defined path does not exist
 	 */
-	public AbstractColumnMappingDefinition(final String destinationName, final AbstractDynamodbResultWalker resultWalker,
-										   final LookupFailBehaviour lookupFailBehaviour) {
+	public AbstractColumnMappingDefinition(final String destinationName,
+			final AbstractDynamodbResultWalker resultWalker, final LookupFailBehaviour lookupFailBehaviour) {
 		this.destinationName = destinationName;
 		this.resultWalker = resultWalker;
 		this.lookupFailBehaviour = lookupFailBehaviour;
@@ -63,9 +65,16 @@ public abstract class AbstractColumnMappingDefinition implements Serializable {
 	/**
 	 * Get the default value of this column.
 	 * 
-	 * @return {@link ExasolCellValue} holding default value
+	 * @return {@link ValueExpression} holding default value
 	 */
-	public abstract ExasolCellValue getDestinationDefaultValue();
+	public abstract ValueExpression getDestinationDefaultValue();
+
+	public String getDestinationDefaultValueLiteral() {
+		final StringRendererConfig stringRendererConfig = StringRendererConfig.createDefault();
+		final ValueExpressionRenderer renderer = new ValueExpressionRenderer(stringRendererConfig);
+		this.getDestinationDefaultValue().accept(renderer);
+		return renderer.render();
+	}
 
 	/**
 	 * Is Exasol column nullable.
@@ -87,15 +96,16 @@ public abstract class AbstractColumnMappingDefinition implements Serializable {
 	 * Extracts this columns value from DynamoDB's result row.
 	 *
 	 * @param dynamodbRow
-	 * @return {@link ExasolCellValue}
+	 * @return {@link ValueExpression}
 	 * @throws AdapterException
 	 */
-	public ExasolCellValue convertRow(final Map<String, AttributeValue> dynamodbRow)
+	public ValueExpression convertRow(final Map<String, AttributeValue> dynamodbRow)
 			throws AbstractDynamodbResultWalker.DynamodbResultWalkerException, ColumnMappingException {
 		try {
 			final AttributeValue dynamodbProperty = this.resultWalker.walk(dynamodbRow);
 			return convertValue(dynamodbProperty);
-		} catch (final AbstractDynamodbResultWalker.DynamodbResultWalkerException | UnsupportedDynamodbTypeException e) {
+		} catch (final AbstractDynamodbResultWalker.DynamodbResultWalkerException
+				| UnsupportedDynamodbTypeException e) {
 			if (this.lookupFailBehaviour == LookupFailBehaviour.DEFAULT_VALUE) {
 				return this.getDestinationDefaultValue();
 			}
@@ -111,7 +121,7 @@ public abstract class AbstractColumnMappingDefinition implements Serializable {
 	 * @return the conversion result
 	 * @throws ColumnMappingException
 	 */
-	protected abstract ExasolCellValue convertValue(AttributeValue dynamodbProperty) throws ColumnMappingException;
+	protected abstract ValueExpression convertValue(AttributeValue dynamodbProperty) throws ColumnMappingException;
 
 	/**
 	 * Behaviour if the requested property is not set in a given DynamoDB row.

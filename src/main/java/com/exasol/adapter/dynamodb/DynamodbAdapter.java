@@ -26,10 +26,9 @@ import com.exasol.adapter.dynamodb.queryresult.QueryResultTableBuilder;
 import com.exasol.adapter.metadata.SchemaMetadata;
 import com.exasol.adapter.request.*;
 import com.exasol.adapter.response.*;
-import com.exasol.cellvalue.CellValuesToSqlSelectFromValuesConverter;
-import com.exasol.cellvalue.ExasolCellValue;
 import com.exasol.dynamodb.DynamodbConnectionUtil;
 import com.exasol.dynamodb.resultwalker.AbstractDynamodbResultWalker;
+import com.exasol.sql.expression.ValueExpression;
 
 /**
  * DynamoDB Virtual Schema adapter.
@@ -116,16 +115,17 @@ public class DynamodbAdapter implements VirtualSchemaAdapter {
 		try {
 			final AmazonDynamoDB client = getConnection(exaMetadata, request);
 			final ScanResult scanResult = client.scan(new ScanRequest("JB_Books"));
-			final List<List<ExasolCellValue>> resultRows = new ArrayList<>();
+			final List<List<ValueExpression>> resultRows = new ArrayList<>();
 			for (final Map<String, AttributeValue> dynamodbItem : scanResult.getItems()) {
 				resultRows.add(queryResultTable.convertRow(dynamodbItem));
 			}
-			final String selectFromValuesStatement = new CellValuesToSqlSelectFromValuesConverter()
+			final String selectFromValuesStatement = new ValueExpressionsToSqlSelectFromValuesConverter()
 					.convert(queryResultTable, resultRows);
 			return PushDownResponse.builder()//
 					.pushDownSql(selectFromValuesStatement)//
 					.build();
-		} catch (final ExaConnectionAccessException | AbstractDynamodbResultWalker.DynamodbResultWalkerException exception) {
+		} catch (final ExaConnectionAccessException
+				| AbstractDynamodbResultWalker.DynamodbResultWalkerException exception) {
 			throw new AdapterException("Unable create Virtual Schema \"" + request.getVirtualSchemaName()
 					+ "\". Cause: \"" + exception.getMessage(), exception);
 		}

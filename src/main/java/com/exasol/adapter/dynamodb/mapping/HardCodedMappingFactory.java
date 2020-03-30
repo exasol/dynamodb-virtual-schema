@@ -12,8 +12,9 @@ public class HardCodedMappingFactory implements MappingFactory {
 	@Override
 	public SchemaMappingDefinition getSchemaMapping() {
 		final TableMappingDefinition table = TableMappingDefinition.builder("testTable", true)
-				.withColumnMappingDefinition(new ToJsonColumnMappingDefinition("json",
-						new IdentityDynamodbResultWalker(), AbstractColumnMappingDefinition.LookupFailBehaviour.DEFAULT_VALUE))
+				.withColumnMappingDefinition(
+						new ToJsonColumnMappingDefinition("json", new IdentityDynamodbResultWalker(),
+								AbstractColumnMappingDefinition.LookupFailBehaviour.DEFAULT_VALUE))
 				.build();
 		return new SchemaMappingDefinition(List.of(table));
 	}

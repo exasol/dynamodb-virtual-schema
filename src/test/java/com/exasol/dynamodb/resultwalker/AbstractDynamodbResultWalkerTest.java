@@ -63,7 +63,8 @@ public class AbstractDynamodbResultWalkerTest {
 	void testObjectWalkerException() {
 		final ObjectDynamodbResultWalker walker = new ObjectDynamodbResultWalker("isbn", null);
 		final AbstractDynamodbResultWalker.DynamodbResultWalkerException exception = assertThrows(
-				AbstractDynamodbResultWalker.DynamodbResultWalkerException.class, () -> walker.walk(Collections.emptyMap()));
+				AbstractDynamodbResultWalker.DynamodbResultWalkerException.class,
+				() -> walker.walk(Collections.emptyMap()));
 		assertThat(exception.getCurrentPath(), equalTo(""));
 	}
 

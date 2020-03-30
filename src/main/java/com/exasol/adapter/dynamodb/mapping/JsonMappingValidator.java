@@ -70,7 +70,7 @@ public class JsonMappingValidator {
 			possibleProperties.addAll(objectSchema.getPropertySchemas().keySet());
 			possibleProperties.addAll(possibleAdditionalObjectProperties(objectSchema));
 		} catch (final ClassCastException ignored) {
-			//ignore this exception and return empty set
+			// ignore this exception and return empty set
 		}
 		return String.join(", ", possibleProperties);
 	}

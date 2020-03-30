@@ -11,7 +11,7 @@ import com.exasol.adapter.AdapterProperties;
  * specific properties.
  */
 public class DynamodbAdapterProperties {
-	@SuppressWarnings("java:S1075") //this is not a configurable path
+	@SuppressWarnings("java:S1075") // this is not a configurable path
 	private static final String BUCKETFS_BASIC_PATH = "/buckets";
 	private static final String MAPPING_KEY = "MAPPING";
 	private final AdapterProperties properties;

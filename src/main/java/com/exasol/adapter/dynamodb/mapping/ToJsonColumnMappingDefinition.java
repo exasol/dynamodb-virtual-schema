@@ -2,9 +2,9 @@ package com.exasol.adapter.dynamodb.mapping;
 
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.exasol.adapter.metadata.DataType;
-import com.exasol.cellvalue.ExasolCellValue;
-import com.exasol.cellvalue.StringExasolCellValue;
 import com.exasol.dynamodb.resultwalker.AbstractDynamodbResultWalker;
+import com.exasol.sql.expression.StringLiteral;
+import com.exasol.sql.expression.ValueExpression;
 
 /**
  * Maps a property of a DynamoDB table and all it's descendants to a JSON string
@@ -31,8 +31,8 @@ public class ToJsonColumnMappingDefinition extends AbstractColumnMappingDefiniti
 	}
 
 	@Override
-	public ExasolCellValue getDestinationDefaultValue() {
-		return new StringExasolCellValue("");
+	public ValueExpression getDestinationDefaultValue() {
+		return StringLiteral.of("");
 	}
 
 	@Override
@@ -41,8 +41,8 @@ public class ToJsonColumnMappingDefinition extends AbstractColumnMappingDefiniti
 	}
 
 	@Override
-	protected ExasolCellValue convertValue(final AttributeValue dynamodbProperty) {
+	protected ValueExpression convertValue(final AttributeValue dynamodbProperty) {
 		// TODO convert to json
-		return new StringExasolCellValue("dummy value");
+		return StringLiteral.of("dummy value");
 	}
 }

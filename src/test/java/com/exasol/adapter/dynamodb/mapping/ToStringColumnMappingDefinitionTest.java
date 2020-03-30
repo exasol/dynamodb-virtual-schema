@@ -13,9 +13,9 @@ import org.junit.jupiter.api.Test;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.exasol.adapter.AdapterException;
 import com.exasol.adapter.metadata.DataType;
-import com.exasol.cellvalue.ExasolCellValue;
 import com.exasol.dynamodb.resultwalker.IdentityDynamodbResultWalker;
 import com.exasol.dynamodb.resultwalker.ObjectDynamodbResultWalker;
+import com.exasol.sql.expression.ValueExpression;
 
 /**
  * Tests for {@link ToStringColumnMappingDefinition}
@@ -50,8 +50,8 @@ public class ToStringColumnMappingDefinitionTest {
 				DEST_COLUMN, TEST_STRING.length(), new ObjectDynamodbResultWalker(TEST_SOURCE_COLUMN, null),
 				AbstractColumnMappingDefinition.LookupFailBehaviour.DEFAULT_VALUE,
 				ToStringColumnMappingDefinition.OverflowBehaviour.EXCEPTION);
-		final ExasolCellValue exasolCellValue = toStringColumnMappingDefinition.convertRow(getDynamodbStringRow());
-		assertThat(exasolCellValue.toLiteral(), equalTo("'" + TEST_STRING + "'"));
+		final ValueExpression exasolCellValue = toStringColumnMappingDefinition.convertRow(getDynamodbStringRow());
+		assertThat(exasolCellValue.toString(), equalTo(TEST_STRING));
 	}
 
 	@Test
@@ -61,8 +61,8 @@ public class ToStringColumnMappingDefinitionTest {
 				new ObjectDynamodbResultWalker(TEST_SOURCE_COLUMN, null),
 				AbstractColumnMappingDefinition.LookupFailBehaviour.DEFAULT_VALUE,
 				ToStringColumnMappingDefinition.OverflowBehaviour.EXCEPTION);
-		final ExasolCellValue exasolCellValue = toStringColumnMappingDefinition.convertRow(getDynamodbNumberRow());
-		assertThat(exasolCellValue.toLiteral(), equalTo("'" + String.valueOf(TEST_NUMBER) + "'"));
+		final ValueExpression exasolCellValue = toStringColumnMappingDefinition.convertRow(getDynamodbNumberRow());
+		assertThat(exasolCellValue.toString(), equalTo(String.valueOf(TEST_NUMBER)));
 	}
 
 	@Test
@@ -81,9 +81,9 @@ public class ToStringColumnMappingDefinitionTest {
 				DEST_COLUMN, TEST_STRING.length() - 1, new ObjectDynamodbResultWalker(TEST_SOURCE_COLUMN, null),
 				AbstractColumnMappingDefinition.LookupFailBehaviour.DEFAULT_VALUE,
 				ToStringColumnMappingDefinition.OverflowBehaviour.TRUNCATE);
-		final ExasolCellValue exasolCellValue = toStringColumnMappingDefinition.convertRow(getDynamodbStringRow());
+		final ValueExpression exasolCellValue = toStringColumnMappingDefinition.convertRow(getDynamodbStringRow());
 		final String expected = TEST_STRING.substring(0, TEST_STRING.length() - 1);
-		assertThat(exasolCellValue.toLiteral(), equalTo("'" + expected + "'"));
+		assertThat(exasolCellValue.toString(), equalTo(expected));
 	}
 
 	@Test
@@ -114,7 +114,7 @@ public class ToStringColumnMappingDefinitionTest {
 	void testGetDestinationDefaultValue() {
 		final ToStringColumnMappingDefinition toStringColumnMappingDefinition = new ToStringColumnMappingDefinition(
 				null, 0, null, null, null);
-		assertThat(toStringColumnMappingDefinition.getDestinationDefaultValue().toLiteral(), equalTo("''"));
+		assertThat(toStringColumnMappingDefinition.getDestinationDefaultValue().toString(), equalTo(""));
 	}
 
 	@Test

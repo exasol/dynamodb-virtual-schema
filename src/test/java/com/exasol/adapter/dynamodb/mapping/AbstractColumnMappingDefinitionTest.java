@@ -10,10 +10,11 @@ import org.junit.jupiter.api.Test;
 
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.exasol.adapter.metadata.DataType;
-import com.exasol.cellvalue.ExasolCellValue;
 import com.exasol.dynamodb.resultwalker.AbstractDynamodbResultWalker;
 import com.exasol.dynamodb.resultwalker.IdentityDynamodbResultWalker;
 import com.exasol.dynamodb.resultwalker.ObjectDynamodbResultWalker;
+import com.exasol.sql.expression.StringLiteral;
+import com.exasol.sql.expression.ValueExpression;
 
 public class AbstractColumnMappingDefinitionTest {
 	@Test
@@ -25,26 +26,34 @@ public class AbstractColumnMappingDefinitionTest {
 	}
 
 	@Test
-	void testLookup()
-			throws AbstractDynamodbResultWalker.DynamodbResultWalkerException, AbstractColumnMappingDefinition.ColumnMappingException {
+	void testLookup() throws AbstractDynamodbResultWalker.DynamodbResultWalkerException,
+			AbstractColumnMappingDefinition.ColumnMappingException {
 		final ObjectDynamodbResultWalker resultWalker = new ObjectDynamodbResultWalker("isbn", null);
 		final MocColumnMappingDefinition columnMappingDefinition = new MocColumnMappingDefinition("d", resultWalker,
 				AbstractColumnMappingDefinition.LookupFailBehaviour.EXCEPTION);
 		final String isbn = "123456789";
 		final AttributeValue isbnValue = new AttributeValue();
 		isbnValue.setS(isbn);
-		final ExasolCellValue exasolCellValue = columnMappingDefinition.convertRow(Map.of("isbn", isbnValue));
-		assertThat(exasolCellValue.toLiteral(), equalTo(isbn));
+		final ValueExpression valueExpression = columnMappingDefinition.convertRow(Map.of("isbn", isbnValue));
+		assertThat(valueExpression.toString(), equalTo(isbn));
 	}
 
 	@Test
-	void testNullLookupFailBehaviour()
-			throws AbstractColumnMappingDefinition.ColumnMappingException, AbstractDynamodbResultWalker.DynamodbResultWalkerException {
+	void testGetDestinationDefaultValueLiteral() {
+		final String destinationName = "destinationName";
+		final MocColumnMappingDefinition columnMappingDefinition = new MocColumnMappingDefinition(destinationName, null,
+				null);
+		assertThat(columnMappingDefinition.getDestinationDefaultValueLiteral(), equalTo("'default'"));
+	}
+
+	@Test
+	void testNullLookupFailBehaviour() throws AbstractColumnMappingDefinition.ColumnMappingException,
+			AbstractDynamodbResultWalker.DynamodbResultWalkerException {
 		final ObjectDynamodbResultWalker resultWalker = new ObjectDynamodbResultWalker("nonExistingColumn", null);
 		final MocColumnMappingDefinition columnMappingDefinition = new MocColumnMappingDefinition("d", resultWalker,
 				AbstractColumnMappingDefinition.LookupFailBehaviour.DEFAULT_VALUE);
-		final ExasolCellValue exasolCellValue = columnMappingDefinition.convertRow(Map.of());
-		assertThat(exasolCellValue.toLiteral(), equalTo("default"));
+		final ValueExpression valueExpression = columnMappingDefinition.convertRow(Map.of());
+		assertThat(valueExpression.toString(), equalTo("default"));
 	}
 
 	@Test
@@ -60,23 +69,12 @@ public class AbstractColumnMappingDefinitionTest {
 	public void testColumnMappingException() {
 		final String columnName = "name";
 		final ExceptionMocColumnMappingDefinition mappingDefinition = new ExceptionMocColumnMappingDefinition(
-				columnName, new IdentityDynamodbResultWalker(), AbstractColumnMappingDefinition.LookupFailBehaviour.EXCEPTION);
+				columnName, new IdentityDynamodbResultWalker(),
+				AbstractColumnMappingDefinition.LookupFailBehaviour.EXCEPTION);
 		final AbstractColumnMappingDefinition.ColumnMappingException exception = assertThrows(
-				AbstractColumnMappingDefinition.ColumnMappingException.class, () -> mappingDefinition.convertRow(Map.of()));
+				AbstractColumnMappingDefinition.ColumnMappingException.class,
+				() -> mappingDefinition.convertRow(Map.of()));
 		assertThat(exception.getCausingColumn().getDestinationName(), equalTo(columnName));
-	}
-
-	private static class MocExasolCellValue implements ExasolCellValue {
-		private final String value;
-
-		private MocExasolCellValue(final String value) {
-			this.value = value;
-		}
-
-		@Override
-		public String toLiteral() {
-			return this.value;
-		}
 	}
 
 	private static class MocColumnMappingDefinition extends AbstractColumnMappingDefinition {
@@ -91,8 +89,8 @@ public class AbstractColumnMappingDefinitionTest {
 		}
 
 		@Override
-		public ExasolCellValue getDestinationDefaultValue() {
-			return new MocExasolCellValue("default");
+		public ValueExpression getDestinationDefaultValue() {
+			return StringLiteral.of("default");
 		}
 
 		@Override
@@ -107,14 +105,14 @@ public class AbstractColumnMappingDefinitionTest {
 		 * @return
 		 */
 		@Override
-		protected ExasolCellValue convertValue(final AttributeValue dynamodbProperty) {
-			return new MocExasolCellValue(dynamodbProperty.getS());
+		protected ValueExpression convertValue(final AttributeValue dynamodbProperty) {
+			return StringLiteral.of(dynamodbProperty.getS());
 		}
 	}
 
 	private static class ExceptionMocColumnMappingDefinition extends AbstractColumnMappingDefinition {
 		public ExceptionMocColumnMappingDefinition(final String destinationName,
-                                                   final AbstractDynamodbResultWalker resultWalker, final LookupFailBehaviour lookupFailBehaviour) {
+				final AbstractDynamodbResultWalker resultWalker, final LookupFailBehaviour lookupFailBehaviour) {
 			super(destinationName, resultWalker, lookupFailBehaviour);
 		}
 
@@ -124,7 +122,7 @@ public class AbstractColumnMappingDefinitionTest {
 		}
 
 		@Override
-		public ExasolCellValue getDestinationDefaultValue() {
+		public ValueExpression getDestinationDefaultValue() {
 			return null;
 		}
 
@@ -134,7 +132,7 @@ public class AbstractColumnMappingDefinitionTest {
 		}
 
 		@Override
-		protected ExasolCellValue convertValue(final AttributeValue dynamodbProperty) throws ColumnMappingException {
+		protected ValueExpression convertValue(final AttributeValue dynamodbProperty) throws ColumnMappingException {
 			throw new ColumnMappingException("message", this);
 		}
 	}

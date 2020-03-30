@@ -5,16 +5,16 @@ import java.util.Map;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.exasol.adapter.AdapterException;
 import com.exasol.adapter.dynamodb.mapping.AbstractColumnMappingDefinition;
-import com.exasol.cellvalue.ExasolCellValue;
+import com.exasol.sql.expression.ValueExpression;
 
 /**
  * This class represents one column in a query result. It is used for building
  * the actual result using calls to {@link #convertRow(Map)}.
  *
  * Right now this class seems unnecessary as
- * {@link AbstractColumnMappingDefinition#convertRow(Map)} could be used directly. It
- * will be needed in the future for representing constant values from the
- * {@code SELECT}.
+ * {@link AbstractColumnMappingDefinition#convertRow(Map)} could be used
+ * directly. It will be needed in the future for representing constant values
+ * from the {@code SELECT}.
  */
 public class QueryResultColumn {
 	private final AbstractColumnMappingDefinition columnMapping;
@@ -38,11 +38,16 @@ public class QueryResultColumn {
 	 * @throws AdapterException
 	 *             if query abort was configured on conversion errors.
 	 */
-	public ExasolCellValue convertRow(final Map<String, AttributeValue> dynamodbRow) throws AdapterException {
+	public ValueExpression convertRow(final Map<String, AttributeValue> dynamodbRow) throws AdapterException {
 		return this.columnMapping.convertRow(dynamodbRow);
 	}
 
-	AbstractColumnMappingDefinition getColumnMapping() {
+	/**
+	 * Get the {@link AbstractColumnMappingDefinition}
+	 * 
+	 * @return {@link AbstractColumnMappingDefinition}
+	 */
+	public AbstractColumnMappingDefinition getColumnMapping() {
 		return this.columnMapping;
 	}
 }

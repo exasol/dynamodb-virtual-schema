@@ -10,10 +10,10 @@ import com.exasol.adapter.dynamodb.mapping.AbstractColumnMappingDefinition;
 import com.exasol.adapter.dynamodb.mapping.SchemaMappingDefinitionToSchemaMetadataConverter;
 import com.exasol.adapter.metadata.ColumnMetadata;
 import com.exasol.adapter.metadata.TableMetadata;
-import com.exasol.adapter.sql.VoidSqlNodeVisitor;
 import com.exasol.adapter.sql.SqlSelectList;
 import com.exasol.adapter.sql.SqlStatementSelect;
 import com.exasol.adapter.sql.SqlTable;
+import com.exasol.adapter.sql.VoidSqlNodeVisitor;
 
 /**
  * Visitor for {@link com.exasol.adapter.sql.SqlStatementSelect} building a

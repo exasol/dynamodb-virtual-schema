@@ -5,16 +5,17 @@ import java.util.Map;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 
 /**
- * This {@link AbstractDynamodbResultWalker} does walks on object property. For example
- * applied on the path {@code author.name} the walker returns an AttributeValue
- * of type Map with {@code name} as key.
+ * This {@link AbstractDynamodbResultWalker} does walks on object property. For
+ * example applied on the path {@code author.name} the walker returns an
+ * AttributeValue of type Map with {@code name} as key.
  */
 public class ObjectDynamodbResultWalker extends AbstractDynamodbResultWalker {
 	private static final long serialVersionUID = -4999583991152944380L;
 	private final String lookupKey;
 
 	/**
-	 * Constructor as non last part of the {@link AbstractDynamodbResultWalker} chain.
+	 * Constructor as non last part of the {@link AbstractDynamodbResultWalker}
+	 * chain.
 	 */
 	public ObjectDynamodbResultWalker(final String lookupKey, final AbstractDynamodbResultWalker next) {
 		super(next);

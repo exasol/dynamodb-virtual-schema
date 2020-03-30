@@ -6,7 +6,7 @@ import java.util.Map;
 
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.exasol.adapter.AdapterException;
-import com.exasol.cellvalue.ExasolCellValue;
+import com.exasol.sql.expression.ValueExpression;
 
 /**
  * Represents the result of a query. Using {@link #convertRow(Map)} the rows of
@@ -41,10 +41,10 @@ public class QueryResultTable {
 	 * @param dynamodbRow
 	 *            DynamoDB row
 	 */
-	public List<ExasolCellValue> convertRow(final Map<String, AttributeValue> dynamodbRow) throws AdapterException {
-		final List<ExasolCellValue> resultValues = new ArrayList<>(this.columns.size());
+	public List<ValueExpression> convertRow(final Map<String, AttributeValue> dynamodbRow) throws AdapterException {
+		final List<ValueExpression> resultValues = new ArrayList<>(this.columns.size());
 		for (final QueryResultColumn resultColumn : this.columns) {
-			final ExasolCellValue result = resultColumn.convertRow(dynamodbRow);
+			final ValueExpression result = resultColumn.convertRow(dynamodbRow);
 			resultValues.add(result);
 		}
 		return resultValues;

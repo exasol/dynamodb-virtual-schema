@@ -4,9 +4,9 @@ import java.util.Map;
 
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.exasol.adapter.metadata.DataType;
-import com.exasol.cellvalue.ExasolCellValue;
-import com.exasol.cellvalue.StringExasolCellValue;
 import com.exasol.dynamodb.resultwalker.AbstractDynamodbResultWalker;
+import com.exasol.sql.expression.StringLiteral;
+import com.exasol.sql.expression.ValueExpression;
 
 /**
  * Extracts a string from a DynamoDB table and maps to a Exasol VarChar column
@@ -24,8 +24,8 @@ public class ToStringColumnMappingDefinition extends AbstractColumnMappingDefini
 	 * @param destinationStringSize
 	 *            Length of the Exasol VARCHAR
 	 * @param resultWalker
-	 *            {@link AbstractDynamodbResultWalker} representing the path to the source *
-	 *            property
+	 *            {@link AbstractDynamodbResultWalker} representing the path to the
+	 *            source * property
 	 * @param lookupFailBehaviour
 	 *            {@link LookupFailBehaviour} if the defined path does not exist
 	 * @param overflowBehaviour
@@ -33,8 +33,8 @@ public class ToStringColumnMappingDefinition extends AbstractColumnMappingDefini
 	 *            {@link #destinationStringSize}
 	 */
 	public ToStringColumnMappingDefinition(final String destinationName, final int destinationStringSize,
-										   final AbstractDynamodbResultWalker resultWalker, final LookupFailBehaviour lookupFailBehaviour,
-										   final OverflowBehaviour overflowBehaviour) {
+			final AbstractDynamodbResultWalker resultWalker, final LookupFailBehaviour lookupFailBehaviour,
+			final OverflowBehaviour overflowBehaviour) {
 		super(destinationName, resultWalker, lookupFailBehaviour);
 		this.destinationStringSize = destinationStringSize;
 		this.overflowBehaviour = overflowBehaviour;
@@ -64,8 +64,8 @@ public class ToStringColumnMappingDefinition extends AbstractColumnMappingDefini
 	}
 
 	@Override
-	public ExasolCellValue getDestinationDefaultValue() {
-		return new StringExasolCellValue("");
+	public ValueExpression getDestinationDefaultValue() {
+		return StringLiteral.of("");
 	}
 
 	@Override
@@ -74,9 +74,9 @@ public class ToStringColumnMappingDefinition extends AbstractColumnMappingDefini
 	}
 
 	@Override
-	protected ExasolCellValue convertValue(final AttributeValue dynamodbProperty) throws ColumnMappingException {
+	protected ValueExpression convertValue(final AttributeValue dynamodbProperty) throws ColumnMappingException {
 		final String sourceString = walkToString(dynamodbProperty);
-		return new StringExasolCellValue(handleOverflow(sourceString));
+		return StringLiteral.of(handleOverflow(sourceString));
 	}
 
 	private String walkToString(final AttributeValue attributeValue) throws ColumnMappingException {
