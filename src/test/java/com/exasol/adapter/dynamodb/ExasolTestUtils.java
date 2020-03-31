@@ -22,7 +22,7 @@ public class ExasolTestUtils {
 	public static final String ADAPTER_SCHEMA = "ADAPTER";
 	public static final String DYNAMODB_ADAPTER = "DYNAMODB_ADAPTER";
 	private static final Logger LOGGER = LoggerFactory.getLogger(ExasolTestUtils.class);
-	private static final String VIRTUAL_SCHEMAS_JAR_NAME_AND_VERSION = "dynamodb-virtual-schemas-adapter-dist-0.1.1.jar";
+	private static final String VIRTUAL_SCHEMAS_JAR_NAME_AND_VERSION = "dynamodb-virtual-schemas-adapter-dist-0.2.0.jar";
 	private static final Path PATH_TO_VIRTUAL_SCHEMAS_JAR = Path.of("target", VIRTUAL_SCHEMAS_JAR_NAME_AND_VERSION);
 	private final ExasolContainer<? extends ExasolContainer<?>> container;
 	private final Statement statement;
