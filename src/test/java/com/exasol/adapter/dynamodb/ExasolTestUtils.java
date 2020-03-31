@@ -116,7 +116,6 @@ public class ExasolTestUtils {
 		}
 		// noinspection SpellCheckingInspection
 		statementBuilder.append("    %scriptclass com.exasol.adapter.RequestDispatcher;\n");
-		// noinspection SpellCheckingInspection
 		statementBuilder.append("    %jar /buckets/bfsdefault/default/" + VIRTUAL_SCHEMAS_JAR_NAME_AND_VERSION + ";\n");
 		statementBuilder.append("/");
 		final String sql = statementBuilder.toString();
