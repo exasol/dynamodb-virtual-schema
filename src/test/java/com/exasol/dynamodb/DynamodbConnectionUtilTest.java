@@ -36,7 +36,6 @@ public class DynamodbConnectionUtilTest {
 		final String uri = "aws:ca-central-1";
 		final AmazonDynamoDB connection = DynamodbConnectionUtil.getLowLevelConnection(uri, "", "");
 		final URI endpoint = (URI) getPrivateField("endpoint", connection);
-		final String region = (String) getPrivateField("signerRegionOverride", connection);
 		assertThat(endpoint.toString(), equalTo("https://dynamodb.ca-central-1.amazonaws.com"));
 	}
 }

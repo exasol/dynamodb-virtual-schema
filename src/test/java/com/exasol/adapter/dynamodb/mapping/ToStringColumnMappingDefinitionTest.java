@@ -66,7 +66,7 @@ public class ToStringColumnMappingDefinitionTest {
 	}
 
 	@Test
-	void testConvertUnsupportedDynamodbType() throws AdapterException {
+	void testConvertUnsupportedDynamodbType() {
 		final ToStringColumnMappingDefinition toStringColumnMappingDefinition = new ToStringColumnMappingDefinition(
 				DEST_COLUMN, 2, new ObjectDynamodbResultWalker(TEST_SOURCE_COLUMN, null),
 				AbstractColumnMappingDefinition.LookupFailBehaviour.EXCEPTION,

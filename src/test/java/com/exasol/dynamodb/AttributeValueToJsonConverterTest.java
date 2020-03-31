@@ -32,7 +32,7 @@ public class AttributeValueToJsonConverterTest {
 	void testNumber(final double number) {
 		final String numberString = String.valueOf(number);
 		final AttributeValue attributeValue = new AttributeValue();
-		attributeValue.setN(String.valueOf(numberString));
+		attributeValue.setN(numberString);
 		final JsonValue json = AttributeValueToJsonConverter.convert(attributeValue);
 		assertThat(json.toString(), equalTo(numberString));
 	}

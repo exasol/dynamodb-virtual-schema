@@ -9,8 +9,6 @@ import java.lang.reflect.Method;
 
 import org.junit.jupiter.api.Test;
 
-import com.exasol.adapter.AdapterException;
-
 /**
  * Tests for {@link VoidSqlNodeVisitor}
  */
@@ -31,7 +29,7 @@ public class VoidSqlNodeVisitorTest {
 	private static class Moc extends VoidSqlNodeVisitor {
 
 		@Override
-		public Void visit(final SqlStatementSelect select) throws AdapterException {
+		public Void visit(final SqlStatementSelect select) {
 			return null;
 		}
 	}

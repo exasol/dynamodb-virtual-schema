@@ -62,7 +62,7 @@ public class QueryResultTableTest {
 		}
 
 		@Override
-		protected ValueExpression convertValue(final AttributeValue dynamodbProperty) throws ColumnMappingException {
+		protected ValueExpression convertValue(final AttributeValue dynamodbProperty) {
 			return StringLiteral.of("testValue");
 		}
 	}
