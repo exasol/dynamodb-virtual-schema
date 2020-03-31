@@ -71,11 +71,7 @@ CREATE VIRTUAL SCHEMA DYNAMODB_TEST USING ADAPTER.DYNAMODB_ADAPTER WITH
  
 
 ## First steps
-Start for example with:
-
-```
-SELECT * FROM ASDF."testTable";
-```
+Start with the [mapping definition example](doc/schemaMappingLanguageReference.md).
 
 # Logging & Debugging
 * [Logging for Virtual Schemas](https://github.com/exasol/virtual-schemas/blob/master/doc/development/remote_logging.md)

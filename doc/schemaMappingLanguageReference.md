@@ -77,6 +77,12 @@ Mapping definition:
 }
 ```
 
+After [creating a virtual schema](../README.md) (for example named `BOOKSHOP`) you can query your data using:
+
+```
+SELECT * FROM BOOKSHOP.BOOKS;
+```
+
 ### More Examples
 * [Example for toJSON mapping](exampleWithToJson.md)
 * [Example for toTable mapping](exampleWithToTable.md)
