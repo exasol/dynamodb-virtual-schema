@@ -71,8 +71,10 @@ public class ToStringColumnMappingDefinitionTest {
 				DEST_COLUMN, 2, new ObjectDynamodbResultWalker(TEST_SOURCE_COLUMN, null),
 				AbstractColumnMappingDefinition.LookupFailBehaviour.EXCEPTION,
 				ToStringColumnMappingDefinition.OverflowBehaviour.EXCEPTION);
-		assertThrows(AbstractColumnMappingDefinition.UnsupportedDynamodbTypeException.class,
+		final AbstractColumnMappingDefinition.ColumnMappingException exception = assertThrows(
+				AbstractColumnMappingDefinition.ColumnMappingException.class,
 				() -> toStringColumnMappingDefinition.convertRow(getDynamodbListRow()));
+		assertThat(exception.getMessage(), equalTo("The DynamoDB type List cant't be converted to string."));
 	}
 
 	@Test

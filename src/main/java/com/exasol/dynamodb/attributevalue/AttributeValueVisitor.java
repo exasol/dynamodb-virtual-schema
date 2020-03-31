@@ -19,7 +19,7 @@ public interface AttributeValueVisitor {
 	 *            string value
 	 */
 	default void visitString(final String value) {
-		throw new UnsupportedOperationException("not yet implemented");
+		throw new UnsupportedDynamodbTypeException("String");
 	}
 
 	/**
@@ -29,7 +29,7 @@ public interface AttributeValueVisitor {
 	 *            string containing number value
 	 */
 	default void visitNumber(final String value) {
-		throw new UnsupportedOperationException("not yet implemented");
+		throw new UnsupportedDynamodbTypeException("Number");
 	}
 
 	/**
@@ -39,7 +39,7 @@ public interface AttributeValueVisitor {
 	 *            byte value
 	 */
 	default void visitBinary(final ByteBuffer value) {
-		throw new UnsupportedOperationException("not yet implemented");
+		throw new UnsupportedDynamodbTypeException("Binary");
 	}
 
 	/**
@@ -49,7 +49,7 @@ public interface AttributeValueVisitor {
 	 *            byte value
 	 */
 	default void visitBoolean(final boolean value) {
-		throw new UnsupportedOperationException("not yet implemented");
+		throw new UnsupportedDynamodbTypeException("Boolean");
 	}
 
 	/**
@@ -59,7 +59,7 @@ public interface AttributeValueVisitor {
 	 *            map value
 	 */
 	default void visitMap(final Map<String, AttributeValue> value) {
-		throw new UnsupportedOperationException("not yet implemented");
+		throw new UnsupportedDynamodbTypeException("Map");
 	}
 
 	/**
@@ -69,7 +69,7 @@ public interface AttributeValueVisitor {
 	 *            ByteSet value
 	 */
 	default void visitByteSet(final List<ByteBuffer> value) {
-		throw new UnsupportedOperationException("not yet implemented");
+		throw new UnsupportedDynamodbTypeException("ByteSet");
 	}
 
 	/**
@@ -79,7 +79,7 @@ public interface AttributeValueVisitor {
 	 *            list value
 	 */
 	default void visitList(final List<AttributeValue> value) {
-		throw new UnsupportedOperationException("not yet implemented");
+		throw new UnsupportedDynamodbTypeException("List");
 	}
 
 	/**
@@ -89,7 +89,7 @@ public interface AttributeValueVisitor {
 	 *            NumberSet value
 	 */
 	default void visitNumberSet(final List<String> value) {
-		throw new UnsupportedOperationException("not yet implemented");
+		throw new UnsupportedDynamodbTypeException("NumberSet");
 	}
 
 	/**
@@ -99,13 +99,40 @@ public interface AttributeValueVisitor {
 	 *            StringSet value
 	 */
 	default void visitStringSet(final List<String> value) {
-		throw new UnsupportedOperationException("not yet implemented");
+		throw new UnsupportedDynamodbTypeException("StringSet");
 	}
 
 	/**
 	 * Called when AttributeValue is NULL
 	 */
 	default void visitNull() {
-		throw new UnsupportedOperationException("not yet implemented");
+		throw new UnsupportedDynamodbTypeException("not yet implemented");
+	}
+
+	/**
+	 * Exception that is thrown if method was not implemented.
+	 */
+	class UnsupportedDynamodbTypeException extends UnsupportedOperationException {
+		private final String dynamodbTypeName;
+
+		/**
+		 * Constructor.
+		 * 
+		 * @param dynamodbTypeName
+		 *            name of the unimplemented DynamoDB type
+		 */
+		public UnsupportedDynamodbTypeException(final String dynamodbTypeName) {
+			super(String.format("Unsupported DynamoDB type: %s", dynamodbTypeName));
+			this.dynamodbTypeName = dynamodbTypeName;
+		}
+
+		/**
+		 * Getter for the name of the unsupported DynamoDB type.
+		 * 
+		 * @return unsupported DynamoDB type
+		 */
+		public String getDynamodbTypeName() {
+			return this.dynamodbTypeName;
+		}
 	}
 }

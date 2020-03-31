@@ -4,6 +4,8 @@ import java.util.Map;
 
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.exasol.adapter.metadata.DataType;
+import com.exasol.dynamodb.attributevalue.AttributeValueVisitor;
+import com.exasol.dynamodb.attributevalue.AttributeValueWrapper;
 import com.exasol.dynamodb.resultwalker.AbstractDynamodbResultWalker;
 import com.exasol.sql.expression.StringLiteral;
 import com.exasol.sql.expression.ValueExpression;
@@ -75,19 +77,20 @@ public class ToStringColumnMappingDefinition extends AbstractColumnMappingDefini
 
 	@Override
 	protected ValueExpression convertValue(final AttributeValue dynamodbProperty) throws ColumnMappingException {
-		final String sourceString = walkToString(dynamodbProperty);
-		return StringLiteral.of(handleOverflow(sourceString));
-	}
-
-	private String walkToString(final AttributeValue attributeValue) throws ColumnMappingException {
-		if (attributeValue.getS() != null) {
-			return attributeValue.getS();
-		} else if (attributeValue.getN() != null) {
-			return attributeValue.getN();
-		} else if (attributeValue.getBOOL() != null) {
-			return Boolean.TRUE.equals(attributeValue.getBOOL()) ? "true" : "false";
+		final ToStringVisitor toStringVisitor = new ToStringVisitor();
+		final AttributeValueWrapper attributeValueWrapper = new AttributeValueWrapper(dynamodbProperty);
+		try {
+			attributeValueWrapper.accept(toStringVisitor);
+		} catch (final AttributeValueVisitor.UnsupportedDynamodbTypeException e) {
+			throw new LookupColumnMappingException(
+					String.format("The DynamoDB type %s cant't be converted to string.", e.getDynamodbTypeName()),
+					this);
 		}
-		throw new UnsupportedDynamodbTypeException("this attribute value type can't be converted to string", this);
+		final String stringValue = toStringVisitor.getResult();
+		if (stringValue == null) {
+			return getDestinationDefaultValue();
+		}
+		return StringLiteral.of(this.handleOverflow(stringValue));
 	}
 
 	private String handleOverflow(final String sourceString) throws OverflowException {
@@ -115,6 +118,38 @@ public class ToStringColumnMappingDefinition extends AbstractColumnMappingDefini
 		 * throw an {@link OverflowException}.
 		 */
 		EXCEPTION
+	}
+
+	/**
+	 * Visitor for {@link AttributeValue} that converts its value to string. If this
+	 * is not possible an {@link UnsupportedOperationException} is thrown.
+	 */
+	private static class ToStringVisitor implements AttributeValueVisitor {
+		private String stringValue;
+
+		@Override
+		public void visitString(final String value) {
+			this.stringValue = value;
+		}
+
+		@Override
+		public void visitNumber(final String value) {
+			this.stringValue = value;
+		}
+
+		@Override
+		public void visitNull() {
+			this.stringValue = null;
+		}
+
+		@Override
+		public void visitBoolean(final boolean value) {
+			this.stringValue = Boolean.TRUE.equals(value) ? "true" : "false";
+		}
+
+		public String getResult() {
+			return this.stringValue;
+		}
 	}
 
 	/**

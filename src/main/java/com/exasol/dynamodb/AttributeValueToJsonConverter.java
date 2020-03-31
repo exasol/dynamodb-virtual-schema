@@ -3,7 +3,10 @@ package com.exasol.dynamodb;
 import java.util.List;
 import java.util.Map;
 
-import javax.json.*;
+import javax.json.Json;
+import javax.json.JsonArrayBuilder;
+import javax.json.JsonObjectBuilder;
+import javax.json.JsonValue;
 
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.exasol.dynamodb.attributevalue.AttributeValueVisitor;
@@ -14,6 +17,10 @@ import com.exasol.dynamodb.attributevalue.AttributeValueWrapper;
  * {@link com.amazonaws.services.dynamodbv2.model.AttributeValue} to JSON
  */
 public class AttributeValueToJsonConverter {
+
+	private AttributeValueToJsonConverter() {
+
+	}
 
 	/**
 	 * Converts an DynamoDB {@link AttributeValue} to json
@@ -109,9 +116,5 @@ public class AttributeValueToJsonConverter {
 		public JsonValue getJsonValue() {
 			return this.jsonValue;
 		}
-	}
-
-	private AttributeValueToJsonConverter() {
-
 	}
 }

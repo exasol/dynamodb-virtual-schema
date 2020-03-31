@@ -104,8 +104,7 @@ public abstract class AbstractColumnMappingDefinition implements Serializable {
 		try {
 			final AttributeValue dynamodbProperty = this.resultWalker.walk(dynamodbRow);
 			return convertValue(dynamodbProperty);
-		} catch (final AbstractDynamodbResultWalker.DynamodbResultWalkerException
-				| UnsupportedDynamodbTypeException e) {
+		} catch (final AbstractDynamodbResultWalker.DynamodbResultWalkerException | LookupColumnMappingException e) {
 			if (this.lookupFailBehaviour == LookupFailBehaviour.DEFAULT_VALUE) {
 				return this.getDestinationDefaultValue();
 			}
@@ -167,11 +166,21 @@ public abstract class AbstractColumnMappingDefinition implements Serializable {
 	}
 
 	/**
-	 * Exception that is thrown if a DynamoDB type shall be converted that is not
-	 * supported by a specific mapping.
+	 * Exception that is thrown on lookup error. It is caught in
+	 * {@link #convertRow(Map)} and handled according to
+	 * {@link #lookupFailBehaviour}
 	 */
-	public static class UnsupportedDynamodbTypeException extends ColumnMappingException {
-		public UnsupportedDynamodbTypeException(final String message, final AbstractColumnMappingDefinition column) {
+	public static class LookupColumnMappingException extends ColumnMappingException {
+
+		/**
+		 * Constructor.
+		 *
+		 * @param message
+		 *            Exception message
+		 * @param column
+		 *            {@link AbstractColumnMappingDefinition} that caused exception
+		 */
+		public LookupColumnMappingException(final String message, final AbstractColumnMappingDefinition column) {
 			super(message, column);
 		}
 	}
