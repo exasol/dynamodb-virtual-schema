@@ -14,7 +14,7 @@ install:
 before_script:
 - tools/version.sh verify
 - |- #generate documentation and push to github pages
-  if [[ "$TRAVIS_BRANCH" = "develop" && "$TRAVIS_PULL_REQUEST" = "false" ]] ; then
+  if [[ "$TRAVIS_BRANCH" = "master" && "$TRAVIS_PULL_REQUEST" = "false" ]] ; then
     source .ci/setup-ssh.sh || travis_terminate 1
     .ci/generateDocumentation.sh || travis_terminate 1
   fi
