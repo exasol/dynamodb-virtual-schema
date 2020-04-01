@@ -81,10 +81,9 @@ public class ToStringColumnMappingDefinition extends AbstractColumnMappingDefini
 		final AttributeValueWrapper attributeValueWrapper = new AttributeValueWrapper(dynamodbProperty);
 		try {
 			attributeValueWrapper.accept(toStringVisitor);
-		} catch (final AttributeValueVisitor.UnsupportedDynamodbTypeException e) {
-			throw new LookupColumnMappingException(
-					String.format("The DynamoDB type %s cant't be converted to string.", e.getDynamodbTypeName()),
-					this);
+		} catch (final AttributeValueVisitor.UnsupportedDynamodbTypeException exception) {
+			throw new LookupColumnMappingException(String.format("The DynamoDB type %s cant't be converted to string.",
+					exception.getDynamodbTypeName()), this);
 		}
 		final String stringValue = toStringVisitor.getResult();
 		if (stringValue == null) {

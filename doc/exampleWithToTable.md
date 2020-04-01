@@ -29,33 +29,36 @@ This shall be normalized to the following relational structure:
 
 ![Class diagram](diagrams/mappingToTable.png)
 
-Note that BOOKS_TOPICS uses isbn as FOREIGN KEY.
+Note that `BOOKS_TOPICS` uses `ISBN` as FOREIGN KEY.
 
 Mapping definition:
 ```
 {
-  "$schema": "https://github.com/exasol/dynamodb-virtual-schema/tree/master/schemaMapping/schema",
+  "$schema": "../../main/resources/mappingLanguageSchema.json",
   "srcTable": "MY_BOOKS",
-  "destTableName": "BOOKS",
-  "description": "Maps MY_BOOKS to BOOKS with toJSON",
-  "children": {
-    "isbn": {
-      "mapping": "toString",
-      "maxLength": 20,
-      "overflow": "ABORT"
-    },
-    "name": {
-      "mapping": "toString",
-      "maxLength": 100,
-      "overflow": "TRUNCATE"
-    },
-    "topics":{
-      "mapping": "toTable",
-      "description": "Maps the strings in this list to rows in the separate table BOOKS_TOPICS",
-      "children": {
-        "name": {
-          "mapping": "toString",
-          "maxLength": 20
+  "destTable": "BOOKS",
+  "description": "Maps MY_BOOKS to BOOKS",
+  "mapping": {
+    "fields": {
+      "isbn": {
+        "toStringMapping": {
+          "maxLength": 20,
+          "overflow": "ABORT"
+        }
+      },
+      "name": {
+        "toStringMapping": {
+          "maxLength": 100,
+          "overflow": "TRUNCATE"
+        }
+      },
+      "topics": {
+        "toTableMapping": {
+          "mapping": {
+            "toStringMapping": {
+              "destName": "TOPIC_NAME"
+            }
+          }
         }
       }
     }

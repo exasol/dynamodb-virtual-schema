@@ -1,7 +1,7 @@
 {
   "$schema": "./wrong/schema",
   "srcTable": "MY_BOOKS",
-  "destTableName": "BOOKS",
+  "destTable": "BOOKS",
   "description": "Maps MY_BOOKS to BOOKS",
   "mapping": {
     "fields": {

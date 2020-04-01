@@ -16,6 +16,12 @@
         "$ref": "#/definitions/mappingDefinition"
       }
     },
+    "destTable": {
+      "type": "string",
+      "title": "name of the destination table in Exasol Virtual Schema",
+      "description": "The name of the resulting table in Exasol.",
+      "pattern": "^[a-zA-Z0-9]+$"
+    },
     "mappingDefinition": {
       "type": "object",
       "description": "A mapping definition can either be:\n - a mapping to a column or table\n - an step  into the property tree of the DynamoDB table",
@@ -79,8 +85,8 @@
           "title": "toTable mapping definition",
           "description": "This mapping is used for normalizing documents from DynamoDB. It creates a new table in the resulting virtual schema named: \\<NAME_OF_PARENT\\>_\\<GIVEN_NAME\\>.\n\n The columns of that new table are defined using the mapping property. If the parent table defined a key using one or more toString mappings for a DynamoDB primary key or secondary index this will be used as foreign key.\n\n*Supported DynamoDB types:* List (L).",
           "properties": {
-            "destTableName": {
-              "type": "string"
+            "destTable": {
+              "$ref": "#/definitions/destTable"
             },
             "mapping": {
               "$ref": "#/definitions/mappingDefinition",
@@ -116,7 +122,7 @@
   "required": [
     "$schema",
     "srcTable",
-    "destTableName",
+    "destTable",
     "mapping"
   ],
   "properties": {
@@ -133,11 +139,8 @@
       "title": "DynamoDB table name",
       "description": "The identifier of the DynamoDB table."
     },
-    "destTableName": {
-      "type": "string",
-      "title": "name of the destination table in Exasol Virtual Schema",
-      "description": "The name of the resulting table in Exasol.",
-      "pattern": "^[a-zA-Z0-9]+$"
+    "destTable": {
+      "$ref": "#/definitions/destTable"
     },
     "description": {
       "$ref": "#/definitions/description"

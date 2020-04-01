@@ -1,7 +1,7 @@
 {
   "$schema": "../../main/resources/mappingLanguageSchema.json",
   "srcTable": "MY_BOOKS",
-  "destTableName": "BOOKS",
+  "destTable": "BOOKS",
   "description": "Maps MY_BOOKS to BOOKS",
   "mapping": {
     "fields": {
@@ -25,7 +25,7 @@
           "name": {
             "toStringMapping": {
               "maxLength": 20,
-              "destName": "authorName",
+              "destName": "AUTHOR_NAME",
               "description": "Maps the nested property authors.name to column authorName"
             }
           }

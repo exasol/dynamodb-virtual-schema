@@ -78,7 +78,7 @@ public class DynamodbAdapterTestLocalIT {
 	public void testSchemaDefinition() throws SQLException {
 		final Map<String, String> rowNames = exasolTestUtils.describeTable(TEST_SCHEMA, "BOOKS");
 		assertThat(rowNames, equalTo(
-				Map.of("isbn", "VARCHAR(20) UTF8", "name", "VARCHAR(100) UTF8", "authorName", "VARCHAR(20) UTF8")));
+				Map.of("isbn", "VARCHAR(20) UTF8", "name", "VARCHAR(100) UTF8", "AUTHOR_NAME", "VARCHAR(20) UTF8")));
 	}
 
 	/**

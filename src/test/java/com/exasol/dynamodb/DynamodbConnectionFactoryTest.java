@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test;
 import com.amazonaws.AmazonWebServiceClient;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 
-public class DynamodbConnectionUtilTest {
+public class DynamodbConnectionFactoryTest {
 
 	Object getPrivateField(final String name, final AmazonDynamoDB connection)
 			throws NoSuchFieldException, IllegalAccessException {
@@ -24,7 +24,7 @@ public class DynamodbConnectionUtilTest {
 	@Test
 	void testGetLowLevelConnectionLocal() throws NoSuchFieldException, IllegalAccessException {
 		final String uri = "http://127.0.0.1:1234";
-		final AmazonDynamoDB connection = DynamodbConnectionUtil.getLowLevelConnection(uri, "", "");
+		final AmazonDynamoDB connection = new DynamodbConnectionFactory().getLowLevelConnection(uri, "", "");
 		final URI endpoint = (URI) getPrivateField("endpoint", connection);
 		final String region = (String) getPrivateField("signerRegionOverride", connection);
 		assertThat(endpoint.toString(), equalTo(uri));
@@ -34,7 +34,7 @@ public class DynamodbConnectionUtilTest {
 	@Test
 	void testGetLowLevelConnectionAws() throws NoSuchFieldException, IllegalAccessException {
 		final String uri = "aws:ca-central-1";
-		final AmazonDynamoDB connection = DynamodbConnectionUtil.getLowLevelConnection(uri, "", "");
+		final AmazonDynamoDB connection = new DynamodbConnectionFactory().getLowLevelConnection(uri, "", "");
 		final URI endpoint = (URI) getPrivateField("endpoint", connection);
 		assertThat(endpoint.toString(), equalTo("https://dynamodb.ca-central-1.amazonaws.com"));
 	}

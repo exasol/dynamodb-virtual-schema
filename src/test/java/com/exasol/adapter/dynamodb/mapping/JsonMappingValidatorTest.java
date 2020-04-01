@@ -22,9 +22,9 @@ public class JsonMappingValidatorTest {
 		final File file = new File(classLoader.getResource(fileName).getFile());
 		try {
 			jsonMappingValidator.validate(file);
-		} catch (final JsonMappingFactory.MappingException e) {
-			LOGGER.info(e.getMessage());
-			throw e;
+		} catch (final JsonMappingFactory.MappingException exception) {
+			LOGGER.info(exception.getMessage());
+			throw exception;
 		}
 	}
 
@@ -56,8 +56,8 @@ public class JsonMappingValidatorTest {
 	@Test
 	void testInvalidNoDestName() {
 		final JsonMappingFactory.MappingException exception = assertThrows(JsonMappingFactory.MappingException.class,
-				() -> runValidation("invalidMappingNoDestTableName.json"));
-		assertThat(exception.getMessage(), equalTo("#: required key [destTableName] not found"));
+				() -> runValidation("invalidMappingNoDestTable.json"));
+		assertThat(exception.getMessage(), equalTo("#: required key [destTable] not found"));
 	}
 
 	@Test

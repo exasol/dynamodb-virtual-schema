@@ -1,12 +1,12 @@
 @startuml
 class BOOKS {
-  isbn: VARCHAR(20)
-  name: VARCHAR(100)
+    ISBN: VARCHAR(20)
+    NAME: VARCHAR(100)
 }
 
 class BOOKS_TOPICS {
-    isbn: VARCHAR(20) FOREIGN KEY
-    name: VARCHAR(20)
+    ISBN: VARCHAR(20) FOREIGN KEY
+    TOPIC_NAME: VARCHAR(20)
 }
 
 BOOKS  "1" *-- "*" BOOKS_TOPICS : contains

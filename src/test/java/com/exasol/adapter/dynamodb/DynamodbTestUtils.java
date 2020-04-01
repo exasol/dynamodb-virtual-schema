@@ -22,7 +22,7 @@ import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.auth.DefaultAWSCredentialsProviderChain;
 import com.amazonaws.services.dynamodbv2.document.*;
 import com.amazonaws.services.dynamodbv2.model.*;
-import com.exasol.dynamodb.DynamodbConnectionUtil;
+import com.exasol.dynamodb.DynamodbConnectionFactory;
 import com.github.dockerjava.api.model.ContainerNetwork;
 
 /*
@@ -83,7 +83,7 @@ public class DynamodbTestUtils {
 		this.dynamoUrl = dynamoUrl;
 		this.dynamoUser = user;
 		this.dynamoPass = pass;
-		this.dynamoClient = DynamodbConnectionUtil.getDocumentConnection(dynamoUrl, user, pass);
+		this.dynamoClient = new DynamodbConnectionFactory().getDocumentConnection(dynamoUrl, user, pass);
 	}
 
 	private static String getDockerNetworkUrlForLocalDynamodb(final GenericContainer localDynamo,

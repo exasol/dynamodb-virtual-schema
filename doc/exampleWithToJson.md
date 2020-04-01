@@ -27,9 +27,9 @@ This will be mapped to a Exasol table like:
 
 ```
 CREATE TABLE BOOKS (
-    isbn        VARCHAR(20),
-    name        VARCHAR(100),
-    topics      VARCHAR(200)
+    ISBN        VARCHAR(20),
+    NAME        VARCHAR(100),
+    TOPICS      VARCHAR(200)
 );
 ```
 With topics containing a JSON-style array of strings like `["DynamoDB", "Exasol"]`.
@@ -38,25 +38,30 @@ Mapping definition:
 
 ```
 {
-  "$schema": "https://github.com/exasol/dynamodb-virtual-schema/tree/master/schemaMapping/schema",
+  "$schema": "../../main/resources/mappingLanguageSchema.json",
   "srcTable": "MY_BOOKS",
-  "destTableName": "BOOKS",
+  "destTable": "BOOKS",
   "description": "Maps MY_BOOKS to BOOKS with toJSON",
-  "children": {
-    "isbn": {
-      "mapping": "toString",
-      "maxLength": 20,
-      "overflow": "ABORT"
-    },
-    "name": {
-      "mapping": "toString",
-      "maxLength": 100,
-      "overflow": "TRUNCATE"
-    },
-    "topics":{
-      "mapping": "toJSON",
-      "description": "Maps the sub document of this property to a JSON string",
-      "maxLength": 200
+  "mapping": {
+    "fields": {
+      "isbn": {
+        "toStringMapping": {
+          "maxLength": 20,
+          "overflow": "ABORT"
+        }
+      },
+      "name": {
+        "toStringMapping": {
+          "maxLength": 100,
+          "overflow": "TRUNCATE"
+        }
+      },
+      "topics": {
+        "toJsonMapping": {
+          "description": "Maps the sub document of this property to a JSON string",
+          "maxLength": 200
+        }
+      }
     }
   }
 }

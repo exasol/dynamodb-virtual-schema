@@ -26,7 +26,7 @@ import com.exasol.adapter.dynamodb.queryresult.QueryResultTableBuilder;
 import com.exasol.adapter.metadata.SchemaMetadata;
 import com.exasol.adapter.request.*;
 import com.exasol.adapter.response.*;
-import com.exasol.dynamodb.DynamodbConnectionUtil;
+import com.exasol.dynamodb.DynamodbConnectionFactory;
 import com.exasol.dynamodb.resultwalker.AbstractDynamodbResultWalker;
 import com.exasol.sql.expression.ValueExpression;
 
@@ -39,14 +39,17 @@ public class DynamodbAdapter implements VirtualSchemaAdapter {
 	public CreateVirtualSchemaResponse createVirtualSchema(final ExaMetadata exaMetadata,
 			final CreateVirtualSchemaRequest request) throws AdapterException {
 		try {
-			final SchemaMappingDefinition schemaMappingDefinition = getSchemaMappingDefinition(request);
-			final SchemaMetadata schemaMetadata = SchemaMappingDefinitionToSchemaMetadataConverter
-					.convert(schemaMappingDefinition);
-			return CreateVirtualSchemaResponse.builder().schemaMetadata(schemaMetadata).build();
+			return runCreateVirtualSchema(request);
 		} catch (final IOException exception) {
 			throw new AdapterException("Unable create Virtual Schema \"" + request.getVirtualSchemaName()
-					+ "\". Cause: \"" + e.getMessage(), e);// NOSONAR
+					+ "\". Cause: \"" + exception.getMessage(), exception);// NOSONAR
 		}
+	}
+
+	private CreateVirtualSchemaResponse runCreateVirtualSchema(final CreateVirtualSchemaRequest request)
+			throws IOException, AdapterException {
+		final SchemaMetadata schemaMetadata = getSchemaMetadata(request);
+		return CreateVirtualSchemaResponse.builder().schemaMetadata(schemaMetadata).build();
 	}
 
 	private SchemaMappingDefinition getSchemaMappingDefinition(final AdapterRequest request)
@@ -56,10 +59,15 @@ public class DynamodbAdapter implements VirtualSchemaAdapter {
 		final DynamodbAdapterProperties dynamodbAdapterProperties = new DynamodbAdapterProperties(adapterProperties);
 		final File path = dynamodbAdapterProperties.getMappingDefinition();
 		if (!path.exists()) {
-			throw new AdapterException(String.format("the specified mapping file (%s) could not be found.", path));
+			throw new AdapterException("The specified mapping file (" + path + ") could not be found.");
 		}
 		final MappingFactory mappingFactory = new JsonMappingFactory(path);
 		return mappingFactory.getSchemaMapping();
+	}
+
+	private SchemaMetadata getSchemaMetadata(final AdapterRequest request) throws IOException, AdapterException {
+		final SchemaMappingDefinition schemaMappingDefinition = getSchemaMappingDefinition(request);
+		return SchemaMappingDefinitionToSchemaMetadataConverter.convert(schemaMappingDefinition);
 	}
 
 	/**
@@ -70,7 +78,7 @@ public class DynamodbAdapter implements VirtualSchemaAdapter {
 			throws ExaConnectionAccessException {
 		final AdapterProperties properties = getPropertiesFromRequest(request);
 		final ExaConnectionInformation connection = exaMetadata.getConnection(properties.getConnectionName());
-		return DynamodbConnectionUtil.getLowLevelConnection(connection.getAddress(), connection.getUser(),
+		return new DynamodbConnectionFactory().getLowLevelConnection(connection.getAddress(), connection.getUser(),
 				connection.getPassword());
 	}
 
@@ -108,22 +116,8 @@ public class DynamodbAdapter implements VirtualSchemaAdapter {
 	@Override
 	public PushDownResponse pushdown(final ExaMetadata exaMetadata, final PushDownRequest request)
 			throws AdapterException {
-
-		final QueryResultTableBuilder queryResultTableBuilder = new QueryResultTableBuilder();
-		request.getSelect().accept(queryResultTableBuilder);
-		final QueryResultTable queryResultTable = queryResultTableBuilder.getQueryResultTable();
 		try {
-			final AmazonDynamoDB client = getConnection(exaMetadata, request);
-			final ScanResult scanResult = client.scan(new ScanRequest("JB_Books"));
-			final List<List<ValueExpression>> resultRows = new ArrayList<>();
-			for (final Map<String, AttributeValue> dynamodbItem : scanResult.getItems()) {
-				resultRows.add(queryResultTable.convertRow(dynamodbItem));
-			}
-			final String selectFromValuesStatement = new ValueExpressionsToSqlSelectFromValuesConverter()
-					.convert(queryResultTable, resultRows);
-			return PushDownResponse.builder()//
-					.pushDownSql(selectFromValuesStatement)//
-					.build();
+			return runPushdown(exaMetadata, request);
 		} catch (final ExaConnectionAccessException
 				| AbstractDynamodbResultWalker.DynamodbResultWalkerException exception) {
 			throw new AdapterException("Unable create Virtual Schema \"" + request.getVirtualSchemaName()
@@ -131,18 +125,45 @@ public class DynamodbAdapter implements VirtualSchemaAdapter {
 		}
 	}
 
+	private PushDownResponse runPushdown(final ExaMetadata exaMetadata, final PushDownRequest request)
+			throws AdapterException, ExaConnectionAccessException {
+		final QueryResultTable queryResultTable = new QueryResultTableBuilder().build(request.getSelect());
+		final ScanResult scanResult = runDynamodbQuery(exaMetadata, request);
+		final String selectFromValuesStatement = convertResult(scanResult, queryResultTable);
+		return PushDownResponse.builder()//
+				.pushDownSql(selectFromValuesStatement)//
+				.build();
+	}
+
+	private String convertResult(final ScanResult scanResult, final QueryResultTable queryResultTable)
+			throws AdapterException {
+		final List<List<ValueExpression>> resultRows = new ArrayList<>();
+		for (final Map<String, AttributeValue> dynamodbItem : scanResult.getItems()) {
+			resultRows.add(queryResultTable.convertRow(dynamodbItem));
+		}
+		return new ValueExpressionsToSqlSelectFromValuesConverter().convert(queryResultTable, resultRows);
+	}
+
+	private ScanResult runDynamodbQuery(final ExaMetadata exaMetadata, final PushDownRequest request)
+			throws ExaConnectionAccessException {
+		final AmazonDynamoDB client = getConnection(exaMetadata, request);
+		return client.scan(new ScanRequest("JB_Books"));
+	}
+
 	@Override
 	public RefreshResponse refresh(final ExaMetadata exaMetadata, final RefreshRequest refreshRequest)
 			throws AdapterException {
 		try {
-			final SchemaMappingDefinition schemaMappingDefinition = getSchemaMappingDefinition(refreshRequest);
-			final SchemaMetadata schemaMetadata = SchemaMappingDefinitionToSchemaMetadataConverter
-					.convert(schemaMappingDefinition);
-			return RefreshResponse.builder().schemaMetadata(schemaMetadata).build();
-		} catch (final IOException e) {
+			return this.runRefresh(refreshRequest);
+		} catch (final IOException exception) {
 			throw new AdapterException("Unable update Virtual Schema \"" + refreshRequest.getVirtualSchemaName()
-					+ "\". Cause: \"" + e.getMessage(), e);// NOSONAR
+					+ "\". Cause: \"" + exception.getMessage(), exception);// NOSONAR
 		}
+	}
+
+	private RefreshResponse runRefresh(final RefreshRequest refreshRequest) throws IOException, AdapterException {
+		final SchemaMetadata schemaMetadata = getSchemaMetadata(refreshRequest);
+		return RefreshResponse.builder().schemaMetadata(schemaMetadata).build();
 	}
 
 	@Override

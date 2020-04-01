@@ -104,11 +104,12 @@ public abstract class AbstractColumnMappingDefinition implements Serializable {
 		try {
 			final AttributeValue dynamodbProperty = this.resultWalker.walk(dynamodbRow);
 			return convertValue(dynamodbProperty);
-		} catch (final AbstractDynamodbResultWalker.DynamodbResultWalkerException | LookupColumnMappingException e) {
+		} catch (final AbstractDynamodbResultWalker.DynamodbResultWalkerException
+				| LookupColumnMappingException exception) {
 			if (this.lookupFailBehaviour == LookupFailBehaviour.DEFAULT_VALUE) {
 				return this.getDestinationDefaultValue();
 			}
-			throw e;
+			throw exception;
 		}
 	}
 

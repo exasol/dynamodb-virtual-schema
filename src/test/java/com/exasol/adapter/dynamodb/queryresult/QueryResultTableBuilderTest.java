@@ -29,9 +29,7 @@ public class QueryResultTableBuilderTest {
 		final SqlStatementSelect statement = SqlStatementSelect.builder()
 				.fromClause(new SqlTable(tableMetadata.getName(), tableMetadata))
 				.selectList(SqlSelectList.createSelectStarSelectList()).build();
-		final QueryResultTableBuilder queryResultTableBuilder = new QueryResultTableBuilder();
-		queryResultTableBuilder.visit(statement);
-		final QueryResultTable resultTable = queryResultTableBuilder.getQueryResultTable();
+		final QueryResultTable resultTable = new QueryResultTableBuilder().build(statement);
 		final List<String> actualDestinationNames = resultTable.getColumns().stream()
 				.map(column -> column.getColumnMapping().getDestinationName()).collect(Collectors.toList());
 		final String[] expectedDestinationNames = tableMetadata.getColumns().stream().map(ColumnMetadata::getName)

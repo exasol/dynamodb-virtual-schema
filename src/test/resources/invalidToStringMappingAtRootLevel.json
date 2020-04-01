@@ -1,7 +1,7 @@
 {
   "$schema": "../../main/resources/mappingLanguageSchema.json",
   "srcTable": "MY_BOOKS",
-  "destTableName": "BOOKS",
+  "destTable": "BOOKS",
   "description": "syntactic correct but should throw exception in factory",
   "mapping": {
     "toStringMapping": {

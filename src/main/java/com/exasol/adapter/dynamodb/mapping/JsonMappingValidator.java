@@ -50,29 +50,31 @@ public class JsonMappingValidator {
 		}
 	}
 
-	private String extractReadableErrorMessage(final ValidationException e) {
-		final List<ValidationException> causingExceptions = e.getCausingExceptions();
+	private String extractReadableErrorMessage(final ValidationException exception) {
+		final List<ValidationException> causingExceptions = exception.getCausingExceptions();
 		if (!causingExceptions.isEmpty()) {
 			final ValidationException firstException = causingExceptions.get(0);
 			return extractReadableErrorMessage(firstException);
 		}
-		if (e.getErrorMessage().startsWith("extraneous key")
-				&& e.getSchemaLocation().equals("#/definitions/mappingDefinition")) {
-			final String possibleProperties = possibleObjectProperties(e.getViolatedSchema());
+		if (exception.getErrorMessage().startsWith("extraneous key")
+				&& exception.getSchemaLocation().equals("#/definitions/mappingDefinition")) {
+			final String possibleProperties = possibleObjectProperties(exception.getViolatedSchema());
 			if (!possibleProperties.isEmpty()) {
-				return e.getMessage() + ", use one of the following mapping definitions here: " + possibleProperties;
+				return exception.getMessage() + ", use one of the following mapping definitions here: "
+						+ possibleProperties;
 			}
 		}
-		if (e.getMessage().startsWith("#/$schema:") && e.getMessage().endsWith("is not a valid enum value")) {
-			return e.getPointerToViolation()
+		if (exception.getMessage().startsWith("#/$schema:")
+				&& exception.getMessage().endsWith("is not a valid enum value")) {
+			return exception.getPointerToViolation()
 					+ " $schema must be set  to https://github.com/exasol/dynamodb-virtual-schema/blob/develop/src/main/resources/mappingLanguageSchema.json";
 		}
-		if (e.getPointerToViolation().endsWith("/mapping") && e.getKeyword().equals("minProperties")) {
-			final String possibleProperties = possibleObjectProperties(e.getViolatedSchema());
-			return e.getPointerToViolation() + " please specify at least one mapping here. Possible are: "
+		if (exception.getPointerToViolation().endsWith("/mapping") && exception.getKeyword().equals("minProperties")) {
+			final String possibleProperties = possibleObjectProperties(exception.getViolatedSchema());
+			return exception.getPointerToViolation() + " please specify at least one mapping here. Possible are: "
 					+ possibleProperties;
 		}
-		return e.getMessage();
+		return exception.getMessage();
 	}
 
 	private String possibleObjectProperties(final Schema schema) {

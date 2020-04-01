@@ -10,10 +10,7 @@ import com.amazonaws.services.dynamodbv2.document.DynamoDB;
 /**
  * Helper functions for creating a DynamoDB connection.
  */
-public class DynamodbConnectionUtil {
-	private DynamodbConnectionUtil() {
-
-	}
+public class DynamodbConnectionFactory {
 
 	/**
 	 * Creates a AmazonDynamoDB (low level api client) for a given uri, user and
@@ -28,7 +25,7 @@ public class DynamodbConnectionUtil {
 	 *            aws credential key
 	 * @return AmazonDynamoDB (low level api client)
 	 */
-	public static AmazonDynamoDB getLowLevelConnection(final String uri, final String user, final String key) {
+	public AmazonDynamoDB getLowLevelConnection(final String uri, final String user, final String key) {
 
 		final String AWS_PREFIX = "aws:";
 		final String AWS_LOCAL_REGION = "eu-central-1";
@@ -49,7 +46,7 @@ public class DynamodbConnectionUtil {
 	 *
 	 * @return DynamoDB (document api client)
 	 */
-	public static DynamoDB getDocumentConnection(final String uri, final String user, final String key) {
+	public DynamoDB getDocumentConnection(final String uri, final String user, final String key) {
 		return new DynamoDB(getLowLevelConnection(uri, user, key));
 	}
 }

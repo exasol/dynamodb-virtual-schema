@@ -23,7 +23,7 @@ import com.exasol.dynamodb.resultwalker.ObjectDynamodbResultWalker;
  * definitions can be found at /doc/schemaMappingLanguageReference.md
  */
 public class JsonMappingFactory implements MappingFactory {
-	private static final String DEST_TABLE_NAME_KEY = "destTableName";
+	private static final String DEST_TABLE_NAME_KEY = "destTable";
 	private static final String MAPPING_KEY = "mapping";
 	private static final String FIELDS_KEY = "fields";
 	private static final String TO_STRING_MAPPING_KEY = "toStringMapping";
