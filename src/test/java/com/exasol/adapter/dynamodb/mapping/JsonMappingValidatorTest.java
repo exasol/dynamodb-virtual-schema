@@ -4,11 +4,9 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 
-import org.json.JSONObject;
-import org.json.JSONTokener;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,8 +19,9 @@ public class JsonMappingValidatorTest {
 	void runValidation(final String fileName) throws IOException, JsonMappingFactory.MappingException {
 		final ClassLoader classLoader = DynamodbTestUtilsTestIT.class.getClassLoader();
 		final JsonMappingValidator jsonMappingValidator = new JsonMappingValidator();
-		try (final InputStream inputStream = classLoader.getResourceAsStream(fileName)) {
-			jsonMappingValidator.validate(new JSONObject(new JSONTokener(inputStream)));
+		final File file = new File(classLoader.getResource(fileName).getFile());
+		try {
+			jsonMappingValidator.validate(file);
 		} catch (final JsonMappingFactory.MappingException e) {
 			LOGGER.info(e.getMessage());
 			throw e;

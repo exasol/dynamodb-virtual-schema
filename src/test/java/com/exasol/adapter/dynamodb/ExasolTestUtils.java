@@ -2,8 +2,10 @@ package com.exasol.adapter.dynamodb;
 
 import java.nio.file.Path;
 import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeoutException;
 
@@ -130,7 +132,8 @@ public class ExasolTestUtils {
 	 *         "true"
 	 */
 	private boolean isNoDebugSystemPropertySet() {
-		final String noDebugProperty = System.getProperty("tests.noDebug");
+		final String noDebugProperty = System.getProperty("tests.noDebug");// if you want to debug set in your ide jvm
+																			// parameter -Dtests.noDebug="false"
 		return noDebugProperty != null && noDebugProperty.equals("true");
 	}
 
@@ -167,5 +170,66 @@ public class ExasolTestUtils {
 		}
 		createStatement += ";";
 		this.statement.execute(createStatement);
+	}
+
+	/**
+	 * Runs the SQL {@code DESCRIBE} command on a given table.
+	 *
+	 * @param schema
+	 *            schema name. Use quotes if lower case name.
+	 * @param table
+	 *            table name. Use quotes if lower case name.
+	 * @return Map with column name as key and column type as value
+	 * @throws SQLException
+	 */
+	public Map<String, String> describeTable(final String schema, final String table) throws SQLException {
+		final ResultSet describeResult = getStatement().executeQuery(String.format("DESCRIBE %s.%s;", schema, table));
+		final Map<String, String> columns = new HashMap<>();
+		while (describeResult.next()) {
+			columns.put(describeResult.getString(1), describeResult.getString(2));
+		}
+		return columns;
+	}
+
+	/**
+	 * Tests if a schema exists for the given name.
+	 * 
+	 * @param schema
+	 *            name of the schema to look up
+	 * @return {@code <true> if the schema exists}
+	 */
+	public boolean testIfSchemaExists(final String schema) {
+		try {
+			getStatement().executeQuery(String.format("OPEN SCHEMA %s;", schema));
+		} catch (final SQLException e) {
+			if (e.getMessage().contains("not found")) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	/**
+	 * Runs SQL {@code REFRESH} command for a given virtual schema.
+	 * 
+	 * @param schemaName
+	 *            name of the virtual schema to refresh. Use quotes if lower case
+	 *            name.
+	 * @throws SQLException
+	 */
+	public void refreshVirtualSchema(final String schemaName) throws SQLException {
+		this.statement.execute(String.format("ALTER VIRTUAL SCHEMA %s REFRESH;", schemaName));
+	}
+
+	/**
+	 * Runs SQL {@code DROP VIRTUAL SCHEMA} command for a given virtual schema.
+	 * 
+	 * @param schemaName
+	 *            name of the virtual schema to drop. Use quotes if lower case *
+	 *            name.
+	 * @throws SQLException
+	 */
+	public void dropVirtualSchema(final String schemaName) throws SQLException {
+		this.statement.execute(String.format("DROP VIRTUAL SCHEMA %s CASCADE;", schemaName));
 	}
 }

@@ -1,5 +1,7 @@
 package com.exasol.adapter.dynamodb.mapping;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashSet;
@@ -13,10 +15,13 @@ import org.json.JSONTokener;
 
 /**
  * Validator for mapping definitions using a JSON-schema validator.
+ * 
+ * The validator in this packages requires the use of the io.json api instead of
+ * the project wide javax api.
  */
 public class JsonMappingValidator {
 	/**
-	 * Validates the given schema using a JSON-schema validator.
+	 * Validates the schema from given file using a JSON-schema validator.
 	 * 
 	 * @param schemaMappingDefinition
 	 *            schema mapping definition to validate
@@ -25,7 +30,14 @@ public class JsonMappingValidator {
 	 * @throws JsonMappingFactory.MappingException
 	 *             if schema is violated
 	 */
-	public void validate(final JSONObject schemaMappingDefinition)
+	public void validate(final File schemaMappingDefinition) throws IOException, JsonMappingFactory.MappingException {
+		try (final InputStream inputStream = new FileInputStream(schemaMappingDefinition)) {
+			final JSONObject definitionObject = new JSONObject(new JSONTokener(inputStream));
+			this.validate(definitionObject);
+		}
+	}
+
+	private void validate(final JSONObject schemaMappingDefinition)
 			throws IOException, JsonMappingFactory.MappingException {
 		final ClassLoader classLoader = JsonMappingFactory.class.getClassLoader();
 		try (final InputStream inputStream = classLoader.getResourceAsStream("mappingLanguageSchema.json")) {

@@ -45,11 +45,11 @@ public class DynamodbAdapter implements VirtualSchemaAdapter {
 			return CreateVirtualSchemaResponse.builder().schemaMetadata(schemaMetadata).build();
 		} catch (final IOException e) {
 			throw new AdapterException("Unable create Virtual Schema \"" + request.getVirtualSchemaName()
-					+ "\". Cause: \"" + e.getMessage(), e);
+					+ "\". Cause: \"" + e.getMessage(), e);// NOSONAR
 		}
 	}
 
-	private SchemaMappingDefinition getSchemaMappingDefinition(final CreateVirtualSchemaRequest request)
+	private SchemaMappingDefinition getSchemaMappingDefinition(final AdapterRequest request)
 			throws AdapterException, IOException {
 		final AdapterProperties adapterProperties = new AdapterProperties(
 				request.getSchemaMetadataInfo().getProperties());
@@ -81,7 +81,7 @@ public class DynamodbAdapter implements VirtualSchemaAdapter {
 	@Override
 	public DropVirtualSchemaResponse dropVirtualSchema(final ExaMetadata exaMetadata,
 			final DropVirtualSchemaRequest dropVirtualSchemaRequest) {
-		throw new UnsupportedOperationException("not yet implemented");// NOSONAR (string constant)
+		return DropVirtualSchemaResponse.builder().build();
 	}
 
 	@Override
@@ -127,13 +127,22 @@ public class DynamodbAdapter implements VirtualSchemaAdapter {
 		} catch (final ExaConnectionAccessException
 				| AbstractDynamodbResultWalker.DynamodbResultWalkerException exception) {
 			throw new AdapterException("Unable create Virtual Schema \"" + request.getVirtualSchemaName()
-					+ "\". Cause: \"" + exception.getMessage(), exception);
+					+ "\". Cause: \"" + exception.getMessage(), exception);// NOSONAR
 		}
 	}
 
 	@Override
-	public RefreshResponse refresh(final ExaMetadata exaMetadata, final RefreshRequest refreshRequest) {
-		throw new UnsupportedOperationException("not yet implemented");// NOSONAR (string constant)
+	public RefreshResponse refresh(final ExaMetadata exaMetadata, final RefreshRequest refreshRequest)
+			throws AdapterException {
+		try {
+			final SchemaMappingDefinition schemaMappingDefinition = getSchemaMappingDefinition(refreshRequest);
+			final SchemaMetadata schemaMetadata = SchemaMappingDefinitionToSchemaMetadataConverter
+					.convert(schemaMappingDefinition);
+			return RefreshResponse.builder().schemaMetadata(schemaMetadata).build();
+		} catch (final IOException e) {
+			throw new AdapterException("Unable update Virtual Schema \"" + refreshRequest.getVirtualSchemaName()
+					+ "\". Cause: \"" + e.getMessage(), e);// NOSONAR
+		}
 	}
 
 	@Override

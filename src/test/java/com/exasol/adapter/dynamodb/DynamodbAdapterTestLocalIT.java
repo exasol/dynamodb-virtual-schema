@@ -9,7 +9,6 @@ import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeoutException;
@@ -77,12 +76,7 @@ public class DynamodbAdapterTestLocalIT {
 
 	@Test
 	public void testSchemaDefinition() throws SQLException {
-		final ResultSet describeResult = exasolTestUtils.getStatement()
-				.executeQuery("DESCRIBE " + TEST_SCHEMA + ".\"BOOKS\";");
-		final Map<String, String> rowNames = new HashMap<>();
-		while (describeResult.next()) {
-			rowNames.put(describeResult.getString(1), describeResult.getString(2));
-		}
+		final Map<String, String> rowNames = exasolTestUtils.describeTable(TEST_SCHEMA, "BOOKS");
 		assertThat(rowNames, equalTo(
 				Map.of("isbn", "VARCHAR(20) UTF8", "name", "VARCHAR(100) UTF8", "authorName", "VARCHAR(20) UTF8")));
 	}

@@ -7,8 +7,9 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.json.JSONObject;
-import org.json.JSONTokener;
+import javax.json.Json;
+import javax.json.JsonObject;
+import javax.json.JsonReader;
 
 import com.exasol.adapter.AdapterException;
 import com.exasol.dynamodb.resultwalker.AbstractDynamodbResultWalkerBuilder;
@@ -56,10 +57,9 @@ public class JsonMappingFactory implements MappingFactory {
 	private JsonMappingFactory(final File[] definitionsPaths) throws IOException, SchemaMappingException {
 		final JsonMappingValidator jsonMappingValidator = new JsonMappingValidator();
 		for (final File definitionPath : definitionsPaths) {
-			try (final InputStream inputStream = new FileInputStream(definitionPath)) {
-				final JSONObject definitionObject = new JSONObject(new JSONTokener(inputStream));
-				jsonMappingValidator.validate(definitionObject);
-				addRootDefinition(definitionObject);
+			try {
+				jsonMappingValidator.validate(definitionPath);
+				parseFile(definitionPath);
 			} catch (final MappingException e) {
 				throw new SchemaMappingException(definitionPath.getName(), e);
 			}
@@ -82,67 +82,75 @@ public class JsonMappingFactory implements MappingFactory {
 		}
 	}
 
-	private void addRootDefinition(final JSONObject definition) throws MappingException {
+	private void parseFile(final File definitionPath) throws IOException, MappingException {
+		try (final InputStream inputStream = new FileInputStream(definitionPath);
+				final JsonReader reader = Json.createReader(inputStream)) {
+			final JsonObject definitionObject = reader.readObject();
+			addRootDefinition(definitionObject);
+		}
+	}
+
+	private void addRootDefinition(final JsonObject definition) throws MappingException {
 		final TableMappingDefinition.Builder tableBuilder = TableMappingDefinition
 				.builder(definition.getString(DEST_TABLE_NAME_KEY), true);
-		walkRootMapping(definition.getJSONObject(MAPPING_KEY), new IdentityDynamodbResultWalker.Builder(),
+		walkRootMapping(definition.getJsonObject(MAPPING_KEY), new IdentityDynamodbResultWalker.Builder(),
 				tableBuilder);
 
 		this.tables.add(tableBuilder.build());
 	}
 
-	private void walkRootMapping(final JSONObject definition,
+	private void walkRootMapping(final JsonObject definition,
 			final AbstractDynamodbResultWalkerBuilder walkerToThisPath,
 			final TableMappingDefinition.Builder tableBuilder) throws MappingException {
 		walkMapping(definition, walkerToThisPath, tableBuilder, null, true);
 	}
 
-	private void walkMapping(final JSONObject definition, final AbstractDynamodbResultWalkerBuilder walkerToThisPath,
+	private void walkMapping(final JsonObject definition, final AbstractDynamodbResultWalkerBuilder walkerToThisPath,
 			final TableMappingDefinition.Builder tableBuilder, final String propertyName, final boolean isRootLevel)
 			throws MappingException {
-		if (definition.has(TO_STRING_MAPPING_KEY)) {
+		if (definition.containsKey(TO_STRING_MAPPING_KEY)) {
 			if (isRootLevel) {
 				throw new MappingException("ToString mapping is not allowed at root level");
 			}
-			addStringColumn(definition.getJSONObject(TO_STRING_MAPPING_KEY), walkerToThisPath, tableBuilder,
+			addStringColumn(definition.getJsonObject(TO_STRING_MAPPING_KEY), walkerToThisPath, tableBuilder,
 					propertyName);
-		} else if (definition.has(TO_JSON_MAPPING_KEY)) {
-			addToJsonColumn(definition.getJSONObject(TO_JSON_MAPPING_KEY), walkerToThisPath, tableBuilder,
+		} else if (definition.containsKey(TO_JSON_MAPPING_KEY)) {
+			addToJsonColumn(definition.getJsonObject(TO_JSON_MAPPING_KEY), walkerToThisPath, tableBuilder,
 					propertyName);
-		} else if (definition.has(FIELDS_KEY)) {
-			walkChildren(definition.getJSONObject(FIELDS_KEY), walkerToThisPath, tableBuilder);
+		} else if (definition.containsKey(FIELDS_KEY)) {
+			walkChildren(definition.getJsonObject(FIELDS_KEY), walkerToThisPath, tableBuilder);
 		} else {
 			throw new UnsupportedOperationException("not yet implemented");
 		}
 	}
 
-	private void walkChildren(final JSONObject definition, final AbstractDynamodbResultWalkerBuilder walkerToThisPath,
+	private void walkChildren(final JsonObject definition, final AbstractDynamodbResultWalkerBuilder walkerToThisPath,
 			final TableMappingDefinition.Builder tableBuilder) throws MappingException {
 		for (final String dynamodbPropertyName : definition.keySet()) {
 			final ObjectDynamodbResultWalker.Builder walker = new ObjectDynamodbResultWalker.Builder(walkerToThisPath,
 					dynamodbPropertyName);
-			this.walkMapping(definition.getJSONObject(dynamodbPropertyName), walker, tableBuilder, dynamodbPropertyName,
+			this.walkMapping(definition.getJsonObject(dynamodbPropertyName), walker, tableBuilder, dynamodbPropertyName,
 					false);
 		}
 
 	}
 
-	private void addStringColumn(final JSONObject definition, final AbstractDynamodbResultWalkerBuilder resultWalker,
+	private void addStringColumn(final JsonObject definition, final AbstractDynamodbResultWalkerBuilder resultWalker,
 			final TableMappingDefinition.Builder tableBuilder, final String dynamodbPropertyName) {
 		String destinationColumnName = dynamodbPropertyName;
 		int maxLength = DEFAULT_MAX_LENGTH;
 		ToStringColumnMappingDefinition.OverflowBehaviour overflowBehaviour = DEFAULT_TO_STRING_OVERFLOW;
 		AbstractColumnMappingDefinition.LookupFailBehaviour lookupFailBehaviour = DEFAULT_LOOKUP_BEHAVIOUR;
-		if (definition.has(DEST_NAME_KEY)) {
+		if (definition.containsKey(DEST_NAME_KEY)) {
 			destinationColumnName = definition.getString(DEST_NAME_KEY);
 		}
-		if (definition.has(MAX_LENGTH_KEY)) {
+		if (definition.containsKey(MAX_LENGTH_KEY)) {
 			maxLength = definition.getInt(MAX_LENGTH_KEY);
 		}
-		if (definition.has(OVERFLOW_KEY) && definition.getString(OVERFLOW_KEY).equals("ABORT")) {
+		if (definition.containsKey(OVERFLOW_KEY) && definition.getString(OVERFLOW_KEY).equals("ABORT")) {
 			overflowBehaviour = ToStringColumnMappingDefinition.OverflowBehaviour.EXCEPTION;
 		}
-		if (definition.has(REQUIRED_KEY) && definition.getBoolean(REQUIRED_KEY)) {
+		if (definition.containsKey(REQUIRED_KEY) && definition.getBoolean(REQUIRED_KEY)) {
 			lookupFailBehaviour = AbstractColumnMappingDefinition.LookupFailBehaviour.EXCEPTION;
 		}
 
@@ -150,11 +158,11 @@ public class JsonMappingFactory implements MappingFactory {
 				resultWalker.build(), lookupFailBehaviour, overflowBehaviour));
 	}
 
-	private void addToJsonColumn(final JSONObject definition, final AbstractDynamodbResultWalkerBuilder resultWalker,
+	private void addToJsonColumn(final JsonObject definition, final AbstractDynamodbResultWalkerBuilder resultWalker,
 			final TableMappingDefinition.Builder tableBuilder, final String dynamodbPropertyName)
 			throws MappingException {
 		String destinationColumnName = dynamodbPropertyName;
-		if (definition.has(DEST_NAME_KEY)) {
+		if (definition.containsKey(DEST_NAME_KEY)) {
 			destinationColumnName = definition.getString(DEST_NAME_KEY);
 		}
 		if (destinationColumnName == null) {
