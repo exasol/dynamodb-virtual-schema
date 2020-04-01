@@ -2,26 +2,27 @@
 
 set -e
 
-GH_REPO_ORG=`echo $TRAVIS_REPO_SLUG | cut -d "/" -f 1`
-GH_REPO_NAME=`echo $TRAVIS_REPO_SLUG | cut -d "/" -f 2`
-GH_REPO_REF="github.com/$GH_REPO_ORG/$GH_REPO_NAME.git"
+readonly committer_mail="travis@travis-ci.org"
 
-git clone -b gh-pages git@github.com:$GH_REPO_ORG/$GH_REPO_NAME.git schema_docs
+GH_REPO_ORG=$(echo "$TRAVIS_REPO_SLUG" | cut -d "/" -f 1)
+GH_REPO_NAME=$(echo "$TRAVIS_REPO_SLUG" | cut -d "/" -f 2)
+
+git clone -b gh-pages "git@github.com:$GH_REPO_ORG/$GH_REPO_NAME.git" schema_docs
 cd schema_docs
 
 ##### Configure git.
 # Set the push default to simple i.e. push only the current branch.
 git config --global push.default simple
-# Pretend to be an user called Travis CI.
+# Pretend to be a user called "Travis CI".
 git config user.name "Travis CI"
-git config user.email "travis@travis-ci.org"
+git config user.email "$committer_mail"
 
 # go back to first commit
-git reset --hard `git rev-list --max-parents=0 --abbrev-commit HEAD`
+git reset --hard "$(git rev-list --max-parents=0 --abbrev-commit HEAD)"
 
 #generate documentation
-readonly schema_path=$TRAVIS_BUILD_DIR/src/main/resources/mappingLanguageSchema.json
-bootprint json-schema $schema_path ./schema_doc/
+readonly schema_path="$TRAVIS_BUILD_DIR/src/main/resources/mappingLanguageSchema.json"
+bootprint json-schema "$schema_path" ./schema_doc/
 
 
 if [ -d "schema_doc" ] && [ -f "schema_doc/index.html" ]; then
