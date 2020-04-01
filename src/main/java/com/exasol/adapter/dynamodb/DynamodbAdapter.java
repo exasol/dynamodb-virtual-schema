@@ -43,7 +43,7 @@ public class DynamodbAdapter implements VirtualSchemaAdapter {
 			final SchemaMetadata schemaMetadata = SchemaMappingDefinitionToSchemaMetadataConverter
 					.convert(schemaMappingDefinition);
 			return CreateVirtualSchemaResponse.builder().schemaMetadata(schemaMetadata).build();
-		} catch (final IOException e) {
+		} catch (final IOException exception) {
 			throw new AdapterException("Unable create Virtual Schema \"" + request.getVirtualSchemaName()
 					+ "\". Cause: \"" + e.getMessage(), e);// NOSONAR
 		}

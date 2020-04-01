@@ -9,5 +9,5 @@ class BOOKS_TOPICS {
     name: VARCHAR(20)
 }
 
-BOOKS  "1" *-- "many" BOOKS_TOPICS : contains
+BOOKS  "1" *-- "*" BOOKS_TOPICS : contains
 @enduml

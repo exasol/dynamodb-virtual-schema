@@ -1,6 +1,6 @@
 # Example for `toTable` mapping
 
-given a DynamoDB table called `MY_BOOKS` containing objects like:
+Given a DynamoDB table called `MY_BOOKS` containing objects like:
 
 ```
 {

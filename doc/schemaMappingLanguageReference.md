@@ -1,14 +1,16 @@
 # Reference of the DynamoDB to Exasol mapping language
-Using the mapping language a mapping from one DynamoDB table to Exasol can be specified. 
-Its syntax is based on the JSON Schemas.
 
-The mappings are defined in a json document. This document must contain exactly one object. 
+Using the mapping language a mapping from one DynamoDB table to Exasol can be specified. 
+Its syntax is based on JSON Schemas.
+
+The mappings are defined in a JSON document. This document must contain exactly one object. 
 For mapping multiple DynamoDB tables, create multiple files. 
 
 The structure of the mapping follows the structure of the data in the DynamoDB.
 
 ## Example
-given a DynamoDB table called `MY_BOOKS` containing objects like:
+
+Given a DynamoDB table called `MY_BOOKS` containing objects like:
 
 ```
 {
