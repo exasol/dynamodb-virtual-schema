@@ -4,10 +4,7 @@ set -e
 
 readonly committer_mail="travis@travis-ci.org"
 
-GH_REPO_ORG=$(echo "$TRAVIS_REPO_SLUG" | cut -d "/" -f 1)
-GH_REPO_NAME=$(echo "$TRAVIS_REPO_SLUG" | cut -d "/" -f 2)
-
-git clone -b gh-pages "git@github.com:$GH_REPO_ORG/$GH_REPO_NAME.git" schema_docs
+git clone -b gh-pages "git@github.com:${TRAVIS_REPO_SLUG}.git" schema_docs
 cd schema_docs
 
 ##### Configure git.
@@ -40,7 +37,7 @@ if [ -d "schema_doc" ] && [ -f "schema_doc/index.html" ]; then
     # Force push to the remote gh-pages branch.
     # The ouput is redirected to /dev/null to hide any sensitive credential data
     # that might otherwise be exposed.
-    git push --force "git@github.com:$GH_REPO_ORG/$GH_REPO_NAME.git" > /dev/null 2>&1
+    git push --force "git@github.com:${TRAVIS_REPO_SLUG}.git" > /dev/null 2>&1
 else
     echo '' >&2
     echo 'Warning: No documentation (html) files have been found!' >&2
