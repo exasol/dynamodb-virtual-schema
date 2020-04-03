@@ -1,8 +1,10 @@
-package com.exasol.adapter.dynamodb.mapping;
+package com.exasol.adapter.dynamodb.mapping.tojson;
 
 import javax.json.JsonValue;
 
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
+import com.exasol.adapter.dynamodb.mapping.AbstractColumnMappingDefinition;
+import com.exasol.adapter.dynamodb.mapping.ColumnMappingDefinitionVisitor;
 import com.exasol.adapter.metadata.DataType;
 import com.exasol.dynamodb.AttributeValueToJsonConverter;
 import com.exasol.dynamodb.resultwalker.AbstractDynamodbResultWalker;
@@ -44,8 +46,7 @@ public class ToJsonColumnMappingDefinition extends AbstractColumnMappingDefiniti
 	}
 
 	@Override
-	protected ValueExpression convertValue(final AttributeValue dynamodbProperty) {
-		final JsonValue json = AttributeValueToJsonConverter.convert(dynamodbProperty);
-		return StringLiteral.of(json.toString());
+	public void accept(final ColumnMappingDefinitionVisitor visitor) {
+		visitor.visit(this);
 	}
 }

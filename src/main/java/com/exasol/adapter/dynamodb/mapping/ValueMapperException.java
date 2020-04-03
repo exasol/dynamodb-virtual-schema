@@ -16,7 +16,7 @@ public class ColumnMappingException extends AdapterException {
 	 * @param column
 	 *            {@link AbstractColumnMappingDefinition} that caused exception
 	 */
-	ColumnMappingException(final String message, final AbstractColumnMappingDefinition column) {
+	public ColumnMappingException(final String message, final AbstractColumnMappingDefinition column) {
 		super(message);
 		this.causingColumn = column;
 	}

@@ -8,6 +8,8 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import java.util.Collections;
 import java.util.Map;
 
+import com.exasol.adapter.dynamodb.mapping.tostringmapping.ToStringColumnMappingDefinition;
+import com.exasol.adapter.dynamodb.mapping.tostringmapping.ToStringValueMapper;
 import org.junit.jupiter.api.Test;
 
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
@@ -71,7 +73,7 @@ public class ToStringColumnMappingDefinitionTest {
 				DEST_COLUMN, 2, new ObjectDynamodbResultWalker(TEST_SOURCE_COLUMN, null),
 				AbstractColumnMappingDefinition.LookupFailBehaviour.EXCEPTION,
 				ToStringColumnMappingDefinition.OverflowBehaviour.EXCEPTION);
-		final ColumnMappingException exception = assertThrows(ColumnMappingException.class,
+		final ValueMapperException exception = assertThrows(ValueMapperException.class,
 				() -> toStringColumnMappingDefinition.convertRow(getDynamodbListRow()));
 		assertThat(exception.getMessage(), equalTo("The DynamoDB type List cant't be converted to string."));
 	}
@@ -93,7 +95,7 @@ public class ToStringColumnMappingDefinitionTest {
 				DEST_COLUMN, TEST_STRING.length() - 1, new ObjectDynamodbResultWalker(TEST_SOURCE_COLUMN, null),
 				AbstractColumnMappingDefinition.LookupFailBehaviour.DEFAULT_VALUE,
 				ToStringColumnMappingDefinition.OverflowBehaviour.EXCEPTION);
-		assertThrows(ToStringColumnMappingDefinition.OverflowException.class,
+		assertThrows(ToStringValueMapper.OverflowException.class,
 				() -> toStringColumnMappingDefinition.convertRow(getDynamodbStringRow()));
 	}
 

@@ -17,7 +17,7 @@ public class LookupColumnMappingException extends ColumnMappingException {
 	 * @param column
 	 *            {@link AbstractColumnMappingDefinition} that caused exception
 	 */
-	LookupColumnMappingException(final String message, final AbstractColumnMappingDefinition column) {
+    public LookupColumnMappingException(final String message, final AbstractColumnMappingDefinition column) {
 		super(message, column);
 	}
 }

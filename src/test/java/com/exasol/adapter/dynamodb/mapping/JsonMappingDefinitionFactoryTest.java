@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.exasol.adapter.dynamodb.mapping.tostringmapping.ToStringColumnMappingDefinition;
 import org.junit.jupiter.api.Test;
 
 import com.exasol.adapter.AdapterException;
