@@ -28,7 +28,7 @@ public class ToJsonValueMapperTest {
 		final Map<String, AttributeValue> rootAttributeValue = Map.of("key",
 				AttributeValueTestUtils.forString("value"));
 		final ValueExpression exasolCellValue = new ToJsonValueMapper(toStringColumnMappingDefinition)
-				.convertRow(rootAttributeValue);
+				.mapRow(rootAttributeValue);
 		assertThat(exasolCellValue.toString(), equalTo("{\"key\":\"value\"}"));
 	}
 }

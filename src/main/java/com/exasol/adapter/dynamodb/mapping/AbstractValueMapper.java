@@ -31,11 +31,11 @@ public abstract class AbstractValueMapper {
 	 * @return {@link ValueExpression}
 	 * @throws AdapterException
 	 */
-	public ValueExpression convertRow(final Map<String, AttributeValue> dynamodbRow)
+	public ValueExpression mapRow(final Map<String, AttributeValue> dynamodbRow)
 			throws DynamodbResultWalkerException, ValueMapperException {
 		try {
 			final AttributeValue dynamodbProperty = this.column.getResultWalker().walk(dynamodbRow);
-			return this.convertValue(dynamodbProperty);
+			return this.mapValue(dynamodbProperty);
 		} catch (final DynamodbResultWalkerException | LookupValueMapperException exception) {
 			if (this.column
 					.getLookupFailBehaviour() == AbstractColumnMappingDefinition.LookupFailBehaviour.DEFAULT_VALUE) {
@@ -53,5 +53,5 @@ public abstract class AbstractValueMapper {
 	 * @return the conversion result
 	 * @throws ValueMapperException
 	 */
-	protected abstract ValueExpression convertValue(AttributeValue dynamodbProperty) throws ValueMapperException;
+	protected abstract ValueExpression mapValue(AttributeValue dynamodbProperty) throws ValueMapperException;
 }

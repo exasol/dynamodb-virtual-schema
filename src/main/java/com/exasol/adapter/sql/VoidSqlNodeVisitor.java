@@ -1,12 +1,12 @@
 package com.exasol.adapter.sql;
 
 import com.exasol.adapter.AdapterException;
-import com.exasol.adapter.dynamodb.queryresult.QueryResultTableBuilder;
+import com.exasol.adapter.dynamodb.queryresultschema.QueryResultTableSchemaBuilder;
 
 /**
  * Facade for the {@link SqlNodeVisitor} interface implementing all methods with
  * unsupported exception. This class is used for keeping
- * {@link QueryResultTableBuilder} short and readable.
+ * {@link QueryResultTableSchemaBuilder} short and readable.
  */
 public abstract class VoidSqlNodeVisitor implements SqlNodeVisitor<Void> {
 	private static final String UNSUPPORTED_MESSAGE = "not yet supported";

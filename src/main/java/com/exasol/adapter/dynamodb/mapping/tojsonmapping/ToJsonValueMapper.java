@@ -26,7 +26,7 @@ public class ToJsonValueMapper extends AbstractValueMapper {
 	}
 
 	@Override
-	protected ValueExpression convertValue(final AttributeValue dynamodbProperty) throws ValueMapperException {
+	protected ValueExpression mapValue(final AttributeValue dynamodbProperty) throws ValueMapperException {
 		final JsonValue json = AttributeValueToJsonConverter.convert(dynamodbProperty);
 		return StringLiteral.of(json.toString());
 	}

@@ -4,7 +4,7 @@ import java.util.Map;
 
 /**
  * Exception that is thrown on lookup error. It is caught in
- * {@link AbstractValueMapper#convertRow(Map)} and handled according to
+ * {@link AbstractValueMapper#mapRow(Map)} and handled according to
  * {@link AbstractColumnMappingDefinition#getLookupFailBehaviour()}
  */
 public class LookupValueMapperException extends ValueMapperException {

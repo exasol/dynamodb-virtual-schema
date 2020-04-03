@@ -1,4 +1,4 @@
-package com.exasol.adapter.dynamodb.queryresult;
+package com.exasol.adapter.dynamodb.queryresultschema;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
 
 import com.exasol.adapter.AdapterException;
+import com.exasol.adapter.dynamodb.mapping.AbstractColumnMappingDefinition;
 import com.exasol.adapter.dynamodb.mapping.HardCodedMappingFactory;
 import com.exasol.adapter.dynamodb.mapping.SchemaMappingDefinitionToSchemaMetadataConverter;
 import com.exasol.adapter.metadata.ColumnMetadata;
@@ -19,9 +20,9 @@ import com.exasol.adapter.sql.SqlStatementSelect;
 import com.exasol.adapter.sql.SqlTable;
 
 /**
- * Tests for {@link QueryResultTableBuilder}
+ * Tests for {@link QueryResultTableSchemaBuilder}
  */
-public class QueryResultTableBuilderTest {
+public class QueryResultTableSchemaBuilderTest {
 	@Test
 	void testBuildSelectStar() throws IOException, AdapterException {
 		final TableMetadata tableMetadata = SchemaMappingDefinitionToSchemaMetadataConverter
@@ -29,9 +30,9 @@ public class QueryResultTableBuilderTest {
 		final SqlStatementSelect statement = SqlStatementSelect.builder()
 				.fromClause(new SqlTable(tableMetadata.getName(), tableMetadata))
 				.selectList(SqlSelectList.createSelectStarSelectList()).build();
-		final QueryResultTable resultTable = new QueryResultTableBuilder().build(statement);
+		final QueryResultTableSchema resultTable = new QueryResultTableSchemaBuilder().build(statement);
 		final List<String> actualDestinationNames = resultTable.getColumns().stream()
-				.map(column -> column.getColumnMapping().getDestinationName()).collect(Collectors.toList());
+				.map(AbstractColumnMappingDefinition::getDestinationName).collect(Collectors.toList());
 		final String[] expectedDestinationNames = tableMetadata.getColumns().stream().map(ColumnMetadata::getName)
 				.toArray(String[]::new);
 		assertThat(actualDestinationNames, containsInAnyOrder(expectedDestinationNames));

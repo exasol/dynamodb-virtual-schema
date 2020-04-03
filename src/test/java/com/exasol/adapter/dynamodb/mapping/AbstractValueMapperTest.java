@@ -29,7 +29,7 @@ public class AbstractValueMapperTest {
 		final String isbn = "123456789";
 		final AttributeValue isbnValue = AttributeValueTestUtils.forString(isbn);
 		final ValueExpression valueExpression = new MocValueMapper(columnMappingDefinition)
-				.convertRow(Map.of("isbn", isbnValue));
+				.mapRow(Map.of("isbn", isbnValue));
 		assertThat(valueExpression.toString(), equalTo(isbn));
 	}
 
@@ -39,7 +39,7 @@ public class AbstractValueMapperTest {
 		final MocColumnMappingDefinition columnMappingDefinition = new MocColumnMappingDefinition("d", resultWalker,
 				AbstractColumnMappingDefinition.LookupFailBehaviour.DEFAULT_VALUE);
 		final ValueExpression valueExpression = new MocValueMapper(columnMappingDefinition)
-				.convertRow(Collections.emptyMap());
+				.mapRow(Collections.emptyMap());
 		assertThat(valueExpression.toString(), equalTo("default"));
 	}
 
@@ -49,7 +49,7 @@ public class AbstractValueMapperTest {
 		final MocColumnMappingDefinition columnMappingDefinition = new MocColumnMappingDefinition("d", resultWalker,
 				AbstractColumnMappingDefinition.LookupFailBehaviour.EXCEPTION);
 		assertThrows(DynamodbResultWalkerException.class,
-				() -> new MocValueMapper(columnMappingDefinition).convertRow(Collections.emptyMap()));
+				() -> new MocValueMapper(columnMappingDefinition).mapRow(Collections.emptyMap()));
 	}
 
 	@Test
@@ -58,7 +58,7 @@ public class AbstractValueMapperTest {
 		final MocColumnMappingDefinition mappingDefinition = new MocColumnMappingDefinition(columnName,
 				new IdentityDynamodbResultWalker(), AbstractColumnMappingDefinition.LookupFailBehaviour.EXCEPTION);
 		final ValueMapperException exception = assertThrows(ValueMapperException.class,
-				() -> new ExceptionMocValueMapper(mappingDefinition).convertRow(Map.of()));
+				() -> new ExceptionMocValueMapper(mappingDefinition).mapRow(Map.of()));
 		assertThat(exception.getCausingColumn().getDestinationName(), equalTo(columnName));
 	}
 
@@ -69,7 +69,7 @@ public class AbstractValueMapperTest {
 		}
 
 		@Override
-		protected ValueExpression convertValue(final AttributeValue dynamodbProperty) throws ValueMapperException {
+		protected ValueExpression mapValue(final AttributeValue dynamodbProperty) throws ValueMapperException {
 			return StringLiteral.of(dynamodbProperty.getS());
 		}
 	}
@@ -82,7 +82,7 @@ public class AbstractValueMapperTest {
 		}
 
 		@Override
-		protected ValueExpression convertValue(final AttributeValue dynamodbProperty) throws ValueMapperException {
+		protected ValueExpression mapValue(final AttributeValue dynamodbProperty) throws ValueMapperException {
 			throw new ValueMapperException("message", this.column);
 		}
 	}

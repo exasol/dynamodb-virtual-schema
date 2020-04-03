@@ -1,4 +1,4 @@
-package com.exasol.adapter.dynamodb.queryresult;
+package com.exasol.adapter.dynamodb.queryresultschema;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -14,30 +14,30 @@ import com.exasol.adapter.sql.*;
 
 /**
  * Visitor for {@link com.exasol.adapter.sql.SqlStatementSelect} building a
- * {@link QueryResultTable}
+ * {@link QueryResultTableSchema}
  */
-public class QueryResultTableBuilder {
+public class QueryResultTableSchemaBuilder {
 
 	/**
-	 * Builds the {@link QueryResultTable} from an {@link SqlStatementSelect}
+	 * Builds the {@link QueryResultTableSchema} from an {@link SqlStatementSelect}
 	 * 
 	 * @param selectStatement
 	 *            select statement
-	 * @return {@link QueryResultTable}
+	 * @return {@link QueryResultTableSchema}
 	 */
-	public QueryResultTable build(final SqlStatement selectStatement) throws AdapterException {
+	public QueryResultTableSchema build(final SqlStatement selectStatement) throws AdapterException {
 		final Visitor visitor = new Visitor();
 		selectStatement.accept(visitor);
 		return visitor.getQueryResultTable();
 	}
 
 	private static class Visitor extends VoidSqlNodeVisitor {
-		private final List<QueryResultColumn> resultColumns = new ArrayList<>();
+		private final List<AbstractColumnMappingDefinition> resultColumns = new ArrayList<>();
 		private String tableName;
 		private TableMetadata tableMetadata;
 
-		private QueryResultTable getQueryResultTable() {
-			return new QueryResultTable(Collections.unmodifiableList(this.resultColumns));
+		private QueryResultTableSchema getQueryResultTable() {
+			return new QueryResultTableSchema(Collections.unmodifiableList(this.resultColumns));
 		}
 
 		@Override
@@ -64,8 +64,7 @@ public class QueryResultTableBuilder {
 				for (final ColumnMetadata columnMetadata : this.tableMetadata.getColumns()) {
 					final AbstractColumnMappingDefinition columnMappingDefinition = SchemaMappingDefinitionToSchemaMetadataConverter
 							.convertBackColumn(columnMetadata);
-					final QueryResultColumn resultColumn = new QueryResultColumn(columnMappingDefinition);
-					this.resultColumns.add(resultColumn);
+					this.resultColumns.add(columnMappingDefinition);
 				}
 			} catch (final IOException | ClassNotFoundException exception) {
 				throw new AdapterException(

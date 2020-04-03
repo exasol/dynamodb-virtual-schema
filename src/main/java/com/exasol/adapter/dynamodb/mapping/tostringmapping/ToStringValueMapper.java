@@ -28,7 +28,7 @@ public class ToStringValueMapper extends AbstractValueMapper {
 	}
 
 	@Override
-	protected ValueExpression convertValue(final AttributeValue dynamodbProperty) throws ValueMapperException {
+	protected ValueExpression mapValue(final AttributeValue dynamodbProperty) throws ValueMapperException {
 		final ToStringVisitor toStringVisitor = new ToStringVisitor();
 		final AttributeValueWrapper attributeValueWrapper = new AttributeValueWrapper(dynamodbProperty);
 		try {

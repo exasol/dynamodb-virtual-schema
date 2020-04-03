@@ -3,7 +3,8 @@ package com.exasol.adapter.dynamodb;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.exasol.adapter.dynamodb.queryresult.QueryResultTable;
+import com.exasol.adapter.dynamodb.mapping.AbstractColumnMappingDefinition;
+import com.exasol.adapter.dynamodb.queryresultschema.QueryResultTableSchema;
 import com.exasol.sql.StatementFactory;
 import com.exasol.sql.ValueTable;
 import com.exasol.sql.ValueTableRow;
@@ -20,14 +21,15 @@ import com.exasol.sql.rendering.StringRendererConfig;
 public class ValueExpressionsToSqlSelectFromValuesConverter implements ValueExpressionsToSqlConverter {
 
 	@Override
-	public String convert(final QueryResultTable tableStructure, final List<List<ValueExpression>> rows) {
+	public String convert(final QueryResultTableSchema tableStructure, final List<List<ValueExpression>> rows) {
 		final StringRendererConfig config = StringRendererConfig.builder().quoteIdentifiers(true).build();
 		final SelectRenderer renderer = new SelectRenderer(config);
 		convertToSelect(tableStructure, rows).accept(renderer);
 		return renderer.render();
 	}
 
-	private Select convertToSelect(final QueryResultTable tableStructure, final List<List<ValueExpression>> rows) {
+	private Select convertToSelect(final QueryResultTableSchema tableStructure,
+			final List<List<ValueExpression>> rows) {
 		final Select select = StatementFactory.getInstance().select();
 		final ValueTable valueTable = new ValueTable(select);
 
@@ -46,8 +48,8 @@ public class ValueExpressionsToSqlSelectFromValuesConverter implements ValueExpr
 		return select;
 	}
 
-	private List<ValueExpression> getDefaultValueRow(final QueryResultTable tableStructure) {
-		return tableStructure.getColumns().stream()
-				.map(column -> column.getColumnMapping().getDestinationDefaultValue()).collect(Collectors.toList());
+	private List<ValueExpression> getDefaultValueRow(final QueryResultTableSchema tableStructure) {
+		return tableStructure.getColumns().stream().map(AbstractColumnMappingDefinition::getDestinationDefaultValue)
+				.collect(Collectors.toList());
 	}
 }

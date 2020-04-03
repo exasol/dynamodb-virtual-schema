@@ -10,8 +10,7 @@ import org.junit.jupiter.api.Test;
 
 import com.exasol.adapter.dynamodb.mapping.AbstractColumnMappingDefinition;
 import com.exasol.adapter.dynamodb.mapping.tojsonmapping.ToJsonColumnMappingDefinition;
-import com.exasol.adapter.dynamodb.queryresult.QueryResultColumn;
-import com.exasol.adapter.dynamodb.queryresult.QueryResultTable;
+import com.exasol.adapter.dynamodb.queryresultschema.QueryResultTableSchema;
 import com.exasol.dynamodb.resultwalker.IdentityDynamodbResultWalker;
 import com.exasol.sql.expression.StringLiteral;
 import com.exasol.sql.expression.ValueExpression;
@@ -20,10 +19,10 @@ import com.exasol.sql.expression.ValueExpression;
  * Tests for {@link ValueExpressionsToSqlSelectFromValuesConverter}.
  */
 public class ValueExpressionsToSqlSelectFromValuesConverterTest {
-	QueryResultTable getTestTable() {
-		return new QueryResultTable(List
-				.of(new QueryResultColumn(new ToJsonColumnMappingDefinition("json", new IdentityDynamodbResultWalker(),
-						AbstractColumnMappingDefinition.LookupFailBehaviour.DEFAULT_VALUE))));
+	QueryResultTableSchema getTestTable() {
+		return new QueryResultTableSchema(
+				List.of(new ToJsonColumnMappingDefinition("json", new IdentityDynamodbResultWalker(),
+						AbstractColumnMappingDefinition.LookupFailBehaviour.DEFAULT_VALUE)));
 	}
 
 	@Test

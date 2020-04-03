@@ -21,8 +21,9 @@ import com.exasol.adapter.dynamodb.mapping.JsonMappingFactory;
 import com.exasol.adapter.dynamodb.mapping.MappingDefinitionFactory;
 import com.exasol.adapter.dynamodb.mapping.SchemaMappingDefinition;
 import com.exasol.adapter.dynamodb.mapping.SchemaMappingDefinitionToSchemaMetadataConverter;
-import com.exasol.adapter.dynamodb.queryresult.QueryResultTable;
-import com.exasol.adapter.dynamodb.queryresult.QueryResultTableBuilder;
+import com.exasol.adapter.dynamodb.queryresultschema.QueryResultTableSchema;
+import com.exasol.adapter.dynamodb.queryresultschema.QueryResultTableSchemaBuilder;
+import com.exasol.adapter.dynamodb.queryresultschema.RowMapper;
 import com.exasol.adapter.metadata.SchemaMetadata;
 import com.exasol.adapter.request.*;
 import com.exasol.adapter.response.*;
@@ -138,21 +139,23 @@ public class DynamodbAdapter implements VirtualSchemaAdapter {
 
 	private PushDownResponse runPushdown(final ExaMetadata exaMetadata, final PushDownRequest request)
 			throws AdapterException, ExaConnectionAccessException {
-		final QueryResultTable queryResultTable = new QueryResultTableBuilder().build(request.getSelect());
+		final QueryResultTableSchema queryResultTableSchema = new QueryResultTableSchemaBuilder()
+				.build(request.getSelect());
 		final ScanResult scanResult = runDynamodbQuery(exaMetadata, request);
-		final String selectFromValuesStatement = convertResult(scanResult, queryResultTable);
+		final String selectFromValuesStatement = convertResult(scanResult, queryResultTableSchema);
 		return PushDownResponse.builder()//
 				.pushDownSql(selectFromValuesStatement)//
 				.build();
 	}
 
-	private String convertResult(final ScanResult scanResult, final QueryResultTable queryResultTable)
+	private String convertResult(final ScanResult scanResult, final QueryResultTableSchema queryResultTableSchema)
 			throws AdapterException {
 		final List<List<ValueExpression>> resultRows = new ArrayList<>();
+		final RowMapper rowMapper = new RowMapper(queryResultTableSchema);
 		for (final Map<String, AttributeValue> dynamodbItem : scanResult.getItems()) {
-			resultRows.add(queryResultTable.convertRow(dynamodbItem));
+			resultRows.add(rowMapper.mapRow(dynamodbItem));
 		}
-		return new ValueExpressionsToSqlSelectFromValuesConverter().convert(queryResultTable, resultRows);
+		return new ValueExpressionsToSqlSelectFromValuesConverter().convert(queryResultTableSchema, resultRows);
 	}
 
 	private ScanResult runDynamodbQuery(final ExaMetadata exaMetadata, final PushDownRequest request)

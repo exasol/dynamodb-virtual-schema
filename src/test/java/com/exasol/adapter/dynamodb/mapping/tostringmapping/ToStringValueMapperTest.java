@@ -33,7 +33,7 @@ public class ToStringValueMapperTest {
 				AbstractColumnMappingDefinition.LookupFailBehaviour.DEFAULT_VALUE,
 				ToStringColumnMappingDefinition.OverflowBehaviour.EXCEPTION);
 		final ValueExpression exasolCellValue = new ToStringValueMapper(toStringColumnMappingDefinition)
-				.convertRow(getDynamodbStringRow());
+				.mapRow(getDynamodbStringRow());
 		assertThat(exasolCellValue.toString(), equalTo(TEST_STRING));
 	}
 
@@ -45,7 +45,7 @@ public class ToStringValueMapperTest {
 				AbstractColumnMappingDefinition.LookupFailBehaviour.DEFAULT_VALUE,
 				ToStringColumnMappingDefinition.OverflowBehaviour.EXCEPTION);
 		final ValueExpression exasolCellValue = new ToStringValueMapper(toStringColumnMappingDefinition)
-				.convertRow(getDynamodbNumberRow());
+				.mapRow(getDynamodbNumberRow());
 		assertThat(exasolCellValue.toString(), equalTo(String.valueOf(TEST_NUMBER)));
 	}
 
@@ -56,7 +56,7 @@ public class ToStringValueMapperTest {
 				AbstractColumnMappingDefinition.LookupFailBehaviour.EXCEPTION,
 				ToStringColumnMappingDefinition.OverflowBehaviour.EXCEPTION);
 		final ValueMapperException exception = assertThrows(ValueMapperException.class,
-				() -> new ToStringValueMapper(toStringColumnMappingDefinition).convertRow(getDynamodbListRow()));
+				() -> new ToStringValueMapper(toStringColumnMappingDefinition).mapRow(getDynamodbListRow()));
 		assertThat(exception.getMessage(), equalTo("The DynamoDB type List cant't be converted to string."));
 	}
 
@@ -67,7 +67,7 @@ public class ToStringValueMapperTest {
 				AbstractColumnMappingDefinition.LookupFailBehaviour.DEFAULT_VALUE,
 				ToStringColumnMappingDefinition.OverflowBehaviour.TRUNCATE);
 		final ValueExpression exasolCellValue = new ToStringValueMapper(toStringColumnMappingDefinition)
-				.convertRow(getDynamodbStringRow());
+				.mapRow(getDynamodbStringRow());
 		final String expected = TEST_STRING.substring(0, TEST_STRING.length() - 1);
 		assertThat(exasolCellValue.toString(), equalTo(expected));
 	}
@@ -79,7 +79,7 @@ public class ToStringValueMapperTest {
 				AbstractColumnMappingDefinition.LookupFailBehaviour.DEFAULT_VALUE,
 				ToStringColumnMappingDefinition.OverflowBehaviour.EXCEPTION);
 		assertThrows(ToStringValueMapper.OverflowException.class,
-				() -> new ToStringValueMapper(toStringColumnMappingDefinition).convertRow(getDynamodbStringRow()));
+				() -> new ToStringValueMapper(toStringColumnMappingDefinition).mapRow(getDynamodbStringRow()));
 	}
 
 	private Map<String, AttributeValue> getDynamodbStringRow() {
