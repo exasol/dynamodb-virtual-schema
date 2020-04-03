@@ -4,20 +4,20 @@ import java.util.Map;
 
 /**
  * Exception that is thrown on lookup error. It is caught in
- * {@link AbstractColumnMappingDefinition#convertRow(Map)} and handled according
- * to {@link AbstractColumnMappingDefinition#getLookupFailBehaviour()}
+ * {@link AbstractValueMapper#convertRow(Map)} and handled according to
+ * {@link AbstractColumnMappingDefinition#getLookupFailBehaviour()}
  */
-public class LookupColumnMappingException extends ColumnMappingException {
+public class LookupValueMapperException extends ValueMapperException {
 
 	/**
-	 * Creates an instance of {@link LookupColumnMappingException}.
+	 * Creates an instance of {@link LookupValueMapperException}.
 	 *
 	 * @param message
 	 *            Exception message
 	 * @param column
 	 *            {@link AbstractColumnMappingDefinition} that caused exception
 	 */
-    public LookupColumnMappingException(final String message, final AbstractColumnMappingDefinition column) {
+	public LookupValueMapperException(final String message, final AbstractColumnMappingDefinition column) {
 		super(message, column);
 	}
 }

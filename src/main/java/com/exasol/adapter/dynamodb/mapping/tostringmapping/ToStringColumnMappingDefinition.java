@@ -1,4 +1,4 @@
-package com.exasol.adapter.dynamodb.mapping.tostring;
+package com.exasol.adapter.dynamodb.mapping.tostringmapping;
 
 import com.exasol.adapter.dynamodb.mapping.AbstractColumnMappingDefinition;
 import com.exasol.adapter.dynamodb.mapping.ColumnMappingDefinitionVisitor;

@@ -11,20 +11,21 @@ import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.exasol.adapter.dynamodb.mapping.tostringmapping.ToStringColumnMappingDefinition;
 import org.junit.jupiter.api.Test;
 
 import com.exasol.adapter.AdapterException;
+import com.exasol.adapter.dynamodb.mapping.tostringmapping.ToStringColumnMappingDefinition;
 
 /**
  * Tests for {@link JsonMappingFactory}
  */
-public class JsonMappingFactoryTest {
+public class JsonMappingDefinitionFactoryTest {
 
 	private SchemaMappingDefinition getMappingDefinitionForFileName(final String name)
 			throws IOException, AdapterException {
 		final ClassLoader classLoader = JsonMappingFactory.class.getClassLoader();
-		final MappingFactory mappingFactory = new JsonMappingFactory(new File(classLoader.getResource(name).getFile()));
+		final MappingDefinitionFactory mappingFactory = new JsonMappingFactory(
+				new File(classLoader.getResource(name).getFile()));
 		return mappingFactory.getSchemaMapping();
 	}
 

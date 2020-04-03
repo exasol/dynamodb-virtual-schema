@@ -5,18 +5,18 @@ import com.exasol.adapter.AdapterException;
 /**
  * Exception on failures in column mapping
  */
-public class ColumnMappingException extends AdapterException {
+public class ValueMapperException extends AdapterException {
 	private final AbstractColumnMappingDefinition causingColumn;
 
 	/**
-	 * Creates an instance of {@link ColumnMappingException}.
+	 * Creates an instance of {@link ValueMapperException}.
 	 *
 	 * @param message
 	 *            Exception message
 	 * @param column
 	 *            {@link AbstractColumnMappingDefinition} that caused exception
 	 */
-	public ColumnMappingException(final String message, final AbstractColumnMappingDefinition column) {
+	public ValueMapperException(final String message, final AbstractColumnMappingDefinition column) {
 		super(message);
 		this.causingColumn = column;
 	}

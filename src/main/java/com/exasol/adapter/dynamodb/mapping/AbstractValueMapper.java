@@ -7,10 +7,10 @@ import com.exasol.adapter.AdapterException;
 import com.exasol.dynamodb.resultwalker.DynamodbResultWalkerException;
 import com.exasol.sql.expression.ValueExpression;
 
-public abstract class ValueMapper {
+public abstract class AbstractValueMapper {
 	private final AbstractColumnMappingDefinition column;
 
-	public ValueMapper(final AbstractColumnMappingDefinition column) {
+	public AbstractValueMapper(final AbstractColumnMappingDefinition column) {
 		this.column = column;
 	}
 
@@ -22,11 +22,11 @@ public abstract class ValueMapper {
 	 * @throws AdapterException
 	 */
 	public ValueExpression convertRow(final Map<String, AttributeValue> dynamodbRow)
-			throws DynamodbResultWalkerException, ColumnMappingException {
+			throws DynamodbResultWalkerException, ValueMapperException {
 		try {
 			final AttributeValue dynamodbProperty = this.column.getResultWalker().walk(dynamodbRow);
 			return this.convertValue(dynamodbProperty);
-		} catch (final DynamodbResultWalkerException | LookupColumnMappingException exception) {
+		} catch (final DynamodbResultWalkerException | LookupValueMapperException exception) {
 			if (this.column
 					.getLookupFailBehaviour() == AbstractColumnMappingDefinition.LookupFailBehaviour.DEFAULT_VALUE) {
 				return this.column.getDestinationDefaultValue();
@@ -41,7 +41,7 @@ public abstract class ValueMapper {
 	 * @param dynamodbProperty
 	 *            the DynamoDB property to be converted
 	 * @return the conversion result
-	 * @throws ColumnMappingException
+	 * @throws ValueMapperException
 	 */
-	protected abstract ValueExpression convertValue(AttributeValue dynamodbProperty) throws ColumnMappingException;
+	protected abstract ValueExpression convertValue(AttributeValue dynamodbProperty) throws ValueMapperException;
 }

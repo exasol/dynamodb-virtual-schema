@@ -3,7 +3,7 @@ package com.exasol.adapter.dynamodb.mapping;
 /**
  * Interface for {@link SchemaMappingDefinition} factories.
  */
-public interface MappingFactory {
+public interface MappingDefinitionFactory {
 	/**
 	 * Gives a {@link SchemaMappingDefinition}
 	 * 

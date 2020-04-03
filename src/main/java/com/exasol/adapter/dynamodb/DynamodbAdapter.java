@@ -18,7 +18,7 @@ import com.exasol.adapter.AdapterProperties;
 import com.exasol.adapter.VirtualSchemaAdapter;
 import com.exasol.adapter.capabilities.Capabilities;
 import com.exasol.adapter.dynamodb.mapping.JsonMappingFactory;
-import com.exasol.adapter.dynamodb.mapping.MappingFactory;
+import com.exasol.adapter.dynamodb.mapping.MappingDefinitionFactory;
 import com.exasol.adapter.dynamodb.mapping.SchemaMappingDefinition;
 import com.exasol.adapter.dynamodb.mapping.SchemaMappingDefinitionToSchemaMetadataConverter;
 import com.exasol.adapter.dynamodb.queryresult.QueryResultTable;
@@ -60,7 +60,7 @@ public class DynamodbAdapter implements VirtualSchemaAdapter {
 				request.getSchemaMetadataInfo().getProperties());
 		final DynamodbAdapterProperties dynamodbAdapterProperties = new DynamodbAdapterProperties(adapterProperties);
 		final File mappingDefinitionFile = openSchemaMapping(dynamodbAdapterProperties);
-		final MappingFactory mappingFactory = new JsonMappingFactory(mappingDefinitionFile);
+		final MappingDefinitionFactory mappingFactory = new JsonMappingFactory(mappingDefinitionFile);
 		return mappingFactory.getSchemaMapping();
 	}
 

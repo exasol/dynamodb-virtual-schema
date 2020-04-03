@@ -1,9 +1,9 @@
-package com.exasol.adapter.dynamodb.mapping.tostring;
+package com.exasol.adapter.dynamodb.mapping.tostringmapping;
 
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.exasol.adapter.dynamodb.mapping.AbstractValueMapper;
-import com.exasol.adapter.dynamodb.mapping.ValueMapperException;
 import com.exasol.adapter.dynamodb.mapping.LookupValueMapperException;
+import com.exasol.adapter.dynamodb.mapping.ValueMapperException;
 import com.exasol.dynamodb.attributevalue.AttributeValueVisitor;
 import com.exasol.dynamodb.attributevalue.AttributeValueWrapper;
 import com.exasol.dynamodb.attributevalue.UnsupportedDynamodbTypeException;
@@ -25,7 +25,8 @@ public class ToStringValueMapper extends AbstractValueMapper {
 			attributeValueWrapper.accept(toStringVisitor);
 		} catch (final UnsupportedDynamodbTypeException exception) {
 			throw new LookupValueMapperException(
-					"The DynamoDB type " + exception.getDynamodbTypeName() + " cant't be converted to string.", this.column);
+					"The DynamoDB type " + exception.getDynamodbTypeName() + " cant't be converted to string.",
+					this.column);
 		}
 		final String stringValue = toStringVisitor.result;
 		if (stringValue == null) {
@@ -34,16 +35,16 @@ public class ToStringValueMapper extends AbstractValueMapper {
 		return StringLiteral.of(this.handleOverflow(stringValue));
 	}
 
-    private String handleOverflow(final String sourceString) throws OverflowException {
-        if (sourceString.length() > this.column.getDestinationStringSize()) {
-            if (this.column.getOverflowBehaviour() == ToStringColumnMappingDefinition.OverflowBehaviour.TRUNCATE) {
-                return sourceString.substring(0, this.column.getDestinationStringSize());
-            } else {
-                throw new OverflowException("String overflow", this.column);
-            }
-        }
-        return sourceString;
-    }
+	private String handleOverflow(final String sourceString) throws OverflowException {
+		if (sourceString.length() > this.column.getDestinationStringSize()) {
+			if (this.column.getOverflowBehaviour() == ToStringColumnMappingDefinition.OverflowBehaviour.TRUNCATE) {
+				return sourceString.substring(0, this.column.getDestinationStringSize());
+			} else {
+				throw new OverflowException("String overflow", this.column);
+			}
+		}
+		return sourceString;
+	}
 
 	/**
 	 * Visitor for {@link AttributeValue} that converts its value to string. If this
@@ -73,13 +74,13 @@ public class ToStringValueMapper extends AbstractValueMapper {
 		}
 	}
 
-    /**
-     * Exception thrown if the size of the string from DynamoDB is longer than the
-     * configured size.
-     */
-    public static class OverflowException extends ValueMapperException {
-        public OverflowException(final String message, final ToStringColumnMappingDefinition column) {
-            super(message, column);
-        }
-    }
+	/**
+	 * Exception thrown if the size of the string from DynamoDB is longer than the
+	 * configured size.
+	 */
+	public static class OverflowException extends ValueMapperException {
+		public OverflowException(final String message, final ToStringColumnMappingDefinition column) {
+			super(message, column);
+		}
+	}
 }

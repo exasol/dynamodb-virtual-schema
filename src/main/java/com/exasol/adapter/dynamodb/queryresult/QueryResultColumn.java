@@ -5,6 +5,8 @@ import java.util.Map;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.exasol.adapter.AdapterException;
 import com.exasol.adapter.dynamodb.mapping.AbstractColumnMappingDefinition;
+import com.exasol.adapter.dynamodb.mapping.AbstractValueMapper;
+import com.exasol.adapter.dynamodb.mapping.ValueMapperFactory;
 import com.exasol.sql.expression.ValueExpression;
 
 /**
@@ -12,9 +14,9 @@ import com.exasol.sql.expression.ValueExpression;
  * the actual result using calls to {@link #convertRow(Map)}.
  *
  * Right now this class seems unnecessary as
- * {@link AbstractColumnMappingDefinition#convertRow(Map)} could be used
- * directly. It will be needed in the future for representing constant values
- * from the {@code SELECT}.
+ * {@link AbstractValueMapper#convertRow(Map)} could be used directly. It will
+ * be needed in the future for representing constant values from the
+ * {@code SELECT}.
  */
 public class QueryResultColumn {
 	private final AbstractColumnMappingDefinition columnMapping;
@@ -39,7 +41,8 @@ public class QueryResultColumn {
 	 *             if query abort was configured on conversion errors.
 	 */
 	public ValueExpression convertRow(final Map<String, AttributeValue> dynamodbRow) throws AdapterException {
-		return this.columnMapping.convertRow(dynamodbRow);
+		final AbstractValueMapper valueMapper = new ValueMapperFactory().getValueMapperForColumn(this.columnMapping);
+		return valueMapper.convertRow(dynamodbRow);
 	}
 
 	/**

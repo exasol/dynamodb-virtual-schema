@@ -1,13 +1,9 @@
 package com.exasol.adapter.dynamodb.mapping;
 
 import java.io.Serializable;
-import java.util.Map;
 
-import com.amazonaws.services.dynamodbv2.model.AttributeValue;
-import com.exasol.adapter.AdapterException;
 import com.exasol.adapter.metadata.DataType;
 import com.exasol.dynamodb.resultwalker.AbstractDynamodbResultWalker;
-import com.exasol.dynamodb.resultwalker.DynamodbResultWalkerException;
 import com.exasol.sql.expression.ValueExpression;
 import com.exasol.sql.expression.rendering.ValueExpressionRenderer;
 import com.exasol.sql.rendering.StringRendererConfig;
@@ -17,9 +13,9 @@ import com.exasol.sql.rendering.StringRendererConfig;
  * <p>
  * Each instance of this class represents one column in the Exasol table.
  * Objects of this class get serialized into the column adapter notes. They are
- * created using a {@link MappingFactory}. Storing the Mapping definition is
- * necessary as mapping definition files in bucketfs could change but the
- * mapping must not change until {@code REFRESH} is called.
+ * created using a {@link MappingDefinitionFactory}. Storing the Mapping
+ * definition is necessary as mapping definition files in bucketfs could change
+ * but the mapping must not change until {@code REFRESH} is called.
  * </p>
  */
 public abstract class AbstractColumnMappingDefinition implements Serializable {
@@ -92,35 +88,11 @@ public abstract class AbstractColumnMappingDefinition implements Serializable {
 		return this.lookupFailBehaviour;
 	}
 
-	/**
-	 * Extracts this column's value from DynamoDB's result row.
-	 *
-	 * @param dynamodbRow
-	 * @return {@link ValueExpression}
-	 * @throws AdapterException
-	 */
-	public ValueExpression convertRow(final Map<String, AttributeValue> dynamodbRow)
-			throws DynamodbResultWalkerException, ColumnMappingException {
-		try {
-			final AttributeValue dynamodbProperty = this.resultWalker.walk(dynamodbRow);
-			return convertValue(dynamodbProperty);
-		} catch (final DynamodbResultWalkerException | LookupColumnMappingException exception) {
-			if (this.lookupFailBehaviour == LookupFailBehaviour.DEFAULT_VALUE) {
-				return this.getDestinationDefaultValue();
-			}
-			throw exception;
-		}
+	AbstractDynamodbResultWalker getResultWalker() {
+		return this.resultWalker;
 	}
 
-	/**
-	 * Converts the DynamoDB property into an Exasol cell value.
-	 * 
-	 * @param dynamodbProperty
-	 *            the DynamoDB property specified using {@link #resultWalker}
-	 * @return the conversion result
-	 * @throws ColumnMappingException
-	 */
-	protected abstract ValueExpression convertValue(AttributeValue dynamodbProperty) throws ColumnMappingException;
+	public abstract void accept(ColumnMappingDefinitionVisitor visitor);
 
 	/**
 	 * Behaviour if the requested property is not set in a given DynamoDB row.
@@ -135,5 +107,4 @@ public abstract class AbstractColumnMappingDefinition implements Serializable {
 		 */
 		DEFAULT_VALUE
 	}
-
 }

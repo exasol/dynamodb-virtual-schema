@@ -12,20 +12,22 @@ import javax.json.JsonObject;
 import javax.json.JsonReader;
 
 import com.exasol.adapter.AdapterException;
+import com.exasol.adapter.dynamodb.mapping.tojsonmapping.ToJsonColumnMappingDefinition;
+import com.exasol.adapter.dynamodb.mapping.tostringmapping.ToStringColumnMappingDefinition;
 import com.exasol.dynamodb.resultwalker.AbstractDynamodbResultWalkerBuilder;
 import com.exasol.dynamodb.resultwalker.IdentityDynamodbResultWalker;
 import com.exasol.dynamodb.resultwalker.ObjectDynamodbResultWalker;
 
 /**
- * This {@link MappingFactory} reads a {@link SchemaMappingDefinition} from JSON
- * files.
+ * This {@link MappingDefinitionFactory} reads a {@link SchemaMappingDefinition}
+ * from JSON files.
  * <p>
  * The JSON files must follow the schema defined at
  * {@code resources/mappingLanguageSchema.json}. Documentation of schema mapping
  * definitions can be found at {@code /doc/schemaMappingLanguageReference.md}.
  * </p>
  */
-public class JsonMappingFactory implements MappingFactory {
+public class JsonMappingFactory implements MappingDefinitionFactory {
 	private static final String DEST_TABLE_NAME_KEY = "destTable";
 	private static final String MAPPING_KEY = "mapping";
 	private static final String FIELDS_KEY = "fields";

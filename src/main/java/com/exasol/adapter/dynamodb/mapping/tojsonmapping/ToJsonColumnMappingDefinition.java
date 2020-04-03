@@ -1,12 +1,8 @@
-package com.exasol.adapter.dynamodb.mapping.tojson;
+package com.exasol.adapter.dynamodb.mapping.tojsonmapping;
 
-import javax.json.JsonValue;
-
-import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.exasol.adapter.dynamodb.mapping.AbstractColumnMappingDefinition;
 import com.exasol.adapter.dynamodb.mapping.ColumnMappingDefinitionVisitor;
 import com.exasol.adapter.metadata.DataType;
-import com.exasol.dynamodb.AttributeValueToJsonConverter;
 import com.exasol.dynamodb.resultwalker.AbstractDynamodbResultWalker;
 import com.exasol.sql.expression.StringLiteral;
 import com.exasol.sql.expression.ValueExpression;

@@ -9,7 +9,7 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 
 import com.exasol.adapter.dynamodb.mapping.AbstractColumnMappingDefinition;
-import com.exasol.adapter.dynamodb.mapping.ToJsonColumnMappingDefinition;
+import com.exasol.adapter.dynamodb.mapping.tojsonmapping.ToJsonColumnMappingDefinition;
 import com.exasol.adapter.dynamodb.queryresult.QueryResultColumn;
 import com.exasol.adapter.dynamodb.queryresult.QueryResultTable;
 import com.exasol.dynamodb.resultwalker.IdentityDynamodbResultWalker;
