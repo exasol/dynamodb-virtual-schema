@@ -6,7 +6,7 @@ import com.exasol.dynamodb.resultwalker.IdentityDynamodbResultWalker;
 
 /**
  * A {@link MappingFactory} giving a hard coded mapping, with on single column
- * mapping the whole document to a json string.
+ * mapping the whole document to a JSON string.
  */
 public class HardCodedMappingFactory implements MappingFactory {
 	@Override

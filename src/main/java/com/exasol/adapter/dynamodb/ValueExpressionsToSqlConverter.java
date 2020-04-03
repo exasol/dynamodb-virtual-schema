@@ -6,12 +6,12 @@ import com.exasol.adapter.dynamodb.queryresult.QueryResultTable;
 import com.exasol.sql.expression.ValueExpression;
 
 /**
- * Interface for converting a list of {@link ValueExpression} into a SQL
- * Statement for pushdown response.
+ * Interface for converting a list of {@link ValueExpression}s into a SQL
+ * statement for the push-down response.
  */
 public interface ValueExpressionsToSqlConverter {
 	/**
-	 * Converts a list of lists of {@link ValueExpression} into an SQL Statement.
+	 * Converts a list of lists of {@link ValueExpression}s into a SQL statement.
 	 *
 	 * @param tableStructure
 	 *            used for creating empty row

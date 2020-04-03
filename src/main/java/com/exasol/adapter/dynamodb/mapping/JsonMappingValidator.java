@@ -15,9 +15,10 @@ import org.json.JSONTokener;
 
 /**
  * Validator for mapping definitions using a JSON-schema validator.
- * 
- * The validator in this packages requires the use of the io.json api instead of
- * the project wide javax api.
+ * <p>
+ * The validator in this packages requires the use of the {@code io.json} API instead of
+ * the project-wide {@code javax} API.
+ * </p>
  */
 public class JsonMappingValidator {
 	/**
@@ -78,15 +79,15 @@ public class JsonMappingValidator {
 	}
 
 	private String possibleObjectProperties(final Schema schema) {
-		final Set<String> possibleProperties = new HashSet<>();
 		try {
+			final Set<String> possibleProperties = new HashSet<>();
 			final ObjectSchema objectSchema = (ObjectSchema) schema;
 			possibleProperties.addAll(objectSchema.getPropertySchemas().keySet());
 			possibleProperties.addAll(possibleAdditionalObjectProperties(objectSchema));
+			return String.join(", ", possibleProperties);
 		} catch (final ClassCastException ignored) {
-			// ignore this exception and return empty set
+			return "";
 		}
-		return String.join(", ", possibleProperties);
 	}
 
 	private Set<String> possibleAdditionalObjectProperties(final ObjectSchema objectSchema) {

@@ -42,8 +42,8 @@ public class JsonMappingFactory implements MappingFactory {
 	 * Constructor.
 	 * 
 	 * @param definitionsPath
-	 *            path to the definition. Can either be a .json file or an
-	 *            directory. If it points to an directory, all .json files are
+	 *            path to the definition. Can either be a {@code .json} file or an
+	 *            directory. If it points to an directory, all {@code .json} files are
 	 *            loaded.
 	 * @throws IOException
 	 *             if could not open file
@@ -95,7 +95,6 @@ public class JsonMappingFactory implements MappingFactory {
 				.builder(definition.getString(DEST_TABLE_NAME_KEY), true);
 		walkRootMapping(definition.getJsonObject(MAPPING_KEY), new IdentityDynamodbResultWalker.Builder(),
 				tableBuilder);
-
 		this.tables.add(tableBuilder.build());
 	}
 

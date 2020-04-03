@@ -35,7 +35,7 @@ public abstract class AbstractColumnMappingDefinition implements Serializable {
 	 *            name of the Exasol column
 	 * @param resultWalker
 	 *            {@link AbstractDynamodbResultWalker} representing the path to the
-	 *            source property
+	 *            source DynamoDB property
 	 * @param lookupFailBehaviour
 	 *            {@link LookupFailBehaviour} if the defined path does not exist
 	 */
@@ -93,7 +93,7 @@ public abstract class AbstractColumnMappingDefinition implements Serializable {
 	}
 
 	/**
-	 * Extracts this columns value from DynamoDB's result row.
+	 * Extracts this column's value from DynamoDB's result row.
 	 *
 	 * @param dynamodbRow
 	 * @return {@link ValueExpression}
