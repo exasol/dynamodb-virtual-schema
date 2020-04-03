@@ -4,7 +4,6 @@ import java.io.Serializable;
 import java.util.Map;
 
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
-import com.exasol.adapter.AdapterException;
 
 /**
  * This class is used for modelling path expressions. For example the path
@@ -60,33 +59,4 @@ public abstract class AbstractDynamodbResultWalker implements Serializable {
 		return attributeValue;
 	}
 
-	/**
-	 * Exception fired when the modeled path does not exist.
-	 */
-	@SuppressWarnings("serial")
-	public static class DynamodbResultWalkerException extends AdapterException {
-		private final String currentPath;
-
-		/**
-		 * Constructor.
-		 * 
-		 * @param message
-		 *            Exception message.
-		 * @param currentPath
-		 *            path to the result walker step that caused the exception
-		 */
-		DynamodbResultWalkerException(final String message, final String currentPath) {
-			super(message);
-			this.currentPath = currentPath;
-		}
-
-		/**
-		 * Gives the path to the result walker step that caused the exception.
-		 * 
-		 * @return String describing the path.
-		 */
-		public String getCurrentPath() {
-			return this.currentPath;
-		}
-	}
 }

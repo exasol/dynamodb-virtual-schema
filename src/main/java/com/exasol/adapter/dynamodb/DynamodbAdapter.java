@@ -26,8 +26,10 @@ import com.exasol.adapter.dynamodb.queryresult.QueryResultTableBuilder;
 import com.exasol.adapter.metadata.SchemaMetadata;
 import com.exasol.adapter.request.*;
 import com.exasol.adapter.response.*;
+import com.exasol.bucketfs.BucketfsFileFactory;
+import com.exasol.bucketfs.BucketfsPathException;
 import com.exasol.dynamodb.DynamodbConnectionFactory;
-import com.exasol.dynamodb.resultwalker.AbstractDynamodbResultWalker;
+import com.exasol.dynamodb.resultwalker.DynamodbResultWalkerException;
 import com.exasol.sql.expression.ValueExpression;
 
 /**
@@ -57,12 +59,22 @@ public class DynamodbAdapter implements VirtualSchemaAdapter {
 		final AdapterProperties adapterProperties = new AdapterProperties(
 				request.getSchemaMetadataInfo().getProperties());
 		final DynamodbAdapterProperties dynamodbAdapterProperties = new DynamodbAdapterProperties(adapterProperties);
-		final File path = dynamodbAdapterProperties.getMappingDefinition();
-		if (!path.exists()) {
-			throw new AdapterException("The specified mapping file (" + path + ") could not be found.");
-		}
-		final MappingFactory mappingFactory = new JsonMappingFactory(path);
+		final File mappingDefinitionFile = openSchemaMapping(dynamodbAdapterProperties);
+		final MappingFactory mappingFactory = new JsonMappingFactory(mappingDefinitionFile);
 		return mappingFactory.getSchemaMapping();
+	}
+
+	private File openSchemaMapping(final DynamodbAdapterProperties dynamodbAdapterProperties) throws AdapterException {
+		try {
+			final String path = dynamodbAdapterProperties.getMappingDefinition();
+			final File file = new BucketfsFileFactory().openFile(path);
+			if (!file.exists()) {
+				throw new AdapterException("The specified mapping file (" + file + ") could not be found.");
+			}
+			return file;
+		} catch (final BucketfsPathException exception) {
+			throw new AdapterException("Could not open mapping definition", exception);
+		}
 	}
 
 	private SchemaMetadata getSchemaMetadata(final AdapterRequest request) throws IOException, AdapterException {
@@ -118,8 +130,7 @@ public class DynamodbAdapter implements VirtualSchemaAdapter {
 			throws AdapterException {
 		try {
 			return runPushdown(exaMetadata, request);
-		} catch (final ExaConnectionAccessException
-				| AbstractDynamodbResultWalker.DynamodbResultWalkerException exception) {
+		} catch (final ExaConnectionAccessException | DynamodbResultWalkerException exception) {
 			throw new AdapterException("Unable create Virtual Schema \"" + request.getVirtualSchemaName()
 					+ "\". Cause: \"" + exception.getMessage(), exception);// NOSONAR
 		}

@@ -5,6 +5,7 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.nio.ByteBuffer;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -37,7 +38,7 @@ public class AttributeValueWrapperTest {
 		final AttributeValue attributeValue = new AttributeValue();
 		attributeValue.setS("");
 		final AttributeValueWrapper attributeValueWrapper = new AttributeValueWrapper(attributeValue);
-		assertThrows(AttributeValueVisitor.UnsupportedDynamodbTypeException.class,
+		assertThrows(UnsupportedDynamodbTypeException.class,
 				() -> attributeValueWrapper.accept(new AttributeValueVisitor() {
 				}));
 	}
@@ -66,7 +67,7 @@ public class AttributeValueWrapperTest {
 		final AttributeValue attributeValue = new AttributeValue();
 		attributeValue.setN("");
 		final AttributeValueWrapper attributeValueWrapper = new AttributeValueWrapper(attributeValue);
-		assertThrows(AttributeValueVisitor.UnsupportedDynamodbTypeException.class,
+		assertThrows(UnsupportedDynamodbTypeException.class,
 				() -> attributeValueWrapper.accept(new AttributeValueVisitor() {
 				}));
 	}
@@ -95,7 +96,7 @@ public class AttributeValueWrapperTest {
 		final AttributeValue attributeValue = new AttributeValue();
 		attributeValue.setB(ByteBuffer.wrap("test".getBytes()));
 		final AttributeValueWrapper attributeValueWrapper = new AttributeValueWrapper(attributeValue);
-		assertThrows(AttributeValueVisitor.UnsupportedDynamodbTypeException.class,
+		assertThrows(UnsupportedDynamodbTypeException.class,
 				() -> attributeValueWrapper.accept(new AttributeValueVisitor() {
 				}));
 	}
@@ -123,7 +124,7 @@ public class AttributeValueWrapperTest {
 		final AttributeValue attributeValue = new AttributeValue();
 		attributeValue.setBOOL(true);
 		final AttributeValueWrapper attributeValueWrapper = new AttributeValueWrapper(attributeValue);
-		assertThrows(AttributeValueVisitor.UnsupportedDynamodbTypeException.class,
+		assertThrows(UnsupportedDynamodbTypeException.class,
 				() -> attributeValueWrapper.accept(new AttributeValueVisitor() {
 				}));
 	}
@@ -152,7 +153,7 @@ public class AttributeValueWrapperTest {
 		final AttributeValue attributeValue = new AttributeValue();
 		attributeValue.setM(Map.of());
 		final AttributeValueWrapper attributeValueWrapper = new AttributeValueWrapper(attributeValue);
-		assertThrows(AttributeValueVisitor.UnsupportedDynamodbTypeException.class,
+		assertThrows(UnsupportedDynamodbTypeException.class,
 				() -> attributeValueWrapper.accept(new AttributeValueVisitor() {
 				}));
 	}
@@ -179,9 +180,9 @@ public class AttributeValueWrapperTest {
 	@Test
 	void testByteSetValueUnsupportedOperation() {
 		final AttributeValue attributeValue = new AttributeValue();
-		attributeValue.setBS(List.of());
+		attributeValue.setBS(Collections.emptyList());
 		final AttributeValueWrapper attributeValueWrapper = new AttributeValueWrapper(attributeValue);
-		assertThrows(AttributeValueVisitor.UnsupportedDynamodbTypeException.class,
+		assertThrows(UnsupportedDynamodbTypeException.class,
 				() -> attributeValueWrapper.accept(new AttributeValueVisitor() {
 				}));
 	}
@@ -208,9 +209,9 @@ public class AttributeValueWrapperTest {
 	@Test
 	void testListValueUnsupportedOperation() {
 		final AttributeValue attributeValue = new AttributeValue();
-		attributeValue.setL(List.of());
+		attributeValue.setL(Collections.emptyList());
 		final AttributeValueWrapper attributeValueWrapper = new AttributeValueWrapper(attributeValue);
-		assertThrows(AttributeValueVisitor.UnsupportedDynamodbTypeException.class,
+		assertThrows(UnsupportedDynamodbTypeException.class,
 				() -> attributeValueWrapper.accept(new AttributeValueVisitor() {
 				}));
 	}
@@ -239,7 +240,7 @@ public class AttributeValueWrapperTest {
 		final AttributeValue attributeValue = new AttributeValue();
 		attributeValue.setNS(List.of("123"));
 		final AttributeValueWrapper attributeValueWrapper = new AttributeValueWrapper(attributeValue);
-		assertThrows(AttributeValueVisitor.UnsupportedDynamodbTypeException.class,
+		assertThrows(UnsupportedDynamodbTypeException.class,
 				() -> attributeValueWrapper.accept(new AttributeValueVisitor() {
 				}));
 	}
@@ -268,7 +269,7 @@ public class AttributeValueWrapperTest {
 		final AttributeValue attributeValue = new AttributeValue();
 		attributeValue.setSS(List.of("test"));
 		final AttributeValueWrapper attributeValueWrapper = new AttributeValueWrapper(attributeValue);
-		assertThrows(AttributeValueVisitor.UnsupportedDynamodbTypeException.class,
+		assertThrows(UnsupportedDynamodbTypeException.class,
 				() -> attributeValueWrapper.accept(new AttributeValueVisitor() {
 				}));
 	}
@@ -296,7 +297,7 @@ public class AttributeValueWrapperTest {
 		final AttributeValue attributeValue = new AttributeValue();
 		attributeValue.setNULL(true);
 		final AttributeValueWrapper attributeValueWrapper = new AttributeValueWrapper(attributeValue);
-		assertThrows(AttributeValueVisitor.UnsupportedDynamodbTypeException.class,
+		assertThrows(UnsupportedDynamodbTypeException.class,
 				() -> attributeValueWrapper.accept(new AttributeValueVisitor() {
 				}));
 	}

@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -16,11 +17,13 @@ import org.json.JSONTokener;
 /**
  * Validator for mapping definitions using a JSON-schema validator.
  * <p>
- * The validator in this packages requires the use of the {@code io.json} API instead of
- * the project-wide {@code javax} API.
+ * The validator in this packages requires the use of the {@code io.json} API
+ * instead of the project-wide {@code javax} API.
  * </p>
  */
 public class JsonMappingValidator {
+	private static final String MAPPING_LANGUAGE_SCHEMA = "mappingLanguageSchema.json";
+
 	/**
 	 * Validates the schema from given file using a JSON-schema validator.
 	 * 
@@ -40,8 +43,8 @@ public class JsonMappingValidator {
 
 	private void validate(final JSONObject schemaMappingDefinition)
 			throws IOException, JsonMappingFactory.MappingException {
-		final ClassLoader classLoader = JsonMappingFactory.class.getClassLoader();
-		try (final InputStream inputStream = classLoader.getResourceAsStream("mappingLanguageSchema.json")) {
+		final ClassLoader classLoader = JsonMappingValidator.class.getClassLoader();
+		try (final InputStream inputStream = classLoader.getResourceAsStream(MAPPING_LANGUAGE_SCHEMA)) {
 			final JSONObject rawSchema = new JSONObject(new JSONTokener(inputStream));
 			final Schema schema = SchemaLoader.load(rawSchema);
 			final Validator validator = Validator.builder().build();
@@ -96,7 +99,7 @@ public class JsonMappingValidator {
 					objectSchema.getSchemaOfAdditionalProperties());
 			return additionalPropertiesSchema.getPropertySchemas().keySet();
 		} catch (final ClassCastException ignored) {
-			return Set.of();
+			return Collections.emptySet();
 		}
 	}
 

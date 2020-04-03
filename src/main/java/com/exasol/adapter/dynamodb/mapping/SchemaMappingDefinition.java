@@ -11,7 +11,7 @@ public class SchemaMappingDefinition {
 	private final List<TableMappingDefinition> tableMappings;
 
 	/**
-	 * Constructor.
+	 * Creates an instance of {@link SchemaMappingDefinition}.
 	 * 
 	 * @param tableMappings
 	 *            List of {@link TableMappingDefinition}s

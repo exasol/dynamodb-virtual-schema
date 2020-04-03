@@ -30,7 +30,7 @@ public class ExasolTestUtils {
 	private final Statement statement;
 
 	/**
-	 * Constructor.
+	 * Creates an instance of {@link ExasolTestUtils}.
 	 * 
 	 * @param container
 	 *            exasol test container
@@ -183,7 +183,7 @@ public class ExasolTestUtils {
 	 * @throws SQLException
 	 */
 	public Map<String, String> describeTable(final String schema, final String table) throws SQLException {
-		final ResultSet describeResult = getStatement().executeQuery(String.format("DESCRIBE %s.%s;", schema, table));
+		final ResultSet describeResult = getStatement().executeQuery("DESCRIBE " + schema + "." + table + ";");
 		final Map<String, String> columns = new HashMap<>();
 		while (describeResult.next()) {
 			columns.put(describeResult.getString(1), describeResult.getString(2));
@@ -200,7 +200,7 @@ public class ExasolTestUtils {
 	 */
 	public boolean testIfSchemaExists(final String schema) {
 		try {
-			getStatement().executeQuery(String.format("OPEN SCHEMA %s;", schema));
+			getStatement().executeQuery("OPEN SCHEMA " + schema + ";");
 		} catch (final SQLException e) {
 			if (e.getMessage().contains("not found")) {
 				return false;
@@ -218,7 +218,7 @@ public class ExasolTestUtils {
 	 * @throws SQLException
 	 */
 	public void refreshVirtualSchema(final String schemaName) throws SQLException {
-		this.statement.execute(String.format("ALTER VIRTUAL SCHEMA %s REFRESH;", schemaName));
+		this.statement.execute("ALTER VIRTUAL SCHEMA " + schemaName + " REFRESH;");
 	}
 
 	/**
@@ -230,6 +230,6 @@ public class ExasolTestUtils {
 	 * @throws SQLException
 	 */
 	public void dropVirtualSchema(final String schemaName) throws SQLException {
-		this.statement.execute(String.format("DROP VIRTUAL SCHEMA %s CASCADE;", schemaName));
+		this.statement.execute("DROP VIRTUAL SCHEMA " + schemaName + " CASCADE;");
 	}
 }

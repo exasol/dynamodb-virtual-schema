@@ -2,7 +2,6 @@ package com.exasol.adapter.dynamodb;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.Collections;
 import java.util.Map;
@@ -16,7 +15,6 @@ import com.exasol.adapter.AdapterProperties;
  * Tests for {@link DynamodbAdapterProperties}.
  */
 public class DynamodbAdapterPropertiesTest {
-	private static final String BUCKETFS_BASIC_PATH = "/buckets";
 
 	@Test
 	public void testEmptySchema() {
@@ -38,15 +36,7 @@ public class DynamodbAdapterPropertiesTest {
 		final String value = "/bfsdefault/default/mappings/mapping.json";
 		final AdapterProperties adapterProperties = new AdapterProperties(Map.of("MAPPING", value));
 		final DynamodbAdapterProperties dynamodbAdapterProperties = new DynamodbAdapterProperties(adapterProperties);
-		assertThat(dynamodbAdapterProperties.getMappingDefinition().getAbsolutePath(),
-				equalTo(BUCKETFS_BASIC_PATH + "/bfsdefault/default/mappings/mapping.json"));
-	}
-
-	@Test
-	public void testGetSchemaDefinitionPropertyInjection() {
-		final String value = "/../etc/secrets.conf";
-		final AdapterProperties adapterProperties = new AdapterProperties(Map.of("MAPPING", value));
-		final DynamodbAdapterProperties dynamodbAdapterProperties = new DynamodbAdapterProperties(adapterProperties);
-		assertThrows(AdapterException.class, dynamodbAdapterProperties::getMappingDefinition);
+		assertThat(dynamodbAdapterProperties.getMappingDefinition(),
+				equalTo("/bfsdefault/default/mappings/mapping.json"));
 	}
 }

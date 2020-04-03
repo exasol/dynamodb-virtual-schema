@@ -30,11 +30,13 @@ public class ValueExpressionsToSqlSelectFromValuesConverter implements ValueExpr
 	private Select convertToSelect(final QueryResultTable tableStructure, final List<List<ValueExpression>> rows) {
 		final Select select = StatementFactory.getInstance().select();
 		final ValueTable valueTable = new ValueTable(select);
-		for (final List<ValueExpression> row : rows) {
-			final ValueTableRow valueTableRow = ValueTableRow.builder(select).add(row).build();
-			valueTable.appendRow(valueTableRow);
-		}
-		if (rows.isEmpty()) {
+
+		if (!rows.isEmpty()) {
+			for (final List<ValueExpression> row : rows) {
+				final ValueTableRow valueTableRow = ValueTableRow.builder(select).add(row).build();
+				valueTable.appendRow(valueTableRow);
+			}
+		} else {
 			final ValueTableRow defaultValueRow = ValueTableRow.builder(select).add(getDefaultValueRow(tableStructure))
 					.build();
 			valueTable.appendRow(defaultValueRow);

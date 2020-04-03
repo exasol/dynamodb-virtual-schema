@@ -13,13 +13,15 @@ import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Test;
 
+import com.exasol.adapter.AdapterException;
+
 /**
  * Tests for {@link JsonMappingFactory}
  */
 public class JsonMappingFactoryTest {
 
 	private SchemaMappingDefinition getMappingDefinitionForFileName(final String name)
-			throws IOException, JsonMappingFactory.SchemaMappingException {
+			throws IOException, AdapterException {
 		final ClassLoader classLoader = JsonMappingFactory.class.getClassLoader();
 		final MappingFactory mappingFactory = new JsonMappingFactory(new File(classLoader.getResource(name).getFile()));
 		return mappingFactory.getSchemaMapping();
@@ -31,7 +33,7 @@ public class JsonMappingFactoryTest {
 	 * @throws IOException
 	 */
 	@Test
-	void testBasicMapping() throws IOException, JsonMappingFactory.SchemaMappingException {
+	void testBasicMapping() throws IOException, AdapterException {
 		final SchemaMappingDefinition schemaMapping = getMappingDefinitionForFileName("basicMapping.json");
 		final List<TableMappingDefinition> tables = schemaMapping.getTableMappings();
 		final TableMappingDefinition table = tables.get(0);
@@ -58,7 +60,7 @@ public class JsonMappingFactoryTest {
 	}
 
 	@Test
-	void testToJsonMapping() throws IOException, JsonMappingFactory.SchemaMappingException {
+	void testToJsonMapping() throws IOException, AdapterException {
 		final SchemaMappingDefinition schemaMapping = getMappingDefinitionForFileName("toJsonMapping.json");
 		final List<TableMappingDefinition> tables = schemaMapping.getTableMappings();
 		final TableMappingDefinition table = tables.get(0);

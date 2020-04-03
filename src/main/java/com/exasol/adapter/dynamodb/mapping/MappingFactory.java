@@ -9,5 +9,5 @@ public interface MappingFactory {
 	 * 
 	 * @return {@link SchemaMappingDefinition}
 	 */
-	SchemaMappingDefinition getSchemaMapping();
+	public SchemaMappingDefinition getSchemaMapping();
 }

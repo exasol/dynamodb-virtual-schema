@@ -49,7 +49,7 @@ public class ObjectDynamodbResultWalker extends AbstractDynamodbResultWalker {
 		private final String lookupKey;
 
 		/**
-		 * Constructor.
+		 * Creates an instance of {@link ObjectDynamodbResultWalker.Builder}.
 		 * 
 		 * @param previousBuilder
 		 *            previous builder in chain

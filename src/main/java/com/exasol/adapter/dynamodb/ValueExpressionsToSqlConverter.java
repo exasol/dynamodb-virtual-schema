@@ -19,5 +19,5 @@ public interface ValueExpressionsToSqlConverter {
 	 *            List of ordered lists of {@link ValueExpression}
 	 * @return SQL Statement
 	 */
-	String convert(final QueryResultTable tableStructure, final List<List<ValueExpression>> rows);
+	public String convert(final QueryResultTable tableStructure, final List<List<ValueExpression>> rows);
 }

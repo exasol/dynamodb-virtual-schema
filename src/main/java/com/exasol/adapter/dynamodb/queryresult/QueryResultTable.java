@@ -16,7 +16,7 @@ public class QueryResultTable {
 	private final List<QueryResultColumn> columns;
 
 	/**
-	 * Constructor.
+	 * Creates an instance of {@link QueryResultTable}.
 	 * 
 	 * @param columns
 	 *            in correct order

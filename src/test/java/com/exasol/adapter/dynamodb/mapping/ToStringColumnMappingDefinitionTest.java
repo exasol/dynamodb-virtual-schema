@@ -5,7 +5,7 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import java.util.List;
+import java.util.Collections;
 import java.util.Map;
 
 import org.junit.jupiter.api.Test;
@@ -40,7 +40,7 @@ public class ToStringColumnMappingDefinitionTest {
 
 	private Map<String, AttributeValue> getDynamodbListRow() {
 		final AttributeValue stringField = new AttributeValue();
-		stringField.setL(List.of());
+		stringField.setL(Collections.emptyList());
 		return Map.of(TEST_SOURCE_COLUMN, stringField);
 	}
 
@@ -71,8 +71,7 @@ public class ToStringColumnMappingDefinitionTest {
 				DEST_COLUMN, 2, new ObjectDynamodbResultWalker(TEST_SOURCE_COLUMN, null),
 				AbstractColumnMappingDefinition.LookupFailBehaviour.EXCEPTION,
 				ToStringColumnMappingDefinition.OverflowBehaviour.EXCEPTION);
-		final AbstractColumnMappingDefinition.ColumnMappingException exception = assertThrows(
-				AbstractColumnMappingDefinition.ColumnMappingException.class,
+		final ColumnMappingException exception = assertThrows(ColumnMappingException.class,
 				() -> toStringColumnMappingDefinition.convertRow(getDynamodbListRow()));
 		assertThat(exception.getMessage(), equalTo("The DynamoDB type List cant't be converted to string."));
 	}

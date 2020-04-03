@@ -7,20 +7,20 @@ import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.exasol.adapter.AdapterException;
 import com.exasol.adapter.metadata.DataType;
 import com.exasol.dynamodb.resultwalker.AbstractDynamodbResultWalker;
+import com.exasol.dynamodb.resultwalker.DynamodbResultWalkerException;
 import com.exasol.sql.expression.ValueExpression;
 import com.exasol.sql.expression.rendering.ValueExpressionRenderer;
 import com.exasol.sql.rendering.StringRendererConfig;
 
 /**
  * Definition of a column mapping from DynamoDB table to Exasol Virtual Schema.
+ * <p>
  * Each instance of this class represents one column in the Exasol table.
  * Objects of this class get serialized into the column adapter notes. They are
- * created using a {@link MappingFactory}. The serialization can't be replaced
- * by retrieving the mapping at query execution time form the
- * {@link MappingFactory} as the definition (from bucketfs) could have changed
- * but not been refreshed. Just reloading the schema would lead to
- * inconsistencies between the schema known to the database and the one used by
- * this adapter.
+ * created using a {@link MappingFactory}. Storing the Mapping definition is
+ * necessary as mapping definition files in bucketfs could change but the
+ * mapping must not change until {@code REFRESH} is called.
+ * </p>
  */
 public abstract class AbstractColumnMappingDefinition implements Serializable {
 	private static final long serialVersionUID = 48342992735371252L;
@@ -29,7 +29,7 @@ public abstract class AbstractColumnMappingDefinition implements Serializable {
 	private final LookupFailBehaviour lookupFailBehaviour;
 
 	/**
-	 * Constructor.
+	 * Creates an instance of {@link AbstractColumnMappingDefinition}.
 	 * 
 	 * @param destinationName
 	 *            name of the Exasol column
@@ -100,12 +100,11 @@ public abstract class AbstractColumnMappingDefinition implements Serializable {
 	 * @throws AdapterException
 	 */
 	public ValueExpression convertRow(final Map<String, AttributeValue> dynamodbRow)
-			throws AbstractDynamodbResultWalker.DynamodbResultWalkerException, ColumnMappingException {
+			throws DynamodbResultWalkerException, ColumnMappingException {
 		try {
 			final AttributeValue dynamodbProperty = this.resultWalker.walk(dynamodbRow);
 			return convertValue(dynamodbProperty);
-		} catch (final AbstractDynamodbResultWalker.DynamodbResultWalkerException
-				| LookupColumnMappingException exception) {
+		} catch (final DynamodbResultWalkerException | LookupColumnMappingException exception) {
 			if (this.lookupFailBehaviour == LookupFailBehaviour.DEFAULT_VALUE) {
 				return this.getDestinationDefaultValue();
 			}
@@ -132,57 +131,9 @@ public abstract class AbstractColumnMappingDefinition implements Serializable {
 		 */
 		EXCEPTION,
 		/**
-		 * Set column value to null.
+		 * The column specific default value is returned.
 		 */
 		DEFAULT_VALUE
 	}
 
-	/**
-	 * Exception of failures in column mapping
-	 */
-	public static class ColumnMappingException extends AdapterException {
-		private final AbstractColumnMappingDefinition causingColumn;
-
-		/**
-		 * Constructor.
-		 * 
-		 * @param message
-		 *            Exception message
-		 * @param column
-		 *            {@link AbstractColumnMappingDefinition} that caused exception
-		 */
-		public ColumnMappingException(final String message, final AbstractColumnMappingDefinition column) {
-			super(message);
-			this.causingColumn = column;
-		}
-
-		/**
-		 * Get the column that caused this exception.
-		 * 
-		 * @return {@link AbstractColumnMappingDefinition} that caused exception
-		 */
-		public AbstractColumnMappingDefinition getCausingColumn() {
-			return this.causingColumn;
-		}
-	}
-
-	/**
-	 * Exception that is thrown on lookup error. It is caught in
-	 * {@link #convertRow(Map)} and handled according to
-	 * {@link #lookupFailBehaviour}
-	 */
-	public static class LookupColumnMappingException extends ColumnMappingException {
-
-		/**
-		 * Constructor.
-		 *
-		 * @param message
-		 *            Exception message
-		 * @param column
-		 *            {@link AbstractColumnMappingDefinition} that caused exception
-		 */
-		public LookupColumnMappingException(final String message, final AbstractColumnMappingDefinition column) {
-			super(message, column);
-		}
-	}
 }

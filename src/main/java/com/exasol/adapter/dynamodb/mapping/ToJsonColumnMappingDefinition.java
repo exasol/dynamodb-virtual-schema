@@ -16,7 +16,7 @@ public class ToJsonColumnMappingDefinition extends AbstractColumnMappingDefiniti
 	private static final long serialVersionUID = 7687302490848045236L;
 
 	/**
-	 * Constructor.
+	 * Creates an instance of {@link ToJsonColumnMappingDefinition}.
 	 * 
 	 * @param destinationName
 	 *            name of the column in Exasol table.

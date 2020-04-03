@@ -18,9 +18,12 @@ import com.exasol.dynamodb.resultwalker.ObjectDynamodbResultWalker;
 
 /**
  * This {@link MappingFactory} reads a {@link SchemaMappingDefinition} from JSON
- * files. The JSON files must follow the schema defined at
- * resources/mappingLanguageSchema.json. Documentation on schema mapping
- * definitions can be found at /doc/schemaMappingLanguageReference.md
+ * files.
+ * <p>
+ * The JSON files must follow the schema defined at
+ * {@code resources/mappingLanguageSchema.json}. Documentation of schema mapping
+ * definitions can be found at {@code /doc/schemaMappingLanguageReference.md}.
+ * </p>
  */
 public class JsonMappingFactory implements MappingFactory {
 	private static final String DEST_TABLE_NAME_KEY = "destTable";
@@ -39,18 +42,18 @@ public class JsonMappingFactory implements MappingFactory {
 	private final List<TableMappingDefinition> tables = new ArrayList<>();
 
 	/**
-	 * Constructor.
+	 * Creates an instance of {@link JsonMappingFactory}.
 	 * 
 	 * @param definitionsPath
 	 *            path to the definition. Can either be a {@code .json} file or an
-	 *            directory. If it points to an directory, all {@code .json} files are
-	 *            loaded.
+	 *            directory. If it points to an directory, all {@code .json} files
+	 *            are loaded.
 	 * @throws IOException
 	 *             if could not open file
 	 * @throws SchemaMappingException
 	 *             if schema mapping invalid
 	 */
-	public JsonMappingFactory(final File definitionsPath) throws IOException, SchemaMappingException {
+	public JsonMappingFactory(final File definitionsPath) throws IOException, AdapterException {
 		this(splitIfDirectory(definitionsPath));
 	}
 
@@ -73,12 +76,16 @@ public class JsonMappingFactory implements MappingFactory {
 	 *            path to file or directory
 	 * @return array of definition files
 	 */
-	private static File[] splitIfDirectory(final File definitionsPath) {
+	private static File[] splitIfDirectory(final File definitionsPath) throws AdapterException {
 		final String jsonFileEnding = ".json";
 		if (definitionsPath.isFile()) {
 			return new File[]{definitionsPath};
 		} else {
-			return definitionsPath.listFiles((file, fileName) -> fileName.endsWith(jsonFileEnding));
+			final File[] files = definitionsPath.listFiles((file, fileName) -> fileName.endsWith(jsonFileEnding));
+			if (files == null || files.length == 0) {
+				throw new AdapterException("no schema mapping files found in " + definitionsPath);
+			}
+			return files;
 		}
 	}
 
@@ -136,36 +143,38 @@ public class JsonMappingFactory implements MappingFactory {
 
 	private void addStringColumn(final JsonObject definition, final AbstractDynamodbResultWalkerBuilder resultWalker,
 			final TableMappingDefinition.Builder tableBuilder, final String dynamodbPropertyName) {
-		String destinationColumnName = dynamodbPropertyName;
-		int maxLength = DEFAULT_MAX_LENGTH;
-		ToStringColumnMappingDefinition.OverflowBehaviour overflowBehaviour = DEFAULT_TO_STRING_OVERFLOW;
-		AbstractColumnMappingDefinition.LookupFailBehaviour lookupFailBehaviour = DEFAULT_LOOKUP_BEHAVIOUR;
-		if (definition.containsKey(DEST_NAME_KEY)) {
-			destinationColumnName = definition.getString(DEST_NAME_KEY);
-		}
-		if (definition.containsKey(MAX_LENGTH_KEY)) {
-			maxLength = definition.getInt(MAX_LENGTH_KEY);
-		}
-		if (definition.containsKey(OVERFLOW_KEY) && definition.getString(OVERFLOW_KEY).equals("ABORT")) {
-			overflowBehaviour = ToStringColumnMappingDefinition.OverflowBehaviour.EXCEPTION;
-		}
-		if (definition.containsKey(REQUIRED_KEY) && definition.getBoolean(REQUIRED_KEY)) {
-			lookupFailBehaviour = AbstractColumnMappingDefinition.LookupFailBehaviour.EXCEPTION;
-		}
-
+		final String destinationColumnName = definition.getString(DEST_NAME_KEY, dynamodbPropertyName);
+		final int maxLength = definition.getInt(MAX_LENGTH_KEY, DEFAULT_MAX_LENGTH);
+		final ToStringColumnMappingDefinition.OverflowBehaviour overflowBehaviour = readStringOverflowBehaviour(
+				definition);
+		final AbstractColumnMappingDefinition.LookupFailBehaviour lookupFailBehaviour = readLookupFailBehaviour(
+				definition);
 		tableBuilder.withColumnMappingDefinition(new ToStringColumnMappingDefinition(destinationColumnName, maxLength,
 				resultWalker.build(), lookupFailBehaviour, overflowBehaviour));
+	}
+
+	private ToStringColumnMappingDefinition.OverflowBehaviour readStringOverflowBehaviour(final JsonObject definition) {
+		if (definition.containsKey(OVERFLOW_KEY) && definition.getString(OVERFLOW_KEY).equals("ABORT")) {
+			return ToStringColumnMappingDefinition.OverflowBehaviour.EXCEPTION;
+		} else {
+			return DEFAULT_TO_STRING_OVERFLOW;
+		}
+	}
+
+	private AbstractColumnMappingDefinition.LookupFailBehaviour readLookupFailBehaviour(final JsonObject definition) {
+		if (definition.containsKey(REQUIRED_KEY) && definition.getBoolean(REQUIRED_KEY)) {
+			return AbstractColumnMappingDefinition.LookupFailBehaviour.EXCEPTION;
+		} else {
+			return DEFAULT_LOOKUP_BEHAVIOUR;
+		}
 	}
 
 	private void addToJsonColumn(final JsonObject definition, final AbstractDynamodbResultWalkerBuilder resultWalker,
 			final TableMappingDefinition.Builder tableBuilder, final String dynamodbPropertyName)
 			throws MappingException {
-		String destinationColumnName = dynamodbPropertyName;
-		if (definition.containsKey(DEST_NAME_KEY)) {
-			destinationColumnName = definition.getString(DEST_NAME_KEY);
-		}
+		final String destinationColumnName = definition.getString(DEST_NAME_KEY, dynamodbPropertyName);
 		if (destinationColumnName == null) {
-			throw new MappingException(String.format("please set %s property", DEST_NAME_KEY));
+			throw new MappingException("Please set " + DEST_NAME_KEY + " property");
 		}
 		tableBuilder.withColumnMappingDefinition(new ToJsonColumnMappingDefinition(destinationColumnName,
 				resultWalker.build(), AbstractColumnMappingDefinition.LookupFailBehaviour.DEFAULT_VALUE));
@@ -183,7 +192,7 @@ public class JsonMappingFactory implements MappingFactory {
 		private final String causingMappingDefinitionFileName;
 
 		/**
-		 * Constructor.
+		 * Creates an instance of {@link SchemaMappingException}.
 		 * 
 		 * @param causingMappingDefinitionFileName
 		 *            mapping definition file that contains the mistake
@@ -192,7 +201,7 @@ public class JsonMappingFactory implements MappingFactory {
 		 */
 		public SchemaMappingException(final String causingMappingDefinitionFileName,
 				final MappingException mappingException) {
-			super(String.format("Error in schema mapping %s:", causingMappingDefinitionFileName), mappingException);
+			super("Error in schema mapping " + causingMappingDefinitionFileName + ":", mappingException);
 			this.causingMappingDefinitionFileName = causingMappingDefinitionFileName;
 		}
 
@@ -213,7 +222,7 @@ public class JsonMappingFactory implements MappingFactory {
 	 */
 	public static class MappingException extends AdapterException {
 		/**
-		 * Constructor.
+		 * Creates an instance of {@link MappingException}.
 		 * 
 		 * @param message
 		 *            Exception message

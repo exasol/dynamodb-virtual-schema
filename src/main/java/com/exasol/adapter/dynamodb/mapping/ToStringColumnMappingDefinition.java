@@ -6,6 +6,7 @@ import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.exasol.adapter.metadata.DataType;
 import com.exasol.dynamodb.attributevalue.AttributeValueVisitor;
 import com.exasol.dynamodb.attributevalue.AttributeValueWrapper;
+import com.exasol.dynamodb.attributevalue.UnsupportedDynamodbTypeException;
 import com.exasol.dynamodb.resultwalker.AbstractDynamodbResultWalker;
 import com.exasol.sql.expression.StringLiteral;
 import com.exasol.sql.expression.ValueExpression;
@@ -19,7 +20,7 @@ public class ToStringColumnMappingDefinition extends AbstractColumnMappingDefini
 	private final OverflowBehaviour overflowBehaviour;
 
 	/**
-	 * Constructor.
+	 * Creates an instance of {@link ToStringColumnMappingDefinition}.
 	 * 
 	 * @param destinationName
 	 *            Name of the Exasol column
@@ -81,9 +82,9 @@ public class ToStringColumnMappingDefinition extends AbstractColumnMappingDefini
 		final AttributeValueWrapper attributeValueWrapper = new AttributeValueWrapper(dynamodbProperty);
 		try {
 			attributeValueWrapper.accept(toStringVisitor);
-		} catch (final AttributeValueVisitor.UnsupportedDynamodbTypeException exception) {
-			throw new LookupColumnMappingException(String.format("The DynamoDB type %s cant't be converted to string.",
-					exception.getDynamodbTypeName()), this);
+		} catch (final UnsupportedDynamodbTypeException exception) {
+			throw new LookupColumnMappingException(
+					"The DynamoDB type " + exception.getDynamodbTypeName() + " cant't be converted to string.", this);
 		}
 		final String stringValue = toStringVisitor.getResult();
 		if (stringValue == null) {
