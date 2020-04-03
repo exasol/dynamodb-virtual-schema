@@ -15,7 +15,7 @@
         <java.version>11</java.version>
         <junit.version>5.4.2</junit.version>
         <junit.platform.version>1.4.2</junit.platform.version>
-        <vscommon.version>8.0.1</vscommon.version>
+        <vscommon.version>8.0.2</vscommon.version>
         <gpg.skip>true</gpg.skip>
         <org.testcontainers.version>1.12.3</org.testcontainers.version>
         <surefire.and.failsafe.plugin.version>3.0.0-M4</surefire.and.failsafe.plugin.version>
@@ -88,20 +88,9 @@
     </repositories>
     <dependencies>
         <dependency>
-            <groupId>org.glassfish</groupId>
-            <artifactId>javax.json</artifactId>
-            <version>1.1.4</version>
-        </dependency>
-        <dependency>
             <groupId>com.exasol</groupId>
             <artifactId>virtual-schema-common-java</artifactId>
             <version>${vscommon.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.glassfish</groupId>
-                    <artifactId>javax.json</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
         <dependency>
             <groupId>com.exasol</groupId>
