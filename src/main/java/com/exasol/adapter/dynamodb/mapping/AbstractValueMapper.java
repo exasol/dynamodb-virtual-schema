@@ -7,15 +7,25 @@ import com.exasol.adapter.AdapterException;
 import com.exasol.dynamodb.resultwalker.DynamodbResultWalkerException;
 import com.exasol.sql.expression.ValueExpression;
 
+/**
+ * Abstract class for extracting a value specified in an ColumnMappingDefinition
+ * from a DynamoDB row.
+ */
 public abstract class AbstractValueMapper {
 	private final AbstractColumnMappingDefinition column;
 
+	/**
+	 * Creates an instance of {@link AbstractValueMapper} for extracting a value
+	 * specified parameter column from a DynamoDB row.
+	 * 
+	 * @param column
+	 */
 	public AbstractValueMapper(final AbstractColumnMappingDefinition column) {
 		this.column = column;
 	}
 
 	/**
-	 * Extracts this column's value from DynamoDB's result row.
+	 * Extracts {@link #column}s value from DynamoDB's result row.
 	 *
 	 * @param dynamodbRow
 	 * @return {@link ValueExpression}

@@ -10,8 +10,18 @@ import com.exasol.dynamodb.attributevalue.UnsupportedDynamodbTypeException;
 import com.exasol.sql.expression.StringLiteral;
 import com.exasol.sql.expression.ValueExpression;
 
+/**
+ * ValueMapper for {@link ToStringColumnMappingDefinition}
+ */
 public class ToStringValueMapper extends AbstractValueMapper {
 	private final ToStringColumnMappingDefinition column;
+
+	/**
+	 * Creates an instance of {@link ToStringColumnMappingDefinition}
+	 * 
+	 * @param column
+	 *            {@link ToStringColumnMappingDefinition}
+	 */
 	public ToStringValueMapper(final ToStringColumnMappingDefinition column) {
 		super(column);
 		this.column = column;

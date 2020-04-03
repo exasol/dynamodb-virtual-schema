@@ -39,5 +39,4 @@ public class BucketfsFileFactory {
 			throw new BucketfsPathException("Error in file path: " + file.getAbsolutePath(), file.getAbsolutePath());
 		}
 	}
-
 }

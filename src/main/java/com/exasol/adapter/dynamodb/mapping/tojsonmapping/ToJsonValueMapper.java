@@ -10,7 +10,17 @@ import com.exasol.dynamodb.AttributeValueToJsonConverter;
 import com.exasol.sql.expression.StringLiteral;
 import com.exasol.sql.expression.ValueExpression;
 
+/**
+ * ValueMapper for {@link ToJsonColumnMappingDefinition}
+ */
 public class ToJsonValueMapper extends AbstractValueMapper {
+
+	/**
+	 * Creates an instance of {@link ToJsonColumnMappingDefinition}
+	 * 
+	 * @param column
+	 *            {@link ToJsonColumnMappingDefinition}
+	 */
 	public ToJsonValueMapper(final AbstractColumnMappingDefinition column) {
 		super(column);
 	}

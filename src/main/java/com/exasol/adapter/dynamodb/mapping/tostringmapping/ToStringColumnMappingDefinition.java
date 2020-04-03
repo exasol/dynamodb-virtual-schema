@@ -92,5 +92,4 @@ public class ToStringColumnMappingDefinition extends AbstractColumnMappingDefini
 		 */
 		EXCEPTION
 	}
-
 }
