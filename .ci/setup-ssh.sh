@@ -3,7 +3,7 @@
 
 set -ev
 SSH_FILE="$(mktemp -u "$HOME"/.ssh/travis_temp_ssh_key_XXXX)"
-declare -r SSH_FILE
+declare -r "$SSH_FILE"
 # Decrypt the file containing the private key (put the real name of the variables)
 # shellcheck disable=SC2154 # variables are set by travis
 openssl aes-256-cbc \
