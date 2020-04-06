@@ -54,7 +54,7 @@ public class TableMappingDefinition {
 	}
 
 	/**
-	 * Specifies if a table has a pendant in DynamoDB
+	 * Specifies if a table has a counterpart in DynamoDB
 	 *
 	 * @return {@code <true>} if this table has an pendant in DynamoDB
 	 *         {@code <false>} if this table represents a nested list or map from
