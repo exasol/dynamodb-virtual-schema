@@ -12,41 +12,36 @@ import com.amazonaws.services.dynamodbv2.document.DynamoDB;
  */
 public class DynamodbConnectionFactory {
 
-	/**
-	 * Creates a AmazonDynamoDB (low level api client) for a given uri, user and
-	 * key.
-	 *
-	 * @param uri
-	 *            either aws:<REGION> or address of local DynamoDB server (e.g.
-	 *            http://localhost:8000)
-	 * @param user
-	 *            aws credential id
-	 * @param key
-	 *            aws credential key
-	 * @return AmazonDynamoDB (low level api client)
-	 */
-	public AmazonDynamoDB getLowLevelConnection(final String uri, final String user, final String key) {
+    /**
+     * Creates a AmazonDynamoDB (low level api client) for a given uri, user and key.
+     *
+     * @param uri  either aws:<REGION> or address of local DynamoDB server (e.g. http://localhost:8000)
+     * @param user aws credential id
+     * @param key  aws credential key
+     * @return AmazonDynamoDB (low level api client)
+     */
+    public AmazonDynamoDB getLowLevelConnection(final String uri, final String user, final String key) {
 
-		final String AWS_PREFIX = "aws:";
-		final String AWS_LOCAL_REGION = "eu-central-1";
-		final BasicAWSCredentials awsCredentials = new BasicAWSCredentials(user, key);
-		final AmazonDynamoDBClientBuilder clientBuilder = AmazonDynamoDBClientBuilder.standard()
-				.withCredentials(new AWSStaticCredentialsProvider(awsCredentials));
-		if (uri.startsWith(AWS_PREFIX)) {
-			clientBuilder.withRegion(uri.replace(AWS_PREFIX, ""));
-		} else {
-			clientBuilder.withEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration(uri, AWS_LOCAL_REGION));
-		}
-		return clientBuilder.build();
-	}
+        final String AWS_PREFIX = "aws:";
+        final String AWS_LOCAL_REGION = "eu-central-1";
+        final BasicAWSCredentials awsCredentials = new BasicAWSCredentials(user, key);
+        final AmazonDynamoDBClientBuilder clientBuilder = AmazonDynamoDBClientBuilder.standard()
+                .withCredentials(new AWSStaticCredentialsProvider(awsCredentials));
+        if (uri.startsWith(AWS_PREFIX)) {
+            clientBuilder.withRegion(uri.replace(AWS_PREFIX, ""));
+        } else {
+            clientBuilder.withEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration(uri, AWS_LOCAL_REGION));
+        }
+        return clientBuilder.build();
+    }
 
-	/**
-	 * Creates a DynamoDB (document api client) for a given uri, user and key. for
-	 * details see {@link #getLowLevelConnection(String, String, String)}.
-	 *
-	 * @return DynamoDB (document api client)
-	 */
-	public DynamoDB getDocumentConnection(final String uri, final String user, final String key) {
-		return new DynamoDB(getLowLevelConnection(uri, user, key));
-	}
+    /**
+     * Creates a DynamoDB (document api client) for a given uri, user and key. for details see
+     * {@link #getLowLevelConnection(String, String, String)}.
+     *
+     * @return DynamoDB (document api client)
+     */
+    public DynamoDB getDocumentConnection(final String uri, final String user, final String key) {
+        return new DynamoDB(getLowLevelConnection(uri, user, key));
+    }
 }

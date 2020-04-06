@@ -12,18 +12,18 @@ import com.exasol.adapter.dynamodb.mapping.tostringmapping.ToStringValueMapper;
 
 public class ValueMapperFactoryTest {
 
-	@Test
-	void testToStringMapping() {
-		final ToStringColumnMappingDefinition mappingDefinition = new ToStringColumnMappingDefinition("", 10, null,
-				null, null);
-		final AbstractValueMapper valueMapper = new ValueMapperFactory().getValueMapperForColumn(mappingDefinition);
-		assertThat(valueMapper.getClass(), equalTo(ToStringValueMapper.class));
-	}
+    @Test
+    void testToStringMapping() {
+        final ToStringColumnMappingDefinition mappingDefinition = new ToStringColumnMappingDefinition("", 10, null,
+                null, null);
+        final AbstractValueMapper valueMapper = new ValueMapperFactory().getValueMapperForColumn(mappingDefinition);
+        assertThat(valueMapper.getClass(), equalTo(ToStringValueMapper.class));
+    }
 
-	@Test
-	void testToJsonMapping() {
-		final ToJsonColumnMappingDefinition mappingDefinition = new ToJsonColumnMappingDefinition("", null, null);
-		final AbstractValueMapper valueMapper = new ValueMapperFactory().getValueMapperForColumn(mappingDefinition);
-		assertThat(valueMapper.getClass(), equalTo(ToJsonValueMapper.class));
-	}
+    @Test
+    void testToJsonMapping() {
+        final ToJsonColumnMappingDefinition mappingDefinition = new ToJsonColumnMappingDefinition("", null, null);
+        final AbstractValueMapper valueMapper = new ValueMapperFactory().getValueMapperForColumn(mappingDefinition);
+        assertThat(valueMapper.getClass(), equalTo(ToJsonValueMapper.class));
+    }
 }

@@ -13,10 +13,10 @@ import com.exasol.adapter.dynamodb.mapping.MocColumnMappingDefinition;
  * Tests for {@link QueryResultTableSchema}
  */
 public class QueryResultTableSchemaTest {
-	@Test
-	void testSetAndGetColumns() {
-		final MocColumnMappingDefinition columnDefinition = new MocColumnMappingDefinition("", null, null);
-		final QueryResultTableSchema queryResultTableSchema = new QueryResultTableSchema(List.of(columnDefinition));
-		assertThat(queryResultTableSchema.getColumns(), containsInAnyOrder(columnDefinition));
-	}
+    @Test
+    void testSetAndGetColumns() {
+        final MocColumnMappingDefinition columnDefinition = new MocColumnMappingDefinition("", null, null);
+        final QueryResultTableSchema queryResultTableSchema = new QueryResultTableSchema(List.of(columnDefinition));
+        assertThat(queryResultTableSchema.getColumns(), containsInAnyOrder(columnDefinition));
+    }
 }

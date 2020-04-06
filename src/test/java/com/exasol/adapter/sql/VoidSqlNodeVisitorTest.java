@@ -13,24 +13,24 @@ import org.junit.jupiter.api.Test;
  * Tests for {@link VoidSqlNodeVisitor}
  */
 public class VoidSqlNodeVisitorTest {
-	@Test
-	void testUnimplementedException() {
-		final Method[] methods = VoidSqlNodeVisitor.class.getDeclaredMethods();
-		for (final Method method : methods) {
-			final Moc moc = new Moc();
-			if (!method.getName().equals("visit"))
-				continue;
-			final InvocationTargetException exception = assertThrows(InvocationTargetException.class,
-					() -> method.invoke(moc, new Object[]{null}));
-			assertThat(exception.getCause().getClass(), equalTo(UnsupportedOperationException.class));
-		}
-	}
+    @Test
+    void testUnimplementedException() {
+        final Method[] methods = VoidSqlNodeVisitor.class.getDeclaredMethods();
+        for (final Method method : methods) {
+            final Moc moc = new Moc();
+            if (!method.getName().equals("visit"))
+                continue;
+            final InvocationTargetException exception = assertThrows(InvocationTargetException.class,
+                    () -> method.invoke(moc, new Object[] { null }));
+            assertThat(exception.getCause().getClass(), equalTo(UnsupportedOperationException.class));
+        }
+    }
 
-	private static class Moc extends VoidSqlNodeVisitor {
+    private static class Moc extends VoidSqlNodeVisitor {
 
-		@Override
-		public Void visit(final SqlStatementSelect select) {
-			return null;
-		}
-	}
+        @Override
+        public Void visit(final SqlStatementSelect select) {
+            return null;
+        }
+    }
 }

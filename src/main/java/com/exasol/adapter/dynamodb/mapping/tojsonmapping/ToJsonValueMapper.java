@@ -15,19 +15,18 @@ import com.exasol.sql.expression.ValueExpression;
  */
 public class ToJsonValueMapper extends AbstractValueMapper {
 
-	/**
-	 * Creates an instance of {@link ToJsonColumnMappingDefinition}
-	 * 
-	 * @param column
-	 *            {@link ToJsonColumnMappingDefinition}
-	 */
-	public ToJsonValueMapper(final AbstractColumnMappingDefinition column) {
-		super(column);
-	}
+    /**
+     * Creates an instance of {@link ToJsonColumnMappingDefinition}
+     * 
+     * @param column {@link ToJsonColumnMappingDefinition}
+     */
+    public ToJsonValueMapper(final AbstractColumnMappingDefinition column) {
+        super(column);
+    }
 
-	@Override
-	protected ValueExpression mapValue(final AttributeValue dynamodbProperty) throws ValueMapperException {
-		final JsonValue json = AttributeValueToJsonConverter.convert(dynamodbProperty);
-		return StringLiteral.of(json.toString());
-	}
+    @Override
+    protected ValueExpression mapValue(final AttributeValue dynamodbProperty) throws ValueMapperException {
+        final JsonValue json = AttributeValueToJsonConverter.convert(dynamodbProperty);
+        return StringLiteral.of(json.toString());
+    }
 }

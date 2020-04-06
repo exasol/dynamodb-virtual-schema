@@ -18,17 +18,17 @@ import com.exasol.sql.expression.ValueExpression;
  * Tests for {@link ToJsonValueMapper}
  */
 public class ToJsonValueMapperTest {
-	private static final String DEST_COLUMN = "destColumn";
+    private static final String DEST_COLUMN = "destColumn";
 
-	@Test
-	void testConvertRowBasic() throws AdapterException {
-		final ToJsonColumnMappingDefinition toStringColumnMappingDefinition = new ToJsonColumnMappingDefinition(
-				DEST_COLUMN, new IdentityDynamodbResultWalker(),
-				AbstractColumnMappingDefinition.LookupFailBehaviour.EXCEPTION);
-		final Map<String, AttributeValue> rootAttributeValue = Map.of("key",
-				AttributeValueTestUtils.forString("value"));
-		final ValueExpression exasolCellValue = new ToJsonValueMapper(toStringColumnMappingDefinition)
-				.mapRow(rootAttributeValue);
-		assertThat(exasolCellValue.toString(), equalTo("{\"key\":\"value\"}"));
-	}
+    @Test
+    void testConvertRowBasic() throws AdapterException {
+        final ToJsonColumnMappingDefinition toStringColumnMappingDefinition = new ToJsonColumnMappingDefinition(
+                DEST_COLUMN, new IdentityDynamodbResultWalker(),
+                AbstractColumnMappingDefinition.LookupFailBehaviour.EXCEPTION);
+        final Map<String, AttributeValue> rootAttributeValue = Map.of("key",
+                AttributeValueTestUtils.forString("value"));
+        final ValueExpression exasolCellValue = new ToJsonValueMapper(toStringColumnMappingDefinition)
+                .mapRow(rootAttributeValue);
+        assertThat(exasolCellValue.toString(), equalTo("{\"key\":\"value\"}"));
+    }
 }

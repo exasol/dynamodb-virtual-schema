@@ -10,29 +10,29 @@ import com.exasol.adapter.dynamodb.mapping.tostringmapping.ToStringValueMapper;
  */
 public class ValueMapperFactory {
 
-	/**
-	 * Builds an ValueMapper fitting to an ColumnMappingDefinition.
-	 * 
-	 * @param column
-	 *            ColumnMappingDefinition for which to build the ValueMapper
-	 * @return built ValueMapper
-	 */
-	public AbstractValueMapper getValueMapperForColumn(final AbstractColumnMappingDefinition column) {
-		final ColumnVisitor visitor = new ColumnVisitor();
-		column.accept(visitor);
-		return visitor.valueMapper;
-	}
+    /**
+     * Builds an ValueMapper fitting to an ColumnMappingDefinition.
+     * 
+     * @param column ColumnMappingDefinition for which to build the ValueMapper
+     * @return built ValueMapper
+     */
+    public AbstractValueMapper getValueMapperForColumn(final AbstractColumnMappingDefinition column) {
+        final ColumnVisitor visitor = new ColumnVisitor();
+        column.accept(visitor);
+        return visitor.valueMapper;
+    }
 
-	private static class ColumnVisitor implements ColumnMappingDefinitionVisitor {
-		private AbstractValueMapper valueMapper;
-		@Override
-		public void visit(final ToStringColumnMappingDefinition columnDefinition) {
-			this.valueMapper = new ToStringValueMapper(columnDefinition);
-		}
+    private static class ColumnVisitor implements ColumnMappingDefinitionVisitor {
+        private AbstractValueMapper valueMapper;
 
-		@Override
-		public void visit(final ToJsonColumnMappingDefinition columnDefinition) {
-			this.valueMapper = new ToJsonValueMapper(columnDefinition);
-		}
-	}
+        @Override
+        public void visit(final ToStringColumnMappingDefinition columnDefinition) {
+            this.valueMapper = new ToStringValueMapper(columnDefinition);
+        }
+
+        @Override
+        public void visit(final ToJsonColumnMappingDefinition columnDefinition) {
+            this.valueMapper = new ToJsonValueMapper(columnDefinition);
+        }
+    }
 }

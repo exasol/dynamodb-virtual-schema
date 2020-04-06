@@ -7,19 +7,17 @@ import com.exasol.adapter.dynamodb.mapping.tostringmapping.ToStringColumnMapping
  * Visitor for {@link AbstractColumnMappingDefinition}.
  */
 public interface ColumnMappingDefinitionVisitor {
-	/**
-	 * Visits an {@link ToStringColumnMappingDefinition}.
-	 * 
-	 * @param columnDefinition
-	 *            {@link ToStringColumnMappingDefinition} to visit
-	 */
-	public void visit(ToStringColumnMappingDefinition columnDefinition);
+    /**
+     * Visits an {@link ToStringColumnMappingDefinition}.
+     * 
+     * @param columnDefinition {@link ToStringColumnMappingDefinition} to visit
+     */
+    public void visit(ToStringColumnMappingDefinition columnDefinition);
 
-	/**
-	 * Visits an {@link ToJsonColumnMappingDefinition}.
-	 * 
-	 * @param columnDefinition
-	 *            {@link ToJsonColumnMappingDefinition} to visit
-	 */
-	public void visit(ToJsonColumnMappingDefinition columnDefinition);
+    /**
+     * Visits an {@link ToJsonColumnMappingDefinition}.
+     * 
+     * @param columnDefinition {@link ToJsonColumnMappingDefinition} to visit
+     */
+    public void visit(ToJsonColumnMappingDefinition columnDefinition);
 }
