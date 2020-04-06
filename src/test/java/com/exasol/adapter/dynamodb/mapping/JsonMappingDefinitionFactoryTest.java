@@ -47,7 +47,7 @@ public class JsonMappingDefinitionFactoryTest {
         final ToStringColumnMappingDefinition nameColumn = (ToStringColumnMappingDefinition) columns.stream()
                 .filter(column -> column.getDestinationName().equals("name")).findAny().get();
         assertAll(() -> assertThat(tables.size(), equalTo(1)), //
-                () -> assertThat(table.getDestName(), equalTo("BOOKS")),
+                () -> assertThat(table.getDestinationName(), equalTo("BOOKS")),
                 () -> assertThat(columnNames, containsInAnyOrder("isbn", "name", "AUTHOR_NAME")),
                 () -> assertThat(isbnColumn.getDestinationStringSize(), equalTo(20)),
                 () -> assertThat(isbnColumn.getOverflowBehaviour(),
@@ -70,7 +70,7 @@ public class JsonMappingDefinitionFactoryTest {
         final List<String> columnNames = columns.stream().map(AbstractColumnMappingDefinition::getDestinationName)
                 .collect(Collectors.toList());
         assertAll(() -> assertThat(tables.size(), equalTo(1)), //
-                () -> assertThat(table.getDestName(), equalTo("BOOKS")),
+                () -> assertThat(table.getDestinationName(), equalTo("BOOKS")),
                 () -> assertThat(columnNames, containsInAnyOrder("isbn", "name", "topics")));
     }
 

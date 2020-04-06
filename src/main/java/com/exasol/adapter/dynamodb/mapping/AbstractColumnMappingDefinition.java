@@ -20,21 +20,21 @@ import com.exasol.sql.rendering.StringRendererConfig;
 public abstract class AbstractColumnMappingDefinition implements Serializable {
     private static final long serialVersionUID = 48342992735371252L;
     private final String destinationName;
-    private final AbstractDynamodbResultWalker resultWalker;
+    private final AbstractDynamodbResultWalker pathToSourceProperty;
     private final LookupFailBehaviour lookupFailBehaviour;
 
     /**
      * Creates an instance of {@link AbstractColumnMappingDefinition}.
      * 
      * @param destinationName     name of the Exasol column
-     * @param resultWalker        {@link AbstractDynamodbResultWalker} representing the path to the source DynamoDB
+     * @param pathToSourceProperty        {@link AbstractDynamodbResultWalker} representing the path to the source DynamoDB
      *                            property
      * @param lookupFailBehaviour {@link LookupFailBehaviour} if the defined path does not exist
      */
     public AbstractColumnMappingDefinition(final String destinationName,
-            final AbstractDynamodbResultWalker resultWalker, final LookupFailBehaviour lookupFailBehaviour) {
+                                           final AbstractDynamodbResultWalker pathToSourceProperty, final LookupFailBehaviour lookupFailBehaviour) {
         this.destinationName = destinationName;
-        this.resultWalker = resultWalker;
+        this.pathToSourceProperty = pathToSourceProperty;
         this.lookupFailBehaviour = lookupFailBehaviour;
     }
 
@@ -84,8 +84,8 @@ public abstract class AbstractColumnMappingDefinition implements Serializable {
         return this.lookupFailBehaviour;
     }
 
-    AbstractDynamodbResultWalker getResultWalker() {
-        return this.resultWalker;
+    AbstractDynamodbResultWalker getPathToSourceProperty() {
+        return this.pathToSourceProperty;
     }
 
     public abstract void accept(ColumnMappingDefinitionVisitor visitor);

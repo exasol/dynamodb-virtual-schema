@@ -40,7 +40,7 @@ public class SchemaMappingDefinitionToSchemaMetadataConverter {
             columnDefinitions.add(convertColumn(column));
         }
         final String adapterNotes = "";// Due to a bug in exasol core adapter notes are not stored for tables
-        return new TableMetadata(tableMappingDefinition.getDestName(), adapterNotes, columnDefinitions, "");
+        return new TableMetadata(tableMappingDefinition.getDestinationName(), adapterNotes, columnDefinitions, "");
     }
 
     private static ColumnMetadata convertColumn(final AbstractColumnMappingDefinition columnMappingDefinition)

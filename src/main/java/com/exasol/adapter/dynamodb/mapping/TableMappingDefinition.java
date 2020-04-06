@@ -10,13 +10,13 @@ import java.util.List;
  * from a nested list or object. See {@link #isRootTable()} for details.
  */
 public class TableMappingDefinition {
-    private final String destName;
+    private final String destinationName;
     private final boolean isRootTable;
     private final List<AbstractColumnMappingDefinition> columns;
 
-    private TableMappingDefinition(final String destName, final boolean isRootTable,
-            final List<AbstractColumnMappingDefinition> columns) {
-        this.destName = destName;
+    private TableMappingDefinition(final String destinationName, final boolean isRootTable,
+                                   final List<AbstractColumnMappingDefinition> columns) {
+        this.destinationName = destinationName;
         this.isRootTable = isRootTable;
         this.columns = columns;
     }
@@ -37,8 +37,8 @@ public class TableMappingDefinition {
      * 
      * @return name of the Exasol table
      */
-    public String getDestName() {
-        return this.destName;
+    public String getDestinationName() {
+        return this.destinationName;
     }
 
     /**
