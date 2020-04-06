@@ -8,7 +8,7 @@ import java.util.List;
  * Definition of a table mapping from DynamoDB table to Exasol Virtual Schema.
  * Each instance of this class represents on table in the Exasol Virtual Schema.
  * Typically it also represents a DynamoDB table. But it can also represent the
- * data from a nested list or object. See {@link #isRootTable() for details}
+ * data from a nested list or object. See {@link #isRootTable()} for details.
  */
 public class TableMappingDefinition {
 	private final String destName;

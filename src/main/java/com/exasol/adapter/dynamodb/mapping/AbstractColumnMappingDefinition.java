@@ -73,7 +73,7 @@ public abstract class AbstractColumnMappingDefinition implements Serializable {
 	}
 
 	/**
-	 * Is Exasol column nullable.
+	 * Check if Exasol column is nullable.
 	 * 
 	 * @return {@code <true>} if Exasol column is nullable
 	 */
