@@ -25,7 +25,7 @@ Given a DynamoDB table called `MY_BOOKS` containing objects like:
 
 The primary key for the DynamoDB table is `isbn`.
 
-This shall be normalized to the following relational structure:
+It will be normalized to the following relational structure:
 
 ![Class diagram](diagrams/mappingToTable.png)
 

@@ -1,10 +1,10 @@
 # Reference of the DynamoDB to Exasol mapping language
 
-Using the mapping language a mapping from one DynamoDB table to Exasol can be specified. 
+Using the mapping language a mapping from a DynamoDB table to an Exasol table can be specified. 
 Its syntax is based on JSON Schemas.
 
 The mappings are defined in a JSON document. This document must contain exactly one object. 
-For mapping multiple DynamoDB tables, create multiple files. 
+For mapping multiple DynamoDB tables, you can create multiple files. 
 
 The structure of the mapping follows the structure of the data in the DynamoDB.
 
@@ -30,7 +30,7 @@ Given a DynamoDB table called `MY_BOOKS` containing objects like:
 }
 ```
 
-this table shall be mapped to an Exasol Table with the following structure:
+this table will be mapped to an Exasol Table with the following structure:
 
 ```
 CREATE TABLE BOOKS (
@@ -82,7 +82,7 @@ Mapping definition:
 }
 ```
 
-After [creating a virtual schema](../README.md) (for example named `BOOKSHOP`) you can query your data using:
+After [creating a virtual schema](../README.md) (for example named `BOOKSHOP`) you can query the table using:
 
 ```
 SELECT * FROM BOOKSHOP.BOOKS;
@@ -93,4 +93,4 @@ SELECT * FROM BOOKSHOP.BOOKS;
 * [Example for toTable mapping](exampleWithToTable.md)
 
 ## Reference
-[Full reference](https://exasol.github.io/dynamodb-virtual-schema/schema_doc/index.html)
+[Schema documentation reference](https://exasol.github.io/dynamodb-virtual-schema/schema_doc/index.html)
