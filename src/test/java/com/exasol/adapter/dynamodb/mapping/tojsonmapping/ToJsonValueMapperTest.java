@@ -23,8 +23,9 @@ public class ToJsonValueMapperTest {
     @Test
     void testConvertRowBasic() throws AdapterException {
         final ToJsonColumnMappingDefinition toStringColumnMappingDefinition = new ToJsonColumnMappingDefinition(
-                DEST_COLUMN, new IdentityDynamodbResultWalker(),
-                AbstractColumnMappingDefinition.LookupFailBehaviour.EXCEPTION);
+                new AbstractColumnMappingDefinition.ConstructorParameters(DEST_COLUMN,
+                        new IdentityDynamodbResultWalker(),
+                        AbstractColumnMappingDefinition.LookupFailBehaviour.EXCEPTION));
         final Map<String, AttributeValue> rootAttributeValue = Map.of("key",
                 AttributeValueTestUtils.forString("value"));
         final ValueExpression exasolCellValue = new ToJsonValueMapper(toStringColumnMappingDefinition)

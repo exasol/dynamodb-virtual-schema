@@ -22,8 +22,9 @@ public class RowMapperTest {
 
     @Test
     public void testMapRow() throws AdapterException {
-        final ToJsonColumnMappingDefinition mappingDefinition = new ToJsonColumnMappingDefinition("test",
-                new IdentityDynamodbResultWalker(), AbstractColumnMappingDefinition.LookupFailBehaviour.EXCEPTION);
+        final ToJsonColumnMappingDefinition mappingDefinition = new ToJsonColumnMappingDefinition(
+                new AbstractColumnMappingDefinition.ConstructorParameters("test", new IdentityDynamodbResultWalker(),
+                        AbstractColumnMappingDefinition.LookupFailBehaviour.EXCEPTION));
         final QueryResultTableSchema queryResultTableSchema = new QueryResultTableSchema(List.of(mappingDefinition));
         final List<ValueExpression> exasolRow = new RowMapper(queryResultTableSchema)
                 .mapRow(Map.of("testKey", AttributeValueTestUtils.forString("testValue")));

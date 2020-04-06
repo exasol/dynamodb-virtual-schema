@@ -20,8 +20,9 @@ public class SchemaMappingDefinitionToSchemaMetadataConverterTest {
     public SchemaMappingDefinition getSchemaMapping() {
         final TableMappingDefinition table = TableMappingDefinition.builder("testTable", true)
                 .withColumnMappingDefinition(
-                        new ToJsonColumnMappingDefinition("json", new IdentityDynamodbResultWalker(),
-                                AbstractColumnMappingDefinition.LookupFailBehaviour.DEFAULT_VALUE))
+                        new ToJsonColumnMappingDefinition(new AbstractColumnMappingDefinition.ConstructorParameters(
+                                "json", new IdentityDynamodbResultWalker(),
+                                AbstractColumnMappingDefinition.LookupFailBehaviour.DEFAULT_VALUE)))
                 .build();
         return new SchemaMappingDefinition(List.of(table));
     }

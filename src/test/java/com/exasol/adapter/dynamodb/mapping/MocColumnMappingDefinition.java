@@ -8,7 +8,7 @@ import com.exasol.sql.expression.ValueExpression;
 public class MocColumnMappingDefinition extends AbstractColumnMappingDefinition {
     public MocColumnMappingDefinition(final String destinationName, final AbstractDynamodbResultWalker resultWalker,
             final LookupFailBehaviour lookupFailBehaviour) {
-        super(destinationName, resultWalker, lookupFailBehaviour);
+        super(new ConstructorParameters(destinationName, resultWalker, lookupFailBehaviour));
     }
 
     @Override

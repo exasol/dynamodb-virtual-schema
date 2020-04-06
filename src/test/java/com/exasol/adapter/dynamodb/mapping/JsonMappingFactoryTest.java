@@ -19,7 +19,7 @@ import com.exasol.adapter.dynamodb.mapping.tostringmapping.ToStringColumnMapping
 /**
  * Tests for {@link JsonMappingFactory}
  */
-public class JsonMappingDefinitionFactoryTest {
+public class JsonMappingFactoryTest {
 
     private SchemaMappingDefinition getMappingDefinitionForFileName(final String name)
             throws IOException, AdapterException {
@@ -43,12 +43,12 @@ public class JsonMappingDefinitionFactoryTest {
         final List<String> columnNames = columns.stream().map(AbstractColumnMappingDefinition::getDestinationName)
                 .collect(Collectors.toList());
         final ToStringColumnMappingDefinition isbnColumn = (ToStringColumnMappingDefinition) columns.stream()
-                .filter(column -> column.getDestinationName().equals("isbn")).findAny().get();
+                .filter(column -> column.getDestinationName().equals("ISBN")).findAny().get();
         final ToStringColumnMappingDefinition nameColumn = (ToStringColumnMappingDefinition) columns.stream()
-                .filter(column -> column.getDestinationName().equals("name")).findAny().get();
+                .filter(column -> column.getDestinationName().equals("NAME")).findAny().get();
         assertAll(() -> assertThat(tables.size(), equalTo(1)), //
                 () -> assertThat(table.getDestinationName(), equalTo("BOOKS")),
-                () -> assertThat(columnNames, containsInAnyOrder("isbn", "name", "AUTHOR_NAME")),
+                () -> assertThat(columnNames, containsInAnyOrder("ISBN", "NAME", "AUTHOR_NAME")),
                 () -> assertThat(isbnColumn.getDestinationStringSize(), equalTo(20)),
                 () -> assertThat(isbnColumn.getOverflowBehaviour(),
                         equalTo(ToStringColumnMappingDefinition.OverflowBehaviour.EXCEPTION)),
@@ -71,7 +71,7 @@ public class JsonMappingDefinitionFactoryTest {
                 .collect(Collectors.toList());
         assertAll(() -> assertThat(tables.size(), equalTo(1)), //
                 () -> assertThat(table.getDestinationName(), equalTo("BOOKS")),
-                () -> assertThat(columnNames, containsInAnyOrder("isbn", "name", "topics")));
+                () -> assertThat(columnNames, containsInAnyOrder("ISBN", "NAME", "TOPICS")));
     }
 
     @Test

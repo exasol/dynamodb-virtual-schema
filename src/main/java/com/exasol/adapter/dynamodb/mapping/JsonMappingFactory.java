@@ -137,15 +137,25 @@ public class JsonMappingFactory implements MappingDefinitionFactory {
     }
 
     private void addStringColumn(final JsonObject definition, final AbstractDynamodbResultWalkerBuilder resultWalker,
-            final TableMappingDefinition.Builder tableBuilder, final String dynamodbPropertyName) {
-        final String destinationColumnName = definition.getString(DEST_NAME_KEY, dynamodbPropertyName);
+            final TableMappingDefinition.Builder tableBuilder, final String dynamodbPropertyName)
+            throws MappingException {
         final int maxLength = definition.getInt(MAX_LENGTH_KEY, DEFAULT_MAX_LENGTH);
         final ToStringColumnMappingDefinition.OverflowBehaviour overflowBehaviour = readStringOverflowBehaviour(
                 definition);
+        final AbstractColumnMappingDefinition.ConstructorParameters columnParameters = readColumnProperties(definition,
+                resultWalker, dynamodbPropertyName);
+        tableBuilder.withColumnMappingDefinition(
+                new ToStringColumnMappingDefinition(columnParameters, maxLength, overflowBehaviour));
+    }
+
+    private AbstractColumnMappingDefinition.ConstructorParameters readColumnProperties(final JsonObject definition,
+            final AbstractDynamodbResultWalkerBuilder resultWalker, final String dynamodbPropertyName)
+            throws MappingException {
+        final String destinationColumnName = readDestinationColumnName(definition, dynamodbPropertyName);
         final AbstractColumnMappingDefinition.LookupFailBehaviour lookupFailBehaviour = readLookupFailBehaviour(
                 definition);
-        tableBuilder.withColumnMappingDefinition(new ToStringColumnMappingDefinition(destinationColumnName, maxLength,
-                resultWalker.build(), lookupFailBehaviour, overflowBehaviour));
+        return new AbstractColumnMappingDefinition.ConstructorParameters(destinationColumnName, resultWalker.build(),
+                lookupFailBehaviour);
     }
 
     private ToStringColumnMappingDefinition.OverflowBehaviour readStringOverflowBehaviour(final JsonObject definition) {
@@ -164,15 +174,23 @@ public class JsonMappingFactory implements MappingDefinitionFactory {
         }
     }
 
-    private void addToJsonColumn(final JsonObject definition, final AbstractDynamodbResultWalkerBuilder resultWalker,
-            final TableMappingDefinition.Builder tableBuilder, final String dynamodbPropertyName)
+    private String readDestinationColumnName(final JsonObject definition, final String defaultValue)
             throws MappingException {
-        final String destinationColumnName = definition.getString(DEST_NAME_KEY, dynamodbPropertyName);
+        final String destinationColumnName = definition.getString(DEST_NAME_KEY, defaultValue);
         if (destinationColumnName == null) {
             throw new MappingException("Please set " + DEST_NAME_KEY + " property");
         }
-        tableBuilder.withColumnMappingDefinition(new ToJsonColumnMappingDefinition(destinationColumnName,
-                resultWalker.build(), AbstractColumnMappingDefinition.LookupFailBehaviour.DEFAULT_VALUE));
+        return destinationColumnName.toUpperCase();
+    }
+
+    private void addToJsonColumn(final JsonObject definition, final AbstractDynamodbResultWalkerBuilder resultWalker,
+            final TableMappingDefinition.Builder tableBuilder, final String dynamodbPropertyName)
+            throws MappingException {
+        final String destinationColumnName = readDestinationColumnName(definition, dynamodbPropertyName);
+        final AbstractColumnMappingDefinition.ConstructorParameters columnParameters = new AbstractColumnMappingDefinition.ConstructorParameters(
+                destinationColumnName, resultWalker.build(),
+                AbstractColumnMappingDefinition.LookupFailBehaviour.DEFAULT_VALUE);
+        tableBuilder.withColumnMappingDefinition(new ToJsonColumnMappingDefinition(columnParameters));
     }
 
     @Override

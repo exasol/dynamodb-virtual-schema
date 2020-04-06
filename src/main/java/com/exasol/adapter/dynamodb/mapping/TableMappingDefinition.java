@@ -15,7 +15,7 @@ public class TableMappingDefinition {
     private final List<AbstractColumnMappingDefinition> columns;
 
     private TableMappingDefinition(final String destinationName, final boolean isRootTable,
-                                   final List<AbstractColumnMappingDefinition> columns) {
+            final List<AbstractColumnMappingDefinition> columns) {
         this.destinationName = destinationName;
         this.isRootTable = isRootTable;
         this.columns = columns;

@@ -3,7 +3,6 @@ package com.exasol.adapter.dynamodb.mapping.tojsonmapping;
 import com.exasol.adapter.dynamodb.mapping.AbstractColumnMappingDefinition;
 import com.exasol.adapter.dynamodb.mapping.ColumnMappingDefinitionVisitor;
 import com.exasol.adapter.metadata.DataType;
-import com.exasol.dynamodb.resultwalker.AbstractDynamodbResultWalker;
 import com.exasol.sql.expression.StringLiteral;
 import com.exasol.sql.expression.ValueExpression;
 
@@ -16,12 +15,10 @@ public class ToJsonColumnMappingDefinition extends AbstractColumnMappingDefiniti
     /**
      * Creates an instance of {@link ToJsonColumnMappingDefinition}.
      * 
-     * @param destinationName name of the column in Exasol table.
-     * @param resultWalker    source walker defining the path in DynamoDB documents.
+     * @param parameters Parameter object for {@link AbstractColumnMappingDefinition}
      */
-    public ToJsonColumnMappingDefinition(final String destinationName, final AbstractDynamodbResultWalker resultWalker,
-            final LookupFailBehaviour lookupFailBehaviour) {
-        super(destinationName, resultWalker, lookupFailBehaviour);
+    public ToJsonColumnMappingDefinition(final ConstructorParameters parameters) {
+        super(parameters);
     }
 
     @Override

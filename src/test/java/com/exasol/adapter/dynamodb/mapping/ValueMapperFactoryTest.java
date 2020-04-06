@@ -12,17 +12,20 @@ import com.exasol.adapter.dynamodb.mapping.tostringmapping.ToStringValueMapper;
 
 public class ValueMapperFactoryTest {
 
+    private static final AbstractColumnMappingDefinition.ConstructorParameters COLUMN_PARAMETERS = new AbstractColumnMappingDefinition.ConstructorParameters(
+            "", null, null);
+
     @Test
     void testToStringMapping() {
-        final ToStringColumnMappingDefinition mappingDefinition = new ToStringColumnMappingDefinition("", 10, null,
-                null, null);
+        final ToStringColumnMappingDefinition mappingDefinition = new ToStringColumnMappingDefinition(COLUMN_PARAMETERS,
+                10, null);
         final AbstractValueMapper valueMapper = new ValueMapperFactory().getValueMapperForColumn(mappingDefinition);
         assertThat(valueMapper.getClass(), equalTo(ToStringValueMapper.class));
     }
 
     @Test
     void testToJsonMapping() {
-        final ToJsonColumnMappingDefinition mappingDefinition = new ToJsonColumnMappingDefinition("", null, null);
+        final ToJsonColumnMappingDefinition mappingDefinition = new ToJsonColumnMappingDefinition(COLUMN_PARAMETERS);
         final AbstractValueMapper valueMapper = new ValueMapperFactory().getValueMapperForColumn(mappingDefinition);
         assertThat(valueMapper.getClass(), equalTo(ToJsonValueMapper.class));
     }

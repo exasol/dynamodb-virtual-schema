@@ -20,9 +20,10 @@ public class ToStringColumnMappingDefinitionTest {
     void testDestinationDataType() {
         final int stringLength = 10;
         final ToStringColumnMappingDefinition toStringColumnMappingDefinition = new ToStringColumnMappingDefinition(
-                DEST_COLUMN, stringLength, new IdentityDynamodbResultWalker(),
-                AbstractColumnMappingDefinition.LookupFailBehaviour.DEFAULT_VALUE,
-                ToStringColumnMappingDefinition.OverflowBehaviour.TRUNCATE);
+                new AbstractColumnMappingDefinition.ConstructorParameters(DEST_COLUMN,
+                        new IdentityDynamodbResultWalker(),
+                        AbstractColumnMappingDefinition.LookupFailBehaviour.DEFAULT_VALUE),
+                stringLength, ToStringColumnMappingDefinition.OverflowBehaviour.TRUNCATE);
         assertAll(
                 () -> assertThat(toStringColumnMappingDefinition.getDestinationDataType().getExaDataType(),
                         equalTo(DataType.ExaDataType.VARCHAR)),
@@ -32,15 +33,19 @@ public class ToStringColumnMappingDefinitionTest {
 
     @Test
     void testGetDestinationDefaultValue() {
+        final AbstractColumnMappingDefinition.ConstructorParameters columnParameters = new AbstractColumnMappingDefinition.ConstructorParameters(
+                null, null, null);
         final ToStringColumnMappingDefinition toStringColumnMappingDefinition = new ToStringColumnMappingDefinition(
-                null, 0, null, null, null);
+                columnParameters, 0, null);
         assertThat(toStringColumnMappingDefinition.getDestinationDefaultValue().toString(), equalTo(""));
     }
 
     @Test
     void testIsDestinationNullable() {
+        final AbstractColumnMappingDefinition.ConstructorParameters columnParameters = new AbstractColumnMappingDefinition.ConstructorParameters(
+                null, null, null);
         final ToStringColumnMappingDefinition toStringColumnMappingDefinition = new ToStringColumnMappingDefinition(
-                null, 0, null, null, null);
+                columnParameters, 0, null);
         assertThat(toStringColumnMappingDefinition.isDestinationNullable(), equalTo(true));
     }
 }

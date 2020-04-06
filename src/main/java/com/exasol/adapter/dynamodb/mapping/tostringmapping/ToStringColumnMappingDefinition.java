@@ -3,7 +3,6 @@ package com.exasol.adapter.dynamodb.mapping.tostringmapping;
 import com.exasol.adapter.dynamodb.mapping.AbstractColumnMappingDefinition;
 import com.exasol.adapter.dynamodb.mapping.ColumnMappingDefinitionVisitor;
 import com.exasol.adapter.metadata.DataType;
-import com.exasol.dynamodb.resultwalker.AbstractDynamodbResultWalker;
 import com.exasol.sql.expression.StringLiteral;
 import com.exasol.sql.expression.ValueExpression;
 
@@ -18,16 +17,13 @@ public class ToStringColumnMappingDefinition extends AbstractColumnMappingDefini
     /**
      * Creates an instance of {@link ToStringColumnMappingDefinition}.
      * 
-     * @param destinationName       Name of the Exasol column
+     * @param parameters            Parameter object for {{@link AbstractColumnMappingDefinition}}
      * @param destinationStringSize Length of the Exasol VARCHAR
-     * @param resultWalker          {@link AbstractDynamodbResultWalker} representing the path to the source * property
-     * @param lookupFailBehaviour   {@link LookupFailBehaviour} if the defined path does not exist
      * @param overflowBehaviour     Behaviour if extracted string exceeds {@link #destinationStringSize}
      */
-    public ToStringColumnMappingDefinition(final String destinationName, final int destinationStringSize,
-            final AbstractDynamodbResultWalker resultWalker, final LookupFailBehaviour lookupFailBehaviour,
+    public ToStringColumnMappingDefinition(final ConstructorParameters parameters, final int destinationStringSize,
             final OverflowBehaviour overflowBehaviour) {
-        super(destinationName, resultWalker, lookupFailBehaviour);
+        super(parameters);
         this.destinationStringSize = destinationStringSize;
         this.overflowBehaviour = overflowBehaviour;
     }
