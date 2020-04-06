@@ -2,7 +2,8 @@
 # setup-ssh.sh: load the SSH key 
 
 set -ev
-declare -r SSH_FILE="$(mktemp -u "$HOME"/.ssh/travis_temp_ssh_key_XXXX)"
+SSH_FILE="$(mktemp -u "$HOME"/.ssh/travis_temp_ssh_key_XXXX)"
+declare -r SSH_FILE
 # Decrypt the file containing the private key (put the real name of the variables)
 # shellcheck disable=SC2154 # variables are set by travis
 openssl aes-256-cbc \
