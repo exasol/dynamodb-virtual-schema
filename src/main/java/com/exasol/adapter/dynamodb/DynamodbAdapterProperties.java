@@ -11,7 +11,7 @@ public class DynamodbAdapterProperties {
     private final AdapterProperties properties;
 
     /**
-     * Constructor
+     * Creates a new instance of {@link DynamodbAdapterProperties}.
      * 
      * @param properties Adapter Properties
      */
@@ -36,7 +36,7 @@ public class DynamodbAdapterProperties {
     public String getMappingDefinition() throws AdapterException {
         if (!this.hasMappingDefinition()) {
             throw new AdapterException(
-                    MAPPING_KEY + " is mandatory. Provide the path to your schema mapping files on bucketfs here.");
+                    MAPPING_KEY + " is mandatory. Provide the path to your schema mapping files on BucketFS here.");
         }
         final String property = this.properties.get(MAPPING_KEY);
         if (property.isEmpty()) {

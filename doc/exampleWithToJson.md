@@ -1,4 +1,4 @@
-# Example for `toJSON` mapping
+# Example of `toJSON` Mapping
 
 Given a DynamoDB table called `MY_BOOKS` containing objects like:
 
@@ -23,7 +23,7 @@ Given a DynamoDB table called `MY_BOOKS` containing objects like:
 }
 ```
 
-This will be mapped to a Exasol table like:
+We map this table to an Exasol table in the following way:
 
 ```
 CREATE TABLE BOOKS (
