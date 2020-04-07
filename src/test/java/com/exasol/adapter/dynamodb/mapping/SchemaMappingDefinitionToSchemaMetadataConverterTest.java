@@ -18,11 +18,10 @@ import com.exasol.dynamodb.resultwalker.IdentityDynamodbResultWalker;
 
 public class SchemaMappingDefinitionToSchemaMetadataConverterTest {
     public SchemaMappingDefinition getSchemaMapping() {
-        final TableMappingDefinition table = TableMappingDefinition.builder("testTable", true)
-                .withColumnMappingDefinition(
-                        new ToJsonColumnMappingDefinition(new AbstractColumnMappingDefinition.ConstructorParameters(
-                                "json", new IdentityDynamodbResultWalker(),
-                                AbstractColumnMappingDefinition.LookupFailBehaviour.DEFAULT_VALUE)))
+        final TableMappingDefinition table = TableMappingDefinition.builder("testTable").withColumnMappingDefinition(
+                new ToJsonColumnMappingDefinition(new AbstractColumnMappingDefinition.ConstructorParameters("json",
+                        new IdentityDynamodbResultWalker(),
+                        AbstractColumnMappingDefinition.LookupFailBehaviour.DEFAULT_VALUE)))
                 .build();
         return new SchemaMappingDefinition(List.of(table));
     }

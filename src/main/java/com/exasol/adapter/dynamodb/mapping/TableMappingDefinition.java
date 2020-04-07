@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import com.exasol.dynamodb.resultwalker.AbstractDynamodbResultWalker;
+
 /**
  * Definition of a table mapping from DynamoDB table to Exasol Virtual Schema. Each instance of this class represents on
  * table in the Exasol Virtual Schema. Typically it also represents a DynamoDB table. But it can also represent the data
@@ -11,25 +13,36 @@ import java.util.List;
  */
 public class TableMappingDefinition {
     private final String destinationName;
-    private final boolean isRootTable;
     private final List<AbstractColumnMappingDefinition> columns;
+    private final AbstractDynamodbResultWalker pathToNestedTable;
 
-    private TableMappingDefinition(final String destinationName, final boolean isRootTable,
-            final List<AbstractColumnMappingDefinition> columns) {
+    private TableMappingDefinition(final String destinationName, final List<AbstractColumnMappingDefinition> columns,
+            final AbstractDynamodbResultWalker pathToNestedTable) {
         this.destinationName = destinationName;
-        this.isRootTable = isRootTable;
         this.columns = columns;
+        this.pathToNestedTable = pathToNestedTable;
     }
 
     /**
-     * Gives an instance of the Builder.
+     * Gives an instance of the Builder for {@link TableMappingDefinition}. This version of the builder is used for root
+     * tables.
      *
-     * @param destName    Name of the Exasol table
-     * @param isRootTable see {@link #isRootTable()}
-     * @return
+     * @param destName Name of the Exasol table
+     * @return {@link TableMappingDefinition.Builder}
      */
-    public static Builder builder(final String destName, final boolean isRootTable) {
-        return new Builder(destName, isRootTable);
+    public static Builder builder(final String destName) {
+        return new Builder(destName, null);
+    }
+
+    /**
+     * Gives an instance of the Builder for {@link TableMappingDefinition}. This version of the builder is used to
+     * create tables extracted from nested lists.
+     *
+     * @param destName Name of the Exasol table
+     * @return {@link TableMappingDefinition.Builder}
+     */
+    public static Builder builder(final String destName, final AbstractDynamodbResultWalker pathToNestedTable) {
+        return new Builder(destName, pathToNestedTable);
     }
 
     /**
@@ -57,7 +70,7 @@ public class TableMappingDefinition {
      *         list or map from DynamoDB
      */
     public boolean isRootTable() {
-        return this.isRootTable;
+        return this.pathToNestedTable == null;
     }
 
     /**
@@ -65,12 +78,12 @@ public class TableMappingDefinition {
      */
     public static class Builder {
         private final String destName;
-        private final boolean isRootTable;
         private final List<AbstractColumnMappingDefinition> columns = new ArrayList<>();
+        private final AbstractDynamodbResultWalker pathToNestedTable;
 
-        private Builder(final String destName, final boolean isRootTable) {
+        private Builder(final String destName, final AbstractDynamodbResultWalker pathToNestedTable) {
             this.destName = destName;
-            this.isRootTable = isRootTable;
+            this.pathToNestedTable = pathToNestedTable;
         }
 
         /**
@@ -90,8 +103,8 @@ public class TableMappingDefinition {
          * @return {@link TableMappingDefinition}
          */
         public TableMappingDefinition build() {
-            return new TableMappingDefinition(this.destName, this.isRootTable,
-                    Collections.unmodifiableList(this.columns));
+            return new TableMappingDefinition(this.destName, Collections.unmodifiableList(this.columns),
+                    this.pathToNestedTable);
         }
     }
 }
