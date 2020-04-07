@@ -97,7 +97,7 @@ public interface AttributeValueVisitor {
      * Called when AttributeValue is NULL
      */
     public default void visitNull() {
-        throw new UnsupportedDynamodbTypeException("not yet implemented");
+        throw new UnsupportedDynamodbTypeException("Null");
     }
 
 }

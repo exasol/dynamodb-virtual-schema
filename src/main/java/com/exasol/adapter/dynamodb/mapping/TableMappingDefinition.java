@@ -26,7 +26,7 @@ public class TableMappingDefinition {
      *
      * @param destName    Name of the Exasol table
      * @param isRootTable see {@link #isRootTable()}
-     * @return
+     * @return Builder for {@link TableMappingDefinition}
      */
     public static Builder builder(final String destName, final boolean isRootTable) {
         return new Builder(destName, isRootTable);
@@ -76,8 +76,8 @@ public class TableMappingDefinition {
         /**
          * Adds a {@link AbstractColumnMappingDefinition}
          * 
-         * @param columnMappingDefinition
-         * @return self
+         * @param columnMappingDefinition Column MappingDefinition to add
+         * @return self for fluent programming interface
          */
         public Builder withColumnMappingDefinition(final AbstractColumnMappingDefinition columnMappingDefinition) {
             this.columns.add(columnMappingDefinition);

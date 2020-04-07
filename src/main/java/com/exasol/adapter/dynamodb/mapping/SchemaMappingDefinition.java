@@ -4,7 +4,7 @@ import java.util.List;
 
 /**
  * Definition of a whole schema (consisting of table definitions) mapping from DynamoDB to Exasol Virtual Schema. An
- * instance of this call represents a whole schema.
+ * instance of this class represents a whole schema.
  */
 public class SchemaMappingDefinition {
     private final List<TableMappingDefinition> tableMappings;

@@ -12,17 +12,17 @@ public class MocColumnMappingDefinition extends AbstractColumnMappingDefinition 
     }
 
     @Override
-    public DataType getDestinationDataType() {
+    public DataType getExasolDataType() {
         throw new UnsupportedOperationException("not implemented");
     }
 
     @Override
-    public ValueExpression getDestinationDefaultValue() {
+    public ValueExpression getExasolDefaultValue() {
         return StringLiteral.of("default");
     }
 
     @Override
-    public boolean isDestinationNullable() {
+    public boolean isExasolColumnNullable() {
         return false;
     }
 

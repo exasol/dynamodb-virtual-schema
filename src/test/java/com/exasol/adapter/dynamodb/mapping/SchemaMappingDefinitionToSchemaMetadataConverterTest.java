@@ -30,7 +30,8 @@ public class SchemaMappingDefinitionToSchemaMetadataConverterTest {
     @Test
     void testConvert() throws IOException {
         final SchemaMappingDefinition schemaMapping = getSchemaMapping();
-        final SchemaMetadata schemaMetadata = SchemaMappingDefinitionToSchemaMetadataConverter.convert(schemaMapping);
+        final SchemaMetadata schemaMetadata = new SchemaMappingDefinitionToSchemaMetadataConverter()
+                .convert(schemaMapping);
         final List<TableMetadata> tables = schemaMetadata.getTables();
         assertThat(tables.size(), equalTo(1));
         final TableMetadata firstTable = tables.get(0);
@@ -43,10 +44,11 @@ public class SchemaMappingDefinitionToSchemaMetadataConverterTest {
     @Test
     void testSerialization() throws IOException, ClassNotFoundException {
         final SchemaMappingDefinition schemaMapping = getSchemaMapping();
-        final SchemaMetadata schemaMetadata = SchemaMappingDefinitionToSchemaMetadataConverter.convert(schemaMapping);
+        final SchemaMetadata schemaMetadata = new SchemaMappingDefinitionToSchemaMetadataConverter()
+                .convert(schemaMapping);
         final ColumnMetadata firstColumnMetadata = schemaMetadata.getTables().get(0).getColumns().get(0);
-        final AbstractColumnMappingDefinition columnMappingDefinition = SchemaMappingDefinitionToSchemaMetadataConverter
+        final AbstractColumnMappingDefinition columnMappingDefinition = new SchemaMappingDefinitionToSchemaMetadataConverter()
                 .convertBackColumn(firstColumnMetadata);
-        assertThat(columnMappingDefinition.getDestinationName(), equalTo("json"));
+        assertThat(columnMappingDefinition.getExasolName(), equalTo("json"));
     }
 }

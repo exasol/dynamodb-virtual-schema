@@ -18,7 +18,7 @@ public class DynamodbAdapterFactory implements AdapterFactory {
 
     @Override
     public Set<String> getSupportedAdapterNames() {
-        return Set.of("DynamoDB");
+        return Set.of("DYNAMO_DB");
     }
 
     @Override

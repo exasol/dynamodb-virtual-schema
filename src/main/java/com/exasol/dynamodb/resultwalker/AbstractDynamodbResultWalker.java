@@ -30,7 +30,6 @@ public abstract class AbstractDynamodbResultWalker implements Serializable {
     /**
      * Entry point for the path resolution.
      *
-     * @param item
      * @return AttributeValue specified by the path modeled by a chain of this objects
      */
     public AttributeValue walk(final Map<String, AttributeValue> item) throws DynamodbResultWalkerException {

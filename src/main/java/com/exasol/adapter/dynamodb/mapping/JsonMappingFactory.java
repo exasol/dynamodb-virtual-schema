@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import javax.json.Json;
 import javax.json.JsonObject;
@@ -22,7 +23,7 @@ import com.exasol.dynamodb.resultwalker.ObjectDynamodbResultWalker;
  * This {@link MappingDefinitionFactory} reads a {@link SchemaMappingDefinition} from JSON files.
  * <p>
  * The JSON files must follow the schema defined at {@code resources/mappingLanguageSchema.json}. Documentation of
- * schema mapping definitions can be found at {@code /doc/schemaMappingLanguageReference.md}.
+ * schema mapping definitions can be found at {@code /doc/gettingStartedWithSchemaMappingLanguage.md}.
  * </p>
  */
 public class JsonMappingFactory implements MappingDefinitionFactory {
@@ -59,8 +60,8 @@ public class JsonMappingFactory implements MappingDefinitionFactory {
             try {
                 jsonMappingValidator.validate(definitionPath);
                 parseFile(definitionPath);
-            } catch (final MappingException e) {
-                throw new SchemaMappingException(definitionPath.getName(), e);
+            } catch (final MappingException exception) {
+                throw new SchemaMappingException(definitionPath.getName(), exception);
             }
         }
     }
@@ -95,43 +96,61 @@ public class JsonMappingFactory implements MappingDefinitionFactory {
     private void addRootDefinition(final JsonObject definition) throws MappingException {
         final TableMappingDefinition.Builder tableBuilder = TableMappingDefinition
                 .builder(definition.getString(DEST_TABLE_NAME_KEY), true);
-        walkRootMapping(definition.getJsonObject(MAPPING_KEY), new IdentityDynamodbResultWalker.Builder(),
+        visitRootMapping(definition.getJsonObject(MAPPING_KEY), new IdentityDynamodbResultWalker.Builder(),
                 tableBuilder);
         this.tables.add(tableBuilder.build());
     }
 
-    private void walkRootMapping(final JsonObject definition,
+    private void visitRootMapping(final JsonObject definition,
             final AbstractDynamodbResultWalkerBuilder walkerToThisPath,
             final TableMappingDefinition.Builder tableBuilder) throws MappingException {
-        walkMapping(definition, walkerToThisPath, tableBuilder, null, true);
+        visitMapping(definition, walkerToThisPath, tableBuilder, null, true);
     }
 
-    private void walkMapping(final JsonObject definition, final AbstractDynamodbResultWalkerBuilder walkerToThisPath,
+    private void visitMapping(final JsonObject definition, final AbstractDynamodbResultWalkerBuilder walkerToThisPath,
             final TableMappingDefinition.Builder tableBuilder, final String propertyName, final boolean isRootLevel)
             throws MappingException {
-        if (definition.containsKey(TO_STRING_MAPPING_KEY)) {
+
+        switch (getMappingType(definition)) {
+        case TO_STRING_MAPPING_KEY:
             if (isRootLevel) {
                 throw new MappingException("ToString mapping is not allowed at root level");
             }
             addStringColumn(definition.getJsonObject(TO_STRING_MAPPING_KEY), walkerToThisPath, tableBuilder,
                     propertyName);
-        } else if (definition.containsKey(TO_JSON_MAPPING_KEY)) {
+            break;
+        case TO_JSON_MAPPING_KEY:
             addToJsonColumn(definition.getJsonObject(TO_JSON_MAPPING_KEY), walkerToThisPath, tableBuilder,
                     propertyName);
-        } else if (definition.containsKey(FIELDS_KEY)) {
-            walkChildren(definition.getJsonObject(FIELDS_KEY), walkerToThisPath, tableBuilder);
-        } else {
-            throw new UnsupportedOperationException("not yet implemented");
+            break;
+        case FIELDS_KEY:
+            visitChildren(definition.getJsonObject(FIELDS_KEY), walkerToThisPath, tableBuilder);
+            break;
+        case "":// no mapping definition
+            break;
+        default:
+            throw new UnsupportedOperationException("This mapping type is not supported in the current version.");
         }
     }
 
-    private void walkChildren(final JsonObject definition, final AbstractDynamodbResultWalkerBuilder walkerToThisPath,
+    private String getMappingType(final JsonObject definition) throws MappingException {
+        final Set<String> keys = definition.keySet();
+        if (keys.isEmpty()) {
+            return "";
+        } else if (keys.size() == 1) {
+            return keys.iterator().next();
+        } else {
+            throw new MappingException("It's not allowed to define more than one mapping for one property.");
+        }
+    }
+
+    private void visitChildren(final JsonObject definition, final AbstractDynamodbResultWalkerBuilder walkerToThisPath,
             final TableMappingDefinition.Builder tableBuilder) throws MappingException {
         for (final String dynamodbPropertyName : definition.keySet()) {
             final ObjectDynamodbResultWalker.Builder walker = new ObjectDynamodbResultWalker.Builder(walkerToThisPath,
                     dynamodbPropertyName);
-            this.walkMapping(definition.getJsonObject(dynamodbPropertyName), walker, tableBuilder, dynamodbPropertyName,
-                    false);
+            this.visitMapping(definition.getJsonObject(dynamodbPropertyName), walker, tableBuilder,
+                    dynamodbPropertyName, false);
         }
 
     }

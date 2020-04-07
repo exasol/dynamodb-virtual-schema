@@ -1,16 +1,19 @@
-# Reference of the DynamoDB to Exasol mapping language
+# Getting Started With the DynamoDB to Exasol Mapping Language
 
-Using the mapping language a mapping from a DynamoDB table to an Exasol table can be specified. 
-Its syntax is based on JSON Schemas.
-
-The mappings are defined in a JSON document. This document must contain exactly one object. 
+For creating a Virtual Schema for DynamoDB you have to define a mapping 
+of the DynamoDB document structure to a relational structure.
+This is done using the mapping language 
+([reference](https://exasol.github.io/dynamodb-virtual-schema/schema_doc/index.html)).
+The mappings are defined in a JSON document. 
+The documents are then uploaded to a bucket in BucketFS and referenced 
+in the `REATE VIRTUAL SCHEMA` call.  
 For mapping multiple DynamoDB tables, you can create multiple files. 
 
 The structure of the mapping follows the structure of the data in the DynamoDB.
 
 ## Example
 
-Given a DynamoDB table called `MY_BOOKS` containing objects like:
+Given a DynamoDB table called `MY_BOOKS` that contains the following objects:
 
 ```
 {
@@ -29,8 +32,7 @@ Given a DynamoDB table called `MY_BOOKS` containing objects like:
   }
 }
 ```
-
-this table will be mapped to an Exasol Table with the following structure:
+We want this table to be mapped to an Exasol table with the following structure:
 
 ```
 CREATE TABLE BOOKS (
@@ -39,9 +41,9 @@ CREATE TABLE BOOKS (
     AUTHOR_NAME  VARCHAR(20)
 );
 ```
-Note that the nested property `author.name` is mapped to `AUTHOR_NAME`. 
+The nested property `author.name` shall be mapped to the column `AUTHOR_NAME`. 
 
-Mapping definition:
+In order to let this adapter create the described mapping we create the following mapping definition:
 
 ```
 {
@@ -82,15 +84,18 @@ Mapping definition:
 }
 ```
 
-After [creating a virtual schema](../README.md) (for example named `BOOKSHOP`) you can query the table using:
+Next we save this definition to a file, upload it to a bucket in 
+BucketFS and reference it in the `CREATE VIRTUAL SCHEMA` call.
+
+After running [creating a virtual schema](../README.md) (for example with the schema named `BOOKSHOP`) we can query the table using:
 
 ```
 SELECT * FROM BOOKSHOP.BOOKS;
 ```
 
 ### More Examples
-* [Example for toJSON mapping](exampleWithToJson.md)
-* [Example for toTable mapping](exampleWithToTable.md)
+* [Example for toJsonMapping](exampleWithToJson.md)
+* [Example for toTableMapping](exampleWithToTable.md)
 
 ## Reference
 [Schema mapping language reference](https://exasol.github.io/dynamodb-virtual-schema/schema_doc/index.html)

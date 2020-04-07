@@ -1,6 +1,6 @@
-# Example for `toTable` mapping
+# Example For `toTableMapping`
 
-Given a DynamoDB table called `MY_BOOKS` containing objects like:
+Given a DynamoDB table called `MY_BOOKS` that contains the following objects:
 
 ```
 {
@@ -25,13 +25,14 @@ Given a DynamoDB table called `MY_BOOKS` containing objects like:
 
 The primary key for the DynamoDB table is `isbn`.
 
-It will be normalized to the following relational structure:
+We want this DynamoDB table to be mapped to the following relational structure: 
 
 ![Class diagram](diagrams/mappingToTable.png)
 
 Note that `BOOKS_TOPICS` uses `ISBN` as FOREIGN KEY.
 
-Mapping definition:
+To achieve this we create the following mapping definition:
+
 ```
 {
   "$schema": "../../main/resources/mappingLanguageSchema.json",

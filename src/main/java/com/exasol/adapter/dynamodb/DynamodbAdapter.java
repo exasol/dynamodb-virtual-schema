@@ -55,32 +55,35 @@ public class DynamodbAdapter implements VirtualSchemaAdapter {
         return CreateVirtualSchemaResponse.builder().schemaMetadata(schemaMetadata).build();
     }
 
+    private SchemaMetadata getSchemaMetadata(final AdapterRequest request) throws IOException, AdapterException {
+        final SchemaMappingDefinition schemaMappingDefinition = getSchemaMappingDefinition(request);
+        return new SchemaMappingDefinitionToSchemaMetadataConverter().convert(schemaMappingDefinition);
+    }
+
     private SchemaMappingDefinition getSchemaMappingDefinition(final AdapterRequest request)
             throws AdapterException, IOException {
         final AdapterProperties adapterProperties = new AdapterProperties(
                 request.getSchemaMetadataInfo().getProperties());
         final DynamodbAdapterProperties dynamodbAdapterProperties = new DynamodbAdapterProperties(adapterProperties);
-        final File mappingDefinitionFile = openSchemaMapping(dynamodbAdapterProperties);
+        final File mappingDefinitionFile = getSchemaMappingFile(dynamodbAdapterProperties);
         final MappingDefinitionFactory mappingFactory = new JsonMappingFactory(mappingDefinitionFile);
         return mappingFactory.getSchemaMapping();
     }
 
-    private File openSchemaMapping(final DynamodbAdapterProperties dynamodbAdapterProperties) throws AdapterException {
+    private File getSchemaMappingFile(final DynamodbAdapterProperties dynamodbAdapterProperties)
+            throws AdapterException {
         try {
             final String path = dynamodbAdapterProperties.getMappingDefinition();
             final File file = new BucketfsFileFactory().openFile(path);
             if (!file.exists()) {
-                throw new AdapterException("The specified mapping file (" + file + ") could not be found.");
+                throw new AdapterException("The specified mapping file (" + file
+                        + ") could not be found. Make sure you uploaded your mapping definition to BucketFS and specified "
+                        + "the correct bucketfs, bucket and path within the bucket.");
             }
             return file;
         } catch (final BucketfsPathException exception) {
             throw new AdapterException("Could not open mapping definition", exception);
         }
-    }
-
-    private SchemaMetadata getSchemaMetadata(final AdapterRequest request) throws IOException, AdapterException {
-        final SchemaMappingDefinition schemaMappingDefinition = getSchemaMappingDefinition(request);
-        return SchemaMappingDefinitionToSchemaMetadataConverter.convert(schemaMappingDefinition);
     }
 
     /**
@@ -118,11 +121,6 @@ public class DynamodbAdapter implements VirtualSchemaAdapter {
     /**
      * Runs the actual query. The data is fetched using a scan from DynamoDB and then transformed into a
      * {@code SELECT FROM VALUES} statement and passed back to Exasol.
-     *
-     * @param exaMetadata
-     * @param request
-     * @return
-     * @throws AdapterException
      */
     @Override
     public PushDownResponse pushdown(final ExaMetadata exaMetadata, final PushDownRequest request)
@@ -146,6 +144,12 @@ public class DynamodbAdapter implements VirtualSchemaAdapter {
                 .build();
     }
 
+    private ScanResult runDynamodbQuery(final ExaMetadata exaMetadata, final PushDownRequest request)
+            throws ExaConnectionAccessException {
+        final AmazonDynamoDB client = getConnection(exaMetadata, request);
+        return client.scan(new ScanRequest("JB_Books"));
+    }
+
     private String convertResult(final ScanResult scanResult, final QueryResultTableSchema queryResultTableSchema)
             throws AdapterException {
         final List<List<ValueExpression>> resultRows = new ArrayList<>();
@@ -154,12 +158,6 @@ public class DynamodbAdapter implements VirtualSchemaAdapter {
             resultRows.add(rowMapper.mapRow(dynamodbItem));
         }
         return new ValueExpressionsToSqlSelectFromValuesConverter().convert(queryResultTableSchema, resultRows);
-    }
-
-    private ScanResult runDynamodbQuery(final ExaMetadata exaMetadata, final PushDownRequest request)
-            throws ExaConnectionAccessException {
-        final AmazonDynamoDB client = getConnection(exaMetadata, request);
-        return client.scan(new ScanRequest("JB_Books"));
     }
 
     @Override
@@ -181,6 +179,7 @@ public class DynamodbAdapter implements VirtualSchemaAdapter {
     @Override
     public SetPropertiesResponse setProperties(final ExaMetadata exaMetadata,
             final SetPropertiesRequest setPropertiesRequest) {
-        throw new UnsupportedOperationException("not yet implemented");// NOSONAR (string constant)
+        throw new UnsupportedOperationException(
+                "The current version of DynamoDB Virtual Schema does not support SET PROPERTIES statement.");
     }
 }

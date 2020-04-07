@@ -15,8 +15,7 @@ import com.exasol.sql.expression.ValueExpression;
 import com.exasol.sql.rendering.StringRendererConfig;
 
 /**
- * This implementation of {@link ValueExpressionsToSqlConverter} converts a DynamoDB result into an
- * {@code SELECT FROM VALUES} statement.
+ * Converts a list of Exasol {@link ValueExpression}s into an {@code SELECT FROM VALUES} statement.
  */
 public class ValueExpressionsToSqlSelectFromValuesConverter implements ValueExpressionsToSqlConverter {
 
@@ -49,7 +48,7 @@ public class ValueExpressionsToSqlSelectFromValuesConverter implements ValueExpr
     }
 
     private List<ValueExpression> getDefaultValueRow(final QueryResultTableSchema tableStructure) {
-        return tableStructure.getColumns().stream().map(AbstractColumnMappingDefinition::getDestinationDefaultValue)
+        return tableStructure.getColumns().stream().map(AbstractColumnMappingDefinition::getExasolDefaultValue)
                 .collect(Collectors.toList());
     }
 }

@@ -11,7 +11,7 @@ public class AbstractColumnMappingDefinitionTest {
         final String destinationName = "destinationName";
         final MocColumnMappingDefinition columnMappingDefinition = new MocColumnMappingDefinition(destinationName, null,
                 null);
-        assertThat(columnMappingDefinition.getDestinationName(), equalTo(destinationName));
+        assertThat(columnMappingDefinition.getExasolName(), equalTo(destinationName));
     }
 
     @Test
@@ -19,6 +19,6 @@ public class AbstractColumnMappingDefinitionTest {
         final String destinationName = "destinationName";
         final MocColumnMappingDefinition columnMappingDefinition = new MocColumnMappingDefinition(destinationName, null,
                 null);
-        assertThat(columnMappingDefinition.getDestinationDefaultValueLiteral(), equalTo("'default'"));
+        assertThat(columnMappingDefinition.getExasolDefaultValueLiteral(), equalTo("'default'"));
     }
 }
