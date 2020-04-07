@@ -11,20 +11,20 @@ import com.exasol.sql.expression.ValueExpression;
  */
 public class ToStringColumnMappingDefinition extends AbstractColumnMappingDefinition {
     private static final long serialVersionUID = -6772281079326146978L;
-    private final int destinationStringSize;
+    private final int exasolStringSize;
     private final OverflowBehaviour overflowBehaviour;
 
     /**
      * Creates an instance of {@link ToStringColumnMappingDefinition}.
      * 
-     * @param parameters            Parameter object for {{@link AbstractColumnMappingDefinition}}
-     * @param destinationStringSize Length of the Exasol VARCHAR
-     * @param overflowBehaviour     Behaviour if extracted string exceeds {@link #destinationStringSize}
+     * @param parameters        Parameter object for {{@link AbstractColumnMappingDefinition}}
+     * @param exasolStringSize  Length of the Exasol VARCHAR
+     * @param overflowBehaviour Behaviour if extracted string exceeds {@link #exasolStringSize}
      */
-    public ToStringColumnMappingDefinition(final ConstructorParameters parameters, final int destinationStringSize,
+    public ToStringColumnMappingDefinition(final ConstructorParameters parameters, final int exasolStringSize,
             final OverflowBehaviour overflowBehaviour) {
         super(parameters);
-        this.destinationStringSize = destinationStringSize;
+        this.exasolStringSize = exasolStringSize;
         this.overflowBehaviour = overflowBehaviour;
     }
 
@@ -33,12 +33,12 @@ public class ToStringColumnMappingDefinition extends AbstractColumnMappingDefini
      * 
      * @return maximum size of Exasol VARCHAR
      */
-    public int getDestinationStringSize() {
-        return this.destinationStringSize;
+    public int getExasolStringSize() {
+        return this.exasolStringSize;
     }
 
     /**
-     * Get the behaviour if the {@link #destinationStringSize} is exceeded.
+     * Get the behaviour if the {@link #exasolStringSize} is exceeded.
      * 
      * @return {@link OverflowBehaviour}
      */
@@ -47,17 +47,17 @@ public class ToStringColumnMappingDefinition extends AbstractColumnMappingDefini
     }
 
     @Override
-    public DataType getDestinationDataType() {
-        return DataType.createVarChar(this.destinationStringSize, DataType.ExaCharset.UTF8);
+    public DataType getExasolDataType() {
+        return DataType.createVarChar(this.exasolStringSize, DataType.ExaCharset.UTF8);
     }
 
     @Override
-    public ValueExpression getDestinationDefaultValue() {
+    public ValueExpression getExasolDefaultValue() {
         return StringLiteral.of("");
     }
 
     @Override
-    public boolean isDestinationNullable() {
+    public boolean isExasolColumnNullable() {
         return true;
     }
 
@@ -68,7 +68,7 @@ public class ToStringColumnMappingDefinition extends AbstractColumnMappingDefini
 
     /**
      * Specifies the behaviour of {@link ToStringValueMapper} if the string from DynamoDB is longer than
-     * {@link #destinationStringSize}.
+     * {@link #exasolStringSize}.
      */
     public enum OverflowBehaviour {
         /**

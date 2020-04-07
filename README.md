@@ -58,20 +58,20 @@ CREATE CONNECTION DYNAMO_CONNECTION
 
 ```
 
-Before creating a Virtual Schema you need to [create mapping definitions](doc/schemaMappingLanguageReference.md) and upload them to BucketFs bucket.
+Before creating a Virtual Schema you need to [create mapping definitions](doc/gettingStartedWithSchemaMappingLanguage.md) and upload them to a BucketFS bucket.
 
 Finally create the Virtual Schema using:
 
 ```
 CREATE VIRTUAL SCHEMA DYNAMODB_TEST USING ADAPTER.DYNAMODB_ADAPTER WITH
     CONNECTION_NAME = 'DYNAMO_CONNECTION'
-    SQL_DIALECT     = 'DynamoDB'
+    SQL_DIALECT     = 'DYNAMO_DB'
     MAPPING         = '/bfsdefault/default/path/to/mappings/in/bucketfs';
 ```
  
 
-## First steps
-Start with the [mapping definition example](doc/schemaMappingLanguageReference.md).
+## First Steps
+Start with the [mapping definition example](doc/gettingStartedWithSchemaMappingLanguage.md).
 
 # Documentation
 * [Schema mapping language reference](https://exasol.github.io/dynamodb-virtual-schema/schema_doc/index.html)

@@ -15,7 +15,7 @@ public class StringSerializer {
      * 
      * @param serializable Object to be serialized
      * @return base64 string
-     * @throws IOException
+     * @throws IOException if serialization fails
      */
     public static String serializeToString(final Serializable serializable) throws IOException {
         final ByteArrayOutputStream bo = new ByteArrayOutputStream();
@@ -30,8 +30,8 @@ public class StringSerializer {
      * 
      * @param serialized base64 string created by {@link #serializeToString(Serializable)}
      * @return deserialized object. Cast this object to your class.
-     * @throws IOException
-     * @throws ClassNotFoundException
+     * @throws IOException            if deserialization fails
+     * @throws ClassNotFoundException if deserialization fails
      */
     public static Object deserializeFromString(final String serialized) throws IOException, ClassNotFoundException {
         final byte[] data = Base64.getDecoder().decode(serialized);

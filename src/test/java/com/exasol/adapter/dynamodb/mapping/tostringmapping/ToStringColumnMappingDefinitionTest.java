@@ -25,10 +25,9 @@ public class ToStringColumnMappingDefinitionTest {
                         AbstractColumnMappingDefinition.LookupFailBehaviour.DEFAULT_VALUE),
                 stringLength, ToStringColumnMappingDefinition.OverflowBehaviour.TRUNCATE);
         assertAll(
-                () -> assertThat(toStringColumnMappingDefinition.getDestinationDataType().getExaDataType(),
+                () -> assertThat(toStringColumnMappingDefinition.getExasolDataType().getExaDataType(),
                         equalTo(DataType.ExaDataType.VARCHAR)),
-                () -> assertThat(toStringColumnMappingDefinition.getDestinationDataType().getSize(),
-                        equalTo(stringLength)));
+                () -> assertThat(toStringColumnMappingDefinition.getExasolDataType().getSize(), equalTo(stringLength)));
     }
 
     @Test
@@ -37,7 +36,7 @@ public class ToStringColumnMappingDefinitionTest {
                 null, null, null);
         final ToStringColumnMappingDefinition toStringColumnMappingDefinition = new ToStringColumnMappingDefinition(
                 columnParameters, 0, null);
-        assertThat(toStringColumnMappingDefinition.getDestinationDefaultValue().toString(), equalTo(""));
+        assertThat(toStringColumnMappingDefinition.getExasolDefaultValue().toString(), equalTo(""));
     }
 
     @Test
@@ -46,6 +45,6 @@ public class ToStringColumnMappingDefinitionTest {
                 null, null, null);
         final ToStringColumnMappingDefinition toStringColumnMappingDefinition = new ToStringColumnMappingDefinition(
                 columnParameters, 0, null);
-        assertThat(toStringColumnMappingDefinition.isDestinationNullable(), equalTo(true));
+        assertThat(toStringColumnMappingDefinition.isExasolColumnNullable(), equalTo(true));
     }
 }

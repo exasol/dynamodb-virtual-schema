@@ -9,7 +9,7 @@ isRootTable
 }
 
 abstract class AbstractColumnMappingDefinition {
-destinationName
+exasolName
 pathToSourceProperty: DynamodbResultWalker
 lookupFailBehaviour
 }

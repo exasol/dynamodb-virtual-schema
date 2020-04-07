@@ -119,7 +119,7 @@ public class DynamodbTestUtils {
     /**
      * Runs a table scan on the given DynamoDB table. The scan result is logged.
      * 
-     * @param tableName
+     * @param tableName DynamoDB table name to scan
      * @return number of scanned items
      */
     public int scan(final String tableName) {
@@ -128,12 +128,6 @@ public class DynamodbTestUtils {
         return this.logAndCountItems(scanResult);
     }
 
-    /**
-     * Logs all items to {@code LOGGER} and returns the count.
-     * 
-     * @param items
-     * @return number of items
-     */
     private int logAndCountItems(final Iterable<Item> items) {
         int counter = 0;
         for (final Item item : items) {
@@ -146,7 +140,7 @@ public class DynamodbTestUtils {
     /**
      * Creates a DynamoDB table.
      * 
-     * @param tableName
+     * @param tableName name for the new DynamoDB table
      * @param keyName   partition key (type is always string)
      */
     public void createTable(final String tableName, final String keyName) {
@@ -159,7 +153,7 @@ public class DynamodbTestUtils {
     /**
      * Deletes a DynamoDB table.
      * 
-     * @param tableName
+     * @param tableName name of the DynamoDB table to delete
      */
     public void deleteTable(final String tableName) {
         this.dynamoClient.getTable(tableName).delete();
@@ -177,15 +171,15 @@ public class DynamodbTestUtils {
 
     /**
      * Imports data from a json file. The File mus have the AWS json syntax. For running the import the aws-cli is used.
-     * 
-     * @param asset
-     * @throws IOException
-     * @throws InterruptedException
+     *
+     * @param tableName name of the DynamoDB table
+     * @param asset     JSOn file to import
+     * @throws IOException if file can't get opened
      */
-    public void importData(final String tableNames, final File asset) throws IOException {
+    public void importData(final String tableName, final File asset) throws IOException {
         try (final JsonReader jsonReader = Json.createReader(new FileReader(asset))) {
             final String[] itemsJson = splitJsonArrayInArrayOfJsonStrings(jsonReader.readArray());
-            this.putJson(tableNames, itemsJson);
+            this.putJson(tableName, itemsJson);
         }
     }
 

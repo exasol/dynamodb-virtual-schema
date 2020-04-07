@@ -39,15 +39,15 @@ public class ToStringValueMapper extends AbstractValueMapper {
         }
         final String stringValue = toStringVisitor.result;
         if (stringValue == null) {
-            return this.column.getDestinationDefaultValue();
+            return this.column.getExasolDefaultValue();
         }
         return StringLiteral.of(this.handleOverflow(stringValue));
     }
 
     private String handleOverflow(final String sourceString) throws OverflowException {
-        if (sourceString.length() > this.column.getDestinationStringSize()) {
+        if (sourceString.length() > this.column.getExasolStringSize()) {
             if (this.column.getOverflowBehaviour() == ToStringColumnMappingDefinition.OverflowBehaviour.TRUNCATE) {
-                return sourceString.substring(0, this.column.getDestinationStringSize());
+                return sourceString.substring(0, this.column.getExasolStringSize());
             } else {
                 throw new OverflowException("String overflow", this.column);
             }

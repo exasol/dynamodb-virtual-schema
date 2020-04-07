@@ -13,13 +13,13 @@ import com.exasol.sql.rendering.StringRendererConfig;
  * <p>
  * Each instance of this class represents one column in the Exasol table. Objects of this class get serialized into the
  * column adapter notes. They are created using a {@link MappingDefinitionFactory}. Storing the Mapping definition is
- * necessary as mapping definition files in bucketfs could change but the mapping must not change until {@code REFRESH}
+ * necessary as mapping definition files in BucketFS could be changed, but the mapping must not be changed until a {@code REFRESH} statement
  * is called.
  * </p>
  */
 public abstract class AbstractColumnMappingDefinition implements Serializable {
     private static final long serialVersionUID = 48342992735371252L;
-    private final String destinationName;
+    private final String exasolName; // name of the column in resulting Virtual Schema
     private final AbstractDynamodbResultWalker pathToSourceProperty;
     private final LookupFailBehaviour lookupFailBehaviour;
 
@@ -29,7 +29,7 @@ public abstract class AbstractColumnMappingDefinition implements Serializable {
      * @param parameters parameter object
      */
     public AbstractColumnMappingDefinition(final ConstructorParameters parameters) {
-        this.destinationName = parameters.destinationName;
+        this.exasolName = parameters.destinationName;
         this.pathToSourceProperty = parameters.pathToSourceProperty;
         this.lookupFailBehaviour = parameters.lookupFailBehaviour;
     }
@@ -39,8 +39,8 @@ public abstract class AbstractColumnMappingDefinition implements Serializable {
      *
      * @return name of the column
      */
-    public String getDestinationName() {
-        return this.destinationName;
+    public String getExasolName() {
+        return this.exasolName;
     }
 
     /**
@@ -48,28 +48,33 @@ public abstract class AbstractColumnMappingDefinition implements Serializable {
      *
      * @return Exasol data type
      */
-    public abstract DataType getDestinationDataType();
+    public abstract DataType getExasolDataType();
 
     /**
      * Get the default value of this column.
      *
      * @return {@link ValueExpression} holding default value
      */
-    public abstract ValueExpression getDestinationDefaultValue();
+    public abstract ValueExpression getExasolDefaultValue();
 
-    public String getDestinationDefaultValueLiteral() {
+    /**
+     * Get the string representation of the exasol column default value literal.
+     * 
+     * @return default value string
+     */
+    public String getExasolDefaultValueLiteral() {
         final StringRendererConfig stringRendererConfig = StringRendererConfig.createDefault();
         final ValueExpressionRenderer renderer = new ValueExpressionRenderer(stringRendererConfig);
-        this.getDestinationDefaultValue().accept(renderer);
+        this.getExasolDefaultValue().accept(renderer);
         return renderer.render();
     }
 
     /**
-     * Check if Exasol column is nullable.
+     * Describes if Exasol column is nullable.
      *
      * @return {@code <true>} if Exasol column is nullable
      */
-    public abstract boolean isDestinationNullable();
+    public abstract boolean isExasolColumnNullable();
 
     /**
      * Get the {@link LookupFailBehaviour}
@@ -91,7 +96,7 @@ public abstract class AbstractColumnMappingDefinition implements Serializable {
      */
     public enum LookupFailBehaviour {
         /**
-         * Break the whole query.
+         * Break the execution of the query .
          */
         EXCEPTION,
         /**

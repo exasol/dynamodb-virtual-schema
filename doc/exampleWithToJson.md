@@ -1,4 +1,4 @@
-# Example for `toJSON` mapping
+# Example of `toJsonMapping`
 
 Given a DynamoDB table called `MY_BOOKS` containing objects like:
 
@@ -23,7 +23,7 @@ Given a DynamoDB table called `MY_BOOKS` containing objects like:
 }
 ```
 
-This will be mapped to a Exasol table like:
+We want this DynamoDB table to be mapped to an Exasol table in the following way:
 
 ```
 CREATE TABLE BOOKS (
@@ -32,9 +32,10 @@ CREATE TABLE BOOKS (
     TOPICS      VARCHAR(200)
 );
 ```
-With topics containing a JSON-style array of strings like `["DynamoDB", "Exasol"]`.
+ 
+With `TOPICS` being a `VARCHAR` column containing a JSON strings like `["DynamoDB", "Exasol"]`.
 
-Mapping definition:
+To achieve this we create the following mapping definition:  
 
 ```
 {
@@ -66,3 +67,5 @@ Mapping definition:
   }
 }
 ```
+
+The toJsonMapping will map the topics as desired to a JSON string in the column `TOPICS`.

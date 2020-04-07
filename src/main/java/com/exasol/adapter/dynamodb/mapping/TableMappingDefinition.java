@@ -7,7 +7,7 @@ import java.util.List;
 import com.exasol.dynamodb.resultwalker.AbstractDynamodbResultWalker;
 
 /**
- * Definition of a table mapping from DynamoDB table to Exasol Virtual Schema. Each instance of this class represents on
+ * Definition of a table mapping from DynamoDB table to Exasol Virtual Schema. Each instance of this class represents a
  * table in the Exasol Virtual Schema. Typically it also represents a DynamoDB table. But it can also represent the data
  * from a nested list or object. See {@link #isRootTable()} for details.
  */
@@ -39,7 +39,7 @@ public class TableMappingDefinition {
      * create tables extracted from nested lists.
      *
      * @param destName Name of the Exasol table
-     * @return {@link TableMappingDefinition.Builder}
+     * @return Builder for {@link TableMappingDefinition}
      */
     public static Builder builder(final String destName, final AbstractDynamodbResultWalker pathToNestedTable) {
         return new Builder(destName, pathToNestedTable);
@@ -89,8 +89,8 @@ public class TableMappingDefinition {
         /**
          * Adds a {@link AbstractColumnMappingDefinition}
          * 
-         * @param columnMappingDefinition
-         * @return self
+         * @param columnMappingDefinition Column MappingDefinition to add
+         * @return self for fluent programming interface
          */
         public Builder withColumnMappingDefinition(final AbstractColumnMappingDefinition columnMappingDefinition) {
             this.columns.add(columnMappingDefinition);

@@ -33,7 +33,7 @@ public class ExasolTestUtils {
      * Creates an instance of {@link ExasolTestUtils}.
      * 
      * @param container exasol test container
-     * @throws SQLException
+     * @throws SQLException on SQL error
      */
     public ExasolTestUtils(final ExasolContainer<? extends ExasolContainer<?>> container) throws SQLException {
         final Connection connection = container.createConnectionForUser(container.getUsername(),
@@ -52,10 +52,6 @@ public class ExasolTestUtils {
 
     /**
      * Uploads the dynamodb adapter jar to the exasol test container.
-     * 
-     * @throws InterruptedException
-     * @throws BucketAccessException
-     * @throws TimeoutException
      */
     public void uploadDynamodbAdapterJar() throws InterruptedException, BucketAccessException, TimeoutException {
         final Bucket bucket = this.container.getDefaultBucket();
@@ -75,8 +71,8 @@ public class ExasolTestUtils {
     /**
      * Creates a schema on the exasol test container.
      * 
-     * @param schemaName
-     * @throws SQLException
+     * @param schemaName name of the schema to create
+     * @throws SQLException on SQL error
      */
     public void createTestSchema(final String schemaName) throws SQLException {
         this.statement.execute("CREATE SCHEMA " + schemaName);
@@ -85,11 +81,11 @@ public class ExasolTestUtils {
     /**
      * Runs {@code CREATE CONNECTION} on the exasol test container.
      * 
-     * @param name
-     * @param to
-     * @param user
-     * @param pass
-     * @throws SQLException
+     * @param name name of the connection to create
+     * @param to   uri
+     * @param user user for the connection
+     * @param pass password for the connection
+     * @throws SQLException on SQL error
      */
     public void createConnection(final String name, final String to, final String user, final String pass)
             throws SQLException {
@@ -101,7 +97,7 @@ public class ExasolTestUtils {
      * Runs {@code CREATE OR REPLACE JAVA ADAPTER SCRIPT} on the Exasol test container with the DynamoDB Virtual Schema
      * adapter jar.
      * 
-     * @throws SQLException
+     * @throws SQLException on SQL error
      */
     public void createAdapterScript() throws SQLException {
         this.createTestSchema(ADAPTER_SCHEMA);
@@ -151,13 +147,13 @@ public class ExasolTestUtils {
      * 
      * @param name               name for the newly created schema
      * @param dynamodbConnection name of the connection to use
-     * @throws SQLException
+     * @throws SQLException on SQL error
      */
     public void createDynamodbVirtualSchema(final String name, final String dynamodbConnection, final String mapping)
             throws SQLException {
         String createStatement = "CREATE VIRTUAL SCHEMA " + name + "\n" + "    USING " + ADAPTER_SCHEMA + "."
                 + DYNAMODB_ADAPTER + " WITH\n" + "    CONNECTION_NAME = '" + dynamodbConnection + "'\n"
-                + "   SQL_DIALECT     = 'DynamoDB'\n" + "	  MAPPING = '" + mapping + "'";
+                + "   SQL_DIALECT     = 'DYNAMO_DB'\n" + "	  MAPPING = '" + mapping + "'";
         final String hostIp = getTestHostIpAddress();
         if (hostIp != null) {
             createStatement += "\n   DEBUG_ADDRESS   = '" + hostIp + ":3000'\n" + "   LOG_LEVEL       =  'ALL'";
@@ -169,10 +165,10 @@ public class ExasolTestUtils {
     /**
      * Runs the SQL {@code DESCRIBE} command on a given table.
      *
-     * @param schema schema name. Use quotes if lower case name.
-     * @param table  table name. Use quotes if lower case name.
+     * @param schema schema name. Use quotes if lower case name
+     * @param table  table name. Use quotes if lower case name
      * @return Map with column name as key and column type as value
-     * @throws SQLException
+     * @throws SQLException on SQL error
      */
     public Map<String, String> describeTable(final String schema, final String table) throws SQLException {
         final ResultSet describeResult = getStatement().executeQuery("DESCRIBE " + schema + "." + table + ";");
@@ -204,7 +200,7 @@ public class ExasolTestUtils {
      * Runs SQL {@code REFRESH} command for a given virtual schema.
      * 
      * @param schemaName name of the virtual schema to refresh. Use quotes if lower case name.
-     * @throws SQLException
+     * @throws SQLException on SQL error
      */
     public void refreshVirtualSchema(final String schemaName) throws SQLException {
         this.statement.execute("ALTER VIRTUAL SCHEMA " + schemaName + " REFRESH;");
@@ -214,7 +210,7 @@ public class ExasolTestUtils {
      * Runs SQL {@code DROP VIRTUAL SCHEMA} command for a given virtual schema.
      * 
      * @param schemaName name of the virtual schema to drop. Use quotes if lower case * name.
-     * @throws SQLException
+     * @throws SQLException on SQL error
      */
     public void dropVirtualSchema(final String schemaName) throws SQLException {
         this.statement.execute("DROP VIRTUAL SCHEMA " + schemaName + " CASCADE;");

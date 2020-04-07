@@ -48,11 +48,13 @@ public class QueryResultTableSchemaBuilder {
         @Override
         public Void visit(final SqlSelectList selectList) throws AdapterException {
             if (selectList.isRequestAnyColumn()) {
-                throw new UnsupportedOperationException("not yet implemented");
+                throw new UnsupportedOperationException(
+                        "The current version of DynamoDB Virtual Schema does not support requesting any columns.");
             } else if (selectList.isSelectStar()) {
                 selectAllColumns();
             } else {
-                throw new UnsupportedOperationException("not yet implemented");
+                throw new UnsupportedOperationException(
+                        "The current version of DynamoDB Virtual Schema does not support projection.");
             }
             return null;
         }
@@ -60,7 +62,7 @@ public class QueryResultTableSchemaBuilder {
         private void selectAllColumns() throws AdapterException {
             try {
                 for (final ColumnMetadata columnMetadata : this.tableMetadata.getColumns()) {
-                    final AbstractColumnMappingDefinition columnMappingDefinition = SchemaMappingDefinitionToSchemaMetadataConverter
+                    final AbstractColumnMappingDefinition columnMappingDefinition = new SchemaMappingDefinitionToSchemaMetadataConverter()
                             .convertBackColumn(columnMetadata);
                     this.resultColumns.add(columnMappingDefinition);
                 }

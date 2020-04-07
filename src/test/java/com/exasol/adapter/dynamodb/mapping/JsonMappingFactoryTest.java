@@ -31,8 +31,6 @@ public class JsonMappingFactoryTest {
 
     /**
      * Tests schema load from basicMapping.json
-     * 
-     * @throws IOException
      */
     @Test
     void testBasicMapping() throws IOException, AdapterException {
@@ -40,23 +38,23 @@ public class JsonMappingFactoryTest {
         final List<TableMappingDefinition> tables = schemaMapping.getTableMappings();
         final TableMappingDefinition table = tables.get(0);
         final List<AbstractColumnMappingDefinition> columns = table.getColumns();
-        final List<String> columnNames = columns.stream().map(AbstractColumnMappingDefinition::getDestinationName)
+        final List<String> columnNames = columns.stream().map(AbstractColumnMappingDefinition::getExasolName)
                 .collect(Collectors.toList());
         final ToStringColumnMappingDefinition isbnColumn = (ToStringColumnMappingDefinition) columns.stream()
-                .filter(column -> column.getDestinationName().equals("ISBN")).findAny().get();
+                .filter(column -> column.getExasolName().equals("ISBN")).findAny().get();
         final ToStringColumnMappingDefinition nameColumn = (ToStringColumnMappingDefinition) columns.stream()
-                .filter(column -> column.getDestinationName().equals("NAME")).findAny().get();
+                .filter(column -> column.getExasolName().equals("NAME")).findAny().get();
         assertAll(() -> assertThat(tables.size(), equalTo(1)), //
                 () -> assertThat(table.getDestinationName(), equalTo("BOOKS")),
                 () -> assertThat(columnNames, containsInAnyOrder("ISBN", "NAME", "AUTHOR_NAME")),
-                () -> assertThat(isbnColumn.getDestinationStringSize(), equalTo(20)),
+                () -> assertThat(isbnColumn.getExasolStringSize(), equalTo(20)),
                 () -> assertThat(isbnColumn.getOverflowBehaviour(),
                         equalTo(ToStringColumnMappingDefinition.OverflowBehaviour.EXCEPTION)),
                 () -> assertThat(isbnColumn.getLookupFailBehaviour(),
                         equalTo(AbstractColumnMappingDefinition.LookupFailBehaviour.EXCEPTION)),
                 () -> assertThat(nameColumn.getLookupFailBehaviour(),
                         equalTo(AbstractColumnMappingDefinition.LookupFailBehaviour.DEFAULT_VALUE)),
-                () -> assertThat(nameColumn.getDestinationStringSize(), equalTo(100)),
+                () -> assertThat(nameColumn.getExasolStringSize(), equalTo(100)),
                 () -> assertThat(nameColumn.getOverflowBehaviour(),
                         equalTo(ToStringColumnMappingDefinition.OverflowBehaviour.TRUNCATE)));
     }
@@ -67,7 +65,7 @@ public class JsonMappingFactoryTest {
         final List<TableMappingDefinition> tables = schemaMapping.getTableMappings();
         final TableMappingDefinition table = tables.get(0);
         final List<AbstractColumnMappingDefinition> columns = table.getColumns();
-        final List<String> columnNames = columns.stream().map(AbstractColumnMappingDefinition::getDestinationName)
+        final List<String> columnNames = columns.stream().map(AbstractColumnMappingDefinition::getExasolName)
                 .collect(Collectors.toList());
         assertAll(() -> assertThat(tables.size(), equalTo(1)), //
                 () -> assertThat(table.getDestinationName(), equalTo("BOOKS")),
