@@ -11,7 +11,7 @@ import com.exasol.adapter.dynamodb.mapping.tostringmapping.ToStringValueMapper;
 public class ValueMapperFactory {
 
     /**
-     * Builds an ValueMapper fitting to an ColumnMappingDefinition.
+     * Builds a ValueMapper fitting into a ColumnMappingDefinition.
      * 
      * @param column ColumnMappingDefinition for which to build the ValueMapper
      * @return built ValueMapper

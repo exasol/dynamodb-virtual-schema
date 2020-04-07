@@ -79,7 +79,7 @@ public class JsonMappingFactory implements MappingDefinitionFactory {
         } else {
             final File[] files = definitionsPath.listFiles((file, fileName) -> fileName.endsWith(jsonFileEnding));
             if (files == null || files.length == 0) {
-                throw new AdapterException("no schema mapping files found in " + definitionsPath);
+                throw new AdapterException("No schema mapping files found in " + definitionsPath + ".");
             }
             return files;
         }

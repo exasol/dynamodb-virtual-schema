@@ -87,7 +87,7 @@ public class DynamodbAdapter implements VirtualSchemaAdapter {
     }
 
     /**
-     * Creates a connection to DynamoDB using the connection details set in {@code CREATE CONNECTION}.
+     * Creates a connection to DynamoDB using the connection details from the {@code CREATE CONNECTION} statement.
      */
     private AmazonDynamoDB getConnection(final ExaMetadata exaMetadata, final AbstractAdapterRequest request)
             throws ExaConnectionAccessException {
