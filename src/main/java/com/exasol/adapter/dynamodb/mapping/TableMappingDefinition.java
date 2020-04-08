@@ -10,13 +10,13 @@ import java.util.List;
  * from a nested list or object. See {@link #isRootTable()} for details.
  */
 public class TableMappingDefinition {
-    private final String destinationName;
+    private final String exasolName;
     private final boolean isRootTable;
     private final List<AbstractColumnMappingDefinition> columns;
 
-    private TableMappingDefinition(final String destinationName, final boolean isRootTable,
+    private TableMappingDefinition(final String exasolName, final boolean isRootTable,
             final List<AbstractColumnMappingDefinition> columns) {
-        this.destinationName = destinationName;
+        this.exasolName = exasolName;
         this.isRootTable = isRootTable;
         this.columns = columns;
     }
@@ -37,8 +37,8 @@ public class TableMappingDefinition {
      * 
      * @return name of the Exasol table
      */
-    public String getDestinationName() {
-        return this.destinationName;
+    public String getExasolName() {
+        return this.exasolName;
     }
 
     /**
@@ -64,12 +64,12 @@ public class TableMappingDefinition {
      * Builder for {@link TableMappingDefinition}
      */
     public static class Builder {
-        private final String destName;
+        private final String exasolName;
         private final boolean isRootTable;
         private final List<AbstractColumnMappingDefinition> columns = new ArrayList<>();
 
-        private Builder(final String destName, final boolean isRootTable) {
-            this.destName = destName;
+        private Builder(final String exasolName, final boolean isRootTable) {
+            this.exasolName = exasolName;
             this.isRootTable = isRootTable;
         }
 
@@ -90,7 +90,7 @@ public class TableMappingDefinition {
          * @return {@link TableMappingDefinition}
          */
         public TableMappingDefinition build() {
-            return new TableMappingDefinition(this.destName, this.isRootTable,
+            return new TableMappingDefinition(this.exasolName, this.isRootTable,
                     Collections.unmodifiableList(this.columns));
         }
     }

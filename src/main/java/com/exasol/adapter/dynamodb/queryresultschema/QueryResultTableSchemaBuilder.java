@@ -67,9 +67,8 @@ public class QueryResultTableSchemaBuilder {
                     this.resultColumns.add(columnMappingDefinition);
                 }
             } catch (final IOException | ClassNotFoundException exception) {
-                throw new AdapterException(
-                        "Failed parsing query failed. Cause: could not parse schema. Cause by " + exception.getMessage(),
-                        exception);
+                throw new AdapterException("Failed parsing query failed. Cause: could not parse schema. Cause by "
+                        + exception.getMessage(), exception);
             }
         }
 

@@ -13,8 +13,8 @@ import com.exasol.sql.rendering.StringRendererConfig;
  * <p>
  * Each instance of this class represents one column in the Exasol table. Objects of this class get serialized into the
  * column adapter notes. They are created using a {@link MappingDefinitionFactory}. Storing the Mapping definition is
- * necessary as mapping definition files in BucketFS could be changed, but the mapping must not be changed until a {@code REFRESH} statement
- * is called.
+ * necessary as mapping definition files in BucketFS could be changed, but the mapping must not be changed until a
+ * {@code REFRESH} statement is called.
  * </p>
  */
 public abstract class AbstractColumnMappingDefinition implements Serializable {

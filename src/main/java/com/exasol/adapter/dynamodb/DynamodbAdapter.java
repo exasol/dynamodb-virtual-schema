@@ -82,7 +82,8 @@ public class DynamodbAdapter implements VirtualSchemaAdapter {
             }
             return file;
         } catch (final BucketfsPathException exception) {
-            throw new AdapterException("Could not open mapping definition. Cause: " + exception.getMessage(), exception);
+            throw new AdapterException("Could not open mapping definition. Cause: " + exception.getMessage(),
+                    exception);
         }
     }
 

@@ -45,7 +45,7 @@ public class JsonMappingFactoryTest {
         final ToStringColumnMappingDefinition nameColumn = (ToStringColumnMappingDefinition) columns.stream()
                 .filter(column -> column.getExasolName().equals("NAME")).findAny().get();
         assertAll(() -> assertThat(tables.size(), equalTo(1)), //
-                () -> assertThat(table.getDestinationName(), equalTo("BOOKS")),
+                () -> assertThat(table.getExasolName(), equalTo("BOOKS")),
                 () -> assertThat(columnNames, containsInAnyOrder("ISBN", "NAME", "AUTHOR_NAME")),
                 () -> assertThat(isbnColumn.getExasolStringSize(), equalTo(20)),
                 () -> assertThat(isbnColumn.getOverflowBehaviour(),
@@ -68,7 +68,7 @@ public class JsonMappingFactoryTest {
         final List<String> columnNames = columns.stream().map(AbstractColumnMappingDefinition::getExasolName)
                 .collect(Collectors.toList());
         assertAll(() -> assertThat(tables.size(), equalTo(1)), //
-                () -> assertThat(table.getDestinationName(), equalTo("BOOKS")),
+                () -> assertThat(table.getExasolName(), equalTo("BOOKS")),
                 () -> assertThat(columnNames, containsInAnyOrder("ISBN", "NAME", "TOPICS")));
     }
 
@@ -80,7 +80,7 @@ public class JsonMappingFactoryTest {
         assertAll(() -> assertThat(exception.getCausingMappingDefinitionFileName(), equalTo(fileName)),
                 () -> assertThat(exception.getMessage(),
                         equalTo("Error in schema mapping invalidToStringMappingAtRootLevel.json:")),
-                () -> assertThat(exception.getCause().getMessage(),
-                        equalTo("ToStringMapping is not allowed at root level. You probably want to replace it with a \"fields\" definition.")));
+                () -> assertThat(exception.getCause().getMessage(), equalTo(
+                        "ToStringMapping is not allowed at root level. You probably want to replace it with a \"fields\" definition.")));
     }
 }
