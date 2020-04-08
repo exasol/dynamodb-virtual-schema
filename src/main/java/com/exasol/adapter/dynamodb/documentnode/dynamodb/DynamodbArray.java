@@ -19,4 +19,9 @@ public class DynamodbArray implements DocumentArray {
         final DynamodbDocumentNodeFactory nodeFactory = new DynamodbDocumentNodeFactory();
         return this.value.getL().stream().map(nodeFactory::buildDocumentNode).collect(Collectors.toList());
     }
+
+    @Override
+    public DocumentNode getValue(final int index){
+        return new DynamodbDocumentNodeFactory().buildDocumentNode(this.value.getL().get(index));
+    }
 }

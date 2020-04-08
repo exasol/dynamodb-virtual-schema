@@ -56,6 +56,26 @@ public class DocumentPathExpression {
         }
 
         /**
+         * Appends an {@link ObjectLookupPathSegment} to the current path.
+         * 
+         * @param lookupKey lookup key for the {@link ObjectLookupPathSegment}
+         * @return this for as fluent programming interface
+         */
+        public Builder addObjectLookup(final String lookupKey) {
+            return this.add(new ObjectLookupPathSegment(lookupKey));
+        }
+
+        /**
+         * Appends an {@link ArrayLookupPathSegment} to the current path.
+         * 
+         * @param lookupIndex lookup index for {@link ArrayLookupPathSegment}
+         * @return this for as fluent programming interface
+         */
+        public Builder addArrayLookup(final int lookupIndex) {
+            return this.add(new ArrayLookupPathSegment(lookupIndex));
+        }
+
+        /**
          * Finishes build process of {@link DocumentPathExpression}.
          * 
          * @return build {@link DocumentPathExpression}

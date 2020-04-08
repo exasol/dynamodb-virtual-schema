@@ -19,8 +19,8 @@ public class DocumentPathExpressionTest {
 
     @Test
     void testAdd() {
-        final ObjectPathSegment pathSegment1 = new ObjectPathSegment("key");
-        final ObjectPathSegment pathSegment2 = new ObjectPathSegment("key2");
+        final ObjectLookupPathSegment pathSegment1 = new ObjectLookupPathSegment("key");
+        final ObjectLookupPathSegment pathSegment2 = new ObjectLookupPathSegment("key2");
         final DocumentPathExpression pathExpression = new DocumentPathExpression.Builder()//
                 .add(pathSegment1)//
                 .add(pathSegment2)//
@@ -33,9 +33,27 @@ public class DocumentPathExpressionTest {
     }
 
     @Test
-    void testSubpath() {
-        final ObjectPathSegment pathSegment1 = new ObjectPathSegment("key");
-        final ObjectPathSegment pathSegment2 = new ObjectPathSegment("key2");
+    void testAddObjectLookup() {
+        final DocumentPathExpression pathExpression = new DocumentPathExpression.Builder()//
+            .addObjectLookup("key")//
+            .build();
+        final ObjectLookupPathSegment objectLookup = (ObjectLookupPathSegment) pathExpression.getPath().get(0);
+        assertThat(objectLookup.getLookupKey(), equalTo("key"));
+    }
+
+    @Test
+    void testAddArrayLookup() {
+        final DocumentPathExpression pathExpression = new DocumentPathExpression.Builder()//
+                .addArrayLookup(0)
+                .build();
+        final ArrayLookupPathSegment objectLookup = (ArrayLookupPathSegment) pathExpression.getPath().get(0);
+        assertThat(objectLookup.getLookupIndex(), equalTo(0));
+    }
+
+    @Test
+    void testSubPath() {
+        final ObjectLookupPathSegment pathSegment1 = new ObjectLookupPathSegment("key");
+        final ObjectLookupPathSegment pathSegment2 = new ObjectLookupPathSegment("key2");
         final DocumentPathExpression pathExpression = new DocumentPathExpression.Builder()//
                 .add(pathSegment1)//
                 .add(pathSegment2)//

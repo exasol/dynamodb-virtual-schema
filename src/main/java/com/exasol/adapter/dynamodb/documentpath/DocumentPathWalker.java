@@ -1,7 +1,9 @@
 package com.exasol.adapter.dynamodb.documentpath;
 
+import java.util.List;
 import java.util.function.Function;
 
+import com.exasol.adapter.dynamodb.documentnode.DocumentArray;
 import com.exasol.adapter.dynamodb.documentnode.DocumentNode;
 import com.exasol.adapter.dynamodb.documentnode.DocumentObject;
 
@@ -50,6 +52,10 @@ public class DocumentPathWalker {
             throw new DocumentPathWalkerException(
                     "The requested lookup key (" + exception.lookupKey + ") is not present in this object.",
                     currentPathString);
+        } catch (final NotAnArrayException exception){
+            throw new DocumentPathWalkerException("Can't perform array lookup on non array.", currentPathString);
+        }catch (final IndexOutOfBoundsException exception){
+            throw new DocumentPathWalkerException("Can't perform array lookup: " + exception.getMessage(), currentPathString);
         }
     }
 
@@ -63,20 +69,33 @@ public class DocumentPathWalker {
         Function<DocumentNode, DocumentNode> converter;
 
         @Override
-        public void visit(final ObjectPathSegment objectPathSegment) {
-            this.converter = (thisNode) -> {
-                final String key = objectPathSegment.getLookupKey();
+        public void visit(final ObjectLookupPathSegment objectLookupPathSegment) {
+            this.converter = thisNode -> {
+                final String key = objectLookupPathSegment.getLookupKey();
                 if (!(thisNode instanceof DocumentObject)) {
                     throw new NotAnObjectException(key);
                 }
                 final DocumentObject thisObject = (DocumentObject) thisNode;
-
                 if (!thisObject.hasKey(key)) {
                     throw new UnknownLookupKeyException(key);
                 }
                 return thisObject.get(key);
             };
         }
+
+        @Override
+        public void visit(final ArrayLookupPathSegment arrayLookupPathSegment) {
+            this.converter = thisNode -> {
+                if (!(thisNode instanceof DocumentArray)) {
+                    throw new NotAnArrayException();
+                }
+                final DocumentArray thisArray = (DocumentArray) thisNode;
+                return thisArray.getValue(arrayLookupPathSegment.getLookupIndex());
+            };
+        }
+    }
+
+    private static class NotAnArrayException extends RuntimeException {
     }
 
     private static class NotAnObjectException extends RuntimeException {

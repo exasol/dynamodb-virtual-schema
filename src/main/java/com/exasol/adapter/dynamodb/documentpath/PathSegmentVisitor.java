@@ -1,14 +1,21 @@
 package com.exasol.adapter.dynamodb.documentpath;
 
 /**
- * Visitor interface for {@link PathSegment}
+ * Visitor interface for {@link PathSegment}.
  */
 public interface PathSegmentVisitor {
 
     /**
-     * Visits a {@link ObjectPathSegment}
+     * Visits a {@link ObjectLookupPathSegment}.
      * 
-     * @param objectPathSegment to visit
+     * @param objectLookupPathSegment to visit
      */
-    public void visit(ObjectPathSegment objectPathSegment);
+    public void visit(ObjectLookupPathSegment objectLookupPathSegment);
+
+    /**
+     * Visits a {@link ArrayLookupPathSegment}.
+     *
+     * @param arrayLookupPathSegment to visit
+     */
+    public void visit(ArrayLookupPathSegment arrayLookupPathSegment);
 }

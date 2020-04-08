@@ -15,15 +15,23 @@ public class DocumentPathToStringConverterTest {
     }
 
     @Test
-    void testStringifyObject() {
-        final ObjectPathSegment pathSegment1 = new ObjectPathSegment("key1");
-        final ObjectPathSegment pathSegment2 = new ObjectPathSegment("key2");
+    void testStringifyObjectLookup() {
         final DocumentPathExpression pathExpression = new DocumentPathExpression.Builder()//
-                .add(pathSegment1)//
-                .add(pathSegment2)//
+                .addObjectLookup("key1")//
+                .addObjectLookup("key2")//
                 .build();
         final String result = new DocumentPathToStringConverter().convertToString(pathExpression);
-        assertThat(result, equalTo("/key1/key2/"));
+        assertThat(result, equalTo("/key1/key2"));
+    }
+
+    @Test
+    void testStringifyArrayLookup() {
+        final DocumentPathExpression pathExpression = new DocumentPathExpression.Builder()//
+                .addObjectLookup("key1")//
+                .addArrayLookup(0)//
+                .build();
+        final String result = new DocumentPathToStringConverter().convertToString(pathExpression);
+        assertThat(result, equalTo("/key1[0]"));
     }
 
 }

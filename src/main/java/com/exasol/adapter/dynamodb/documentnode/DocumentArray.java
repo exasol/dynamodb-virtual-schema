@@ -7,6 +7,7 @@ import java.util.List;
  */
 public interface DocumentArray extends DocumentNode {
     List<DocumentNode> getValueList();
+    DocumentNode getValue(int index);
 
     @Override
     default void accept(final DocumentNodeVisitor visitor) {
