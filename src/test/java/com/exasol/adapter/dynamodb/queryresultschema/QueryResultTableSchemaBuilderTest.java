@@ -32,7 +32,7 @@ public class QueryResultTableSchemaBuilderTest {
                 .selectList(SqlSelectList.createSelectStarSelectList()).build();
         final QueryResultTableSchema resultTable = new QueryResultTableSchemaBuilder().build(statement);
         final List<String> actualDestinationNames = resultTable.getColumns().stream()
-                .map(AbstractColumnMappingDefinition::getExasolName).collect(Collectors.toList());
+                .map(AbstractColumnMappingDefinition::getExasolColumnName).collect(Collectors.toList());
         final String[] expectedDestinationNames = tableMetadata.getColumns().stream().map(ColumnMetadata::getName)
                 .toArray(String[]::new);
         assertThat(actualDestinationNames, containsInAnyOrder(expectedDestinationNames));

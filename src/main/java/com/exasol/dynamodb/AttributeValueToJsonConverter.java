@@ -22,7 +22,7 @@ public class AttributeValueToJsonConverter {
     }
 
     /**
-     * Converts an DynamoDB {@link AttributeValue} to json
+     * Converts a DynamoDB {@link AttributeValue} to json
      *
      * @param attributeValue DynamoDB value
      * @return JSON value

@@ -61,8 +61,7 @@ public class JsonMappingValidator {
                 && exception.getSchemaLocation().equals("#/definitions/mappingDefinition")) {
             final String possibleProperties = possibleObjectProperties(exception.getViolatedSchema());
             if (!possibleProperties.isEmpty()) {
-                return exception.getMessage() + ", use one of the following mapping definitions here: "
-                        + possibleProperties;
+                return exception.getMessage() + ", use one of the following mapping definitions: " + possibleProperties;
             }
         }
         if (exception.getMessage().startsWith("#/$schema:")
@@ -72,7 +71,7 @@ public class JsonMappingValidator {
         }
         if (exception.getPointerToViolation().endsWith("/mapping") && exception.getKeyword().equals("minProperties")) {
             final String possibleProperties = possibleObjectProperties(exception.getViolatedSchema());
-            return exception.getPointerToViolation() + " please specify at least one mapping here. Possible are: "
+            return exception.getPointerToViolation() + " Please specify at least one mapping. Possible are: "
                     + possibleProperties;
         }
         return exception.getMessage();

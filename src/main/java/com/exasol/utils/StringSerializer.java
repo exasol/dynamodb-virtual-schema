@@ -26,7 +26,7 @@ public class StringSerializer {
     }
 
     /**
-     * Deserializes an object from base64 string.
+     * Deserializes an object from a base64 string.
      * 
      * @param serialized base64 string created by {@link #serializeToString(Serializable)}
      * @return deserialized object. Cast this object to your class.

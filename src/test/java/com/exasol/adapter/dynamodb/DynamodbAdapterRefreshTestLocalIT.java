@@ -91,7 +91,7 @@ public class DynamodbAdapterRefreshTestLocalIT {
                 "/bfsdefault/default/mappings/test.json");
         final Map<String, String> columnsBefore = exasolTestUtils.describeTable(TEST_SCHEMA, "BOOKS");
         exasolTestUtils.uploadMapping("toJsonMapping.json", "mappings/test.json");
-        Thread.sleep(5000);// Wait for bucketfs to sync //NOSONAR
+        Thread.sleep(5000);// Wait for bucketfs to sync
         exasolTestUtils.refreshVirtualSchema(TEST_SCHEMA);
         final Map<String, String> columnsAfter = exasolTestUtils.describeTable(TEST_SCHEMA, "BOOKS");
         assertThat(columnsBefore, not(equalTo(columnsAfter)));

@@ -24,11 +24,11 @@ public class AbstractValueMapperTest {
     @Test
     void testLookup() throws DynamodbResultWalkerException, ValueMapperException {
         final ObjectDynamodbResultWalker resultWalker = new ObjectDynamodbResultWalker("isbn", null);
-        final MocColumnMappingDefinition columnMappingDefinition = new MocColumnMappingDefinition("d", resultWalker,
+        final MockColumnMappingDefinition columnMappingDefinition = new MockColumnMappingDefinition("d", resultWalker,
                 AbstractColumnMappingDefinition.LookupFailBehaviour.EXCEPTION);
         final String isbn = "123456789";
         final AttributeValue isbnValue = AttributeValueTestUtils.forString(isbn);
-        final ValueExpression valueExpression = new MocValueMapper(columnMappingDefinition)
+        final ValueExpression valueExpression = new MockValueMapper(columnMappingDefinition)
                 .mapRow(Map.of("isbn", isbnValue));
         assertThat(valueExpression.toString(), equalTo(isbn));
     }
@@ -36,9 +36,9 @@ public class AbstractValueMapperTest {
     @Test
     void testNullLookupFailBehaviour() throws ValueMapperException, DynamodbResultWalkerException {
         final ObjectDynamodbResultWalker resultWalker = new ObjectDynamodbResultWalker("nonExistingColumn", null);
-        final MocColumnMappingDefinition columnMappingDefinition = new MocColumnMappingDefinition("d", resultWalker,
+        final MockColumnMappingDefinition columnMappingDefinition = new MockColumnMappingDefinition("d", resultWalker,
                 AbstractColumnMappingDefinition.LookupFailBehaviour.DEFAULT_VALUE);
-        final ValueExpression valueExpression = new MocValueMapper(columnMappingDefinition)
+        final ValueExpression valueExpression = new MockValueMapper(columnMappingDefinition)
                 .mapRow(Collections.emptyMap());
         assertThat(valueExpression.toString(), equalTo("default"));
     }
@@ -46,25 +46,25 @@ public class AbstractValueMapperTest {
     @Test
     void testExceptionLookupFailBehaviour() {
         final ObjectDynamodbResultWalker resultWalker = new ObjectDynamodbResultWalker("nonExistingColumn", null);
-        final MocColumnMappingDefinition columnMappingDefinition = new MocColumnMappingDefinition("d", resultWalker,
+        final MockColumnMappingDefinition columnMappingDefinition = new MockColumnMappingDefinition("d", resultWalker,
                 AbstractColumnMappingDefinition.LookupFailBehaviour.EXCEPTION);
         assertThrows(DynamodbResultWalkerException.class,
-                () -> new MocValueMapper(columnMappingDefinition).mapRow(Collections.emptyMap()));
+                () -> new MockValueMapper(columnMappingDefinition).mapRow(Collections.emptyMap()));
     }
 
     @Test
     public void testColumnMappingException() {
         final String columnName = "name";
-        final MocColumnMappingDefinition mappingDefinition = new MocColumnMappingDefinition(columnName,
+        final MockColumnMappingDefinition mappingDefinition = new MockColumnMappingDefinition(columnName,
                 new IdentityDynamodbResultWalker(), AbstractColumnMappingDefinition.LookupFailBehaviour.EXCEPTION);
         final ValueMapperException exception = assertThrows(ValueMapperException.class,
-                () -> new ExceptionMocValueMapper(mappingDefinition).mapRow(Map.of()));
-        assertThat(exception.getCausingColumn().getExasolName(), equalTo(columnName));
+                () -> new ExceptionMockValueMapper(mappingDefinition).mapRow(Map.of()));
+        assertThat(exception.getCausingColumn().getExasolColumnName(), equalTo(columnName));
     }
 
-    private static class MocValueMapper extends AbstractValueMapper {
+    private static class MockValueMapper extends AbstractValueMapper {
 
-        public MocValueMapper(final AbstractColumnMappingDefinition column) {
+        public MockValueMapper(final AbstractColumnMappingDefinition column) {
             super(column);
         }
 
@@ -74,10 +74,10 @@ public class AbstractValueMapperTest {
         }
     }
 
-    private static class ExceptionMocValueMapper extends AbstractValueMapper {
+    private static class ExceptionMockValueMapper extends AbstractValueMapper {
         AbstractColumnMappingDefinition column;
 
-        public ExceptionMocValueMapper(final AbstractColumnMappingDefinition column) {
+        public ExceptionMockValueMapper(final AbstractColumnMappingDefinition column) {
             super(column);
             this.column = column;
         }

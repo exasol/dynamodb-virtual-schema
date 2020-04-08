@@ -19,7 +19,7 @@ import com.exasol.sql.rendering.StringRendererConfig;
  */
 public abstract class AbstractColumnMappingDefinition implements Serializable {
     private static final long serialVersionUID = 48342992735371252L;
-    private final String exasolName; // name of the column in resulting Virtual Schema
+    private final String exasolColumnName;
     private final AbstractDynamodbResultWalker pathToSourceProperty;
     private final LookupFailBehaviour lookupFailBehaviour;
 
@@ -29,7 +29,7 @@ public abstract class AbstractColumnMappingDefinition implements Serializable {
      * @param parameters parameter object
      */
     public AbstractColumnMappingDefinition(final ConstructorParameters parameters) {
-        this.exasolName = parameters.destinationName;
+        this.exasolColumnName = parameters.exasolColumnName;
         this.pathToSourceProperty = parameters.pathToSourceProperty;
         this.lookupFailBehaviour = parameters.lookupFailBehaviour;
     }
@@ -39,8 +39,8 @@ public abstract class AbstractColumnMappingDefinition implements Serializable {
      *
      * @return name of the column
      */
-    public String getExasolName() {
-        return this.exasolName;
+    public String getExasolColumnName() {
+        return this.exasolColumnName;
     }
 
     /**
@@ -92,7 +92,8 @@ public abstract class AbstractColumnMappingDefinition implements Serializable {
     public abstract void accept(ColumnMappingDefinitionVisitor visitor);
 
     /**
-     * Behaviour if the requested property is not set in a given DynamoDB row.
+     * This enum describes behaviour of the mapping definition when the requested property is not set in a given
+     * DynamoDB row.
      */
     public enum LookupFailBehaviour {
         /**
@@ -110,7 +111,7 @@ public abstract class AbstractColumnMappingDefinition implements Serializable {
      * {@link AbstractColumnMappingDefinition#AbstractColumnMappingDefinition(ConstructorParameters)}
      */
     public static class ConstructorParameters {
-        private final String destinationName;
+        private final String exasolColumnName;
         private final AbstractDynamodbResultWalker pathToSourceProperty;
         private final LookupFailBehaviour lookupFailBehaviour;
 
@@ -118,15 +119,15 @@ public abstract class AbstractColumnMappingDefinition implements Serializable {
          * Creates a parameter object for
          * {@link AbstractColumnMappingDefinition#AbstractColumnMappingDefinition(ConstructorParameters)}
          *
-         * @param destinationName      name of the Exasol column
+         * @param exasolColumnName     name of the Exasol column
          * @param pathToSourceProperty {@link AbstractDynamodbResultWalker} representing the path to the source DynamoDB
          *                             property
          * @param lookupFailBehaviour  {@link LookupFailBehaviour} if the defined path does not exist
          */
-        public ConstructorParameters(final String destinationName,
+        public ConstructorParameters(final String exasolColumnName,
                 final AbstractDynamodbResultWalker pathToSourceProperty,
                 final LookupFailBehaviour lookupFailBehaviour) {
-            this.destinationName = destinationName;
+            this.exasolColumnName = exasolColumnName;
             this.pathToSourceProperty = pathToSourceProperty;
             this.lookupFailBehaviour = lookupFailBehaviour;
         }

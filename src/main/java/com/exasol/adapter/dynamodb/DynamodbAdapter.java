@@ -44,8 +44,8 @@ public class DynamodbAdapter implements VirtualSchemaAdapter {
         try {
             return runCreateVirtualSchema(request);
         } catch (final IOException exception) {
-            throw new AdapterException("Unable to create Virtual Schema \"" + request.getVirtualSchemaName()
-                    + "\". Cause: \"" + exception.getMessage(), exception);// NOSONAR
+            throw new AdapterException("Unable to create Virtual Schema \"" + request.getVirtualSchemaName() + "\". "
+                    + "Cause: " + exception.getMessage(), exception);
         }
     }
 
@@ -129,8 +129,8 @@ public class DynamodbAdapter implements VirtualSchemaAdapter {
         try {
             return runPushdown(exaMetadata, request);
         } catch (final ExaConnectionAccessException | DynamodbResultWalkerException exception) {
-            throw new AdapterException("Unable to create Virtual Schema \"" + request.getVirtualSchemaName()
-                    + "\". Cause: " + exception.getMessage(), exception);// NOSONAR
+            throw new AdapterException("Unable to create Virtual Schema \"" + request.getVirtualSchemaName() + "\". "
+                    + "Cause: " + exception.getMessage(), exception);
         }
     }
 
@@ -168,7 +168,7 @@ public class DynamodbAdapter implements VirtualSchemaAdapter {
             return this.runRefresh(refreshRequest);
         } catch (final IOException exception) {
             throw new AdapterException("Unable to update Virtual Schema \"" + refreshRequest.getVirtualSchemaName()
-                    + "\". Cause: " + exception.getMessage(), exception);// NOSONAR
+                    + "\". Cause: " + exception.getMessage(), exception);
         }
     }
 

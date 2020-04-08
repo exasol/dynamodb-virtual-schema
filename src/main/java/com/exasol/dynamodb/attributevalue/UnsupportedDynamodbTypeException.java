@@ -1,7 +1,7 @@
 package com.exasol.dynamodb.attributevalue;
 
 /**
- * Exception that is thrown by {@link AttributeValueVisitor} if method was not implemented.
+ * Exception that is thrown by {@link AttributeValueVisitor} if a method was not implemented.
  */
 public class UnsupportedDynamodbTypeException extends UnsupportedOperationException {
     private final String dynamodbTypeName;

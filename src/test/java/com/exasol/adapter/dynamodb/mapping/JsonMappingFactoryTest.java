@@ -38,12 +38,12 @@ public class JsonMappingFactoryTest {
         final List<TableMappingDefinition> tables = schemaMapping.getTableMappings();
         final TableMappingDefinition table = tables.get(0);
         final List<AbstractColumnMappingDefinition> columns = table.getColumns();
-        final List<String> columnNames = columns.stream().map(AbstractColumnMappingDefinition::getExasolName)
+        final List<String> columnNames = columns.stream().map(AbstractColumnMappingDefinition::getExasolColumnName)
                 .collect(Collectors.toList());
         final ToStringColumnMappingDefinition isbnColumn = (ToStringColumnMappingDefinition) columns.stream()
-                .filter(column -> column.getExasolName().equals("ISBN")).findAny().get();
+                .filter(column -> column.getExasolColumnName().equals("ISBN")).findAny().get();
         final ToStringColumnMappingDefinition nameColumn = (ToStringColumnMappingDefinition) columns.stream()
-                .filter(column -> column.getExasolName().equals("NAME")).findAny().get();
+                .filter(column -> column.getExasolColumnName().equals("NAME")).findAny().get();
         assertAll(() -> assertThat(tables.size(), equalTo(1)), //
                 () -> assertThat(table.getExasolName(), equalTo("BOOKS")),
                 () -> assertThat(columnNames, containsInAnyOrder("ISBN", "NAME", "AUTHOR_NAME")),
@@ -65,7 +65,7 @@ public class JsonMappingFactoryTest {
         final List<TableMappingDefinition> tables = schemaMapping.getTableMappings();
         final TableMappingDefinition table = tables.get(0);
         final List<AbstractColumnMappingDefinition> columns = table.getColumns();
-        final List<String> columnNames = columns.stream().map(AbstractColumnMappingDefinition::getExasolName)
+        final List<String> columnNames = columns.stream().map(AbstractColumnMappingDefinition::getExasolColumnName)
                 .collect(Collectors.toList());
         assertAll(() -> assertThat(tables.size(), equalTo(1)), //
                 () -> assertThat(table.getExasolName(), equalTo("BOOKS")),

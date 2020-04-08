@@ -44,7 +44,7 @@ public class SchemaMappingDefinitionToSchemaMetadataConverter {
             throws IOException {
         final String serialized = StringSerializer.serializeToString(columnMappingDefinition);
         return ColumnMetadata.builder()//
-                .name(columnMappingDefinition.getExasolName())//
+                .name(columnMappingDefinition.getExasolColumnName())//
                 .type(columnMappingDefinition.getExasolDataType())//
                 .defaultValue(columnMappingDefinition.getExasolDefaultValueLiteral())//
                 .nullable(columnMappingDefinition.isExasolColumnNullable())//

@@ -40,8 +40,9 @@ public class ToStringValueMapper extends AbstractValueMapper {
         final String stringValue = toStringVisitor.result;
         if (stringValue == null) {
             return this.column.getExasolDefaultValue();
+        } else {
+            return StringLiteral.of(this.handleOverflow(stringValue));
         }
-        return StringLiteral.of(this.handleOverflow(stringValue));
     }
 
     private String handleOverflow(final String sourceString) throws OverflowException {
@@ -49,10 +50,13 @@ public class ToStringValueMapper extends AbstractValueMapper {
             if (this.column.getOverflowBehaviour() == ToStringColumnMappingDefinition.OverflowBehaviour.TRUNCATE) {
                 return sourceString.substring(0, this.column.getExasolStringSize());
             } else {
-                throw new OverflowException("String overflow.", this.column);
+                throw new OverflowException(
+                        "String overflow. You can either increase the string size if this column or set the overflow behaviour to truncate.",
+                        this.column);
             }
+        } else {
+            return sourceString;
         }
-        return sourceString;
     }
 
     /**

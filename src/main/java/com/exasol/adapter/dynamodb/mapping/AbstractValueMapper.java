@@ -41,13 +41,14 @@ public abstract class AbstractValueMapper {
             if (this.column
                     .getLookupFailBehaviour() == AbstractColumnMappingDefinition.LookupFailBehaviour.DEFAULT_VALUE) {
                 return this.column.getExasolDefaultValue();
+            } else {
+                throw exception;
             }
-            throw exception;
         }
     }
 
     /**
-     * Converts the DynamoDB property into an Exasol cell value.
+     * Converts the DynamoDB property into an Exasol {@link ValueExpression}.
      *
      * @param dynamodbProperty the DynamoDB property to be converted
      * @return the conversion result

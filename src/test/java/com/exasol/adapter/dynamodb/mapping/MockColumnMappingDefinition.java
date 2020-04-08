@@ -5,8 +5,8 @@ import com.exasol.dynamodb.resultwalker.AbstractDynamodbResultWalker;
 import com.exasol.sql.expression.StringLiteral;
 import com.exasol.sql.expression.ValueExpression;
 
-public class MocColumnMappingDefinition extends AbstractColumnMappingDefinition {
-    public MocColumnMappingDefinition(final String destinationName, final AbstractDynamodbResultWalker resultWalker,
+public class MockColumnMappingDefinition extends AbstractColumnMappingDefinition {
+    public MockColumnMappingDefinition(final String destinationName, final AbstractDynamodbResultWalker resultWalker,
             final LookupFailBehaviour lookupFailBehaviour) {
         super(new ConstructorParameters(destinationName, resultWalker, lookupFailBehaviour));
     }
