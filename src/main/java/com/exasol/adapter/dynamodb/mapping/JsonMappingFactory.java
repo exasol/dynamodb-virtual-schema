@@ -90,7 +90,6 @@ public class JsonMappingFactory implements MappingDefinitionFactory {
     }
 
     private void addRootDefinition(final JsonObject definition) throws MappingException {
-        final JsonColumnMappingFactory tableMappingFactory = new JsonColumnMappingFactory();
         final TableMappingDefinition.Builder tableBuilder = TableMappingDefinition
                 .builder(definition.getString(DEST_TABLE_NAME_KEY), true);
         visitRootMapping(definition.getJsonObject(MAPPING_KEY), new IdentityDynamodbResultWalker.Builder(),

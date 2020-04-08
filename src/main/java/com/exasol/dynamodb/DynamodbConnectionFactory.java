@@ -11,6 +11,8 @@ import com.amazonaws.services.dynamodbv2.document.DynamoDB;
  * Helper functions for creating a DynamoDB connection.
  */
 public class DynamodbConnectionFactory {
+    private final static String AWS_PREFIX = "aws:";
+    private final static String AWS_LOCAL_REGION = "eu-central-1";
 
     /**
      * Creates an AmazonDynamoDB (low level api client) for a given uri, user and key.
@@ -21,9 +23,6 @@ public class DynamodbConnectionFactory {
      * @return AmazonDynamoDB (low level api client)
      */
     public AmazonDynamoDB getLowLevelConnection(final String uri, final String user, final String key) {
-
-        final String AWS_PREFIX = "aws:";
-        final String AWS_LOCAL_REGION = "eu-central-1";
         final BasicAWSCredentials awsCredentials = new BasicAWSCredentials(user, key);
         final AmazonDynamoDBClientBuilder clientBuilder = AmazonDynamoDBClientBuilder.standard()
                 .withCredentials(new AWSStaticCredentialsProvider(awsCredentials));

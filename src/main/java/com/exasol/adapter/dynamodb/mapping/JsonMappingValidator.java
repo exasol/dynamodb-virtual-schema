@@ -61,8 +61,7 @@ public class JsonMappingValidator {
                 && exception.getSchemaLocation().equals("#/definitions/mappingDefinition")) {
             final String possibleProperties = possibleObjectProperties(exception.getViolatedSchema());
             if (!possibleProperties.isEmpty()) {
-                return exception.getMessage() + ", use one of the following mapping definitions: "
-                        + possibleProperties;
+                return exception.getMessage() + ", use one of the following mapping definitions: " + possibleProperties;
             }
         }
         if (exception.getMessage().startsWith("#/$schema:")

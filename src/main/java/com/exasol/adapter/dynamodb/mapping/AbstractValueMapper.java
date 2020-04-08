@@ -41,8 +41,7 @@ public abstract class AbstractValueMapper {
             if (this.column
                     .getLookupFailBehaviour() == AbstractColumnMappingDefinition.LookupFailBehaviour.DEFAULT_VALUE) {
                 return this.column.getExasolDefaultValue();
-            }
-            else {
+            } else {
                 throw exception;
             }
         }

@@ -3,7 +3,8 @@ package com.exasol.dynamodb.attributevalue;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 
 /**
- * Wrapper for {@link com.amazonaws.services.dynamodbv2.model.AttributeValue} that accepts {@link AttributeValueVisitor}.
+ * Wrapper for {@link com.amazonaws.services.dynamodbv2.model.AttributeValue} that accepts
+ * {@link AttributeValueVisitor}.
  */
 public class AttributeValueWrapper {
     private final AttributeValue attributeValue;

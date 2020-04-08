@@ -7,7 +7,7 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
-import com.exasol.adapter.dynamodb.mapping.MocColumnMappingDefinition;
+import com.exasol.adapter.dynamodb.mapping.MockColumnMappingDefinition;
 
 /**
  * Tests for {@link QueryResultTableSchema}
@@ -15,7 +15,7 @@ import com.exasol.adapter.dynamodb.mapping.MocColumnMappingDefinition;
 public class QueryResultTableSchemaTest {
     @Test
     void testSetAndGetColumns() {
-        final MocColumnMappingDefinition columnDefinition = new MocColumnMappingDefinition("", null, null);
+        final MockColumnMappingDefinition columnDefinition = new MockColumnMappingDefinition("", null, null);
         final QueryResultTableSchema queryResultTableSchema = new QueryResultTableSchema(List.of(columnDefinition));
         assertThat(queryResultTableSchema.getColumns(), containsInAnyOrder(columnDefinition));
     }

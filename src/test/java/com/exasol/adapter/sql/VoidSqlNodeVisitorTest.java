@@ -17,16 +17,16 @@ public class VoidSqlNodeVisitorTest {
     void testUnimplementedException() {
         final Method[] methods = VoidSqlNodeVisitor.class.getDeclaredMethods();
         for (final Method method : methods) {
-            final Moc moc = new Moc();
+            final Mock mock = new Mock();
             if (!method.getName().equals("visit"))
                 continue;
             final InvocationTargetException exception = assertThrows(InvocationTargetException.class,
-                    () -> method.invoke(moc, new Object[] { null }));
+                    () -> method.invoke(mock, new Object[] { null }));
             assertThat(exception.getCause().getClass(), equalTo(UnsupportedOperationException.class));
         }
     }
 
-    private static class Moc extends VoidSqlNodeVisitor {
+    private static class Mock extends VoidSqlNodeVisitor {
 
         @Override
         public Void visit(final SqlStatementSelect select) {
