@@ -30,7 +30,7 @@ public class BucketfsFileFactory {
             final String absolute;
             absolute = file.getCanonicalPath();
             if (!absolute.startsWith(BUCKETFS_BASIC_PATH)) {
-                throw new BucketfsPathException("Given path is outside of bucketfs", file.getCanonicalPath());
+                throw new BucketfsPathException("Given path (" + file.getCanonicalPath() + ") is outside of bucketfs.", file.getCanonicalPath());
             }
         } catch (final IOException e) {
             throw new BucketfsPathException("Error in file path: " + file.getAbsolutePath(), file.getAbsolutePath());

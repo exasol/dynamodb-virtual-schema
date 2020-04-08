@@ -81,6 +81,6 @@ public class JsonMappingFactoryTest {
                 () -> assertThat(exception.getMessage(),
                         equalTo("Error in schema mapping invalidToStringMappingAtRootLevel.json:")),
                 () -> assertThat(exception.getCause().getMessage(),
-                        equalTo("ToString mapping is not allowed at root level")));
+                        equalTo("ToStringMapping is not allowed at root level. You probably want to replace it with a \"fields\" definition.")));
     }
 }

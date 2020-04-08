@@ -82,7 +82,7 @@ public class DynamodbAdapter implements VirtualSchemaAdapter {
             }
             return file;
         } catch (final BucketfsPathException exception) {
-            throw new AdapterException("Could not open mapping definition", exception);
+            throw new AdapterException("Could not open mapping definition. Cause: " + exception.getMessage(), exception);
         }
     }
 
@@ -129,7 +129,7 @@ public class DynamodbAdapter implements VirtualSchemaAdapter {
             return runPushdown(exaMetadata, request);
         } catch (final ExaConnectionAccessException | DynamodbResultWalkerException exception) {
             throw new AdapterException("Unable to create Virtual Schema \"" + request.getVirtualSchemaName()
-                    + "\". Cause: \"" + exception.getMessage(), exception);// NOSONAR
+                    + "\". Cause: " + exception.getMessage(), exception);// NOSONAR
         }
     }
 
@@ -167,7 +167,7 @@ public class DynamodbAdapter implements VirtualSchemaAdapter {
             return this.runRefresh(refreshRequest);
         } catch (final IOException exception) {
             throw new AdapterException("Unable to update Virtual Schema \"" + refreshRequest.getVirtualSchemaName()
-                    + "\". Cause: \"" + exception.getMessage(), exception);// NOSONAR
+                    + "\". Cause: " + exception.getMessage(), exception);// NOSONAR
         }
     }
 

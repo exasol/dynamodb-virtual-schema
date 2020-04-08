@@ -79,7 +79,7 @@ public class JsonMappingFactory implements MappingDefinitionFactory {
         } else {
             final File[] files = definitionsPath.listFiles((file, fileName) -> fileName.endsWith(jsonFileEnding));
             if (files == null || files.length == 0) {
-                throw new AdapterException("No schema mapping files found in " + definitionsPath + ".");
+                throw new AdapterException("No schema mapping files found in " + definitionsPath + ". Please check that you definition files have a .json ending and are uploaded to the BucketFS path that was specified in the MAPPING property.");
             }
             return files;
         }
@@ -114,7 +114,7 @@ public class JsonMappingFactory implements MappingDefinitionFactory {
         switch (getMappingType(definition)) {
         case TO_STRING_MAPPING_KEY:
             if (isRootLevel) {
-                throw new MappingException("ToString mapping is not allowed at root level");
+                throw new MappingException("ToStringMapping is not allowed at root level. You probably want to replace it with a \"fields\" definition.");
             }
             addStringColumn(definition.getJsonObject(TO_STRING_MAPPING_KEY), walkerToThisPath, tableBuilder,
                     propertyName);
@@ -197,7 +197,7 @@ public class JsonMappingFactory implements MappingDefinitionFactory {
             throws MappingException {
         final String destinationColumnName = definition.getString(DEST_NAME_KEY, defaultValue);
         if (destinationColumnName == null) {
-            throw new MappingException("Please set " + DEST_NAME_KEY + " property");
+            throw new MappingException(DEST_NAME_KEY + " is mandatory in this definition. Pleas set it to the desired name for the Exasol column.");
         }
         return destinationColumnName.toUpperCase();
     }

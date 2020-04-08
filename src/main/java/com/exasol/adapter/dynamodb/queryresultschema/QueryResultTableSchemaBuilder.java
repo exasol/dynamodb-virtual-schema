@@ -68,7 +68,7 @@ public class QueryResultTableSchemaBuilder {
                 }
             } catch (final IOException | ClassNotFoundException exception) {
                 throw new AdapterException(
-                        "Parsing query failed. Cause: could not parse schema. Cause by " + exception.getMessage(),
+                        "Failed parsing query failed. Cause: could not parse schema. Cause by " + exception.getMessage(),
                         exception);
             }
         }
@@ -76,7 +76,7 @@ public class QueryResultTableSchemaBuilder {
         @Override
         public Void visit(final SqlTable sqlTable) {
             if (this.tableName != null) {
-                throw new UnsupportedOperationException("until now only one table can be queried per statement");
+                throw new UnsupportedOperationException("Until now only one table can be queried per statement.");
             }
             this.tableName = sqlTable.getName();
             this.tableMetadata = sqlTable.getMetadata();
