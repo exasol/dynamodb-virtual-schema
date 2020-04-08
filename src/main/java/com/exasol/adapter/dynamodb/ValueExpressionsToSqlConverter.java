@@ -14,7 +14,7 @@ public interface ValueExpressionsToSqlConverter {
      *
      * @param tableStructure used for creating empty row
      * @param rows           List of ordered lists of {@link ValueExpression}
-     * @return SQL Statement
+     * @return SQL Statement for push down response
      */
     public String convert(final QueryResultTableSchema tableStructure, final List<List<ValueExpression>> rows);
 }

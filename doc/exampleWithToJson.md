@@ -23,7 +23,7 @@ Given a DynamoDB table called `MY_BOOKS` containing objects like:
 }
 ```
 
-We want this DynamoDB table to be mapped to an Exasol table in the following way:
+We want to map this DynamoDB table to an Exasol table in the following way:
 
 ```
 CREATE TABLE BOOKS (
@@ -33,7 +33,7 @@ CREATE TABLE BOOKS (
 );
 ```
  
-With `TOPICS` being a `VARCHAR` column containing a JSON strings like `["DynamoDB", "Exasol"]`.
+`TOPICS` shall be a `VARCHAR` column containing a JSON strings like `["DynamoDB", "Exasol"]`.
 
 To achieve this we create the following mapping definition:  
 
@@ -68,4 +68,4 @@ To achieve this we create the following mapping definition:
 }
 ```
 
-The toJsonMapping will map the topics as desired to a JSON string in the column `TOPICS`.
+The toJsonMapping will map the nested document `topics` to a JSON string in a `TOPICS` column.

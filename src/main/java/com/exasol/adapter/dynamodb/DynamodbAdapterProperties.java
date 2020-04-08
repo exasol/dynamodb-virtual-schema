@@ -4,7 +4,7 @@ import com.exasol.adapter.AdapterException;
 import com.exasol.adapter.AdapterProperties;
 
 /**
- * This is an adapter for the {@link AdapterProperties} adding some DynamoDB specific properties.
+ * This class adds DynamoDB specific properties to {@link AdapterProperties}.
  */
 public class DynamodbAdapterProperties {
     private static final String MAPPING_KEY = "MAPPING";
@@ -31,17 +31,17 @@ public class DynamodbAdapterProperties {
     /**
      * Get mapping definition property.
      *
-     * @return String path to mapping definition files on bucketfs
+     * @return String path to mapping definition files in the BucketFS
      */
     public String getMappingDefinition() throws AdapterException {
         if (!this.hasMappingDefinition()) {
             throw new AdapterException(MAPPING_KEY
-                    + " is mandatory. Please set MAPPING to the path to your schema mapping files on BucketFS.");
+                    + " is mandatory. Please set MAPPING to the path to your schema mapping files in the BucketFS.");
         }
         final String property = this.properties.get(MAPPING_KEY);
         if (property.isEmpty()) {
             throw new AdapterException(MAPPING_KEY
-                    + " must not be empty. Please set MAPPING to the path to your schema mapping files on bucketfs here.");
+                    + " must not be empty. Please set MAPPING to the path to your schema mapping files in the BucketFS.");
         }
         return property;
     }

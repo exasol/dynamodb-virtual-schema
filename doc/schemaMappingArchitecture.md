@@ -1,4 +1,4 @@
-# Schema mapping software architecture
+# Schema Mapping Software Architecture
 
 The `JsonMappingFactory` reads the schema mapping from a [schema mapping file](https://exasol.github.io/dynamodb-virtual-schema/schema_doc/index.html) 
 . It builds a mapping representation using the following class structure:

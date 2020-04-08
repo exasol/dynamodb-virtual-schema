@@ -13,7 +13,7 @@ import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 public interface AttributeValueVisitor {
 
     /**
-     * Called when AttributeValue has a string value
+     * Called when AttributeValue has a string value.
      * 
      * @param value string value
      */
@@ -22,7 +22,7 @@ public interface AttributeValueVisitor {
     }
 
     /**
-     * Called when AttributeValue has a number value
+     * Called when AttributeValue has a number value.
      * 
      * @param value string containing number value
      */
@@ -31,7 +31,7 @@ public interface AttributeValueVisitor {
     }
 
     /**
-     * Called when AttributeValue has a binary value
+     * Called when AttributeValue has a binary value.
      * 
      * @param value byte value
      */
@@ -40,7 +40,7 @@ public interface AttributeValueVisitor {
     }
 
     /**
-     * Called when AttributeValue has a boolean value
+     * Called when AttributeValue has a boolean value.
      * 
      * @param value byte value
      */
@@ -49,7 +49,7 @@ public interface AttributeValueVisitor {
     }
 
     /**
-     * Called when AttributeValue has a map value
+     * Called when AttributeValue has a map value.
      * 
      * @param value map value
      */
@@ -58,7 +58,7 @@ public interface AttributeValueVisitor {
     }
 
     /**
-     * Called when AttributeValue has a ByteSet value
+     * Called when AttributeValue has a ByteSet value.
      *
      * @param value ByteSet value
      */
@@ -67,7 +67,7 @@ public interface AttributeValueVisitor {
     }
 
     /**
-     * Called when AttributeValue has a list
+     * Called when AttributeValue has a list value.
      *
      * @param value list value
      */
@@ -76,7 +76,7 @@ public interface AttributeValueVisitor {
     }
 
     /**
-     * Called when AttributeValue has a NumberSet
+     * Called when AttributeValue has a NumberSet value.
      *
      * @param value NumberSet value
      */
@@ -85,7 +85,7 @@ public interface AttributeValueVisitor {
     }
 
     /**
-     * Called when AttributeValue has a StringSet
+     * Called when AttributeValue has a StringSet value.
      *
      * @param value StringSet value
      */
@@ -94,7 +94,7 @@ public interface AttributeValueVisitor {
     }
 
     /**
-     * Called when AttributeValue is NULL
+     * Called when AttributeValue is NULL value.
      */
     public default void visitNull() {
         throw new UnsupportedDynamodbTypeException("Null");

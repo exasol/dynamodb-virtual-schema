@@ -22,7 +22,7 @@ import com.exasol.dynamodb.resultwalker.ObjectDynamodbResultWalker;
 /**
  * This {@link MappingDefinitionFactory} reads a {@link SchemaMappingDefinition} from JSON files.
  * <p>
- * The JSON files must follow the schema defined at {@code resources/mappingLanguageSchema.json}. Documentation of
+ * The JSON files must follow the schema defined in {@code resources/mappingLanguageSchema.json}. Documentation of
  * schema mapping definitions can be found at {@code /doc/gettingStartedWithSchemaMappingLanguage.md}.
  * </p>
  */
@@ -46,7 +46,7 @@ public class JsonMappingFactory implements MappingDefinitionFactory {
      * Creates an instance of {@link JsonMappingFactory}.
      * 
      * @param definitionsPath path to the definition. Can either be a {@code .json} file or an directory. If it points
-     *                        to an directory, all {@code .json} files are loaded.
+     *                        to a directory, all {@code .json} files are loaded.
      * @throws IOException            if could not open file
      * @throws SchemaMappingException if schema mapping invalid
      */
@@ -73,17 +73,21 @@ public class JsonMappingFactory implements MappingDefinitionFactory {
      * @return array of definition files
      */
     private static File[] splitIfDirectory(final File definitionsPath) throws AdapterException {
-        final String jsonFileEnding = ".json";
         if (definitionsPath.isFile()) {
             return new File[] { definitionsPath };
         } else {
-            final File[] files = definitionsPath.listFiles((file, fileName) -> fileName.endsWith(jsonFileEnding));
-            if (files == null || files.length == 0) {
-                throw new AdapterException("No schema mapping files found in " + definitionsPath
-                        + ". Please check that you definition files have a .json ending and are uploaded to the BucketFS path that was specified in the MAPPING property.");
-            }
-            return files;
+            return splitDirectory(definitionsPath);
         }
+    }
+
+    private static File[] splitDirectory(final File definitionsPath) throws AdapterException {
+        final String jsonFileEnding = ".json";
+        final File[] files = definitionsPath.listFiles((file, fileName) -> fileName.endsWith(jsonFileEnding));
+        if (files == null || files.length == 0) {
+            throw new AdapterException("No schema mapping files found in " + definitionsPath
+                    + ". Please check that you definition files have a .json ending and are uploaded to the BucketFS path that was specified in the MAPPING property.");
+        }
+        return files;
     }
 
     private void parseFile(final File definitionPath) throws IOException, MappingException {
@@ -114,12 +118,8 @@ public class JsonMappingFactory implements MappingDefinitionFactory {
 
         switch (getMappingType(definition)) {
         case TO_STRING_MAPPING_KEY:
-            if (isRootLevel) {
-                throw new MappingException(
-                        "ToStringMapping is not allowed at root level. You probably want to replace it with a \"fields\" definition.");
-            }
-            addStringColumn(definition.getJsonObject(TO_STRING_MAPPING_KEY), walkerToThisPath, tableBuilder,
-                    propertyName);
+            addStringColumnIfPossible(definition.getJsonObject(TO_STRING_MAPPING_KEY), walkerToThisPath, tableBuilder,
+                    propertyName, isRootLevel);
             break;
         case TO_JSON_MAPPING_KEY:
             addToJsonColumn(definition.getJsonObject(TO_JSON_MAPPING_KEY), walkerToThisPath, tableBuilder,
@@ -142,7 +142,7 @@ public class JsonMappingFactory implements MappingDefinitionFactory {
         } else if (keys.size() == 1) {
             return keys.iterator().next();
         } else {
-            throw new MappingException("It's not allowed to define more than one mapping for one property.");
+            throw new MappingException("Please, define only one mapping for one property.");
         }
     }
 
@@ -154,7 +154,15 @@ public class JsonMappingFactory implements MappingDefinitionFactory {
             this.visitMapping(definition.getJsonObject(dynamodbPropertyName), walker, tableBuilder,
                     dynamodbPropertyName, false);
         }
+    }
 
+    private void addStringColumnIfPossible(final JsonObject definition, final AbstractDynamodbResultWalkerBuilder resultWalker,
+                                           final TableMappingDefinition.Builder tableBuilder, final String dynamodbPropertyName, final boolean isRootLevel) throws MappingException {
+        if (isRootLevel) {
+            throw new MappingException(
+                    "ToStringMapping is not allowed at root level. You probably want to replace it with a \"fields\" definition.");
+        }
+        addStringColumn(definition, resultWalker, tableBuilder, dynamodbPropertyName);
     }
 
     private void addStringColumn(final JsonObject definition, final AbstractDynamodbResultWalkerBuilder resultWalker,
@@ -172,10 +180,10 @@ public class JsonMappingFactory implements MappingDefinitionFactory {
     private AbstractColumnMappingDefinition.ConstructorParameters readColumnProperties(final JsonObject definition,
             final AbstractDynamodbResultWalkerBuilder resultWalker, final String dynamodbPropertyName)
             throws MappingException {
-        final String destinationColumnName = readDestinationColumnName(definition, dynamodbPropertyName);
+        final String exasolColumnName = readExasolColumnName(definition, dynamodbPropertyName);
         final AbstractColumnMappingDefinition.LookupFailBehaviour lookupFailBehaviour = readLookupFailBehaviour(
                 definition);
-        return new AbstractColumnMappingDefinition.ConstructorParameters(destinationColumnName, resultWalker.build(),
+        return new AbstractColumnMappingDefinition.ConstructorParameters(exasolColumnName, resultWalker.build(),
                 lookupFailBehaviour);
     }
 
@@ -195,22 +203,22 @@ public class JsonMappingFactory implements MappingDefinitionFactory {
         }
     }
 
-    private String readDestinationColumnName(final JsonObject definition, final String defaultValue)
+    private String readExasolColumnName(final JsonObject definition, final String defaultValue)
             throws MappingException {
-        final String destinationColumnName = definition.getString(DEST_NAME_KEY, defaultValue);
-        if (destinationColumnName == null) {
+        final String exasolColumnName = definition.getString(DEST_NAME_KEY, defaultValue);
+        if (exasolColumnName == null) {
             throw new MappingException(DEST_NAME_KEY
-                    + " is mandatory in this definition. Pleas set it to the desired name for the Exasol column.");
+                    + " is mandatory in this definition. Please set it to the desired name for the Exasol column.");
         }
-        return destinationColumnName.toUpperCase();
+        return exasolColumnName.toUpperCase();
     }
 
     private void addToJsonColumn(final JsonObject definition, final AbstractDynamodbResultWalkerBuilder resultWalker,
             final TableMappingDefinition.Builder tableBuilder, final String dynamodbPropertyName)
             throws MappingException {
-        final String destinationColumnName = readDestinationColumnName(definition, dynamodbPropertyName);
+        final String exasolColumnName = readExasolColumnName(definition, dynamodbPropertyName);
         final AbstractColumnMappingDefinition.ConstructorParameters columnParameters = new AbstractColumnMappingDefinition.ConstructorParameters(
-                destinationColumnName, resultWalker.build(),
+                exasolColumnName, resultWalker.build(),
                 AbstractColumnMappingDefinition.LookupFailBehaviour.DEFAULT_VALUE);
         tableBuilder.withColumnMappingDefinition(new ToJsonColumnMappingDefinition(columnParameters));
     }

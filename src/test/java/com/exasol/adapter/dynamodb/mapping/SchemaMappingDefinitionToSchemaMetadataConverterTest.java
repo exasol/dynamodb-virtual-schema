@@ -49,6 +49,6 @@ public class SchemaMappingDefinitionToSchemaMetadataConverterTest {
         final ColumnMetadata firstColumnMetadata = schemaMetadata.getTables().get(0).getColumns().get(0);
         final AbstractColumnMappingDefinition columnMappingDefinition = new SchemaMappingDefinitionToSchemaMetadataConverter()
                 .convertBackColumn(firstColumnMetadata);
-        assertThat(columnMappingDefinition.getExasolName(), equalTo("json"));
+        assertThat(columnMappingDefinition.getExasolColumnName(), equalTo("json"));
     }
 }

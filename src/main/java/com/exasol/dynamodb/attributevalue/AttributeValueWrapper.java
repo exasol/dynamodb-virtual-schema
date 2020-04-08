@@ -3,22 +3,22 @@ package com.exasol.dynamodb.attributevalue;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 
 /**
- * Wrapper for {@link com.amazonaws.services.dynamodbv2.model.AttributeValue} that accepts {@link AttributeValueVisitor}
+ * Wrapper for {@link com.amazonaws.services.dynamodbv2.model.AttributeValue} that accepts {@link AttributeValueVisitor}.
  */
 public class AttributeValueWrapper {
     private final AttributeValue attributeValue;
 
     /**
-     * Constructor
+     * Creates an instance of {@link AttributeValueWrapper}.
      *
-     * @param attributeValue DynamoDB value
+     * @param attributeValue DynamoDB value to wrap
      */
     public AttributeValueWrapper(final AttributeValue attributeValue) {
         this.attributeValue = attributeValue;
     }
 
     /**
-     * Accepts the visitor
+     * Accepts the {@link AttributeValueVisitor}.
      * 
      * @param visitor {@link AttributeValueVisitor}
      */

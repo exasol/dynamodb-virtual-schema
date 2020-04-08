@@ -13,9 +13,9 @@ import com.amazonaws.services.dynamodbv2.document.DynamoDB;
 public class DynamodbConnectionFactory {
 
     /**
-     * Creates a AmazonDynamoDB (low level api client) for a given uri, user and key.
+     * Creates an AmazonDynamoDB (low level api client) for a given uri, user and key.
      *
-     * @param uri  either aws:<REGION> or address of local DynamoDB server (e.g. http://localhost:8000)
+     * @param uri  either aws:<REGION> or the address of a local DynamoDB server (e.g. http://localhost:8000)
      * @param user aws credential id
      * @param key  aws credential key
      * @return AmazonDynamoDB (low level api client)

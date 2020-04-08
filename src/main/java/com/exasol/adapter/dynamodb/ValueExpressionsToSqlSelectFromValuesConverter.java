@@ -15,7 +15,7 @@ import com.exasol.sql.expression.ValueExpression;
 import com.exasol.sql.rendering.StringRendererConfig;
 
 /**
- * Converts a list of Exasol {@link ValueExpression}s into an {@code SELECT FROM VALUES} statement.
+ * Converts a list of Exasol {@link ValueExpression}s into a {@code SELECT FROM VALUES} statement.
  */
 public class ValueExpressionsToSqlSelectFromValuesConverter implements ValueExpressionsToSqlConverter {
 

@@ -59,7 +59,7 @@ public class AbstractValueMapperTest {
                 new IdentityDynamodbResultWalker(), AbstractColumnMappingDefinition.LookupFailBehaviour.EXCEPTION);
         final ValueMapperException exception = assertThrows(ValueMapperException.class,
                 () -> new ExceptionMocValueMapper(mappingDefinition).mapRow(Map.of()));
-        assertThat(exception.getCausingColumn().getExasolName(), equalTo(columnName));
+        assertThat(exception.getCausingColumn().getExasolColumnName(), equalTo(columnName));
     }
 
     private static class MocValueMapper extends AbstractValueMapper {

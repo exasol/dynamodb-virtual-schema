@@ -25,7 +25,7 @@ Given a DynamoDB table called `MY_BOOKS` that contains the following objects:
 
 The primary key for the DynamoDB table is `isbn`.
 
-We want this DynamoDB table to be mapped to the following relational structure: 
+We want to map this DynamoDB table to the following relational structure: 
 
 ![Class diagram](diagrams/mappingToTable.png)
 

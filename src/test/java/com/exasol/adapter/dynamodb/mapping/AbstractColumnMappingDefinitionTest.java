@@ -11,7 +11,7 @@ public class AbstractColumnMappingDefinitionTest {
         final String destinationName = "destinationName";
         final MocColumnMappingDefinition columnMappingDefinition = new MocColumnMappingDefinition(destinationName, null,
                 null);
-        assertThat(columnMappingDefinition.getExasolName(), equalTo(destinationName));
+        assertThat(columnMappingDefinition.getExasolColumnName(), equalTo(destinationName));
     }
 
     @Test
