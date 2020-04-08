@@ -1,4 +1,4 @@
-# Example For `toTableMapping`
+# Example of `toTableMapping`
 
 Given a DynamoDB table called `MY_BOOKS` that contains the following objects:
 
