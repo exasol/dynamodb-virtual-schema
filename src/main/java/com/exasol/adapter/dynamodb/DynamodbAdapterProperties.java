@@ -35,8 +35,8 @@ public class DynamodbAdapterProperties {
      */
     public String getMappingDefinition() throws AdapterException {
         if (!this.hasMappingDefinition()) {
-            throw new AdapterException(
-                    MAPPING_KEY + " is mandatory. Please set MAPPING to the path to your schema mapping files on BucketFS.");
+            throw new AdapterException(MAPPING_KEY
+                    + " is mandatory. Please set MAPPING to the path to your schema mapping files on BucketFS.");
         }
         final String property = this.properties.get(MAPPING_KEY);
         if (property.isEmpty()) {

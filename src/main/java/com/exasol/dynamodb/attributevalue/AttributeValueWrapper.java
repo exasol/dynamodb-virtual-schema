@@ -44,7 +44,7 @@ public class AttributeValueWrapper {
         } else if (this.attributeValue.getSS() != null) {
             visitor.visitStringSet(this.attributeValue.getSS());
         } else {
-            throw new UnsupportedOperationException("unsupported DynamoDB type");
+            throw new UnsupportedOperationException("Unsupported DynamoDB type");
         }
     }
 }

@@ -12,13 +12,13 @@ import com.exasol.dynamodb.resultwalker.AbstractDynamodbResultWalker;
  * from a nested list or object. See {@link #isRootTable()} for details.
  */
 public class TableMappingDefinition {
-    private final String destinationName;
+    private final String exasolName;
     private final List<AbstractColumnMappingDefinition> columns;
     private final AbstractDynamodbResultWalker pathToNestedTable;
 
-    private TableMappingDefinition(final String destinationName, final List<AbstractColumnMappingDefinition> columns,
+    private TableMappingDefinition(final String exasolName, final List<AbstractColumnMappingDefinition> columns,
             final AbstractDynamodbResultWalker pathToNestedTable) {
-        this.destinationName = destinationName;
+        this.exasolName = exasolName;
         this.columns = columns;
         this.pathToNestedTable = pathToNestedTable;
     }
@@ -50,8 +50,8 @@ public class TableMappingDefinition {
      * 
      * @return name of the Exasol table
      */
-    public String getDestinationName() {
-        return this.destinationName;
+    public String getExasolName() {
+        return this.exasolName;
     }
 
     /**
@@ -77,12 +77,12 @@ public class TableMappingDefinition {
      * Builder for {@link TableMappingDefinition}
      */
     public static class Builder {
-        private final String destName;
+        private final String exasolName;
         private final List<AbstractColumnMappingDefinition> columns = new ArrayList<>();
         private final AbstractDynamodbResultWalker pathToNestedTable;
 
-        private Builder(final String destName, final AbstractDynamodbResultWalker pathToNestedTable) {
-            this.destName = destName;
+        private Builder(final String exasolName, final AbstractDynamodbResultWalker pathToNestedTable) {
+            this.exasolName = exasolName;
             this.pathToNestedTable = pathToNestedTable;
         }
 
@@ -103,7 +103,7 @@ public class TableMappingDefinition {
          * @return {@link TableMappingDefinition}
          */
         public TableMappingDefinition build() {
-            return new TableMappingDefinition(this.destName, Collections.unmodifiableList(this.columns),
+            return new TableMappingDefinition(this.exasolName, Collections.unmodifiableList(this.columns),
                     this.pathToNestedTable);
         }
     }

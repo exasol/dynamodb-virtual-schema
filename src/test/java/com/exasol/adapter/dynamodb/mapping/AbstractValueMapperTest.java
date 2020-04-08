@@ -84,7 +84,7 @@ public class AbstractValueMapperTest {
 
         @Override
         protected ValueExpression mapValue(final AttributeValue dynamodbProperty) throws ValueMapperException {
-            throw new ValueMapperException("message", this.column);
+            throw new ValueMapperException("mocMessage", this.column);
         }
     }
 }

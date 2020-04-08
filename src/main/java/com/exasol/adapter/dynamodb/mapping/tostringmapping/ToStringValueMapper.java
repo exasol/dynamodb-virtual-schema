@@ -49,7 +49,7 @@ public class ToStringValueMapper extends AbstractValueMapper {
             if (this.column.getOverflowBehaviour() == ToStringColumnMappingDefinition.OverflowBehaviour.TRUNCATE) {
                 return sourceString.substring(0, this.column.getExasolStringSize());
             } else {
-                throw new OverflowException("String overflow", this.column);
+                throw new OverflowException("String overflow.", this.column);
             }
         }
         return sourceString;
