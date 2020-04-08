@@ -27,8 +27,7 @@ public class BucketfsFileFactory {
 
     private void preventInjection(final File file) throws BucketfsPathException {
         try {
-            final String absolute;
-            absolute = file.getCanonicalPath();
+            final String absolute = file.getCanonicalPath();
             if (!absolute.startsWith(BUCKETFS_BASIC_PATH)) {
                 throw new BucketfsPathException("Given path (" + file.getCanonicalPath() + ") is outside of bucketfs.",
                         file.getCanonicalPath());

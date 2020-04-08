@@ -20,7 +20,7 @@ import com.exasol.bucketfs.BucketAccessException;
 import com.exasol.containers.ExasolContainer;
 
 /**
- * Tests using the AWS DynamoDB. Setup credentials on your machine using: {@code aws configure} For now two factor
+ * Tests using the AWS DynamoDB. Setup credentials on your machine using: {@code aws configure}. For now two factor
  * authentication is NOT SUPPORTED!
  * 
  * Preparation: create a table {@code JB_Books} with primary key {@code isbn} and insert one item.

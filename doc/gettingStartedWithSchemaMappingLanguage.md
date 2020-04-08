@@ -5,7 +5,7 @@ of the DynamoDB document structure to a relational structure.
 This is done using the mapping language 
 ([reference](https://exasol.github.io/dynamodb-virtual-schema/schema_doc/index.html)).
 You have to defined the mapping in a JSON document, upload it to a bucket in BucketFS and reference 
-in the `REATE VIRTUAL SCHEMA` call.  
+in the `CREATE VIRTUAL SCHEMA` call.  
 For mapping multiple DynamoDB tables, you can create multiple files, 
 upload them to a folder and BucketFS and reference this folder. 
 
