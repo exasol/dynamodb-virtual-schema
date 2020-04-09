@@ -34,4 +34,14 @@ public class DocumentPathToStringConverterTest {
         assertThat(result, equalTo("/key1[0]"));
     }
 
+    @Test
+    void testStringifyArrayAll() {
+        final DocumentPathExpression pathExpression = new DocumentPathExpression.Builder()//
+                .addObjectLookup("key1")//
+                .addArrayAll()//
+                .build();
+        final String result = new DocumentPathToStringConverter().convertToString(pathExpression);
+        assertThat(result, equalTo("/key1[*]"));
+    }
+
 }

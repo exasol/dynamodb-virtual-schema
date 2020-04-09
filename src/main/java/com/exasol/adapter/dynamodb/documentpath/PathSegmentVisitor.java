@@ -18,4 +18,11 @@ public interface PathSegmentVisitor {
      * @param arrayLookupPathSegment to visit
      */
     public void visit(ArrayLookupPathSegment arrayLookupPathSegment);
+
+    /**
+     * Visits a {@link ArrayAllPathSegment}.
+     *
+     * @param arrayAllPathSegment to visit
+     */
+    public void visit(ArrayAllPathSegment arrayAllPathSegment);
 }

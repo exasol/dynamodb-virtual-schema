@@ -7,7 +7,7 @@ public class DocumentPathWalkerException extends Exception {
     private final String currentPath;
 
     DocumentPathWalkerException(final String message, final String currentPath) {
-        super(message + " (current path= " + currentPath + ")");
+        super(message + (currentPath != null ? " (current path= " + currentPath + ")" : ""));
         this.currentPath = currentPath;
     }
 

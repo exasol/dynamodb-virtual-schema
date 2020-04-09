@@ -1,11 +1,13 @@
 package com.exasol.adapter.dynamodb.documentpath;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 
 import com.exasol.adapter.dynamodb.documentnode.DocumentArray;
 import com.exasol.adapter.dynamodb.documentnode.DocumentNode;
 import com.exasol.adapter.dynamodb.documentnode.DocumentObject;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 
 /**
  * This class walks a given path defined in {@link DocumentPathExpression} through a {@link DocumentNode} structure.
@@ -26,24 +28,28 @@ public class DocumentPathWalker {
      * Walks the path defined in constructor through the given document.
      * 
      * @param rootNode document to walk through
-     * @return documents attribute described in {@link DocumentPathExpression}
+     * @return documents attributes described in {@link DocumentPathExpression}.
      * @throws DocumentPathWalkerException if defined path does not exist in the given document
      */
-    public DocumentNode walk(final DocumentNode rootNode) throws DocumentPathWalkerException {
+    public List<DocumentNode> walk(final DocumentNode rootNode) throws DocumentPathWalkerException {
         return this.walk(rootNode, 0);
     }
 
-    private DocumentNode walk(final DocumentNode thisNode, final int position) throws DocumentPathWalkerException {
+    private List<DocumentNode> walk(final DocumentNode thisNode, final int position) throws DocumentPathWalkerException {
         if (this.pathExpression.size() <= position) {
-            return thisNode;
+            return List.of(thisNode);
         }
         final DocumentPathExpression currentPath = this.pathExpression.getSubPath(0, position);
         final String currentPathString = new DocumentPathToStringConverter().convertToString(currentPath);
-        final Function<DocumentNode, DocumentNode> converter = getConverterFor(
+        final Function<DocumentNode, List<DocumentNode>> converter = getConverterFor(
                 this.pathExpression.getPath().get(position));
         try {
-            final DocumentNode nextNode = converter.apply(thisNode);
-            return walk(nextNode, position + 1);
+            final List<DocumentNode> nextNodes = converter.apply(thisNode);
+            final ArrayList<DocumentNode> results = new ArrayList<>();
+            for (final DocumentNode nextNode : nextNodes) {
+                results.addAll(walk(nextNode, position + 1));
+            }
+            return results;
         } catch (final NotAnObjectException exception) {
             throw new DocumentPathWalkerException(
                     "Can't perform key lookup on non object. (requested key= " + exception.lookupKey + ")",
@@ -59,14 +65,14 @@ public class DocumentPathWalker {
         }
     }
 
-    private Function<DocumentNode, DocumentNode> getConverterFor(final PathSegment pathSegment) {
+    private Function<DocumentNode, List<DocumentNode>> getConverterFor(final PathSegment pathSegment) {
         final WalkVisitor visitor = new WalkVisitor();
         pathSegment.accept(visitor);
         return visitor.converter;
     }
 
     private static class WalkVisitor implements PathSegmentVisitor {
-        Function<DocumentNode, DocumentNode> converter;
+        Function<DocumentNode, List<DocumentNode>> converter;
 
         @Override
         public void visit(final ObjectLookupPathSegment objectLookupPathSegment) {
@@ -79,18 +85,30 @@ public class DocumentPathWalker {
                 if (!thisObject.hasKey(key)) {
                     throw new UnknownLookupKeyException(key);
                 }
-                return thisObject.get(key);
+                return List.of(thisObject.get(key));
             };
         }
 
         @Override
         public void visit(final ArrayLookupPathSegment arrayLookupPathSegment) {
             this.converter = thisNode -> {
-                if (!(thisNode instanceof DocumentArray)) {
-                    throw new NotAnArrayException();
-                }
-                final DocumentArray thisArray = (DocumentArray) thisNode;
-                return thisArray.getValue(arrayLookupPathSegment.getLookupIndex());
+                final DocumentArray thisArray = castNodeToArray(thisNode);
+                return List.of(thisArray.getValue(arrayLookupPathSegment.getLookupIndex()));
+            };
+        }
+
+        private DocumentArray castNodeToArray(final DocumentNode thisNode){
+            if (!(thisNode instanceof DocumentArray)) {
+                throw new NotAnArrayException();
+            }
+            return (DocumentArray) thisNode;
+        }
+
+        @Override
+        public void visit(final ArrayAllPathSegment arrayAllPathSegment) {
+            this.converter = thisNode -> {
+                final DocumentArray thisArray = castNodeToArray(thisNode);
+                return thisArray.getValueList();
             };
         }
     }

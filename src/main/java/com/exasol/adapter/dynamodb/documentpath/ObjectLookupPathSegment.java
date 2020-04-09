@@ -7,7 +7,7 @@ public class ObjectLookupPathSegment implements PathSegment {
     private final String lookupKey;
 
     /**
-     * Creates an instance of {@link ObjectLookupPathSegment}
+     * Creates an instance of {@link ObjectLookupPathSegment}.
      * 
      * @param lookupKey key to look up
      */

@@ -76,7 +76,16 @@ public class DocumentPathExpression {
         }
 
         /**
-         * Finishes build process of {@link DocumentPathExpression}.
+         * Appends an {@link ArrayAllPathSegment} to the current path.
+         *
+         * @return this for as fluent programming interface
+         */
+        public Builder addArrayAll() {
+            return this.add(new ArrayAllPathSegment());
+        }
+
+        /**
+         * Finishes the build process of {@link DocumentPathExpression}.
          * 
          * @return build {@link DocumentPathExpression}
          */
