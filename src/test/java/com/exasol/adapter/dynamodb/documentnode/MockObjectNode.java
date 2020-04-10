@@ -1,14 +1,14 @@
-package com.exasol.adapter.dynamodb.documentpath;
+package com.exasol.adapter.dynamodb.documentnode;
 
 import com.exasol.adapter.dynamodb.documentnode.DocumentNode;
 import com.exasol.adapter.dynamodb.documentnode.DocumentObject;
 
 import java.util.Map;
 
-class MockObjectNode implements DocumentObject {
+public class MockObjectNode implements DocumentObject {
     private final Map<String, DocumentNode> value;
 
-    MockObjectNode(final Map<String, DocumentNode> value) {
+    public MockObjectNode(final Map<String, DocumentNode> value) {
         this.value = value;
     }
 

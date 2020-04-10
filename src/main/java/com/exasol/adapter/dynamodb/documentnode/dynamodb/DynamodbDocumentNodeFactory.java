@@ -36,5 +36,4 @@ public class DynamodbDocumentNodeFactory {
             this.converter = DynamodbValue::new;
         }
     }
-
 }

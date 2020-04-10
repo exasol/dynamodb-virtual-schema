@@ -1,9 +1,10 @@
 package com.exasol.adapter.dynamodb.documentpath;
 
 import com.exasol.adapter.dynamodb.documentnode.DocumentNode;
+import com.exasol.adapter.dynamodb.documentnode.MockObjectNode;
+import com.exasol.adapter.dynamodb.documentnode.MockValueNode;
 import org.junit.jupiter.api.Test;
 
-import java.util.List;
 import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;

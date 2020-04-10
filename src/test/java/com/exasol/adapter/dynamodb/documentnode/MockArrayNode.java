@@ -1,14 +1,11 @@
-package com.exasol.adapter.dynamodb.documentpath;
-
-import com.exasol.adapter.dynamodb.documentnode.DocumentArray;
-import com.exasol.adapter.dynamodb.documentnode.DocumentNode;
+package com.exasol.adapter.dynamodb.documentnode;
 
 import java.util.List;
 
-class MockArrayNode implements DocumentArray {
+public class MockArrayNode implements DocumentArray {
     private final List<DocumentNode> value;
 
-    MockArrayNode(final List<DocumentNode> value) {
+    public MockArrayNode(final List<DocumentNode> value) {
         this.value = value;
     }
 

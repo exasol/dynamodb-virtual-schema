@@ -8,6 +8,9 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import java.util.List;
 import java.util.Map;
 
+import com.exasol.adapter.dynamodb.documentnode.MockArrayNode;
+import com.exasol.adapter.dynamodb.documentnode.MockObjectNode;
+import com.exasol.adapter.dynamodb.documentnode.MockValueNode;
 import org.junit.jupiter.api.Test;
 
 import com.exasol.adapter.dynamodb.documentnode.DocumentNode;
