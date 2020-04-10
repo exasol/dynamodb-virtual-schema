@@ -48,8 +48,8 @@ public class JsonMappingFactory implements MappingDefinitionFactory {
     private JsonMappingFactory(final File[] definitionsPaths) throws IOException, SchemaMappingException {
         final JsonMappingValidator jsonMappingValidator = new JsonMappingValidator();
         for (final File definitionPath : definitionsPaths) {
+            jsonMappingValidator.validate(definitionPath);
             try {
-                jsonMappingValidator.validate(definitionPath);
                 parseFile(definitionPath);
             } catch (final MappingException exception) {
                 throw new SchemaMappingException(definitionPath.getName(), exception);
