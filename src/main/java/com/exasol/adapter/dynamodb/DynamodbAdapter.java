@@ -28,7 +28,6 @@ import com.exasol.adapter.metadata.SchemaMetadata;
 import com.exasol.adapter.request.*;
 import com.exasol.adapter.response.*;
 import com.exasol.bucketfs.BucketfsFileFactory;
-import com.exasol.bucketfs.BucketfsPathException;
 import com.exasol.dynamodb.DynamodbConnectionFactory;
 import com.exasol.dynamodb.resultwalker.DynamodbResultWalkerException;
 import com.exasol.sql.expression.ValueExpression;
@@ -72,19 +71,14 @@ public class DynamodbAdapter implements VirtualSchemaAdapter {
 
     private File getSchemaMappingFile(final DynamodbAdapterProperties dynamodbAdapterProperties)
             throws AdapterException {
-        try {
-            final String path = dynamodbAdapterProperties.getMappingDefinition();
-            final File file = new BucketfsFileFactory().openFile(path);
-            if (!file.exists()) {
-                throw new AdapterException("The specified mapping file (" + file
-                        + ") could not be found. Make sure you uploaded your mapping definition to BucketFS and specified "
-                        + "the correct bucketfs, bucket and path within the bucket.");
-            }
-            return file;
-        } catch (final BucketfsPathException exception) {
-            throw new AdapterException("Could not open mapping definition. Cause: " + exception.getMessage(),
-                    exception);
+        final String path = dynamodbAdapterProperties.getMappingDefinition();
+        final File file = new BucketfsFileFactory().openFile(path);
+        if (!file.exists()) {
+            throw new AdapterException("The specified mapping file (" + file
+                    + ") could not be found. Make sure you uploaded your mapping definition to BucketFS and specified "
+                    + "the correct bucketfs, bucket and path within the bucket.");
         }
+        return file;
     }
 
     /**
@@ -165,7 +159,7 @@ public class DynamodbAdapter implements VirtualSchemaAdapter {
     public RefreshResponse refresh(final ExaMetadata exaMetadata, final RefreshRequest refreshRequest)
             throws AdapterException {
         try {
-            return this.runRefresh(refreshRequest);
+            return runRefresh(refreshRequest);
         } catch (final IOException exception) {
             throw new AdapterException("Unable to update Virtual Schema \"" + refreshRequest.getVirtualSchemaName()
                     + "\". Cause: " + exception.getMessage(), exception);

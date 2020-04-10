@@ -17,24 +17,22 @@ import com.exasol.adapter.AdapterException;
 import com.exasol.adapter.dynamodb.mapping.tostringmapping.ToStringColumnMappingDefinition;
 
 /**
- * Tests for {@link JsonMappingFactory}
+ * Tests for {@link JsonMappingFactory}.
  */
 public class JsonMappingFactoryTest {
 
-    private SchemaMappingDefinition getMappingDefinitionForFileName(final String name)
+    private SchemaMappingDefinition getMappingDefinitionForFile(final File mappingFile)
             throws IOException, AdapterException {
-        final ClassLoader classLoader = JsonMappingFactory.class.getClassLoader();
-        final MappingDefinitionFactory mappingFactory = new JsonMappingFactory(
-                new File(classLoader.getResource(name).getFile()));
+        final MappingDefinitionFactory mappingFactory = new JsonMappingFactory(mappingFile);
         return mappingFactory.getSchemaMapping();
     }
 
     /**
-     * Tests schema load from basicMapping.json
+     * Tests schema load from basicMapping.json.
      */
     @Test
     void testBasicMapping() throws IOException, AdapterException {
-        final SchemaMappingDefinition schemaMapping = getMappingDefinitionForFileName("basicMapping.json");
+        final SchemaMappingDefinition schemaMapping = getMappingDefinitionForFile(MappingTestFiles.BASIC_MAPPING_FILE);
         final List<TableMappingDefinition> tables = schemaMapping.getTableMappings();
         final TableMappingDefinition table = tables.get(0);
         final List<AbstractColumnMappingDefinition> columns = table.getColumns();
@@ -61,7 +59,8 @@ public class JsonMappingFactoryTest {
 
     @Test
     void testToJsonMapping() throws IOException, AdapterException {
-        final SchemaMappingDefinition schemaMapping = getMappingDefinitionForFileName("toJsonMapping.json");
+        final SchemaMappingDefinition schemaMapping = getMappingDefinitionForFile(
+                MappingTestFiles.TO_JSON_MAPPING_FILE);
         final List<TableMappingDefinition> tables = schemaMapping.getTableMappings();
         final TableMappingDefinition table = tables.get(0);
         final List<AbstractColumnMappingDefinition> columns = table.getColumns();
@@ -74,10 +73,12 @@ public class JsonMappingFactoryTest {
 
     @Test
     void testException() {
-        final String fileName = "invalidToStringMappingAtRootLevel.json";
         final JsonMappingFactory.SchemaMappingException exception = assertThrows(
-                JsonMappingFactory.SchemaMappingException.class, () -> getMappingDefinitionForFileName(fileName));
-        assertAll(() -> assertThat(exception.getCausingMappingDefinitionFileName(), equalTo(fileName)),
+                JsonMappingFactory.SchemaMappingException.class,
+                () -> getMappingDefinitionForFile(MappingTestFiles.INVALID_TO_STRING_MAPPING_AT_ROOT_LEVEL_FILE));
+        assertAll(
+                () -> assertThat(exception.getCausingMappingDefinitionFileName(),
+                        equalTo(MappingTestFiles.INVALID_TO_STRING_MAPPING_AT_ROOT_LEVEL_FILE_NAME)),
                 () -> assertThat(exception.getMessage(),
                         equalTo("Error in schema mapping invalidToStringMappingAtRootLevel.json:")),
                 () -> assertThat(exception.getCause().getMessage(), equalTo(

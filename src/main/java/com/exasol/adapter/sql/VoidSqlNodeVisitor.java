@@ -8,7 +8,7 @@ import com.exasol.adapter.dynamodb.queryresultschema.QueryResultTableSchemaBuild
  * used for keeping {@link QueryResultTableSchemaBuilder} short and readable.
  */
 public abstract class VoidSqlNodeVisitor implements SqlNodeVisitor<Void> {
-    private static final String UNSUPPORTED_MESSAGE = "not yet supported";
+    private static final String UNSUPPORTED_MESSAGE = "A handling for this SQL statement part was not implemented yet.";
 
     @Override
     public Void visit(final SqlSelectList selectList) throws AdapterException {

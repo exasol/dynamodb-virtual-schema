@@ -13,13 +13,10 @@ import com.exasol.dynamodb.attributevalue.AttributeValueVisitor;
 import com.exasol.dynamodb.attributevalue.AttributeValueWrapper;
 
 /**
- * Converts a DynamoDB {@link com.amazonaws.services.dynamodbv2.model.AttributeValue} to JSON
+ * This class represents a converter from a DynamoDB {@link com.amazonaws.services.dynamodbv2.model.AttributeValue} to
+ * the JSON format.
  */
 public class AttributeValueToJsonConverter {
-
-    private AttributeValueToJsonConverter() {
-
-    }
 
     /**
      * Converts a DynamoDB {@link AttributeValue} to json
@@ -27,13 +24,16 @@ public class AttributeValueToJsonConverter {
      * @param attributeValue DynamoDB value
      * @return JSON value
      */
-    public static JsonValue convert(final AttributeValue attributeValue) {
+    public JsonValue convert(final AttributeValue attributeValue) {
         final AttributeValueWrapper wrapper = new AttributeValueWrapper(attributeValue);
         final ToJsonVisitor toJsonVisitor = new ToJsonVisitor();
         wrapper.accept(toJsonVisitor);
         return toJsonVisitor.getJsonValue();
     }
 
+    /**
+     * This visitor for {@link AttributeValue} converts its value into the JSON format.
+     */
     private static class ToJsonVisitor implements AttributeValueVisitor {
         JsonValue jsonValue;
 
@@ -43,10 +43,16 @@ public class AttributeValueToJsonConverter {
         }
 
         @Override
+        public void defaultVisit(final String typeName) {
+            throw new UnsupportedOperationException("The DynamoDB type " + typeName
+                    + " cant't be converted to JSON string. Try using a different mapping.");
+        }
+
+        @Override
         public void visitMap(final Map<String, AttributeValue> map) {
             final JsonObjectBuilder objectBuilder = Json.createObjectBuilder();
             for (final Map.Entry<String, AttributeValue> mapEntry : map.entrySet()) {
-                objectBuilder.add(mapEntry.getKey(), AttributeValueToJsonConverter.convert(mapEntry.getValue()));
+                objectBuilder.add(mapEntry.getKey(), new AttributeValueToJsonConverter().convert(mapEntry.getValue()));
             }
             this.jsonValue = objectBuilder.build();
         }
@@ -75,7 +81,7 @@ public class AttributeValueToJsonConverter {
         public void visitList(final List<AttributeValue> list) {
             final JsonArrayBuilder arrayBuilder = Json.createArrayBuilder();
             for (final AttributeValue attributeValue : list) {
-                arrayBuilder.add(AttributeValueToJsonConverter.convert(attributeValue));
+                arrayBuilder.add(new AttributeValueToJsonConverter().convert(attributeValue));
             }
             this.jsonValue = arrayBuilder.build();
         }
@@ -93,7 +99,7 @@ public class AttributeValueToJsonConverter {
         public void visitNumberSet(final List<String> numbers) {
             final JsonArrayBuilder arrayBuilder = Json.createArrayBuilder();
             for (final String number : numbers) {
-                arrayBuilder.add(this.convertNumber(number));
+                arrayBuilder.add(convertNumber(number));
             }
             this.jsonValue = arrayBuilder.build();
         }

@@ -34,7 +34,7 @@ public class JsonMappingValidator {
     public void validate(final File schemaMappingDefinition) throws IOException, JsonMappingFactory.MappingException {
         try (final InputStream inputStream = new FileInputStream(schemaMappingDefinition)) {
             final JSONObject definitionObject = new JSONObject(new JSONTokener(inputStream));
-            this.validate(definitionObject);
+            validate(definitionObject);
         }
     }
 
@@ -46,8 +46,8 @@ public class JsonMappingValidator {
             final Schema schema = SchemaLoader.load(rawSchema);
             final Validator validator = Validator.builder().build();
             validator.performValidation(schema, schemaMappingDefinition);
-        } catch (final ValidationException e) {
-            throw new JsonMappingFactory.MappingException(extractReadableErrorMessage(e));
+        } catch (final ValidationException exception) {
+            throw new JsonMappingFactory.MappingException(extractReadableErrorMessage(exception));
         }
     }
 

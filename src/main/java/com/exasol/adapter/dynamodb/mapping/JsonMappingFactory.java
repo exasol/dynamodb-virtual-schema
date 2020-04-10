@@ -142,8 +142,8 @@ public class JsonMappingFactory implements MappingDefinitionFactory {
         for (final String dynamodbPropertyName : definition.keySet()) {
             final ObjectDynamodbResultWalker.Builder walker = new ObjectDynamodbResultWalker.Builder(walkerToThisPath,
                     dynamodbPropertyName);
-            this.visitMapping(definition.getJsonObject(dynamodbPropertyName), walker, tableBuilder,
-                    dynamodbPropertyName, false);
+            visitMapping(definition.getJsonObject(dynamodbPropertyName), walker, tableBuilder, dynamodbPropertyName,
+                    false);
         }
     }
 

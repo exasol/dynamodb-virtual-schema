@@ -12,7 +12,6 @@ import org.junit.jupiter.api.Test;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.exasol.adapter.AdapterException;
 import com.exasol.adapter.dynamodb.mapping.AbstractColumnMappingDefinition;
-import com.exasol.adapter.dynamodb.mapping.ValueMapperException;
 import com.exasol.dynamodb.resultwalker.ObjectDynamodbResultWalker;
 import com.exasol.sql.expression.ValueExpression;
 
@@ -58,9 +57,10 @@ public class ToStringValueMapperTest {
                 AbstractColumnMappingDefinition.LookupFailBehaviour.EXCEPTION);
         final ToStringColumnMappingDefinition toStringColumnMappingDefinition = new ToStringColumnMappingDefinition(
                 columnParameters, 2, ToStringColumnMappingDefinition.OverflowBehaviour.EXCEPTION);
-        final ValueMapperException exception = assertThrows(ValueMapperException.class,
+        final UnsupportedOperationException exception = assertThrows(UnsupportedOperationException.class,
                 () -> new ToStringValueMapper(toStringColumnMappingDefinition).mapRow(getDynamodbListRow()));
-        assertThat(exception.getMessage(), equalTo("The DynamoDB type List cant't be converted to string."));
+        assertThat(exception.getMessage(),
+                equalTo("The DynamoDB type List cant't be converted to string. Try using a different mapping."));
     }
 
     @Test

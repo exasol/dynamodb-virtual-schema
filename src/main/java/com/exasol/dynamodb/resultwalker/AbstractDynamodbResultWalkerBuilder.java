@@ -13,6 +13,6 @@ public abstract class AbstractDynamodbResultWalkerBuilder {
      * @return {@link AbstractDynamodbResultWalker}
      */
     public AbstractDynamodbResultWalker build() {
-        return this.buildChain(null);
+        return buildChain(null);
     }
 }

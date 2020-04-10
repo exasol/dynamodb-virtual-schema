@@ -125,7 +125,7 @@ public class DynamodbTestUtils {
     public int scan(final String tableName) {
         final Table table = this.dynamoClient.getTable(tableName);
         final ItemCollection<ScanOutcome> scanResult = table.scan();
-        return this.logAndCountItems(scanResult);
+        return logAndCountItems(scanResult);
     }
 
     private int logAndCountItems(final Iterable<Item> items) {
@@ -165,7 +165,7 @@ public class DynamodbTestUtils {
      */
     public void deleteCreatedTables() {
         for (final String tableName : this.tableNames) {
-            this.deleteTable(tableName);
+            deleteTable(tableName);
         }
     }
 
@@ -179,7 +179,7 @@ public class DynamodbTestUtils {
     public void importData(final String tableName, final File asset) throws IOException {
         try (final JsonReader jsonReader = Json.createReader(new FileReader(asset))) {
             final String[] itemsJson = splitJsonArrayInArrayOfJsonStrings(jsonReader.readArray());
-            this.putJson(tableName, itemsJson);
+            putJson(tableName, itemsJson);
         }
     }
 

@@ -25,7 +25,7 @@ public class AttributeValueToJsonConverterTest {
         final String testString = "test";
         final AttributeValue attributeValue = new AttributeValue();
         attributeValue.setS(testString);
-        final JsonValue json = AttributeValueToJsonConverter.convert(attributeValue);
+        final JsonValue json = new AttributeValueToJsonConverter().convert(attributeValue);
         assertThat(json.toString(), equalTo("\"" + testString + "\""));
     }
 
@@ -33,7 +33,7 @@ public class AttributeValueToJsonConverterTest {
         final String numberString = String.valueOf(number);
         final AttributeValue attributeValue = new AttributeValue();
         attributeValue.setN(numberString);
-        final JsonValue json = AttributeValueToJsonConverter.convert(attributeValue);
+        final JsonValue json = new AttributeValueToJsonConverter().convert(attributeValue);
         assertThat(json.toString(), equalTo(numberString));
     }
 
@@ -52,7 +52,7 @@ public class AttributeValueToJsonConverterTest {
         final AttributeValue nestedAttributeValue = AttributeValueTestUtils.forString("some value");
         final AttributeValue testMap = new AttributeValue();
         testMap.setM(Map.of("keyString", nestedAttributeValue));
-        final JsonValue json = AttributeValueToJsonConverter.convert(testMap);
+        final JsonValue json = new AttributeValueToJsonConverter().convert(testMap);
         assertThat(json.toString(), equalTo("{\"keyString\":\"some value\"}"));
     }
 
@@ -61,7 +61,7 @@ public class AttributeValueToJsonConverterTest {
         final AttributeValue attributeValue = new AttributeValue();
         attributeValue
                 .setL(List.of(AttributeValueTestUtils.forString("test1"), AttributeValueTestUtils.forString("test2")));
-        final JsonValue json = AttributeValueToJsonConverter.convert(attributeValue);
+        final JsonValue json = new AttributeValueToJsonConverter().convert(attributeValue);
         assertThat(json.toString(), equalTo("[\"test1\",\"test2\"]"));
     }
 
@@ -69,7 +69,7 @@ public class AttributeValueToJsonConverterTest {
     void testConvertTrue() {
         final AttributeValue attributeValue = new AttributeValue();
         attributeValue.setBOOL(true);
-        final JsonValue json = AttributeValueToJsonConverter.convert(attributeValue);
+        final JsonValue json = new AttributeValueToJsonConverter().convert(attributeValue);
         assertThat(json.toString(), equalTo("true"));
     }
 
@@ -77,7 +77,7 @@ public class AttributeValueToJsonConverterTest {
     void testConvertFalse() {
         final AttributeValue attributeValue = new AttributeValue();
         attributeValue.setBOOL(false);
-        final JsonValue json = AttributeValueToJsonConverter.convert(attributeValue);
+        final JsonValue json = new AttributeValueToJsonConverter().convert(attributeValue);
         assertThat(json.toString(), equalTo("false"));
     }
 
@@ -85,7 +85,7 @@ public class AttributeValueToJsonConverterTest {
     void testConvertNumberSet() {
         final AttributeValue attributeValue = new AttributeValue();
         attributeValue.setNS(List.of("123", "456"));
-        final JsonValue json = AttributeValueToJsonConverter.convert(attributeValue);
+        final JsonValue json = new AttributeValueToJsonConverter().convert(attributeValue);
         assertThat(json.toString(), equalTo("[123,456]"));
     }
 
@@ -93,7 +93,7 @@ public class AttributeValueToJsonConverterTest {
     void testConvertStringSet() {
         final AttributeValue attributeValue = new AttributeValue();
         attributeValue.setSS(List.of("test", "test2"));
-        final JsonValue json = AttributeValueToJsonConverter.convert(attributeValue);
+        final JsonValue json = new AttributeValueToJsonConverter().convert(attributeValue);
         assertThat(json.toString(), equalTo("[\"test\",\"test2\"]"));
     }
 
@@ -101,21 +101,23 @@ public class AttributeValueToJsonConverterTest {
     void testBinaryException() {
         final AttributeValue attributeValue = new AttributeValue();
         attributeValue.setB(ByteBuffer.wrap("".getBytes()));
-        assertThrows(UnsupportedOperationException.class, () -> AttributeValueToJsonConverter.convert(attributeValue));
+        assertThrows(UnsupportedOperationException.class,
+                () -> new AttributeValueToJsonConverter().convert(attributeValue));
     }
 
     @Test
     void testBinarySetException() {
         final AttributeValue attributeValue = new AttributeValue();
         attributeValue.setBS(List.of(ByteBuffer.wrap("".getBytes())));
-        assertThrows(UnsupportedOperationException.class, () -> AttributeValueToJsonConverter.convert(attributeValue));
+        assertThrows(UnsupportedOperationException.class,
+                () -> new AttributeValueToJsonConverter().convert(attributeValue));
     }
 
     @Test
     void testConvertNull() {
         final AttributeValue attributeValue = new AttributeValue();
         attributeValue.setNULL(true);
-        final JsonValue json = AttributeValueToJsonConverter.convert(attributeValue);
+        final JsonValue json = new AttributeValueToJsonConverter().convert(attributeValue);
         assertThat(json.toString(), equalTo("null"));
     }
 }

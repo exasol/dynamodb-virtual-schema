@@ -12,6 +12,8 @@ import org.testcontainers.containers.Network;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
+import com.exasol.adapter.dynamodb.mapping.TestDocuments;
+
 /**
  * Tests the {@link DynamodbTestUtils}.
  */
@@ -35,27 +37,26 @@ public class DynamodbTestUtilsTestIT {
         NETWORK.close();
     }
 
+    @AfterEach
+    void after() {
+        dynamodbTestUtils.deleteCreatedTables();
+    }
+
     /**
      * Test for {@link DynamodbTestUtils#importData(String, File)}
      */
     @Test
     void testImportData() throws IOException {
-        dynamodbTestUtils.createTable(TABLE_NAME, "isbn");
+        dynamodbTestUtils.createTable(TABLE_NAME, TestDocuments.BOOKS_ISBN_PROPERTY);
         final ClassLoader classLoader = DynamodbTestUtilsTestIT.class.getClassLoader();
-        final File books = new File(classLoader.getResource("books.json").getFile());
-        dynamodbTestUtils.importData(TABLE_NAME, books);
+        dynamodbTestUtils.importData(TABLE_NAME, TestDocuments.BOOKS);
         assertThat(dynamodbTestUtils.scan(TABLE_NAME), equalTo(3));
     }
 
     @Test
     void testPutJson() {
-        dynamodbTestUtils.createTable(TABLE_NAME, "isbn");
+        dynamodbTestUtils.createTable(TABLE_NAME, TestDocuments.BOOKS_ISBN_PROPERTY);
         dynamodbTestUtils.putJson(TABLE_NAME, "{\n" + "\"isbn\": \"1234\",\n" + " \"name\":\"book1\"\n" + "}");
         assertThat(dynamodbTestUtils.scan(TABLE_NAME), equalTo(1));
-    }
-
-    @AfterEach
-    void after() {
-        dynamodbTestUtils.deleteCreatedTables();
     }
 }

@@ -10,7 +10,6 @@ import com.exasol.dynamodb.resultwalker.AbstractDynamodbResultWalkerBuilder;
  * This class builds ColumnMappingDefinitions from a JSON definition. It is used in the {@link JsonMappingFactory}.
  */
 public class JsonColumnMappingFactory {
-
     private static final String MAX_LENGTH_KEY = "maxLength";
     private static final int DEFAULT_MAX_LENGTH = 254;
     private static final String OVERFLOW_KEY = "overflow";

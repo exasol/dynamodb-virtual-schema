@@ -18,7 +18,7 @@ public interface AttributeValueVisitor {
      * @param value string value
      */
     public default void visitString(final String value) {
-        throw new UnsupportedDynamodbTypeException("String");
+        defaultVisit("String");
     }
 
     /**
@@ -27,7 +27,7 @@ public interface AttributeValueVisitor {
      * @param value string containing number value
      */
     public default void visitNumber(final String value) {
-        throw new UnsupportedDynamodbTypeException("Number");
+        defaultVisit("Number");
     }
 
     /**
@@ -36,7 +36,7 @@ public interface AttributeValueVisitor {
      * @param value byte value
      */
     public default void visitBinary(final ByteBuffer value) {
-        throw new UnsupportedDynamodbTypeException("Binary");
+        defaultVisit("Binary");
     }
 
     /**
@@ -45,7 +45,7 @@ public interface AttributeValueVisitor {
      * @param value byte value
      */
     public default void visitBoolean(final boolean value) {
-        throw new UnsupportedDynamodbTypeException("Boolean");
+        defaultVisit("Boolean");
     }
 
     /**
@@ -54,7 +54,7 @@ public interface AttributeValueVisitor {
      * @param value map value
      */
     public default void visitMap(final Map<String, AttributeValue> value) {
-        throw new UnsupportedDynamodbTypeException("Map");
+        defaultVisit("Map");
     }
 
     /**
@@ -63,7 +63,7 @@ public interface AttributeValueVisitor {
      * @param value ByteSet value
      */
     public default void visitByteSet(final List<ByteBuffer> value) {
-        throw new UnsupportedDynamodbTypeException("ByteSet");
+        defaultVisit("ByteSet");
     }
 
     /**
@@ -72,7 +72,7 @@ public interface AttributeValueVisitor {
      * @param value list value
      */
     public default void visitList(final List<AttributeValue> value) {
-        throw new UnsupportedDynamodbTypeException("List");
+        defaultVisit("List");
     }
 
     /**
@@ -81,7 +81,7 @@ public interface AttributeValueVisitor {
      * @param value NumberSet value
      */
     public default void visitNumberSet(final List<String> value) {
-        throw new UnsupportedDynamodbTypeException("NumberSet");
+        defaultVisit("NumberSet");
     }
 
     /**
@@ -90,14 +90,22 @@ public interface AttributeValueVisitor {
      * @param value StringSet value
      */
     public default void visitStringSet(final List<String> value) {
-        throw new UnsupportedDynamodbTypeException("StringSet");
+        defaultVisit("StringSet");
     }
 
     /**
      * Called when AttributeValue is NULL value.
      */
     public default void visitNull() {
-        throw new UnsupportedDynamodbTypeException("Null");
+        defaultVisit("Null");
     }
+
+    /**
+     * Called when the specific visit method was not implemented. This method can for example be used for throwing an
+     * {@link UnsupportedOperationException}.
+     * 
+     * @param typeName name of the DynamoDB type to visit.
+     */
+    public void defaultVisit(final String typeName);
 
 }

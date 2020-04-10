@@ -36,7 +36,7 @@ public abstract class AbstractValueMapper {
             throws DynamodbResultWalkerException, ValueMapperException {
         try {
             final AttributeValue dynamodbProperty = this.column.getPathToSourceProperty().walk(dynamodbRow);
-            return this.mapValue(dynamodbProperty);
+            return mapValue(dynamodbProperty);
         } catch (final DynamodbResultWalkerException | LookupValueMapperException exception) {
             if (this.column
                     .getLookupFailBehaviour() == AbstractColumnMappingDefinition.LookupFailBehaviour.DEFAULT_VALUE) {
