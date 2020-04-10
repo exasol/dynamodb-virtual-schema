@@ -22,33 +22,8 @@ public class DynamodbDocumentNodeFactory {
         private Function<AttributeValue, DocumentNode> converter;
 
         @Override
-        public void visitString(final String value) {
-            this.converter = DynamodbValue::new;
-        }
-
-        @Override
-        public void visitNumber(final String value) {
-            this.converter = DynamodbValue::new;
-        }
-
-        @Override
-        public void visitBinary(final ByteBuffer value) {
-            this.converter = DynamodbValue::new;
-        }
-
-        @Override
-        public void visitBoolean(final boolean value) {
-            this.converter = DynamodbValue::new;
-        }
-
-        @Override
         public void visitMap(final Map<String, AttributeValue> value) {
             this.converter = DynamodbObject::new;
-        }
-
-        @Override
-        public void visitByteSet(final List<ByteBuffer> value) {
-            this.converter = DynamodbValue::new;
         }
 
         @Override
@@ -57,17 +32,7 @@ public class DynamodbDocumentNodeFactory {
         }
 
         @Override
-        public void visitNumberSet(final List<String> value) {
-            this.converter = DynamodbValue::new;
-        }
-
-        @Override
-        public void visitStringSet(final List<String> value) {
-            this.converter = DynamodbValue::new;
-        }
-
-        @Override
-        public void visitNull() {
+        public void defaultVisit(final String typeName) {
             this.converter = DynamodbValue::new;
         }
     }
