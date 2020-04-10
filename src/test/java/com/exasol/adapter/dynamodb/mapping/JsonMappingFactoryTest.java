@@ -11,6 +11,8 @@ import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.json.JSONObject;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
 import com.exasol.adapter.AdapterException;
@@ -20,11 +22,17 @@ import com.exasol.adapter.dynamodb.mapping.tostringmapping.ToStringColumnMapping
  * Tests for {@link JsonMappingFactory}.
  */
 public class JsonMappingFactoryTest {
+    private final MappingTestFiles mappingTestFiles = new MappingTestFiles();
 
     private SchemaMappingDefinition getMappingDefinitionForFile(final File mappingFile)
             throws IOException, AdapterException {
         final MappingDefinitionFactory mappingFactory = new JsonMappingFactory(mappingFile);
         return mappingFactory.getSchemaMapping();
+    }
+
+    @AfterEach
+    void afterEach() {
+        this.mappingTestFiles.deleteAllTempFiles();
     }
 
     /**
@@ -72,15 +80,20 @@ public class JsonMappingFactoryTest {
     }
 
     @Test
-    void testException() {
+    void testException() throws IOException {
+        final File invalidFile = this.mappingTestFiles.generateInvalidFile(MappingTestFiles.BASIC_MAPPING_FILE,
+                base -> {
+                    final JSONObject newMappings = new JSONObject();
+                    newMappings.put("toStringMapping", new JSONObject());
+                    base.put("mapping", newMappings);
+                    return base;
+                });
+
         final JsonMappingFactory.SchemaMappingException exception = assertThrows(
-                JsonMappingFactory.SchemaMappingException.class,
-                () -> getMappingDefinitionForFile(MappingTestFiles.INVALID_TO_STRING_MAPPING_AT_ROOT_LEVEL_FILE));
-        assertAll(
-                () -> assertThat(exception.getCausingMappingDefinitionFileName(),
-                        equalTo(MappingTestFiles.INVALID_TO_STRING_MAPPING_AT_ROOT_LEVEL_FILE_NAME)),
+                JsonMappingFactory.SchemaMappingException.class, () -> getMappingDefinitionForFile(invalidFile));
+        assertAll(() -> assertThat(exception.getCausingMappingDefinitionFileName(), equalTo(invalidFile.getName())),
                 () -> assertThat(exception.getMessage(),
-                        equalTo("Error in schema mapping invalidToStringMappingAtRootLevel.json:")),
+                        equalTo("Error in schema mapping " + invalidFile.getName() + ":")),
                 () -> assertThat(exception.getCause().getMessage(), equalTo(
                         "ToStringMapping is not allowed at root level. You probably want to replace it with a \"fields\" definition.")));
     }

@@ -28,18 +28,17 @@ public class JsonMappingValidator {
      * Validates the schema from given file using a JSON-schema validator.
      * 
      * @param schemaMappingDefinition schema mapping definition to validate
-     * @throws IOException                         if schema definition could not be opened
+     * @throws IOException              if schema definition could not be opened
      * @throws IllegalArgumentException if schema is violated
      */
-    public void validate(final File schemaMappingDefinition) throws IOException{
+    public void validate(final File schemaMappingDefinition) throws IOException {
         try (final InputStream inputStream = new FileInputStream(schemaMappingDefinition)) {
             final JSONObject definitionObject = new JSONObject(new JSONTokener(inputStream));
             validate(definitionObject, schemaMappingDefinition.getName());
         }
     }
 
-    private void validate(final JSONObject schemaMappingDefinition, final String fileName)
-            throws IOException {
+    private void validate(final JSONObject schemaMappingDefinition, final String fileName) throws IOException {
         final ClassLoader classLoader = JsonMappingValidator.class.getClassLoader();
         try (final InputStream inputStream = classLoader.getResourceAsStream(MAPPING_LANGUAGE_SCHEMA)) {
             final JSONObject rawSchema = new JSONObject(new JSONTokener(inputStream));
