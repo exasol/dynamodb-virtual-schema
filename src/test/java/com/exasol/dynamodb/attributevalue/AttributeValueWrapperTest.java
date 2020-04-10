@@ -21,7 +21,7 @@ public class AttributeValueWrapperTest {
         final AttributeValue attributeValue = new AttributeValue();
         attributeValue.setS(testString);
         final AttributeValueWrapper attributeValueWrapper = new AttributeValueWrapper(attributeValue);
-        class TestVisitor implements AttributeValueVisitor {
+        class TestVisitor implements MockAttributeValueVisitor {
             String stringValue;
 
             @Override
@@ -39,9 +39,11 @@ public class AttributeValueWrapperTest {
         final AttributeValue attributeValue = new AttributeValue();
         attributeValue.setS("");
         final AttributeValueWrapper attributeValueWrapper = new AttributeValueWrapper(attributeValue);
-        assertThrows(UnsupportedDynamodbTypeException.class,
-                () -> attributeValueWrapper.accept(new AttributeValueVisitor() {
+        final UnsupportedOperationException exception = assertThrows(UnsupportedOperationException.class,
+                () -> attributeValueWrapper.accept(new MockAttributeValueVisitor() {
+
                 }));
+        assertThat(exception.getMessage(), equalTo("String"));
     }
 
     @Test
@@ -50,7 +52,7 @@ public class AttributeValueWrapperTest {
         final AttributeValue attributeValue = new AttributeValue();
         attributeValue.setN(testNumber);
         final AttributeValueWrapper attributeValueWrapper = new AttributeValueWrapper(attributeValue);
-        class TestVisitor implements AttributeValueVisitor {
+        class TestVisitor implements MockAttributeValueVisitor {
             String numberValue;
 
             @Override
@@ -68,9 +70,10 @@ public class AttributeValueWrapperTest {
         final AttributeValue attributeValue = new AttributeValue();
         attributeValue.setN("");
         final AttributeValueWrapper attributeValueWrapper = new AttributeValueWrapper(attributeValue);
-        assertThrows(UnsupportedDynamodbTypeException.class,
-                () -> attributeValueWrapper.accept(new AttributeValueVisitor() {
+        final UnsupportedOperationException exception = assertThrows(UnsupportedOperationException.class,
+                () -> attributeValueWrapper.accept(new MockAttributeValueVisitor() {
                 }));
+        assertThat(exception.getMessage(), equalTo("Number"));
     }
 
     @Test
@@ -79,7 +82,7 @@ public class AttributeValueWrapperTest {
         final AttributeValue attributeValue = new AttributeValue();
         attributeValue.setB(bytes);
         final AttributeValueWrapper attributeValueWrapper = new AttributeValueWrapper(attributeValue);
-        class TestVisitor implements AttributeValueVisitor {
+        class TestVisitor implements MockAttributeValueVisitor {
             ByteBuffer byteValue;
 
             @Override
@@ -97,9 +100,10 @@ public class AttributeValueWrapperTest {
         final AttributeValue attributeValue = new AttributeValue();
         attributeValue.setB(ByteBuffer.wrap("test".getBytes()));
         final AttributeValueWrapper attributeValueWrapper = new AttributeValueWrapper(attributeValue);
-        assertThrows(UnsupportedDynamodbTypeException.class,
-                () -> attributeValueWrapper.accept(new AttributeValueVisitor() {
+        final UnsupportedOperationException exception = assertThrows(UnsupportedOperationException.class,
+                () -> attributeValueWrapper.accept(new MockAttributeValueVisitor() {
                 }));
+        assertThat(exception.getMessage(), equalTo("Binary"));
     }
 
     @Test
@@ -108,7 +112,7 @@ public class AttributeValueWrapperTest {
         final AttributeValue attributeValue = new AttributeValue();
         attributeValue.setBOOL(testValue);
         final AttributeValueWrapper attributeValueWrapper = new AttributeValueWrapper(attributeValue);
-        class TestVisitor implements AttributeValueVisitor {
+        class TestVisitor implements MockAttributeValueVisitor {
             boolean booleanValue;
 
             @Override
@@ -126,9 +130,10 @@ public class AttributeValueWrapperTest {
         final AttributeValue attributeValue = new AttributeValue();
         attributeValue.setBOOL(true);
         final AttributeValueWrapper attributeValueWrapper = new AttributeValueWrapper(attributeValue);
-        assertThrows(UnsupportedDynamodbTypeException.class,
-                () -> attributeValueWrapper.accept(new AttributeValueVisitor() {
+        final UnsupportedOperationException exception = assertThrows(UnsupportedOperationException.class,
+                () -> attributeValueWrapper.accept(new MockAttributeValueVisitor() {
                 }));
+        assertThat(exception.getMessage(), equalTo("Boolean"));
     }
 
     @Test
@@ -137,7 +142,7 @@ public class AttributeValueWrapperTest {
         final AttributeValue attributeValue = new AttributeValue();
         attributeValue.setM(testMap);
         final AttributeValueWrapper attributeValueWrapper = new AttributeValueWrapper(attributeValue);
-        class TestVisitor implements AttributeValueVisitor {
+        class TestVisitor implements MockAttributeValueVisitor {
             Map<String, AttributeValue> mapValue;
 
             @Override
@@ -155,9 +160,10 @@ public class AttributeValueWrapperTest {
         final AttributeValue attributeValue = new AttributeValue();
         attributeValue.setM(Map.of());
         final AttributeValueWrapper attributeValueWrapper = new AttributeValueWrapper(attributeValue);
-        assertThrows(UnsupportedDynamodbTypeException.class,
-                () -> attributeValueWrapper.accept(new AttributeValueVisitor() {
+        final UnsupportedOperationException exception = assertThrows(UnsupportedOperationException.class,
+                () -> attributeValueWrapper.accept(new MockAttributeValueVisitor() {
                 }));
+        assertThat(exception.getMessage(), equalTo("Map"));
     }
 
     @Test
@@ -166,7 +172,7 @@ public class AttributeValueWrapperTest {
         final AttributeValue attributeValue = new AttributeValue();
         attributeValue.setBS(testByteSet);
         final AttributeValueWrapper attributeValueWrapper = new AttributeValueWrapper(attributeValue);
-        class TestVisitor implements AttributeValueVisitor {
+        class TestVisitor implements MockAttributeValueVisitor {
             List<ByteBuffer> byteSetValue;
 
             @Override
@@ -184,9 +190,10 @@ public class AttributeValueWrapperTest {
         final AttributeValue attributeValue = new AttributeValue();
         attributeValue.setBS(Collections.emptyList());
         final AttributeValueWrapper attributeValueWrapper = new AttributeValueWrapper(attributeValue);
-        assertThrows(UnsupportedDynamodbTypeException.class,
-                () -> attributeValueWrapper.accept(new AttributeValueVisitor() {
+        final UnsupportedOperationException exception = assertThrows(UnsupportedOperationException.class,
+                () -> attributeValueWrapper.accept(new MockAttributeValueVisitor() {
                 }));
+        assertThat(exception.getMessage(), equalTo("ByteSet"));
     }
 
     @Test
@@ -195,7 +202,7 @@ public class AttributeValueWrapperTest {
         final AttributeValue attributeValue = new AttributeValue();
         attributeValue.setL(testList);
         final AttributeValueWrapper attributeValueWrapper = new AttributeValueWrapper(attributeValue);
-        class TestVisitor implements AttributeValueVisitor {
+        class TestVisitor implements MockAttributeValueVisitor {
             List<AttributeValue> listValue;
 
             @Override
@@ -213,9 +220,10 @@ public class AttributeValueWrapperTest {
         final AttributeValue attributeValue = new AttributeValue();
         attributeValue.setL(Collections.emptyList());
         final AttributeValueWrapper attributeValueWrapper = new AttributeValueWrapper(attributeValue);
-        assertThrows(UnsupportedDynamodbTypeException.class,
-                () -> attributeValueWrapper.accept(new AttributeValueVisitor() {
+        final UnsupportedOperationException exception = assertThrows(UnsupportedOperationException.class,
+                () -> attributeValueWrapper.accept(new MockAttributeValueVisitor() {
                 }));
+        assertThat(exception.getMessage(), equalTo("List"));
     }
 
     @Test
@@ -224,7 +232,7 @@ public class AttributeValueWrapperTest {
         final AttributeValue attributeValue = new AttributeValue();
         attributeValue.setNS(testNumberSet);
         final AttributeValueWrapper attributeValueWrapper = new AttributeValueWrapper(attributeValue);
-        class TestVisitor implements AttributeValueVisitor {
+        class TestVisitor implements MockAttributeValueVisitor {
             List<String> numberSetValue;
 
             @Override
@@ -242,9 +250,10 @@ public class AttributeValueWrapperTest {
         final AttributeValue attributeValue = new AttributeValue();
         attributeValue.setNS(List.of("123"));
         final AttributeValueWrapper attributeValueWrapper = new AttributeValueWrapper(attributeValue);
-        assertThrows(UnsupportedDynamodbTypeException.class,
-                () -> attributeValueWrapper.accept(new AttributeValueVisitor() {
+        final UnsupportedOperationException exception = assertThrows(UnsupportedOperationException.class,
+                () -> attributeValueWrapper.accept(new MockAttributeValueVisitor() {
                 }));
+        assertThat(exception.getMessage(), equalTo("NumberSet"));
     }
 
     @Test
@@ -253,7 +262,7 @@ public class AttributeValueWrapperTest {
         final AttributeValue attributeValue = new AttributeValue();
         attributeValue.setSS(testStringSet);
         final AttributeValueWrapper attributeValueWrapper = new AttributeValueWrapper(attributeValue);
-        class TestVisitor implements AttributeValueVisitor {
+        class TestVisitor implements MockAttributeValueVisitor {
             List<String> stringSetValue;
 
             @Override
@@ -271,9 +280,10 @@ public class AttributeValueWrapperTest {
         final AttributeValue attributeValue = new AttributeValue();
         attributeValue.setSS(List.of("test"));
         final AttributeValueWrapper attributeValueWrapper = new AttributeValueWrapper(attributeValue);
-        assertThrows(UnsupportedDynamodbTypeException.class,
-                () -> attributeValueWrapper.accept(new AttributeValueVisitor() {
+        final UnsupportedOperationException exception = assertThrows(UnsupportedOperationException.class,
+                () -> attributeValueWrapper.accept(new MockAttributeValueVisitor() {
                 }));
+        assertThat(exception.getMessage(), equalTo("StringSet"));
     }
 
     @Test
@@ -281,7 +291,7 @@ public class AttributeValueWrapperTest {
         final AttributeValue attributeValue = new AttributeValue();
         attributeValue.setNULL(true);
         final AttributeValueWrapper attributeValueWrapper = new AttributeValueWrapper(attributeValue);
-        class TestVisitor implements AttributeValueVisitor {
+        class TestVisitor implements MockAttributeValueVisitor {
             boolean wasCalled = false;
 
             @Override
@@ -299,17 +309,26 @@ public class AttributeValueWrapperTest {
         final AttributeValue attributeValue = new AttributeValue();
         attributeValue.setNULL(true);
         final AttributeValueWrapper attributeValueWrapper = new AttributeValueWrapper(attributeValue);
-        assertThrows(UnsupportedDynamodbTypeException.class,
-                () -> attributeValueWrapper.accept(new AttributeValueVisitor() {
+        final UnsupportedOperationException exception = assertThrows(UnsupportedOperationException.class,
+                () -> attributeValueWrapper.accept(new MockAttributeValueVisitor() {
                 }));
+        assertThat(exception.getMessage(), equalTo("Null"));
     }
 
     @Test
     void testUnsupportedType() {
         final AttributeValue attributeValue = new AttributeValue();
         final AttributeValueWrapper attributeValueWrapper = new AttributeValueWrapper(attributeValue);
-        assertThrows(UnsupportedOperationException.class,
-                () -> attributeValueWrapper.accept(new AttributeValueVisitor() {
+        final UnsupportedOperationException exception = assertThrows(UnsupportedOperationException.class,
+                () -> attributeValueWrapper.accept(new MockAttributeValueVisitor() {
                 }));
+        assertThat(exception.getMessage(), equalTo("Unsupported DynamoDB type"));
+    }
+
+    private interface MockAttributeValueVisitor extends AttributeValueVisitor {
+        @Override
+        default void defaultVisit(final String typeName) {
+            throw new UnsupportedOperationException(typeName);
+        }
     }
 }

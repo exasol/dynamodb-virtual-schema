@@ -18,6 +18,7 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import com.exasol.ExaMetadata;
+import com.exasol.adapter.dynamodb.mapping.MappingTestFiles;
 import com.exasol.adapter.request.RefreshRequest;
 import com.exasol.bucketfs.BucketAccessException;
 import com.exasol.containers.ExasolContainer;
@@ -40,7 +41,10 @@ public class DynamodbAdapterRefreshTestLocalIT {
     private static final ExasolContainer<? extends ExasolContainer<?>> EXASOL_CONTAINER = new ExasolContainer<>()
             .withNetwork(NETWORK).withExposedPorts(8888).withLogConsumer(new Slf4jLogConsumer(LOGGER));
     private static final String TEST_SCHEMA = "TEST";
+    private static final String BOOKS_TABLE = "BOOKS";
     private static final String DYNAMODB_CONNECTION = "DYNAMODB_CONNECTION";
+    private static final String BUCKETFS_MAPPING_FILE_NAME = "mappings/test.json";
+    private static final String BUCKETFS_MAPPING_FULL_PATH = "/bfsdefault/default/" + BUCKETFS_MAPPING_FILE_NAME;
     private static DynamodbTestUtils dynamodbTestUtils;
     private static ExasolTestUtils exasolTestUtils;
 
@@ -63,6 +67,11 @@ public class DynamodbAdapterRefreshTestLocalIT {
         NETWORK.close();
     }
 
+    @AfterEach
+    void after() throws SQLException {
+        exasolTestUtils.dropVirtualSchema(TEST_SCHEMA);
+    }
+
     /**
      * In this test case the schema mapping is replaced but {@code REFRESH} is not called. Thus the virtual schema
      * should not change.
@@ -70,12 +79,11 @@ public class DynamodbAdapterRefreshTestLocalIT {
     @Test
     public void testSchemaDefinitionDoesNotChangeUntilRefresh()
             throws SQLException, InterruptedException, BucketAccessException, TimeoutException {
-        exasolTestUtils.uploadMapping("basicMapping.json", "mappings/test.json");
-        exasolTestUtils.createDynamodbVirtualSchema(TEST_SCHEMA, DYNAMODB_CONNECTION,
-                "/bfsdefault/default/mappings/test.json");
-        final Map<String, String> columnsBefore = exasolTestUtils.describeTable(TEST_SCHEMA, "BOOKS");
-        exasolTestUtils.uploadMapping("toJsonMapping.json", "mappings/test.json");
-        final Map<String, String> columnsAfter = exasolTestUtils.describeTable(TEST_SCHEMA, "BOOKS");
+        exasolTestUtils.uploadMapping(MappingTestFiles.BASIC_MAPPING_FILE_NAME, BUCKETFS_MAPPING_FILE_NAME);
+        exasolTestUtils.createDynamodbVirtualSchema(TEST_SCHEMA, DYNAMODB_CONNECTION, BUCKETFS_MAPPING_FULL_PATH);
+        final Map<String, String> columnsBefore = exasolTestUtils.describeTable(TEST_SCHEMA, BOOKS_TABLE);
+        exasolTestUtils.uploadMapping(MappingTestFiles.TO_JSON_MAPPING_FILE_NAME, BUCKETFS_MAPPING_FILE_NAME);
+        final Map<String, String> columnsAfter = exasolTestUtils.describeTable(TEST_SCHEMA, BOOKS_TABLE);
         assertThat(columnsBefore, equalTo(columnsAfter));
     }
 
@@ -86,19 +94,13 @@ public class DynamodbAdapterRefreshTestLocalIT {
     @Test
     public void testSchemaDefinitionChangesOnRefresh()
             throws SQLException, InterruptedException, BucketAccessException, TimeoutException {
-        exasolTestUtils.uploadMapping("basicMapping.json", "mappings/test.json");
-        exasolTestUtils.createDynamodbVirtualSchema(TEST_SCHEMA, DYNAMODB_CONNECTION,
-                "/bfsdefault/default/mappings/test.json");
-        final Map<String, String> columnsBefore = exasolTestUtils.describeTable(TEST_SCHEMA, "BOOKS");
-        exasolTestUtils.uploadMapping("toJsonMapping.json", "mappings/test.json");
+        exasolTestUtils.uploadMapping(MappingTestFiles.BASIC_MAPPING_FILE_NAME, BUCKETFS_MAPPING_FILE_NAME);
+        exasolTestUtils.createDynamodbVirtualSchema(TEST_SCHEMA, DYNAMODB_CONNECTION, BUCKETFS_MAPPING_FULL_PATH);
+        final Map<String, String> columnsBefore = exasolTestUtils.describeTable(TEST_SCHEMA, BOOKS_TABLE);
+        exasolTestUtils.uploadMapping(MappingTestFiles.TO_JSON_MAPPING_FILE_NAME, BUCKETFS_MAPPING_FILE_NAME);
         Thread.sleep(5000);// Wait for bucketfs to sync
         exasolTestUtils.refreshVirtualSchema(TEST_SCHEMA);
-        final Map<String, String> columnsAfter = exasolTestUtils.describeTable(TEST_SCHEMA, "BOOKS");
+        final Map<String, String> columnsAfter = exasolTestUtils.describeTable(TEST_SCHEMA, BOOKS_TABLE);
         assertThat(columnsBefore, not(equalTo(columnsAfter)));
-    }
-
-    @AfterEach
-    void after() throws SQLException {
-        exasolTestUtils.dropVirtualSchema(TEST_SCHEMA);
     }
 }

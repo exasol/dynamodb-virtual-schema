@@ -15,7 +15,6 @@ import com.exasol.sql.expression.ValueExpression;
  * Maps DynamoDB rows to Exasol rows according to {@link QueryResultTableSchema}.
  */
 public class RowMapper {
-
     private final QueryResultTableSchema queryResultTableSchema;
 
     /**

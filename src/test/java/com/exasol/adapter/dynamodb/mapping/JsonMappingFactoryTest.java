@@ -11,30 +11,36 @@ import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.json.JSONObject;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
 import com.exasol.adapter.AdapterException;
 import com.exasol.adapter.dynamodb.mapping.tostringmapping.ToStringColumnMappingDefinition;
 
 /**
- * Tests for {@link JsonMappingFactory}
+ * Tests for {@link JsonMappingFactory}.
  */
 public class JsonMappingFactoryTest {
+    private final MappingTestFiles mappingTestFiles = new MappingTestFiles();
 
-    private SchemaMappingDefinition getMappingDefinitionForFileName(final String name)
+    private SchemaMappingDefinition getMappingDefinitionForFile(final File mappingFile)
             throws IOException, AdapterException {
-        final ClassLoader classLoader = JsonMappingFactory.class.getClassLoader();
-        final MappingDefinitionFactory mappingFactory = new JsonMappingFactory(
-                new File(classLoader.getResource(name).getFile()));
+        final MappingDefinitionFactory mappingFactory = new JsonMappingFactory(mappingFile);
         return mappingFactory.getSchemaMapping();
     }
 
+    @AfterEach
+    void afterEach() {
+        this.mappingTestFiles.deleteAllTempFiles();
+    }
+
     /**
-     * Tests schema load from basicMapping.json
+     * Tests schema load from basicMapping.json.
      */
     @Test
     void testBasicMapping() throws IOException, AdapterException {
-        final SchemaMappingDefinition schemaMapping = getMappingDefinitionForFileName("basicMapping.json");
+        final SchemaMappingDefinition schemaMapping = getMappingDefinitionForFile(MappingTestFiles.BASIC_MAPPING_FILE);
         final List<TableMappingDefinition> tables = schemaMapping.getTableMappings();
         final TableMappingDefinition table = tables.get(0);
         final List<AbstractColumnMappingDefinition> columns = table.getColumns();
@@ -61,7 +67,8 @@ public class JsonMappingFactoryTest {
 
     @Test
     void testToJsonMapping() throws IOException, AdapterException {
-        final SchemaMappingDefinition schemaMapping = getMappingDefinitionForFileName("toJsonMapping.json");
+        final SchemaMappingDefinition schemaMapping = getMappingDefinitionForFile(
+                MappingTestFiles.TO_JSON_MAPPING_FILE);
         final List<TableMappingDefinition> tables = schemaMapping.getTableMappings();
         final TableMappingDefinition table = tables.get(0);
         final List<AbstractColumnMappingDefinition> columns = table.getColumns();
@@ -73,13 +80,20 @@ public class JsonMappingFactoryTest {
     }
 
     @Test
-    void testException() {
-        final String fileName = "invalidToStringMappingAtRootLevel.json";
+    void testException() throws IOException {
+        final File invalidFile = this.mappingTestFiles.generateInvalidFile(MappingTestFiles.BASIC_MAPPING_FILE,
+                base -> {
+                    final JSONObject newMappings = new JSONObject();
+                    newMappings.put("toStringMapping", new JSONObject());
+                    base.put("mapping", newMappings);
+                    return base;
+                });
+
         final JsonMappingFactory.SchemaMappingException exception = assertThrows(
-                JsonMappingFactory.SchemaMappingException.class, () -> getMappingDefinitionForFileName(fileName));
-        assertAll(() -> assertThat(exception.getCausingMappingDefinitionFileName(), equalTo(fileName)),
+                JsonMappingFactory.SchemaMappingException.class, () -> getMappingDefinitionForFile(invalidFile));
+        assertAll(() -> assertThat(exception.getCausingMappingDefinitionFileName(), equalTo(invalidFile.getName())),
                 () -> assertThat(exception.getMessage(),
-                        equalTo("Error in schema mapping invalidToStringMappingAtRootLevel.json:")),
+                        equalTo("Error in schema mapping " + invalidFile.getName() + ":")),
                 () -> assertThat(exception.getCause().getMessage(), equalTo(
                         "ToStringMapping is not allowed at root level. You probably want to replace it with a \"fields\" definition.")));
     }

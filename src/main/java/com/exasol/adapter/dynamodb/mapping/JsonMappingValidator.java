@@ -23,58 +23,85 @@ import org.json.JSONTokener;
  */
 public class JsonMappingValidator {
     private static final String MAPPING_LANGUAGE_SCHEMA = "mappingLanguageSchema.json";
+    private final Schema schema;
+
+    /**
+     * Creates an instance of {@link JsonMappingValidator}.
+     * @throws IOException if reading schema from resources fails.
+     */
+    public JsonMappingValidator() throws IOException {
+        final ClassLoader classLoader = JsonMappingValidator.class.getClassLoader();
+        try (final InputStream inputStream = classLoader.getResourceAsStream(MAPPING_LANGUAGE_SCHEMA)) {
+            final JSONObject rawSchema = new JSONObject(new JSONTokener(inputStream));
+            this.schema = SchemaLoader.load(rawSchema);
+        }
+    }
 
     /**
      * Validates the schema from given file using a JSON-schema validator.
      * 
      * @param schemaMappingDefinition schema mapping definition to validate
-     * @throws IOException                         if schema definition could not be opened
-     * @throws JsonMappingFactory.MappingException if schema is violated
+     * @throws IOException              if schema definition could not be opened
+     * @throws IllegalArgumentException if schema is violated
      */
-    public void validate(final File schemaMappingDefinition) throws IOException, JsonMappingFactory.MappingException {
+    public void validate(final File schemaMappingDefinition) throws IOException {
         try (final InputStream inputStream = new FileInputStream(schemaMappingDefinition)) {
             final JSONObject definitionObject = new JSONObject(new JSONTokener(inputStream));
-            this.validate(definitionObject);
+            validate(definitionObject, schemaMappingDefinition.getName());
         }
     }
 
-    private void validate(final JSONObject schemaMappingDefinition)
-            throws IOException, JsonMappingFactory.MappingException {
-        final ClassLoader classLoader = JsonMappingValidator.class.getClassLoader();
-        try (final InputStream inputStream = classLoader.getResourceAsStream(MAPPING_LANGUAGE_SCHEMA)) {
-            final JSONObject rawSchema = new JSONObject(new JSONTokener(inputStream));
-            final Schema schema = SchemaLoader.load(rawSchema);
+    private void validate(final JSONObject schemaMappingDefinition, final String fileName){
+        try {
             final Validator validator = Validator.builder().build();
-            validator.performValidation(schema, schemaMappingDefinition);
-        } catch (final ValidationException e) {
-            throw new JsonMappingFactory.MappingException(extractReadableErrorMessage(e));
+            validator.performValidation(this.schema, schemaMappingDefinition);
+        } catch (final ValidationException exception) {
+            makeValidationExceptionMoreReadable(exception, fileName);
         }
     }
 
-    private String extractReadableErrorMessage(final ValidationException exception) {
+    private void makeValidationExceptionMoreReadable(final ValidationException exception, final String fileName) {
         final List<ValidationException> causingExceptions = exception.getCausingExceptions();
         if (!causingExceptions.isEmpty()) {
             final ValidationException firstException = causingExceptions.get(0);
-            return extractReadableErrorMessage(firstException);
+            makeValidationExceptionMoreReadable(firstException, fileName);
         }
+        makeUnknownMappingTypeExceptionMoreReadable(exception, fileName);
+        makeWrongSchemaExceptionMoreReadable(exception, fileName);
+        makeNoMappingExceptionMoreReadable(exception, fileName);
+        throwExceptionWithMappingName(fileName, exception.getMessage());
+    }
+
+    private void makeUnknownMappingTypeExceptionMoreReadable(final ValidationException exception,
+            final String fileName) {
         if (exception.getErrorMessage().startsWith("extraneous key")
                 && exception.getSchemaLocation().equals("#/definitions/mappingDefinition")) {
             final String possibleProperties = possibleObjectProperties(exception.getViolatedSchema());
             if (!possibleProperties.isEmpty()) {
-                return exception.getMessage() + ", use one of the following mapping definitions: " + possibleProperties;
+                throwExceptionWithMappingName(fileName, exception.getMessage()
+                        + ", use one of the following mapping definitions: " + possibleProperties);
             }
         }
+    }
+
+    private void makeWrongSchemaExceptionMoreReadable(final ValidationException exception, final String fileName) {
         if (exception.getMessage().startsWith("#/$schema:")
                 && exception.getMessage().endsWith("is not a valid enum value")) {
-            return exception.getPointerToViolation()
-                    + " $schema must be set  to https://github.com/exasol/dynamodb-virtual-schema/blob/develop/src/main/resources/mappingLanguageSchema.json";
+            throwExceptionWithMappingName(fileName, exception.getPointerToViolation()
+                    + " $schema must be set  to https://github.com/exasol/dynamodb-virtual-schema/blob/develop/src/main/resources/mappingLanguageSchema.json");
         }
+    }
+
+    private void makeNoMappingExceptionMoreReadable(final ValidationException exception, final String fileName) {
         if (exception.getPointerToViolation().endsWith("/mapping") && exception.getKeyword().equals("minProperties")) {
             final String possibleProperties = possibleObjectProperties(exception.getViolatedSchema());
-            return exception.getPointerToViolation() + " Please specify at least one mapping. Possible are: "
-                    + possibleProperties;
+            throwExceptionWithMappingName(fileName, exception.getPointerToViolation()
+                    + " Please specify at least one mapping. Possible are: " + possibleProperties);
         }
-        return exception.getMessage();
+    }
+
+    private void throwExceptionWithMappingName(final String fileName, final String message) {
+        throw new IllegalArgumentException("Syntax error in " + fileName + ": " + message);
     }
 
     private String possibleObjectProperties(final Schema schema) {

@@ -18,11 +18,11 @@ public class StringSerializer {
      * @throws IOException if serialization fails
      */
     public static String serializeToString(final Serializable serializable) throws IOException {
-        final ByteArrayOutputStream bo = new ByteArrayOutputStream();
-        final ObjectOutputStream so = new ObjectOutputStream(bo);
-        so.writeObject(serializable);
-        so.flush();
-        return Base64.getEncoder().encodeToString(bo.toByteArray());
+        final ByteArrayOutputStream byteOutputStream = new ByteArrayOutputStream();
+        final ObjectOutputStream objectOutputStream = new ObjectOutputStream(byteOutputStream);
+        objectOutputStream.writeObject(serializable);
+        objectOutputStream.flush();
+        return Base64.getEncoder().encodeToString(byteOutputStream.toByteArray());
     }
 
     /**

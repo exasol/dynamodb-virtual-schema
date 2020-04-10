@@ -7,7 +7,6 @@ import java.io.IOException;
  * Factory for files in bucketfs. Breaking out of the bucketfs using injection is prevented.
  */
 public class BucketfsFileFactory {
-
     @SuppressWarnings("java:S1075") // this is not a configurable path
     private static final String BUCKETFS_BASIC_PATH = "/buckets";
 
@@ -16,24 +15,25 @@ public class BucketfsFileFactory {
      * 
      * @param path: bucketfs path. e.g. {@code /bfsdefault/default/folder/file.txt}
      * @return File defined by the path
-     * @throws BucketfsPathException if path is invalid or on injection
+     * @throws IllegalArgumentException if the path is invalid or outside of the BucketFS.
      */
-    public File openFile(final String path) throws BucketfsPathException {
+    public File openFile(final String path) {
         final String bucketfsPath = BUCKETFS_BASIC_PATH + path;
         final File selectedFile = new File(bucketfsPath);
         preventInjection(selectedFile);
         return selectedFile;
     }
 
-    private void preventInjection(final File file) throws BucketfsPathException {
+    private void preventInjection(final File file) {
         try {
             final String absolute = file.getCanonicalPath();
             if (!absolute.startsWith(BUCKETFS_BASIC_PATH)) {
-                throw new BucketfsPathException("Given path (" + file.getCanonicalPath() + ") is outside of bucketfs.",
-                        file.getCanonicalPath());
+                throw new IllegalArgumentException(
+                        "Given path (" + file.getCanonicalPath() + ") is outside of bucketfs.");
+
             }
-        } catch (final IOException e) {
-            throw new BucketfsPathException("Error in file path: " + file.getAbsolutePath(), file.getAbsolutePath());
+        } catch (final IOException exception) {
+            throw new IllegalArgumentException("Error in file path: " + file.getAbsolutePath());
         }
     }
 }

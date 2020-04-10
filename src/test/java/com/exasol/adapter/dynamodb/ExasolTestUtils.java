@@ -59,7 +59,7 @@ public class ExasolTestUtils {
     }
 
     public void uploadMapping(final String name) throws InterruptedException, BucketAccessException, TimeoutException {
-        this.uploadMapping(name, "mappings/" + name);
+        uploadMapping(name, "mappings/" + name);
     }
 
     public void uploadMapping(final String name, final String destName)
@@ -100,7 +100,7 @@ public class ExasolTestUtils {
      * @throws SQLException on SQL error
      */
     public void createAdapterScript() throws SQLException {
-        this.createTestSchema(ADAPTER_SCHEMA);
+        createTestSchema(ADAPTER_SCHEMA);
         final StringBuilder statementBuilder = new StringBuilder(
                 "CREATE OR REPLACE JAVA ADAPTER SCRIPT " + ADAPTER_SCHEMA + "." + DYNAMODB_ADAPTER + " AS\n");
         final String hostIp = getTestHostIpAddress();
@@ -188,8 +188,8 @@ public class ExasolTestUtils {
     public boolean testIfSchemaExists(final String schema) {
         try {
             getStatement().executeQuery("OPEN SCHEMA " + schema + ";");
-        } catch (final SQLException e) {
-            if (e.getMessage().contains("not found")) {
+        } catch (final SQLException exception) {
+            if (exception.getMessage().contains("not found")) {
                 return false;
             }
         }

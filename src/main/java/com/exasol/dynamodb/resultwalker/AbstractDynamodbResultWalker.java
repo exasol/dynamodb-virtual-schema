@@ -35,7 +35,7 @@ public abstract class AbstractDynamodbResultWalker implements Serializable {
     public AttributeValue walk(final Map<String, AttributeValue> item) throws DynamodbResultWalkerException {
         final AttributeValue attributeValueRepresentingItem = new AttributeValue();
         attributeValueRepresentingItem.setM(item);
-        return this.walk(attributeValueRepresentingItem, "");
+        return walk(attributeValueRepresentingItem, "");
     }
 
     private AttributeValue walk(final AttributeValue attributeValue, final String path)

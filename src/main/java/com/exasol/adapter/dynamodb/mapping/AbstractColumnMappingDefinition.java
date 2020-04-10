@@ -65,7 +65,7 @@ public abstract class AbstractColumnMappingDefinition implements Serializable {
     public String getExasolDefaultValueLiteral() {
         final StringRendererConfig stringRendererConfig = StringRendererConfig.createDefault();
         final ValueExpressionRenderer renderer = new ValueExpressionRenderer(stringRendererConfig);
-        this.getExasolDefaultValue().accept(renderer);
+        getExasolDefaultValue().accept(renderer);
         return renderer.render();
     }
 

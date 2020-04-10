@@ -2,11 +2,9 @@ package com.exasol.adapter.dynamodb.mapping.tostringmapping;
 
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.exasol.adapter.dynamodb.mapping.AbstractValueMapper;
-import com.exasol.adapter.dynamodb.mapping.LookupValueMapperException;
 import com.exasol.adapter.dynamodb.mapping.ValueMapperException;
 import com.exasol.dynamodb.attributevalue.AttributeValueVisitor;
 import com.exasol.dynamodb.attributevalue.AttributeValueWrapper;
-import com.exasol.dynamodb.attributevalue.UnsupportedDynamodbTypeException;
 import com.exasol.sql.expression.StringLiteral;
 import com.exasol.sql.expression.ValueExpression;
 
@@ -30,32 +28,30 @@ public class ToStringValueMapper extends AbstractValueMapper {
     protected ValueExpression mapValue(final AttributeValue dynamodbProperty) throws ValueMapperException {
         final ToStringVisitor toStringVisitor = new ToStringVisitor();
         final AttributeValueWrapper attributeValueWrapper = new AttributeValueWrapper(dynamodbProperty);
-        try {
-            attributeValueWrapper.accept(toStringVisitor);
-        } catch (final UnsupportedDynamodbTypeException exception) {
-            throw new LookupValueMapperException(
-                    "The DynamoDB type " + exception.getDynamodbTypeName() + " cant't be converted to string.",
-                    this.column);
-        }
+        attributeValueWrapper.accept(toStringVisitor);
         final String stringValue = toStringVisitor.result;
         if (stringValue == null) {
             return this.column.getExasolDefaultValue();
         } else {
-            return StringLiteral.of(this.handleOverflow(stringValue));
+            return StringLiteral.of(handleOverflowIfNecessary(stringValue));
         }
     }
 
-    private String handleOverflow(final String sourceString) throws OverflowException {
+    private String handleOverflowIfNecessary(final String sourceString) throws OverflowException {
         if (sourceString.length() > this.column.getExasolStringSize()) {
-            if (this.column.getOverflowBehaviour() == ToStringColumnMappingDefinition.OverflowBehaviour.TRUNCATE) {
-                return sourceString.substring(0, this.column.getExasolStringSize());
-            } else {
-                throw new OverflowException(
-                        "String overflow. You can either increase the string size if this column or set the overflow behaviour to truncate.",
-                        this.column);
-            }
+            return handleOverflow(sourceString);
         } else {
             return sourceString;
+        }
+    }
+
+    private String handleOverflow(final String tooLongSourceString) throws OverflowException {
+        if (this.column.getOverflowBehaviour() == ToStringColumnMappingDefinition.OverflowBehaviour.TRUNCATE) {
+            return tooLongSourceString.substring(0, this.column.getExasolStringSize());
+        } else {
+            throw new OverflowException(
+                    "String overflow. You can either increase the string size if this column or set the overflow behaviour to truncate.",
+                    this.column);
         }
     }
 
@@ -79,6 +75,12 @@ public class ToStringValueMapper extends AbstractValueMapper {
         @Override
         public void visitNull() {
             this.result = null;
+        }
+
+        @Override
+        public void defaultVisit(final String typeName) {
+            throw new UnsupportedOperationException(
+                    "The DynamoDB type " + typeName + " cant't be converted to string. Try using a different mapping.");
         }
 
         @Override

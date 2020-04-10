@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test;
 public class BucketfsFileFactoryTest {
 
     @Test
-    public void testOpenFile() throws BucketfsPathException {
+    public void testOpenFile() {
         final String path = "/bfsdefault/default/folder/file.txt";
         final File file = new BucketfsFileFactory().openFile(path);
         assertThat(file.getAbsolutePath(), equalTo("/buckets/bfsdefault/default/folder/file.txt"));
@@ -20,9 +20,9 @@ public class BucketfsFileFactoryTest {
     @Test
     public void testInjection() {
         final String injectionPath = "/../etc/secrets.conf";
-        final BucketfsPathException exception = assertThrows(BucketfsPathException.class,
+        final IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
                 () -> new BucketfsFileFactory().openFile(injectionPath));
-        assertThat(exception.getCausingPath(), equalTo("/etc/secrets.conf"));
+        assertThat(exception.getMessage(), equalTo("Given path (/etc/secrets.conf) is outside of bucketfs."));
     }
 
 }

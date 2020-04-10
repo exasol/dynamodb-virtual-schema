@@ -19,6 +19,7 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import com.exasol.ExaMetadata;
+import com.exasol.adapter.dynamodb.mapping.MappingTestFiles;
 import com.exasol.adapter.request.CreateVirtualSchemaRequest;
 import com.exasol.adapter.request.DropVirtualSchemaRequest;
 import com.exasol.bucketfs.BucketAccessException;
@@ -67,7 +68,7 @@ public class DynamodbAdapterCreateAndDropTestLocalIT {
 
     @Test
     public void testCreateAndDrop() throws SQLException, InterruptedException, BucketAccessException, TimeoutException {
-        exasolTestUtils.uploadMapping("basicMapping.json", "mappings/test.json");
+        exasolTestUtils.uploadMapping(MappingTestFiles.BASIC_MAPPING_FILE_NAME, "mappings/test.json");
         exasolTestUtils.createDynamodbVirtualSchema(TEST_SCHEMA, DYNAMODB_CONNECTION,
                 "/bfsdefault/default/mappings/test.json");
         assertThat(exasolTestUtils.testIfSchemaExists(TEST_SCHEMA), equalTo(true));

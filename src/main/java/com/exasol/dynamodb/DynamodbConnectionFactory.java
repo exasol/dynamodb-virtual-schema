@@ -8,11 +8,11 @@ import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
 import com.amazonaws.services.dynamodbv2.document.DynamoDB;
 
 /**
- * Helper functions for creating a DynamoDB connection.
+ * This class represents a factory that creates connections to DynamoDB.
  */
 public class DynamodbConnectionFactory {
-    private final static String AWS_PREFIX = "aws:";
-    private final static String AWS_LOCAL_REGION = "eu-central-1";
+    private static final String AWS_PREFIX = "aws:";
+    private static final String AWS_LOCAL_REGION = "eu-central-1";
 
     /**
      * Creates an AmazonDynamoDB (low level api client) for a given uri, user and key.
