@@ -47,34 +47,46 @@ public class JsonMappingValidator {
             final Validator validator = Validator.builder().build();
             validator.performValidation(schema, schemaMappingDefinition);
         } catch (final ValidationException exception) {
-            throw new JsonMappingFactory.MappingException(extractReadableErrorMessage(exception));
+            makeValidationExceptionMoreReadable(exception);
         }
     }
 
-    private String extractReadableErrorMessage(final ValidationException exception) {
+    private void makeValidationExceptionMoreReadable(final ValidationException exception) throws JsonMappingFactory.MappingException {
         final List<ValidationException> causingExceptions = exception.getCausingExceptions();
         if (!causingExceptions.isEmpty()) {
             final ValidationException firstException = causingExceptions.get(0);
-            return extractReadableErrorMessage(firstException);
+            makeValidationExceptionMoreReadable(firstException);
         }
+        makeUnknownMappingTypeExceptionMoreReadable(exception);
+        makeWrongSchemaExceptionMoreReadable(exception);
+        makeNoMappingExceptionMoreReadable(exception);
+        throw new JsonMappingFactory.MappingException(exception.getMessage());
+    }
+
+    private void makeUnknownMappingTypeExceptionMoreReadable(final ValidationException exception) throws JsonMappingFactory.MappingException {
         if (exception.getErrorMessage().startsWith("extraneous key")
                 && exception.getSchemaLocation().equals("#/definitions/mappingDefinition")) {
             final String possibleProperties = possibleObjectProperties(exception.getViolatedSchema());
             if (!possibleProperties.isEmpty()) {
-                return exception.getMessage() + ", use one of the following mapping definitions: " + possibleProperties;
+                throw new JsonMappingFactory.MappingException( exception.getMessage() + ", use one of the following mapping definitions: " + possibleProperties);
             }
         }
+    }
+
+    private void makeWrongSchemaExceptionMoreReadable(final ValidationException exception) throws JsonMappingFactory.MappingException {
         if (exception.getMessage().startsWith("#/$schema:")
                 && exception.getMessage().endsWith("is not a valid enum value")) {
-            return exception.getPointerToViolation()
-                    + " $schema must be set  to https://github.com/exasol/dynamodb-virtual-schema/blob/develop/src/main/resources/mappingLanguageSchema.json";
+            throw new JsonMappingFactory.MappingException( exception.getPointerToViolation()
+                    + " $schema must be set  to https://github.com/exasol/dynamodb-virtual-schema/blob/develop/src/main/resources/mappingLanguageSchema.json");
         }
+    }
+
+    private void makeNoMappingExceptionMoreReadable(final ValidationException exception) throws JsonMappingFactory.MappingException {
         if (exception.getPointerToViolation().endsWith("/mapping") && exception.getKeyword().equals("minProperties")) {
             final String possibleProperties = possibleObjectProperties(exception.getViolatedSchema());
-            return exception.getPointerToViolation() + " Please specify at least one mapping. Possible are: "
-                    + possibleProperties;
+            throw new JsonMappingFactory.MappingException( exception.getPointerToViolation() + " Please specify at least one mapping. Possible are: "
+                    + possibleProperties);
         }
-        return exception.getMessage();
     }
 
     private String possibleObjectProperties(final Schema schema) {
