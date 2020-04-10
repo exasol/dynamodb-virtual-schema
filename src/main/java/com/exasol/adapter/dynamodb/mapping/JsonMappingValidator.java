@@ -23,6 +23,19 @@ import org.json.JSONTokener;
  */
 public class JsonMappingValidator {
     private static final String MAPPING_LANGUAGE_SCHEMA = "mappingLanguageSchema.json";
+    private final Schema schema;
+
+    /**
+     * Creates an instance of {@link JsonMappingValidator}.
+     * @throws IOException if reading schema from resources fails.
+     */
+    public JsonMappingValidator() throws IOException {
+        final ClassLoader classLoader = JsonMappingValidator.class.getClassLoader();
+        try (final InputStream inputStream = classLoader.getResourceAsStream(MAPPING_LANGUAGE_SCHEMA)) {
+            final JSONObject rawSchema = new JSONObject(new JSONTokener(inputStream));
+            this.schema = SchemaLoader.load(rawSchema);
+        }
+    }
 
     /**
      * Validates the schema from given file using a JSON-schema validator.
@@ -38,14 +51,10 @@ public class JsonMappingValidator {
         }
     }
 
-    private void validate(final JSONObject schemaMappingDefinition, final String fileName) throws IOException {
-        final ClassLoader classLoader = JsonMappingValidator.class.getClassLoader();
-        try (final InputStream inputStream = classLoader.getResourceAsStream(MAPPING_LANGUAGE_SCHEMA)) {
-            final JSONObject rawSchema = new JSONObject(new JSONTokener(inputStream));
-            final Schema schema = SchemaLoader.load(rawSchema);
-            // TODO create validator in constructor
+    private void validate(final JSONObject schemaMappingDefinition, final String fileName){
+        try {
             final Validator validator = Validator.builder().build();
-            validator.performValidation(schema, schemaMappingDefinition);
+            validator.performValidation(this.schema, schemaMappingDefinition);
         } catch (final ValidationException exception) {
             makeValidationExceptionMoreReadable(exception, fileName);
         }
