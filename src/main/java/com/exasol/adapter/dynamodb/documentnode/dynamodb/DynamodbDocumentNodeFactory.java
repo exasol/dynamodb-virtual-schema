@@ -9,8 +9,19 @@ import com.exasol.adapter.dynamodb.documentnode.DocumentNode;
 import com.exasol.dynamodb.attributevalue.AttributeValueVisitor;
 import com.exasol.dynamodb.attributevalue.AttributeValueWrapper;
 
+/**
+ * This class builds document nodes for a given {@link AttributeValue}. Weather a object- array- or value-node is built
+ * depends on the type of the {@link AttributeValue}.
+ */
 public class DynamodbDocumentNodeFactory {
-    DocumentNode buildDocumentNode(final AttributeValue value) {
+
+    /**
+     * Builds a document node for a given {@link AttributeValue}.
+     * 
+     * @param value {@link AttributeValue} to wrap
+     * @return object- array- or value-node
+     */
+    public DocumentNode buildDocumentNode(final AttributeValue value) {
         final AttributeValueWrapper attributeValueWrapper = new AttributeValueWrapper(value);
         final Visitor visitor = new Visitor();
         attributeValueWrapper.accept(visitor);
@@ -25,6 +36,7 @@ public class DynamodbDocumentNodeFactory {
             this.converter = DynamodbObject::new;
         }
 
+        // TODO string set, ... should also be mapped as array
         @Override
         public void visitList(final List<AttributeValue> value) {
             this.converter = DynamodbArray::new;

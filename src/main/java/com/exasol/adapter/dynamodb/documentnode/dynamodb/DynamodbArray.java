@@ -7,6 +7,9 @@ import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.exasol.adapter.dynamodb.documentnode.DocumentArray;
 import com.exasol.adapter.dynamodb.documentnode.DocumentNode;
 
+/**
+ * This class wraps DynamoDB lists.
+ */
 public class DynamodbArray implements DocumentArray {
     private final AttributeValue value;
 

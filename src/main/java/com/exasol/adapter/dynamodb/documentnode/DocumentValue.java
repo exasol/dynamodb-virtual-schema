@@ -5,7 +5,7 @@ package com.exasol.adapter.dynamodb.documentnode;
  */
 public interface DocumentValue extends DocumentNode {
     @Override
-    default void accept(final DocumentNodeVisitor visitor) {
+    public default void accept(final DocumentNodeVisitor visitor) {
         visitor.visit(this);
     }
 }

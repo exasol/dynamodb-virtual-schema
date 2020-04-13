@@ -21,7 +21,7 @@ public interface DocumentArray extends DocumentNode {
     public DocumentNode getValue(int index);
 
     @Override
-    default void accept(final DocumentNodeVisitor visitor) {
+    public default void accept(final DocumentNodeVisitor visitor) {
         visitor.visit(this);
     }
 }

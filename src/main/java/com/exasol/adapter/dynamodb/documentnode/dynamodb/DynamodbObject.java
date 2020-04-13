@@ -7,6 +7,9 @@ import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.exasol.adapter.dynamodb.documentnode.DocumentNode;
 import com.exasol.adapter.dynamodb.documentnode.DocumentObject;
 
+/**
+ * This class mapps DynamoDB objects. That means {@link AttributeValue}s with a map.
+ */
 public class DynamodbObject implements DocumentObject {
     private final AttributeValue value;
 
