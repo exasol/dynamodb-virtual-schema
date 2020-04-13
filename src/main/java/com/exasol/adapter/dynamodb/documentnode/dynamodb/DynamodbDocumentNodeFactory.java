@@ -43,6 +43,11 @@ public class DynamodbDocumentNodeFactory {
         }
 
         @Override
+        public void visitStringSet(final List<String> value) {
+            this.converter = DynamodbStringSet::new;
+        }
+
+        @Override
         public void defaultVisit(final String typeName) {
             this.converter = DynamodbValue::new;
         }

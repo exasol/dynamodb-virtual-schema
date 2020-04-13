@@ -3,6 +3,7 @@ package com.exasol.adapter.dynamodb.documentnode.dynamodb;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.instanceOf;
 
+import java.nio.ByteBuffer;
 import java.util.List;
 import java.util.Map;
 
@@ -25,9 +26,33 @@ public class DynamodbDocumentNodeFactoryTest {
     }
 
     @Test
-    void testCreateArray() {
+    void testCreateArrayFromList() {
         final AttributeValue attributeValue = new AttributeValue();
         attributeValue.setL(List.of(new AttributeValue()));
+        final DocumentNode documentNode = new DynamodbDocumentNodeFactory().buildDocumentNode(attributeValue);
+        assertThat(documentNode, instanceOf(DynamodbArray.class));
+    }
+
+    @Test
+    void testCreateArrayFromStringSet() {
+        final AttributeValue attributeValue = new AttributeValue();
+        attributeValue.setSS(List.of(""));
+        final DocumentNode documentNode = new DynamodbDocumentNodeFactory().buildDocumentNode(attributeValue);
+        assertThat(documentNode, instanceOf(DynamodbArray.class));
+    }
+
+    @Test
+    void testCreateArrayFromNumberSet() {
+        final AttributeValue attributeValue = new AttributeValue();
+        attributeValue.setNS(List.of(""));
+        final DocumentNode documentNode = new DynamodbDocumentNodeFactory().buildDocumentNode(attributeValue);
+        assertThat(documentNode, instanceOf(DynamodbArray.class));
+    }
+
+    @Test
+    void testCreateArrayFromBinarySet() {
+        final AttributeValue attributeValue = new AttributeValue();
+        attributeValue.setBS(List.of(ByteBuffer.wrap("".getBytes())));
         final DocumentNode documentNode = new DynamodbDocumentNodeFactory().buildDocumentNode(attributeValue);
         assertThat(documentNode, instanceOf(DynamodbArray.class));
     }

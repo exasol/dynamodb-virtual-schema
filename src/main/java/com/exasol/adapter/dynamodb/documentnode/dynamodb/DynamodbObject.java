@@ -8,7 +8,7 @@ import com.exasol.adapter.dynamodb.documentnode.DocumentNode;
 import com.exasol.adapter.dynamodb.documentnode.DocumentObject;
 
 /**
- * This class mapps DynamoDB objects. That means {@link AttributeValue}s with a map.
+ * This class wraps DynamoDB objects. That means {@link AttributeValue}s containing a map.
  */
 public class DynamodbObject implements DocumentObject {
     private final AttributeValue value;
