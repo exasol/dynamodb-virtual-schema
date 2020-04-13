@@ -8,11 +8,10 @@ import java.util.List;
 public class DocumentPathToStringConverter {
     public String convertToString(final DocumentPathExpression pathExpression) {
         final List<PathSegment> path = pathExpression.getPath();
-        if(path.isEmpty()){
+        if (path.isEmpty()) {
             return "/";
-        }
-        else {
-            final StringBuilder resultBuilder = new StringBuilder("");
+        } else {
+            final StringBuilder resultBuilder = new StringBuilder();
             for (final PathSegment pathSegment : path) {
                 resultBuilder.append(pathSegmentToString(pathSegment));
             }
@@ -41,7 +40,7 @@ public class DocumentPathToStringConverter {
 
         @Override
         public void visit(final ArrayAllPathSegment arrayAllPathSegment) {
-            this.result =  "[*]";
+            this.result = "[*]";
         }
     }
 }

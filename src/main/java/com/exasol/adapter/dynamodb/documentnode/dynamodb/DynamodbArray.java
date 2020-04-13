@@ -21,7 +21,7 @@ public class DynamodbArray implements DocumentArray {
     }
 
     @Override
-    public DocumentNode getValue(final int index){
+    public DocumentNode getValue(final int index) {
         return new DynamodbDocumentNodeFactory().buildDocumentNode(this.value.getL().get(index));
     }
 }

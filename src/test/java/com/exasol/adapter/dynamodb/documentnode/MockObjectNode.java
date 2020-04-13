@@ -1,8 +1,5 @@
 package com.exasol.adapter.dynamodb.documentnode;
 
-import com.exasol.adapter.dynamodb.documentnode.DocumentNode;
-import com.exasol.adapter.dynamodb.documentnode.DocumentObject;
-
 import java.util.Map;
 
 public class MockObjectNode implements DocumentObject {

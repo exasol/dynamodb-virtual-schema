@@ -1,16 +1,16 @@
 package com.exasol.adapter.dynamodb.documentpath;
 
-import com.exasol.adapter.dynamodb.documentnode.DocumentNode;
-import com.exasol.adapter.dynamodb.documentnode.MockObjectNode;
-import com.exasol.adapter.dynamodb.documentnode.MockValueNode;
-import org.junit.jupiter.api.Test;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.Map;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsInAnyOrder;
-import static org.hamcrest.Matchers.equalTo;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import org.junit.jupiter.api.Test;
+
+import com.exasol.adapter.dynamodb.documentnode.DocumentNode;
+import com.exasol.adapter.dynamodb.documentnode.MockObjectNode;
+import com.exasol.adapter.dynamodb.documentnode.MockValueNode;
 
 /**
  * Tests for {@link LinearDocumentPathWalker}
@@ -29,10 +29,11 @@ public class LinearDocumentPathWalkerTest {
     }
 
     @Test
-    void testNonLinearPath(){
-        final DocumentPathExpression pathExpression = new DocumentPathExpression.Builder().addArrayAll()
-                .build();
-        final DocumentPathWalkerException exception = assertThrows(DocumentPathWalkerException.class, () -> new LinearDocumentPathWalker(pathExpression));
-        assertThat(exception.getMessage(), equalTo("The given path is not a linear path. You can either remove the ArrayAllSegments from path or use a DocumentPathWalker."));
+    void testNonLinearPath() {
+        final DocumentPathExpression pathExpression = new DocumentPathExpression.Builder().addArrayAll().build();
+        final DocumentPathWalkerException exception = assertThrows(DocumentPathWalkerException.class,
+                () -> new LinearDocumentPathWalker(pathExpression));
+        assertThat(exception.getMessage(), equalTo(
+                "The given path is not a linear path. You can either remove the ArrayAllSegments from path or use a DocumentPathWalker."));
     }
 }

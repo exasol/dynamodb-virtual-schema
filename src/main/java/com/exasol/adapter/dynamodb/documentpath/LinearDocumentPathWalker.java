@@ -14,6 +14,7 @@ public class LinearDocumentPathWalker {
 
     /**
      * Creates a {@link LinearDocumentPathWalker}.
+     * 
      * @param pathExpression Path definition. Must not contain {@link ArrayAllPathSegment}s.
      * @throws DocumentPathWalkerException if path contains {@link ArrayAllPathSegment}s.
      */

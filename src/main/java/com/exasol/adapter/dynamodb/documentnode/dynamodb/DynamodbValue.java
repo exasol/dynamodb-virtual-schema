@@ -9,4 +9,8 @@ public class DynamodbValue implements DocumentValue {
     DynamodbValue(final AttributeValue value) {
         this.value = value;
     }
+
+    public AttributeValue getValue() {
+        return this.value;
+    }
 }

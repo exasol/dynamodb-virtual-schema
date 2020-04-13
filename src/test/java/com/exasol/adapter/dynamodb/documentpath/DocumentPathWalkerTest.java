@@ -1,19 +1,20 @@
 package com.exasol.adapter.dynamodb.documentpath;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.equalTo;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.List;
 import java.util.Map;
 
-import com.exasol.adapter.dynamodb.documentnode.MockArrayNode;
-import com.exasol.adapter.dynamodb.documentnode.MockObjectNode;
-import com.exasol.adapter.dynamodb.documentnode.MockValueNode;
 import org.junit.jupiter.api.Test;
 
 import com.exasol.adapter.dynamodb.documentnode.DocumentNode;
+import com.exasol.adapter.dynamodb.documentnode.MockArrayNode;
+import com.exasol.adapter.dynamodb.documentnode.MockObjectNode;
+import com.exasol.adapter.dynamodb.documentnode.MockValueNode;
 
 /**
  * Tests for {@link DocumentPathWalker}
@@ -23,7 +24,7 @@ public class DocumentPathWalkerTest {
     private static final MockValueNode NESTED_VALUE1 = new MockValueNode();
     private static final MockValueNode NESTED_VALUE2 = new MockValueNode();
     private static final MockObjectNode TEST_OBJECT_NODE = new MockObjectNode(Map.of("key", NESTED_VALUE1));
-    private static final MockArrayNode TEST_ARRAY_NODE = new MockArrayNode(List.of(NESTED_VALUE1,NESTED_VALUE2));
+    private static final MockArrayNode TEST_ARRAY_NODE = new MockArrayNode(List.of(NESTED_VALUE1, NESTED_VALUE2));
 
     @Test
     void testWalkEmptyPath() throws DocumentPathWalkerException {
@@ -47,7 +48,8 @@ public class DocumentPathWalkerTest {
         final DocumentPathWalkerException exception = assertThrows(DocumentPathWalkerException.class,
                 () -> new DocumentPathWalker(pathExpression).walk(TEST_OBJECT_NODE));
         assertAll(() -> assertThat(exception.getCurrentPath(), equalTo("/key")),
-                () -> assertThat(exception.getMessage(), equalTo("Can't perform key lookup on non object. (requested key= key2) (current path= /key)")));
+                () -> assertThat(exception.getMessage(),
+                        equalTo("Can't perform key lookup on non object. (requested key= key2) (current path= /key)")));
     }
 
     @Test
@@ -56,8 +58,8 @@ public class DocumentPathWalkerTest {
                 .build();
         final DocumentPathWalkerException exception = assertThrows(DocumentPathWalkerException.class,
                 () -> new DocumentPathWalker(pathExpression).walk(TEST_OBJECT_NODE));
-        assertAll(() -> assertThat(exception.getCurrentPath(), equalTo("/")),
-                () -> assertThat(exception.getMessage(), equalTo("The requested lookup key (unknownKey) is not present in this object. (current path= /)")));
+        assertAll(() -> assertThat(exception.getCurrentPath(), equalTo("/")), () -> assertThat(exception.getMessage(),
+                equalTo("The requested lookup key (unknownKey) is not present in this object. (current path= /)")));
     }
 
     @Test

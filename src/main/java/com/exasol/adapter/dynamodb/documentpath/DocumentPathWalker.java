@@ -7,7 +7,6 @@ import java.util.function.Function;
 import com.exasol.adapter.dynamodb.documentnode.DocumentArray;
 import com.exasol.adapter.dynamodb.documentnode.DocumentNode;
 import com.exasol.adapter.dynamodb.documentnode.DocumentObject;
-import com.fasterxml.jackson.databind.node.ArrayNode;
 
 /**
  * This class walks a given path defined in {@link DocumentPathExpression} through a {@link DocumentNode} structure.
@@ -35,7 +34,8 @@ public class DocumentPathWalker {
         return this.walk(rootNode, 0);
     }
 
-    private List<DocumentNode> walk(final DocumentNode thisNode, final int position) throws DocumentPathWalkerException {
+    private List<DocumentNode> walk(final DocumentNode thisNode, final int position)
+            throws DocumentPathWalkerException {
         if (this.pathExpression.size() <= position) {
             return List.of(thisNode);
         }
@@ -58,10 +58,11 @@ public class DocumentPathWalker {
             throw new DocumentPathWalkerException(
                     "The requested lookup key (" + exception.lookupKey + ") is not present in this object.",
                     currentPathString);
-        } catch (final NotAnArrayException exception){
+        } catch (final NotAnArrayException exception) {
             throw new DocumentPathWalkerException("Can't perform array lookup on non array.", currentPathString);
-        }catch (final IndexOutOfBoundsException exception){
-            throw new DocumentPathWalkerException("Can't perform array lookup: " + exception.getMessage(), currentPathString);
+        } catch (final IndexOutOfBoundsException exception) {
+            throw new DocumentPathWalkerException("Can't perform array lookup: " + exception.getMessage(),
+                    currentPathString);
         }
     }
 
@@ -97,7 +98,7 @@ public class DocumentPathWalker {
             };
         }
 
-        private DocumentArray castNodeToArray(final DocumentNode thisNode){
+        private DocumentArray castNodeToArray(final DocumentNode thisNode) {
             if (!(thisNode instanceof DocumentArray)) {
                 throw new NotAnArrayException();
             }

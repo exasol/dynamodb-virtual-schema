@@ -1,6 +1,5 @@
 package com.exasol.adapter.dynamodb.documentnode.dynamodb;
 
-import java.nio.ByteBuffer;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;

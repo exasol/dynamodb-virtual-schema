@@ -1,12 +1,11 @@
 package com.exasol.adapter.dynamodb.documentnode;
 
-import org.junit.jupiter.api.Test;
-
-import java.util.Collections;
-import java.util.List;
-
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
+
+import java.util.Collections;
+
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests for {@link DocumentNodeVisitor}.
@@ -14,7 +13,7 @@ import static org.hamcrest.Matchers.equalTo;
 public class DocumentNodeVisitorTest {
 
     @Test
-    void testVisitArray(){
+    void testVisitArray() {
         final MockDocumentNodeVisitor visitor = new MockDocumentNodeVisitor();
         final DocumentNode documentArray = new MockArrayNode(Collections.emptyList());
         documentArray.accept(visitor);
@@ -22,7 +21,7 @@ public class DocumentNodeVisitorTest {
     }
 
     @Test
-    void testVisitObject(){
+    void testVisitObject() {
         final MockDocumentNodeVisitor visitor = new MockDocumentNodeVisitor();
         final DocumentNode documentArray = new MockObjectNode(Collections.emptyMap());
         documentArray.accept(visitor);
@@ -30,19 +29,20 @@ public class DocumentNodeVisitorTest {
     }
 
     @Test
-    void testVisitValue(){
+    void testVisitValue() {
         final MockDocumentNodeVisitor visitor = new MockDocumentNodeVisitor();
         final DocumentNode documentArray = new MockValueNode();
         documentArray.accept(visitor);
         assertThat(visitor.lastVisited, equalTo(VisitedType.Value));
     }
 
-    private static enum VisitedType{
+    private enum VisitedType {
         Array, Object, Value, Nothing
     }
 
-    private static class MockDocumentNodeVisitor implements DocumentNodeVisitor{
+    private static class MockDocumentNodeVisitor implements DocumentNodeVisitor {
         private VisitedType lastVisited = VisitedType.Nothing;
+
         @Override
         public void visit(final DocumentArray array) {
             this.lastVisited = VisitedType.Array;

@@ -35,8 +35,8 @@ public class DocumentPathExpressionTest {
     @Test
     void testAddObjectLookup() {
         final DocumentPathExpression pathExpression = new DocumentPathExpression.Builder()//
-            .addObjectLookup("key")//
-            .build();
+                .addObjectLookup("key")//
+                .build();
         final ObjectLookupPathSegment objectLookup = (ObjectLookupPathSegment) pathExpression.getPath().get(0);
         assertThat(objectLookup.getLookupKey(), equalTo("key"));
     }
@@ -44,8 +44,7 @@ public class DocumentPathExpressionTest {
     @Test
     void testAddArrayLookup() {
         final DocumentPathExpression pathExpression = new DocumentPathExpression.Builder()//
-                .addArrayLookup(0)
-                .build();
+                .addArrayLookup(0).build();
         final ArrayLookupPathSegment objectLookup = (ArrayLookupPathSegment) pathExpression.getPath().get(0);
         assertThat(objectLookup.getLookupIndex(), equalTo(0));
     }
