@@ -3,9 +3,6 @@ package com.exasol.adapter.dynamodb.documentnode;
 /**
  * Interface for simple values.
  */
-public interface DocumentValue extends DocumentNode {
-    @Override
-    public default void accept(final DocumentNodeVisitor visitor) {
-        visitor.visit(this);
-    }
+@java.lang.SuppressWarnings("squid:S119")//VisitorType does not fit naming conventions.
+public interface DocumentValue<VisitorType> extends DocumentNode<VisitorType> {
 }

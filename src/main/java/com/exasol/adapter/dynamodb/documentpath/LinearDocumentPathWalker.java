@@ -8,9 +8,10 @@ import com.exasol.adapter.dynamodb.documentnode.DocumentNode;
  *
  * In contrast to {@link DocumentPathWalker#walk(DocumentNode)} This classes walk method only returns one single value.
  */
-public class LinearDocumentPathWalker {
+@java.lang.SuppressWarnings("squid:S119")//VisitorType does not fit naming conventions.
+public class LinearDocumentPathWalker<VisitorType> {
 
-    private final DocumentPathWalker documentPathWalker;
+    private final DocumentPathWalker<VisitorType> documentPathWalker;
 
     /**
      * Creates a {@link LinearDocumentPathWalker}.
@@ -20,7 +21,7 @@ public class LinearDocumentPathWalker {
      */
     public LinearDocumentPathWalker(final DocumentPathExpression pathExpression) throws DocumentPathWalkerException {
         checkPathIsLinear(pathExpression);
-        this.documentPathWalker = new DocumentPathWalker(pathExpression);
+        this.documentPathWalker = new DocumentPathWalker<>(pathExpression);
     }
 
     /**
@@ -30,7 +31,7 @@ public class LinearDocumentPathWalker {
      * @return documents attribute described in {@link DocumentPathExpression}
      * @throws DocumentPathWalkerException if defined path does not exist in the given document
      */
-    public DocumentNode walk(final DocumentNode rootNode) throws DocumentPathWalkerException {
+    public DocumentNode<VisitorType> walk(final DocumentNode<VisitorType> rootNode) throws DocumentPathWalkerException {
         return this.documentPathWalker.walk(rootNode).get(0);
     }
 

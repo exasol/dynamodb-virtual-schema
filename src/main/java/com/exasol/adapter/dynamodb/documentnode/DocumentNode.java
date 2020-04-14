@@ -2,13 +2,15 @@ package com.exasol.adapter.dynamodb.documentnode;
 
 /**
  * This is a simple interface for accessing document data. It is used to abstract from the value representations of
- * different document databases.
+ * different document databases. It accepts an generic visitor.
  */
-public interface DocumentNode {
+
+@java.lang.SuppressWarnings("squid:S119")//VisitorType does not fit naming conventions.
+public interface DocumentNode<VisitorType> {
     /**
-     * Accept {@link DocumentNodeVisitor}
+     * Accept a VisitorType visitor.
      * 
-     * @param visitor
+     * @param visitor generic visitor to accept
      */
-    public void accept(DocumentNodeVisitor visitor);
+    public void accept(VisitorType visitor);
 }

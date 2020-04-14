@@ -12,9 +12,6 @@ import java.util.Map;
 import org.junit.jupiter.api.Test;
 
 import com.exasol.adapter.dynamodb.documentnode.DocumentNode;
-import com.exasol.adapter.dynamodb.documentnode.MockArrayNode;
-import com.exasol.adapter.dynamodb.documentnode.MockObjectNode;
-import com.exasol.adapter.dynamodb.documentnode.MockValueNode;
 
 /**
  * Tests for {@link DocumentPathWalker}

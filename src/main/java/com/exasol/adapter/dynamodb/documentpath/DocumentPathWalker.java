@@ -11,7 +11,8 @@ import com.exasol.adapter.dynamodb.documentnode.DocumentObject;
 /**
  * This class walks a given path defined in {@link DocumentPathExpression} through a {@link DocumentNode} structure.
  */
-public class DocumentPathWalker {
+@java.lang.SuppressWarnings("squid:S119")//VisitorType does not fit naming conventions.
+public class DocumentPathWalker<VisitorType> {
     private final DocumentPathExpression pathExpression;
 
     /**
@@ -30,23 +31,24 @@ public class DocumentPathWalker {
      * @return documents attributes described in {@link DocumentPathExpression}.
      * @throws DocumentPathWalkerException if defined path does not exist in the given document
      */
-    public List<DocumentNode> walk(final DocumentNode rootNode) throws DocumentPathWalkerException {
+    public List<DocumentNode<VisitorType>> walk(final DocumentNode<VisitorType> rootNode)
+            throws DocumentPathWalkerException {
         return this.walk(rootNode, 0);
     }
 
-    private List<DocumentNode> walk(final DocumentNode thisNode, final int position)
+    private List<DocumentNode<VisitorType>> walk(final DocumentNode<VisitorType> thisNode, final int position)
             throws DocumentPathWalkerException {
         if (this.pathExpression.size() <= position) {
             return List.of(thisNode);
         }
         final DocumentPathExpression currentPath = this.pathExpression.getSubPath(0, position);
         final String currentPathString = new DocumentPathToStringConverter().convertToString(currentPath);
-        final Function<DocumentNode, List<DocumentNode>> converter = getConverterFor(
+        final Function<DocumentNode<VisitorType>, List<DocumentNode<VisitorType>>> converter = getConverterFor(
                 this.pathExpression.getPath().get(position));
         try {
-            final List<DocumentNode> nextNodes = converter.apply(thisNode);
-            final ArrayList<DocumentNode> results = new ArrayList<>();
-            for (final DocumentNode nextNode : nextNodes) {
+            final List<DocumentNode<VisitorType>> nextNodes = converter.apply(thisNode);
+            final ArrayList<DocumentNode<VisitorType>> results = new ArrayList<>();
+            for (final DocumentNode<VisitorType> nextNode : nextNodes) {
                 results.addAll(walk(nextNode, position + 1));
             }
             return results;
@@ -66,14 +68,17 @@ public class DocumentPathWalker {
         }
     }
 
-    private Function<DocumentNode, List<DocumentNode>> getConverterFor(final PathSegment pathSegment) {
-        final WalkVisitor visitor = new WalkVisitor();
+    @java.lang.SuppressWarnings("squid:S119")//VisitorType does not fit naming conventions.
+    private Function<DocumentNode<VisitorType>, List<DocumentNode<VisitorType>>> getConverterFor(
+            final PathSegment pathSegment) {
+        final WalkVisitor<VisitorType> visitor = new WalkVisitor<>();
         pathSegment.accept(visitor);
         return visitor.converter;
     }
 
-    private static class WalkVisitor implements PathSegmentVisitor {
-        Function<DocumentNode, List<DocumentNode>> converter;
+    @java.lang.SuppressWarnings("squid:S119")//VisitorType does not fit naming conventions.
+    private static class WalkVisitor<VisitorType> implements PathSegmentVisitor {
+        Function<DocumentNode<VisitorType>, List<DocumentNode<VisitorType>>> converter;
 
         @Override
         public void visit(final ObjectLookupPathSegment objectLookupPathSegment) {
@@ -82,7 +87,7 @@ public class DocumentPathWalker {
                 if (!(thisNode instanceof DocumentObject)) {
                     throw new NotAnObjectException(key);
                 }
-                final DocumentObject thisObject = (DocumentObject) thisNode;
+                final DocumentObject<VisitorType> thisObject = (DocumentObject<VisitorType>) thisNode;
                 if (!thisObject.hasKey(key)) {
                     throw new UnknownLookupKeyException(key);
                 }
@@ -93,22 +98,22 @@ public class DocumentPathWalker {
         @Override
         public void visit(final ArrayLookupPathSegment arrayLookupPathSegment) {
             this.converter = thisNode -> {
-                final DocumentArray thisArray = castNodeToArray(thisNode);
+                final DocumentArray<VisitorType> thisArray = castNodeToArray(thisNode);
                 return List.of(thisArray.getValue(arrayLookupPathSegment.getLookupIndex()));
             };
         }
 
-        private DocumentArray castNodeToArray(final DocumentNode thisNode) {
+        private DocumentArray<VisitorType> castNodeToArray(final DocumentNode<VisitorType> thisNode) {
             if (!(thisNode instanceof DocumentArray)) {
                 throw new NotAnArrayException();
             }
-            return (DocumentArray) thisNode;
+            return (DocumentArray<VisitorType>) thisNode;
         }
 
         @Override
         public void visit(final ArrayAllPathSegment arrayAllPathSegment) {
             this.converter = thisNode -> {
-                final DocumentArray thisArray = castNodeToArray(thisNode);
+                final DocumentArray<VisitorType> thisArray = castNodeToArray(thisNode);
                 return thisArray.getValueList();
             };
         }
