@@ -1,0 +1,13 @@
+@startuml
+class BOOKS {
+    ISBN: VARCHAR(20)
+    NAME: VARCHAR(100)
+}
+
+class BOOKS_TOPICS {
+    ISBN: VARCHAR(20) FOREIGN KEY
+    TOPIC_NAME: VARCHAR(20)
+}
+
+BOOKS  "1" *-- "*" BOOKS_TOPICS : contains
+@enduml

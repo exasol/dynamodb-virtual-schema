@@ -1,15 +1,15 @@
 package com.exasol.adapter.dynamodb;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
-import com.amazonaws.auth.AWSStaticCredentialsProvider;
-import com.amazonaws.auth.BasicAWSCredentials;
-import com.amazonaws.client.builder.AwsClientBuilder;
-import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
-import com.amazonaws.services.dynamodbv2.document.DynamoDB;
-import com.amazonaws.services.dynamodbv2.document.ItemCollection;
-import com.amazonaws.services.dynamodbv2.document.ScanOutcome;
-import com.amazonaws.services.dynamodbv2.document.Table;
+import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
+import com.amazonaws.services.dynamodbv2.model.AttributeValue;
+import com.amazonaws.services.dynamodbv2.model.ScanRequest;
+import com.amazonaws.services.dynamodbv2.model.ScanResult;
 import com.exasol.ExaConnectionAccessException;
 import com.exasol.ExaConnectionInformation;
 import com.exasol.ExaMetadata;
@@ -17,124 +17,164 @@ import com.exasol.adapter.AdapterException;
 import com.exasol.adapter.AdapterProperties;
 import com.exasol.adapter.VirtualSchemaAdapter;
 import com.exasol.adapter.capabilities.Capabilities;
-import com.exasol.adapter.metadata.ColumnMetadata;
-import com.exasol.adapter.metadata.DataType;
+import com.exasol.adapter.dynamodb.mapping.JsonMappingFactory;
+import com.exasol.adapter.dynamodb.mapping.MappingDefinitionFactory;
+import com.exasol.adapter.dynamodb.mapping.SchemaMappingDefinition;
+import com.exasol.adapter.dynamodb.mapping.SchemaMappingDefinitionToSchemaMetadataConverter;
+import com.exasol.adapter.dynamodb.queryresultschema.QueryResultTableSchema;
+import com.exasol.adapter.dynamodb.queryresultschema.QueryResultTableSchemaBuilder;
+import com.exasol.adapter.dynamodb.queryresultschema.RowMapper;
 import com.exasol.adapter.metadata.SchemaMetadata;
-import com.exasol.adapter.metadata.TableMetadata;
 import com.exasol.adapter.request.*;
 import com.exasol.adapter.response.*;
+import com.exasol.bucketfs.BucketfsFileFactory;
+import com.exasol.dynamodb.DynamodbConnectionFactory;
+import com.exasol.dynamodb.resultwalker.DynamodbResultWalkerException;
+import com.exasol.sql.expression.ValueExpression;
 
 /**
  * DynamoDB Virtual Schema adapter.
  */
 public class DynamodbAdapter implements VirtualSchemaAdapter {
 
-	@Override
-	public CreateVirtualSchemaResponse createVirtualSchema(final ExaMetadata exaMetadata,
-			final CreateVirtualSchemaRequest request) {
-		final ColumnMetadata.Builder colBuilder = new ColumnMetadata.Builder();
-		colBuilder.name("isbn");
-		colBuilder.type(DataType.createVarChar(100, DataType.ExaCharset.ASCII));
-		final List<ColumnMetadata> cols = List.of(colBuilder.build());
-		final List<TableMetadata> tables = List.of(new TableMetadata("testTable", "", cols, ""));
-		final SchemaMetadata remoteMeta = new SchemaMetadata("", tables);
-		return CreateVirtualSchemaResponse.builder().schemaMetadata(remoteMeta).build();
-	}
+    @Override
+    public CreateVirtualSchemaResponse createVirtualSchema(final ExaMetadata exaMetadata,
+            final CreateVirtualSchemaRequest request) throws AdapterException {
+        try {
+            return runCreateVirtualSchema(request);
+        } catch (final IOException exception) {
+            throw new AdapterException("Unable to create Virtual Schema \"" + request.getVirtualSchemaName() + "\". "
+                    + "Cause: " + exception.getMessage(), exception);
+        }
+    }
 
-	/**
-	 * Creates a connection to DynamoDB using the connection details set in
-	 * {@code CREATE CONNECTION}.
-	 */
-	private DynamoDB getConnection(final ExaMetadata exaMetadata, final AbstractAdapterRequest request)
-			throws ExaConnectionAccessException {
-		final AdapterProperties properties = getPropertiesFromRequest(request);
-		final ExaConnectionInformation connection = exaMetadata.getConnection(properties.getConnectionName());
-		return getDynamodbConnection(connection.getAddress(), connection.getUser(), connection.getPassword());
-	}
+    private CreateVirtualSchemaResponse runCreateVirtualSchema(final CreateVirtualSchemaRequest request)
+            throws IOException, AdapterException {
+        final SchemaMetadata schemaMetadata = getSchemaMetadata(request);
+        return CreateVirtualSchemaResponse.builder().schemaMetadata(schemaMetadata).build();
+    }
 
-	/**
-	 * Creates a DynamoDB client for a given uri, user and key.
-	 * 
-	 * @param uri
-	 *            either aws:<REGION> or address of local DynamoDB server (e.g.
-	 *            http://localhost:8000)
-	 * @param user
-	 *            aws credential id
-	 * @param key
-	 *            aws credential key
-	 * @return DynamoDB client
-	 */
-	protected static DynamoDB getDynamodbConnection(final String uri, final String user, final String key) {
-		final String AWS_PREFIX = "aws:";
-		final String AWS_LOCAL_REGION = "eu-central-1";
-		final BasicAWSCredentials awsCredentials = new BasicAWSCredentials(user, key);
-		final AmazonDynamoDBClientBuilder clientBuilder = AmazonDynamoDBClientBuilder.standard()
-				.withCredentials(new AWSStaticCredentialsProvider(awsCredentials));
-		if (uri.startsWith(AWS_PREFIX)) {
-			clientBuilder.withRegion(uri.replace(AWS_PREFIX, ""));
-		} else {
-			clientBuilder.withEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration(uri, AWS_LOCAL_REGION));
-		}
-		return new DynamoDB(clientBuilder.build());
-	}
+    private SchemaMetadata getSchemaMetadata(final AdapterRequest request) throws IOException, AdapterException {
+        final SchemaMappingDefinition schemaMappingDefinition = getSchemaMappingDefinition(request);
+        return new SchemaMappingDefinitionToSchemaMetadataConverter().convert(schemaMappingDefinition);
+    }
 
-	private AdapterProperties getPropertiesFromRequest(final AdapterRequest request) {
-		return new AdapterProperties(request.getSchemaMetadataInfo().getProperties());
-	}
+    private SchemaMappingDefinition getSchemaMappingDefinition(final AdapterRequest request)
+            throws AdapterException, IOException {
+        final AdapterProperties adapterProperties = new AdapterProperties(
+                request.getSchemaMetadataInfo().getProperties());
+        final DynamodbAdapterProperties dynamodbAdapterProperties = new DynamodbAdapterProperties(adapterProperties);
+        final File mappingDefinitionFile = getSchemaMappingFile(dynamodbAdapterProperties);
+        final MappingDefinitionFactory mappingFactory = new JsonMappingFactory(mappingDefinitionFile);
+        return mappingFactory.getSchemaMapping();
+    }
 
-	@Override
-	public DropVirtualSchemaResponse dropVirtualSchema(final ExaMetadata exaMetadata,
-			final DropVirtualSchemaRequest dropVirtualSchemaRequest) {
-		throw new UnsupportedOperationException("not yet implemented");// NOSONAR (string constant)
-	}
+    private File getSchemaMappingFile(final DynamodbAdapterProperties dynamodbAdapterProperties)
+            throws AdapterException {
+        final String path = dynamodbAdapterProperties.getMappingDefinition();
+        final File file = new BucketfsFileFactory().openFile(path);
+        if (!file.exists()) {
+            throw new AdapterException("The specified mapping file (" + file
+                    + ") could not be found. Make sure you uploaded your mapping definition to BucketFS and specified "
+                    + "the correct bucketfs, bucket and path within the bucket.");
+        }
+        return file;
+    }
 
-	@Override
-	public GetCapabilitiesResponse getCapabilities(final ExaMetadata exaMetadata,
-			final GetCapabilitiesRequest getCapabilitiesRequest) {
-		final Capabilities.Builder builder = Capabilities.builder();
-		final Capabilities capabilities = builder.build();
-		return GetCapabilitiesResponse //
-				.builder()//
-				.capabilities(capabilities)//
-				.build();
-	}
+    /**
+     * Creates a connection to DynamoDB using the connection details from the {@code CREATE CONNECTION} statement.
+     */
+    private AmazonDynamoDB getConnection(final ExaMetadata exaMetadata, final AbstractAdapterRequest request)
+            throws ExaConnectionAccessException {
+        final AdapterProperties properties = getPropertiesFromRequest(request);
+        final ExaConnectionInformation connection = exaMetadata.getConnection(properties.getConnectionName());
+        return new DynamodbConnectionFactory().getLowLevelConnection(connection.getAddress(), connection.getUser(),
+                connection.getPassword());
+    }
 
-	/**
-	 * Runs the actual query. The data is fetched using a scan from DynamoDB and
-	 * then transformed into a {@code SELECT FROM VALUES} statement and passed back
-	 * to Exasol.
-	 *
-	 * @param exaMetadata
-	 * @param request
-	 * @return
-	 * @throws AdapterException
-	 */
-	@Override
-	public PushDownResponse pushdown(final ExaMetadata exaMetadata, final PushDownRequest request)
-			throws AdapterException {
-		try {
-			final DynamoDB client = getConnection(exaMetadata, request);
-			final Table table = client.getTable("JB_Books");
-			final ItemCollection<ScanOutcome> scanResult = table.scan();
-			final String selectFromValuesStatement = new DynamodbResultToSqlSelectFromValuesConverter()
-					.convert(scanResult);
-			return PushDownResponse.builder()//
-					.pushDownSql(selectFromValuesStatement)//
-					.build();
-		} catch (final ExaConnectionAccessException exception) {
-			throw new AdapterException("Unable create Virtual Schema \"" + request.getVirtualSchemaName()
-					+ "\". Cause: \"" + exception.getMessage(), exception);
-		}
-	}
+    private AdapterProperties getPropertiesFromRequest(final AdapterRequest request) {
+        return new AdapterProperties(request.getSchemaMetadataInfo().getProperties());
+    }
 
-	@Override
-	public RefreshResponse refresh(final ExaMetadata exaMetadata, final RefreshRequest refreshRequest) {
-		throw new UnsupportedOperationException("not yet implemented");// NOSONAR (string constant)
-	}
+    @Override
+    public DropVirtualSchemaResponse dropVirtualSchema(final ExaMetadata exaMetadata,
+            final DropVirtualSchemaRequest dropVirtualSchemaRequest) {
+        return DropVirtualSchemaResponse.builder().build();
+    }
 
-	@Override
-	public SetPropertiesResponse setProperties(final ExaMetadata exaMetadata,
-			final SetPropertiesRequest setPropertiesRequest) {
-		throw new UnsupportedOperationException("not yet implemented");// NOSONAR (string constant)
-	}
+    @Override
+    public GetCapabilitiesResponse getCapabilities(final ExaMetadata exaMetadata,
+            final GetCapabilitiesRequest getCapabilitiesRequest) {
+        final Capabilities.Builder builder = Capabilities.builder();
+        final Capabilities capabilities = builder.build();
+        return GetCapabilitiesResponse //
+                .builder()//
+                .capabilities(capabilities)//
+                .build();
+    }
+
+    /**
+     * Runs the actual query. The data is fetched using a scan from DynamoDB and then transformed into a
+     * {@code SELECT FROM VALUES} statement and passed back to Exasol.
+     */
+    @Override
+    public PushDownResponse pushdown(final ExaMetadata exaMetadata, final PushDownRequest request)
+            throws AdapterException {
+        try {
+            return runPushdown(exaMetadata, request);
+        } catch (final ExaConnectionAccessException | DynamodbResultWalkerException exception) {
+            throw new AdapterException("Unable to create Virtual Schema \"" + request.getVirtualSchemaName() + "\". "
+                    + "Cause: " + exception.getMessage(), exception);
+        }
+    }
+
+    private PushDownResponse runPushdown(final ExaMetadata exaMetadata, final PushDownRequest request)
+            throws AdapterException, ExaConnectionAccessException {
+        final QueryResultTableSchema queryResultTableSchema = new QueryResultTableSchemaBuilder()
+                .build(request.getSelect());
+        final ScanResult scanResult = runDynamodbQuery(exaMetadata, request);
+        final String selectFromValuesStatement = convertResult(scanResult, queryResultTableSchema);
+        return PushDownResponse.builder()//
+                .pushDownSql(selectFromValuesStatement)//
+                .build();
+    }
+
+    private ScanResult runDynamodbQuery(final ExaMetadata exaMetadata, final PushDownRequest request)
+            throws ExaConnectionAccessException {
+        final AmazonDynamoDB client = getConnection(exaMetadata, request);
+        return client.scan(new ScanRequest("JB_Books"));
+    }
+
+    private String convertResult(final ScanResult scanResult, final QueryResultTableSchema queryResultTableSchema)
+            throws AdapterException {
+        final List<List<ValueExpression>> resultRows = new ArrayList<>();
+        final RowMapper rowMapper = new RowMapper(queryResultTableSchema);
+        for (final Map<String, AttributeValue> dynamodbItem : scanResult.getItems()) {
+            resultRows.add(rowMapper.mapRow(dynamodbItem));
+        }
+        return new ValueExpressionsToSqlSelectFromValuesConverter().convert(queryResultTableSchema, resultRows);
+    }
+
+    @Override
+    public RefreshResponse refresh(final ExaMetadata exaMetadata, final RefreshRequest refreshRequest)
+            throws AdapterException {
+        try {
+            return runRefresh(refreshRequest);
+        } catch (final IOException exception) {
+            throw new AdapterException("Unable to update Virtual Schema \"" + refreshRequest.getVirtualSchemaName()
+                    + "\". Cause: " + exception.getMessage(), exception);
+        }
+    }
+
+    private RefreshResponse runRefresh(final RefreshRequest refreshRequest) throws IOException, AdapterException {
+        final SchemaMetadata schemaMetadata = getSchemaMetadata(refreshRequest);
+        return RefreshResponse.builder().schemaMetadata(schemaMetadata).build();
+    }
+
+    @Override
+    public SetPropertiesResponse setProperties(final ExaMetadata exaMetadata,
+            final SetPropertiesRequest setPropertiesRequest) {
+        throw new UnsupportedOperationException(
+                "The current version of DynamoDB Virtual Schema does not support SET PROPERTIES statement.");
+    }
 }

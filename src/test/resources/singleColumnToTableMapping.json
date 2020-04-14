@@ -1,0 +1,19 @@
+{
+  "$schema": "../../main/resources/mappingLanguageSchema.json",
+  "srcTable": "MY_BOOKS",
+  "destTable": "BOOKS",
+  "description": "Maps MY_BOOKS to BOOKS",
+  "mapping": {
+    "fields": {
+      "topics": {
+        "toTableMapping": {
+          "mapping": {
+            "toStringMapping": {
+              "destName": "topicName"
+            }
+          }
+        }
+      }
+    }
+  }
+}

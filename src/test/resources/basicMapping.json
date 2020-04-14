@@ -1,0 +1,36 @@
+{
+  "$schema": "../../main/resources/mappingLanguageSchema.json",
+  "srcTable": "MY_BOOKS",
+  "destTable": "BOOKS",
+  "description": "Maps MY_BOOKS to BOOKS",
+  "mapping": {
+    "fields": {
+      "isbn": {
+        "toStringMapping": {
+          "maxLength": 20,
+          "description": "The isbn is mapped to a string with max length of 20",
+          "overflow": "ABORT",
+          "required": true
+        }
+      },
+      "name": {
+        "toStringMapping": {
+          "maxLength": 100,
+          "description": "The name is mapped to a string with max length of 100",
+          "overflow": "TRUNCATE"
+        }
+      },
+      "author": {
+        "fields": {
+          "name": {
+            "toStringMapping": {
+              "maxLength": 20,
+              "destName": "AUTHOR_NAME",
+              "description": "Maps the nested property authors.name to column authorName"
+            }
+          }
+        }
+      }
+    }
+  }
+}

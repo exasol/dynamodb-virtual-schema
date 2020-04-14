@@ -9,13 +9,13 @@
     <description>Adapter for DynamoDB data access from Virtual Schemas.</description>
     <url>https://github.com/exasol/virtual-schema-dynamodb</url>
     <properties>
-        <product.version>0.1.1</product.version>
+        <product.version>0.2.0</product.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <java.version>11</java.version>
         <junit.version>5.4.2</junit.version>
         <junit.platform.version>1.4.2</junit.platform.version>
-        <vscommon.version>8.0.1</vscommon.version>
+        <vscommon.version>8.0.2</vscommon.version>
         <gpg.skip>true</gpg.skip>
         <org.testcontainers.version>1.12.3</org.testcontainers.version>
         <surefire.and.failsafe.plugin.version>3.0.0-M4</surefire.and.failsafe.plugin.version>
@@ -81,6 +81,10 @@
             <name>DynamoDB Local Release Repository</name>
             <url>https://s3.eu-central-1.amazonaws.com/dynamodb-local-frankfurt/release</url>
         </repository>
+        <repository>
+            <id>jitpack.io</id>
+            <url>https://jitpack.io</url>
+        </repository>
     </repositories>
     <dependencies>
         <dependency>
@@ -97,12 +101,6 @@
             <groupId>org.hamcrest</groupId>
             <artifactId>hamcrest</artifactId>
             <version>2.1</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.skyscreamer</groupId>
-            <artifactId>jsonassert</artifactId>
-            <version>1.5.0</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -180,6 +178,16 @@
             <artifactId>slf4j-jdk14</artifactId>
             <version>1.7.28</version>
             <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.github.everit-org.json-schema</groupId>
+            <artifactId>org.everit.json.schema</artifactId>
+            <version>1.12.1</version>
+        </dependency>
+        <dependency>
+            <groupId>com.exasol</groupId>
+            <artifactId>sql-statement-builder</artifactId>
+            <version>3.1.0</version>
         </dependency>
     </dependencies>
     <build>
@@ -260,6 +268,9 @@
                         </exclude><!-- automatic run makes no sense as cloud setup is needed -->
                     </excludes>
                     <failIfNoTests>true</failIfNoTests>
+                    <systemPropertyVariables>
+                        <tests.noDebug>true</tests.noDebug>
+                    </systemPropertyVariables>
                 </configuration>
                 <executions>
                     <execution>

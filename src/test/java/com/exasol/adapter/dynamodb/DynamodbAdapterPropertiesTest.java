@@ -8,32 +8,34 @@ import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 
+import com.exasol.adapter.AdapterException;
 import com.exasol.adapter.AdapterProperties;
 
 /**
  * Tests for {@link DynamodbAdapterProperties}.
  */
 public class DynamodbAdapterPropertiesTest {
-	@Test
-	public void testEmptySchema() {
-		final AdapterProperties adapterProperties = new AdapterProperties(Collections.emptyMap());
-		final DynamodbAdapterProperties dynamodbAdapterProperties = new DynamodbAdapterProperties(adapterProperties);
-		assertThat(dynamodbAdapterProperties.hasSchemaDefinition(), equalTo(false));
-	}
+    private static final String BUCKETFS_PATH = "/bfsdefault/default/mappings/mapping.json";
 
-	@Test
-	public void testHasSchemaDefinitionProperty() {
-		final String value = "(myString VARCHAR(255))";
-		final AdapterProperties adapterProperties = new AdapterProperties(Map.of("DYNAMODB_SCHEMA", value));
-		final DynamodbAdapterProperties dynamodbAdapterProperties = new DynamodbAdapterProperties(adapterProperties);
-		assertThat(dynamodbAdapterProperties.hasSchemaDefinition(), equalTo(true));
-	}
+    @Test
+    public void testEmptySchema() {
+        final AdapterProperties adapterProperties = new AdapterProperties(Collections.emptyMap());
+        final DynamodbAdapterProperties dynamodbAdapterProperties = new DynamodbAdapterProperties(adapterProperties);
+        assertThat(dynamodbAdapterProperties.hasMappingDefinition(), equalTo(false));
+    }
 
-	@Test
-	public void testGetSchemaDefinitionProperty() {
-		final String value = "(myString VARCHAR(255))";
-		final AdapterProperties adapterProperties = new AdapterProperties(Map.of("DYNAMODB_SCHEMA", value));
-		final DynamodbAdapterProperties dynamodbAdapterProperties = new DynamodbAdapterProperties(adapterProperties);
-		assertThat(dynamodbAdapterProperties.getSchemaDefinition(), equalTo(value));
-	}
+    @Test
+    public void testHasSchemaDefinitionProperty() {
+
+        final AdapterProperties adapterProperties = new AdapterProperties(Map.of("MAPPING", BUCKETFS_PATH));
+        final DynamodbAdapterProperties dynamodbAdapterProperties = new DynamodbAdapterProperties(adapterProperties);
+        assertThat(dynamodbAdapterProperties.hasMappingDefinition(), equalTo(true));
+    }
+
+    @Test
+    public void testGetSchemaDefinitionProperty() throws AdapterException {
+        final AdapterProperties adapterProperties = new AdapterProperties(Map.of("MAPPING", BUCKETFS_PATH));
+        final DynamodbAdapterProperties dynamodbAdapterProperties = new DynamodbAdapterProperties(adapterProperties);
+        assertThat(dynamodbAdapterProperties.getMappingDefinition(), equalTo(BUCKETFS_PATH));
+    }
 }

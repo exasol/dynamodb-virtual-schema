@@ -29,7 +29,7 @@ Next create the Adapter Script:
  ```
 CREATE OR REPLACE JAVA ADAPTER SCRIPT ADAPTER.DYNAMODB_ADAPTER AS
     %scriptclass com.exasol.adapter.RequestDispatcher;
-    %jar /buckets/bfsdefault/default/dynamodb-virtual-schemas-adapter-dist-0.1.1.jar;
+    %jar /buckets/bfsdefault/default/dynamodb-virtual-schemas-adapter-dist-0.2.0.jar;
 /
 ```
 
@@ -58,20 +58,24 @@ CREATE CONNECTION DYNAMO_CONNECTION
 
 ```
 
+Before creating a Virtual Schema you need to [create mapping definitions](doc/gettingStartedWithSchemaMappingLanguage.md) and upload them to a BucketFS bucket.
+
 Finally create the Virtual Schema using:
 
 ```
 CREATE VIRTUAL SCHEMA DYNAMODB_TEST USING ADAPTER.DYNAMODB_ADAPTER WITH
     CONNECTION_NAME = 'DYNAMO_CONNECTION'
-    SQL_DIALECT     = 'DynamoDB';
+    SQL_DIALECT     = 'DYNAMO_DB'
+    MAPPING         = '/bfsdefault/default/path/to/mappings/in/bucketfs';
 ```
+ 
 
-## First steps
-Start for example with:
+## First Steps
+Start with the [mapping definition example](doc/gettingStartedWithSchemaMappingLanguage.md).
 
-```
-SELECT * FROM ASDF."testTable";
-```
+# Documentation
+* [Schema mapping language reference](https://exasol.github.io/dynamodb-virtual-schema/schema_doc/index.html)
+* [Schema mapping software architecture](doc/schemaMappingArchitecture.md)
 
 # Logging & Debugging
 * [Logging for Virtual Schemas](https://github.com/exasol/virtual-schemas/blob/master/doc/development/remote_logging.md)

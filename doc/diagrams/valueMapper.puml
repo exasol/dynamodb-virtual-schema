@@ -1,0 +1,20 @@
+@startuml
+
+abstract class AbstractValueMapper{
++AbstractValueMapper(final AbstractColumnMappingDefinition column)
++mapRow(remote row): ValueExpression
+#{abstract}mapValue(remote attribute): ValueExpression
+}
+
+class ToStringValueMapper{
+#mapValue(remote attribute): ValueExpression
+}
+
+class ToJsonValueMapper{
+#mapValue(remote attribute): ValueExpression
+}
+
+AbstractValueMapper <|-- ToStringValueMapper
+AbstractValueMapper <|-- ToJsonValueMapper
+
+@enduml
