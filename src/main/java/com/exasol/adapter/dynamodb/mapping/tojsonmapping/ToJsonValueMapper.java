@@ -5,7 +5,6 @@ import javax.json.JsonValue;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.exasol.adapter.dynamodb.mapping.AbstractColumnMappingDefinition;
 import com.exasol.adapter.dynamodb.mapping.AbstractValueMapper;
-import com.exasol.adapter.dynamodb.mapping.ValueMapperException;
 import com.exasol.dynamodb.AttributeValueToJsonConverter;
 import com.exasol.sql.expression.StringLiteral;
 import com.exasol.sql.expression.ValueExpression;
@@ -25,7 +24,7 @@ public class ToJsonValueMapper extends AbstractValueMapper {
     }
 
     @Override
-    protected ValueExpression mapValue(final AttributeValue dynamodbProperty) throws ValueMapperException {
+    protected ValueExpression mapValue(final AttributeValue dynamodbProperty) {
         final JsonValue json = new AttributeValueToJsonConverter().convert(dynamodbProperty);
         return StringLiteral.of(json.toString());
     }

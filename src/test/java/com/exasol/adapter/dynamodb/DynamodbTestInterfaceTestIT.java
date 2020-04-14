@@ -15,21 +15,21 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 import com.exasol.adapter.dynamodb.mapping.TestDocuments;
 
 /**
- * Tests the {@link DynamodbTestUtils}.
+ * Tests the {@link DynamodbTestInterface}.
  */
 @Tag("integration")
 @Testcontainers
-public class DynamodbTestUtilsTestIT {
+public class DynamodbTestInterfaceTestIT {
     private static final Network NETWORK = Network.newNetwork();
     @Container
     public static final GenericContainer LOCAL_DYNAMO = new GenericContainer<>("amazon/dynamodb-local")
             .withExposedPorts(8000).withNetwork(NETWORK).withCommand("-jar DynamoDBLocal.jar -sharedDb -dbPath .");
     private static final String TABLE_NAME = "TEST";
-    private static DynamodbTestUtils dynamodbTestUtils;
+    private static DynamodbTestInterface dynamodbTestInterface;
 
     @BeforeAll
-    static void beforeAll() throws DynamodbTestUtils.NoNetworkFoundException {
-        dynamodbTestUtils = new DynamodbTestUtils(LOCAL_DYNAMO, NETWORK);
+    static void beforeAll() throws DynamodbTestInterface.NoNetworkFoundException {
+        dynamodbTestInterface = new DynamodbTestInterface(LOCAL_DYNAMO, NETWORK);
     }
 
     @AfterAll
@@ -39,24 +39,24 @@ public class DynamodbTestUtilsTestIT {
 
     @AfterEach
     void after() {
-        dynamodbTestUtils.deleteCreatedTables();
+        dynamodbTestInterface.deleteCreatedTables();
     }
 
     /**
-     * Test for {@link DynamodbTestUtils#importData(String, File)}
+     * Test for {@link DynamodbTestInterface#importData(String, File)}
      */
     @Test
     void testImportData() throws IOException {
-        dynamodbTestUtils.createTable(TABLE_NAME, TestDocuments.BOOKS_ISBN_PROPERTY);
-        final ClassLoader classLoader = DynamodbTestUtilsTestIT.class.getClassLoader();
-        dynamodbTestUtils.importData(TABLE_NAME, TestDocuments.BOOKS);
-        assertThat(dynamodbTestUtils.scan(TABLE_NAME), equalTo(3));
+        dynamodbTestInterface.createTable(TABLE_NAME, TestDocuments.BOOKS_ISBN_PROPERTY);
+        final ClassLoader classLoader = DynamodbTestInterfaceTestIT.class.getClassLoader();
+        dynamodbTestInterface.importData(TABLE_NAME, TestDocuments.BOOKS);
+        assertThat(dynamodbTestInterface.scan(TABLE_NAME), equalTo(3));
     }
 
     @Test
     void testPutJson() {
-        dynamodbTestUtils.createTable(TABLE_NAME, TestDocuments.BOOKS_ISBN_PROPERTY);
-        dynamodbTestUtils.putJson(TABLE_NAME, "{\n" + "\"isbn\": \"1234\",\n" + " \"name\":\"book1\"\n" + "}");
-        assertThat(dynamodbTestUtils.scan(TABLE_NAME), equalTo(1));
+        dynamodbTestInterface.createTable(TABLE_NAME, TestDocuments.BOOKS_ISBN_PROPERTY);
+        dynamodbTestInterface.putJson(TABLE_NAME, "{\n" + "\"isbn\": \"1234\",\n" + " \"name\":\"book1\"\n" + "}");
+        assertThat(dynamodbTestInterface.scan(TABLE_NAME), equalTo(1));
     }
 }

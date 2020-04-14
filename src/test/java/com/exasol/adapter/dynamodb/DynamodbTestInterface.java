@@ -26,15 +26,15 @@ import com.exasol.dynamodb.DynamodbConnectionFactory;
 import com.github.dockerjava.api.model.ContainerNetwork;
 
 /*
-    Test utils for testing with DynamoDB
+    Using this class test data can be put to DynamoDB.
  */
-public class DynamodbTestUtils {
+public class DynamodbTestInterface {
     // Default credentials for dynamodb docker
     private static final String LOCAL_DYNAMO_USER = "fakeMyKeyId";
     private static final String LOCAL_DYNAMO_PASS = "fakeSecretAccessKey";
     private static final String LOCAL_DYNAMO_PORT = "8000";
     private static final String AWS_LOCAL_URL = "aws:eu-central-1";
-    private static final Logger LOGGER = LoggerFactory.getLogger(DynamodbTestUtils.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(DynamodbTestInterface.class);
 
     private final DynamoDB dynamoClient;
     private final String dynamoUrl;
@@ -48,28 +48,28 @@ public class DynamodbTestUtils {
      * Use {@code aws configure} to set up.
      * </p>
      */
-    public DynamodbTestUtils() {
+    public DynamodbTestInterface() {
         this(DefaultAWSCredentialsProviderChain.getInstance().getCredentials());
     }
 
     /**
      * Constructor using DynamoDB at AWS with given AWS credentials.
      */
-    private DynamodbTestUtils(final AWSCredentials awsCredentials) {
+    private DynamodbTestInterface(final AWSCredentials awsCredentials) {
         this(awsCredentials.getAWSAccessKeyId(), awsCredentials.getAWSSecretKey());
     }
 
     /**
      * Constructor using DynamoDB at AWS with given user and pass.
      */
-    private DynamodbTestUtils(final String user, final String pass) {
+    private DynamodbTestInterface(final String user, final String pass) {
         this(AWS_LOCAL_URL, user, pass);
     }
 
     /**
      * Constructor using default login credentials for the local dynamodb docker instance.
      */
-    public DynamodbTestUtils(final GenericContainer localDynamo, final Network dockerNetwork)
+    public DynamodbTestInterface(final GenericContainer localDynamo, final Network dockerNetwork)
             throws NoNetworkFoundException {
         this(getDockerNetworkUrlForLocalDynamodb(localDynamo, dockerNetwork), LOCAL_DYNAMO_USER, LOCAL_DYNAMO_PASS);
     }
@@ -77,7 +77,7 @@ public class DynamodbTestUtils {
     /**
      * Constructor called by all other constructors.
      */
-    private DynamodbTestUtils(final String dynamoUrl, final String user, final String pass) {
+    private DynamodbTestInterface(final String dynamoUrl, final String user, final String pass) {
         this.dynamoUrl = dynamoUrl;
         this.dynamoUser = user;
         this.dynamoPass = pass;

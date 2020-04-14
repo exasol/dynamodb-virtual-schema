@@ -45,21 +45,21 @@ public class DynamodbAdapterRefreshTestLocalIT {
     private static final String DYNAMODB_CONNECTION = "DYNAMODB_CONNECTION";
     private static final String BUCKETFS_MAPPING_FILE_NAME = "mappings/test.json";
     private static final String BUCKETFS_MAPPING_FULL_PATH = "/bfsdefault/default/" + BUCKETFS_MAPPING_FILE_NAME;
-    private static DynamodbTestUtils dynamodbTestUtils;
-    private static ExasolTestUtils exasolTestUtils;
+    private static DynamodbTestInterface dynamodbTestInterface;
+    private static ExasolTestInterface exasolTestInterface;
 
     /**
      * Creates a Virtual Schema in the Exasol test container accessing the local DynamoDB.
      */
     @BeforeAll
-    static void beforeAll() throws DynamodbTestUtils.NoNetworkFoundException, SQLException, InterruptedException,
+    static void beforeAll() throws DynamodbTestInterface.NoNetworkFoundException, SQLException, InterruptedException,
             BucketAccessException, TimeoutException {
-        dynamodbTestUtils = new DynamodbTestUtils(LOCAL_DYNAMO, NETWORK);
-        exasolTestUtils = new ExasolTestUtils(EXASOL_CONTAINER);
-        exasolTestUtils.uploadDynamodbAdapterJar();
-        exasolTestUtils.createAdapterScript();
-        exasolTestUtils.createConnection(DYNAMODB_CONNECTION, dynamodbTestUtils.getDynamoUrl(),
-                dynamodbTestUtils.getDynamoUser(), dynamodbTestUtils.getDynamoPass());
+        dynamodbTestInterface = new DynamodbTestInterface(LOCAL_DYNAMO, NETWORK);
+        exasolTestInterface = new ExasolTestInterface(EXASOL_CONTAINER);
+        exasolTestInterface.uploadDynamodbAdapterJar();
+        exasolTestInterface.createAdapterScript();
+        exasolTestInterface.createConnection(DYNAMODB_CONNECTION, dynamodbTestInterface.getDynamoUrl(),
+                dynamodbTestInterface.getDynamoUser(), dynamodbTestInterface.getDynamoPass());
     }
 
     @AfterAll
@@ -69,7 +69,7 @@ public class DynamodbAdapterRefreshTestLocalIT {
 
     @AfterEach
     void after() throws SQLException {
-        exasolTestUtils.dropVirtualSchema(TEST_SCHEMA);
+        exasolTestInterface.dropVirtualSchema(TEST_SCHEMA);
     }
 
     /**
@@ -79,11 +79,11 @@ public class DynamodbAdapterRefreshTestLocalIT {
     @Test
     public void testSchemaDefinitionDoesNotChangeUntilRefresh()
             throws SQLException, InterruptedException, BucketAccessException, TimeoutException {
-        exasolTestUtils.uploadMapping(MappingTestFiles.BASIC_MAPPING_FILE_NAME, BUCKETFS_MAPPING_FILE_NAME);
-        exasolTestUtils.createDynamodbVirtualSchema(TEST_SCHEMA, DYNAMODB_CONNECTION, BUCKETFS_MAPPING_FULL_PATH);
-        final Map<String, String> columnsBefore = exasolTestUtils.describeTable(TEST_SCHEMA, BOOKS_TABLE);
-        exasolTestUtils.uploadMapping(MappingTestFiles.TO_JSON_MAPPING_FILE_NAME, BUCKETFS_MAPPING_FILE_NAME);
-        final Map<String, String> columnsAfter = exasolTestUtils.describeTable(TEST_SCHEMA, BOOKS_TABLE);
+        exasolTestInterface.uploadMapping(MappingTestFiles.BASIC_MAPPING_FILE_NAME, BUCKETFS_MAPPING_FILE_NAME);
+        exasolTestInterface.createDynamodbVirtualSchema(TEST_SCHEMA, DYNAMODB_CONNECTION, BUCKETFS_MAPPING_FULL_PATH);
+        final Map<String, String> columnsBefore = exasolTestInterface.describeTable(TEST_SCHEMA, BOOKS_TABLE);
+        exasolTestInterface.uploadMapping(MappingTestFiles.TO_JSON_MAPPING_FILE_NAME, BUCKETFS_MAPPING_FILE_NAME);
+        final Map<String, String> columnsAfter = exasolTestInterface.describeTable(TEST_SCHEMA, BOOKS_TABLE);
         assertThat(columnsBefore, equalTo(columnsAfter));
     }
 
@@ -94,13 +94,14 @@ public class DynamodbAdapterRefreshTestLocalIT {
     @Test
     public void testSchemaDefinitionChangesOnRefresh()
             throws SQLException, InterruptedException, BucketAccessException, TimeoutException {
-        exasolTestUtils.uploadMapping(MappingTestFiles.BASIC_MAPPING_FILE_NAME, BUCKETFS_MAPPING_FILE_NAME);
-        exasolTestUtils.createDynamodbVirtualSchema(TEST_SCHEMA, DYNAMODB_CONNECTION, BUCKETFS_MAPPING_FULL_PATH);
-        final Map<String, String> columnsBefore = exasolTestUtils.describeTable(TEST_SCHEMA, BOOKS_TABLE);
-        exasolTestUtils.uploadMapping(MappingTestFiles.TO_JSON_MAPPING_FILE_NAME, BUCKETFS_MAPPING_FILE_NAME);
-        Thread.sleep(5000);// Wait for bucketfs to sync
-        exasolTestUtils.refreshVirtualSchema(TEST_SCHEMA);
-        final Map<String, String> columnsAfter = exasolTestUtils.describeTable(TEST_SCHEMA, BOOKS_TABLE);
+        exasolTestInterface.uploadMapping(MappingTestFiles.BASIC_MAPPING_FILE_NAME, BUCKETFS_MAPPING_FILE_NAME);
+        exasolTestInterface.createDynamodbVirtualSchema(TEST_SCHEMA, DYNAMODB_CONNECTION, BUCKETFS_MAPPING_FULL_PATH);
+        final Map<String, String> columnsBefore = exasolTestInterface.describeTable(TEST_SCHEMA, BOOKS_TABLE);
+        exasolTestInterface.uploadMapping(MappingTestFiles.TO_JSON_MAPPING_FILE_NAME, BUCKETFS_MAPPING_FILE_NAME);
+        Thread.sleep(5000);// Wait for bucketfs to sync; Quick fix for
+                           // https://github.com/exasol/exasol-testcontainers/issues/54
+        exasolTestInterface.refreshVirtualSchema(TEST_SCHEMA);
+        final Map<String, String> columnsAfter = exasolTestInterface.describeTable(TEST_SCHEMA, BOOKS_TABLE);
         assertThat(columnsBefore, not(equalTo(columnsAfter)));
     }
 }

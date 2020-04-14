@@ -45,25 +45,25 @@ public class DynamodbAdapterTestLocalIT {
     private static final String TEST_SCHEMA = "TEST";
     private static final String DYNAMODB_CONNECTION = "DYNAMODB_CONNECTION";
     private static final String DYNAMO_TABLE_NAME = "JB_Books";
-    private static DynamodbTestUtils dynamodbTestUtils;
-    private static ExasolTestUtils exasolTestUtils;
+    private static DynamodbTestInterface dynamodbTestInterface;
+    private static ExasolTestInterface exasolTestInterface;
 
     /**
      * Creates a Virtual Schema in the Exasol test container accessing the local DynamoDB.
      */
     @BeforeAll
-    static void beforeAll() throws DynamodbTestUtils.NoNetworkFoundException, SQLException, InterruptedException,
+    static void beforeAll() throws DynamodbTestInterface.NoNetworkFoundException, SQLException, InterruptedException,
             BucketAccessException, TimeoutException {
-        dynamodbTestUtils = new DynamodbTestUtils(LOCAL_DYNAMO, NETWORK);
-        exasolTestUtils = new ExasolTestUtils(EXASOL_CONTAINER);
-        exasolTestUtils.uploadDynamodbAdapterJar();
-        exasolTestUtils.uploadMapping(MappingTestFiles.BASIC_MAPPING_FILE_NAME);
-        exasolTestUtils.createAdapterScript();
+        dynamodbTestInterface = new DynamodbTestInterface(LOCAL_DYNAMO, NETWORK);
+        exasolTestInterface = new ExasolTestInterface(EXASOL_CONTAINER);
+        exasolTestInterface.uploadDynamodbAdapterJar();
+        exasolTestInterface.uploadMapping(MappingTestFiles.BASIC_MAPPING_FILE_NAME);
+        exasolTestInterface.createAdapterScript();
         LOGGER.info("created adapter script");
-        exasolTestUtils.createConnection(DYNAMODB_CONNECTION, dynamodbTestUtils.getDynamoUrl(),
-                dynamodbTestUtils.getDynamoUser(), dynamodbTestUtils.getDynamoPass());
+        exasolTestInterface.createConnection(DYNAMODB_CONNECTION, dynamodbTestInterface.getDynamoUrl(),
+                dynamodbTestInterface.getDynamoUser(), dynamodbTestInterface.getDynamoPass());
         LOGGER.info("created connection");
-        exasolTestUtils.createDynamodbVirtualSchema(TEST_SCHEMA, DYNAMODB_CONNECTION,
+        exasolTestInterface.createDynamodbVirtualSchema(TEST_SCHEMA, DYNAMODB_CONNECTION,
                 "/bfsdefault/default/mappings/" + MappingTestFiles.BASIC_MAPPING_FILE_NAME);
         LOGGER.info("created schema");
     }
@@ -75,12 +75,12 @@ public class DynamodbAdapterTestLocalIT {
 
     @AfterEach
     void after() {
-        dynamodbTestUtils.deleteCreatedTables();
+        dynamodbTestInterface.deleteCreatedTables();
     }
 
     @Test
     public void testSchemaDefinition() throws SQLException {
-        final Map<String, String> rowNames = exasolTestUtils.describeTable(TEST_SCHEMA, "BOOKS");
+        final Map<String, String> rowNames = exasolTestInterface.describeTable(TEST_SCHEMA, "BOOKS");
         assertThat(rowNames, equalTo(
                 Map.of("ISBN", "VARCHAR(20) UTF8", "NAME", "VARCHAR(100) UTF8", "AUTHOR_NAME", "VARCHAR(20) UTF8")));
     }
@@ -91,7 +91,7 @@ public class DynamodbAdapterTestLocalIT {
      */
     private SelectStringArrayResult selectStringArray() throws SQLException {
         final long start = System.currentTimeMillis();
-        final ResultSet actualResultSet = exasolTestUtils.getStatement()
+        final ResultSet actualResultSet = exasolTestInterface.getStatement()
                 .executeQuery("SELECT \"ISBN\" FROM " + TEST_SCHEMA + ".\"BOOKS\";");
         final long duration = System.currentTimeMillis() - start;
         final List<String> result = new ArrayList<>();
@@ -107,7 +107,7 @@ public class DynamodbAdapterTestLocalIT {
      */
     @Test
     void testEmptySelect() throws SQLException {
-        dynamodbTestUtils.createTable(DYNAMO_TABLE_NAME, TestDocuments.BOOKS_ISBN_PROPERTY);
+        dynamodbTestInterface.createTable(DYNAMO_TABLE_NAME, TestDocuments.BOOKS_ISBN_PROPERTY);
         final List<String> result = selectStringArray().rows;
         assertThat(result.size(), equalTo(0));
     }
@@ -117,9 +117,9 @@ public class DynamodbAdapterTestLocalIT {
      */
     @Test
     void testSingleLineSelect() throws SQLException {
-        dynamodbTestUtils.createTable(DYNAMO_TABLE_NAME, TestDocuments.BOOKS_ISBN_PROPERTY);
+        dynamodbTestInterface.createTable(DYNAMO_TABLE_NAME, TestDocuments.BOOKS_ISBN_PROPERTY);
         final String Isbn = "12398439493";
-        dynamodbTestUtils.putItem(DYNAMO_TABLE_NAME, Isbn, "test name");
+        dynamodbTestInterface.putItem(DYNAMO_TABLE_NAME, Isbn, "test name");
         final SelectStringArrayResult result = selectStringArray();
         assertThat(result.rows, containsInAnyOrder(Isbn));
     }
@@ -129,9 +129,9 @@ public class DynamodbAdapterTestLocalIT {
      */
     @Test
     void testSingleLineSelectWithStringResult() throws SQLException {
-        dynamodbTestUtils.createTable(DYNAMO_TABLE_NAME, TestDocuments.BOOKS_ISBN_PROPERTY);
+        dynamodbTestInterface.createTable(DYNAMO_TABLE_NAME, TestDocuments.BOOKS_ISBN_PROPERTY);
         final String Isbn = "abc";
-        dynamodbTestUtils.putItem(DYNAMO_TABLE_NAME, Isbn, "test name");
+        dynamodbTestInterface.putItem(DYNAMO_TABLE_NAME, Isbn, "test name");
         final SelectStringArrayResult result = selectStringArray();
         assertThat(result.rows, containsInAnyOrder(Isbn));
     }
@@ -141,9 +141,9 @@ public class DynamodbAdapterTestLocalIT {
      */
     @Test
     void testMultiLineSelect() throws IOException, SQLException {
-        dynamodbTestUtils.createTable(DYNAMO_TABLE_NAME, TestDocuments.BOOKS_ISBN_PROPERTY);
+        dynamodbTestInterface.createTable(DYNAMO_TABLE_NAME, TestDocuments.BOOKS_ISBN_PROPERTY);
         final ClassLoader classLoader = DynamodbAdapterTestLocalIT.class.getClassLoader();
-        dynamodbTestUtils.importData(DYNAMO_TABLE_NAME, TestDocuments.BOOKS);
+        dynamodbTestInterface.importData(DYNAMO_TABLE_NAME, TestDocuments.BOOKS);
         final List<String> result = selectStringArray().rows;
         assertThat(result, containsInAnyOrder("123567", "123254545", "1235673"));
     }
@@ -153,12 +153,12 @@ public class DynamodbAdapterTestLocalIT {
      */
     @Test
     void testBigScan() throws SQLException {
-        dynamodbTestUtils.createTable(DYNAMO_TABLE_NAME, TestDocuments.BOOKS_ISBN_PROPERTY);
+        dynamodbTestInterface.createTable(DYNAMO_TABLE_NAME, TestDocuments.BOOKS_ISBN_PROPERTY);
         final int numBooks = 1000;
         final List<String> actualBookNames = new ArrayList<>(numBooks);
         for (int i = 0; i < numBooks; i++) {
             final String booksName = String.valueOf(i);
-            dynamodbTestUtils.putItem(DYNAMO_TABLE_NAME, booksName, "name equal for all books");
+            dynamodbTestInterface.putItem(DYNAMO_TABLE_NAME, booksName, "name equal for all books");
             actualBookNames.add(booksName);
         }
         final SelectStringArrayResult result = selectStringArray();
