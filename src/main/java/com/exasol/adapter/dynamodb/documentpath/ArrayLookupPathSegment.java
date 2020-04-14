@@ -1,7 +1,7 @@
 package com.exasol.adapter.dynamodb.documentpath;
 
 /**
- * This path segment defines a array lookup in an path expression. E.g topics[0]
+ * This path segment defines an array lookup in an path expression. E.g topics[0]
  */
 public class ArrayLookupPathSegment implements PathSegment {
     private final int lookupIndex;

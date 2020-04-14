@@ -41,8 +41,6 @@ public class DocumentPathWalker<VisitorType> {
         if (this.pathExpression.size() <= position) {
             return List.of(thisNode);
         }
-        final DocumentPathExpression currentPath = this.pathExpression.getSubPath(0, position);
-        final String currentPathString = new DocumentPathToStringConverter().convertToString(currentPath);
         final Function<DocumentNode<VisitorType>, List<DocumentNode<VisitorType>>> converter = getConverterFor(
                 this.pathExpression.getPath().get(position));
         try {
@@ -52,20 +50,15 @@ public class DocumentPathWalker<VisitorType> {
                 results.addAll(walk(nextNode, position + 1));
             }
             return results;
-        } catch (final NotAnObjectException exception) {
-            throw new DocumentPathWalkerException(
-                    "Can't perform key lookup on non object. (requested key= " + exception.lookupKey + ")",
-                    currentPathString);
-        } catch (final UnknownLookupKeyException exception) {
-            throw new DocumentPathWalkerException(
-                    "The requested lookup key (" + exception.lookupKey + ") is not present in this object.",
-                    currentPathString);
-        } catch (final NotAnArrayException exception) {
-            throw new DocumentPathWalkerException("Can't perform array lookup on non array.", currentPathString);
-        } catch (final IndexOutOfBoundsException exception) {
-            throw new DocumentPathWalkerException("Can't perform array lookup: " + exception.getMessage(),
-                    currentPathString);
+        } catch (final InternalPathWalkException exception) {
+            throw addCurrentPathToException(exception, position);
         }
+    }
+
+    private DocumentPathWalkerException addCurrentPathToException(final InternalPathWalkException exception, final int position)  {
+        final DocumentPathExpression currentPath = this.pathExpression.getSubPath(0, position);
+        final String currentPathString = new DocumentPathToStringConverter().convertToString(currentPath);
+        return new DocumentPathWalkerException(exception.getMessage(), currentPathString);
     }
 
     @java.lang.SuppressWarnings("squid:S119") // VisitorType does not fit naming conventions.
@@ -85,11 +78,11 @@ public class DocumentPathWalker<VisitorType> {
             this.converter = thisNode -> {
                 final String key = objectLookupPathSegment.getLookupKey();
                 if (!(thisNode instanceof DocumentObject)) {
-                    throw new NotAnObjectException(key);
+                    throw new InternalPathWalkException( "Can't perform key lookup on non object. (requested key= " + key + ")");
                 }
                 final DocumentObject<VisitorType> thisObject = (DocumentObject<VisitorType>) thisNode;
                 if (!thisObject.hasKey(key)) {
-                    throw new UnknownLookupKeyException(key);
+                    throw new InternalPathWalkException("The requested lookup key (" + key + ") is not present in this object.");
                 }
                 return List.of(thisObject.get(key));
             };
@@ -99,13 +92,17 @@ public class DocumentPathWalker<VisitorType> {
         public void visit(final ArrayLookupPathSegment arrayLookupPathSegment) {
             this.converter = thisNode -> {
                 final DocumentArray<VisitorType> thisArray = castNodeToArray(thisNode);
-                return List.of(thisArray.getValue(arrayLookupPathSegment.getLookupIndex()));
+                try {
+                    return List.of(thisArray.getValue(arrayLookupPathSegment.getLookupIndex()));
+                } catch (final IndexOutOfBoundsException exception) {
+                    throw new InternalPathWalkException("Can't perform array lookup: " + exception.getMessage());
+                }
             };
         }
 
         private DocumentArray<VisitorType> castNodeToArray(final DocumentNode<VisitorType> thisNode) {
             if (!(thisNode instanceof DocumentArray)) {
-                throw new NotAnArrayException();
+                throw new InternalPathWalkException("Can't perform array lookup on non array.");
             }
             return (DocumentArray<VisitorType>) thisNode;
         }
@@ -119,23 +116,14 @@ public class DocumentPathWalker<VisitorType> {
         }
     }
 
-    private static class NotAnArrayException extends RuntimeException {
-    }
 
-    private static class NotAnObjectException extends RuntimeException {
-        private final String lookupKey;
-
-        private NotAnObjectException(final String lookupKey) {
-            this.lookupKey = lookupKey;
+    /**
+     * This exception is caught in {@link #walk(DocumentNode, int)} and converted into an
+     * {@link DocumentPathWalkerException}. This step is done for appending the current path.
+     */
+    private static class InternalPathWalkException extends RuntimeException {
+        public InternalPathWalkException(final String message) {
+            super(message);
         }
     }
-
-    private static class UnknownLookupKeyException extends RuntimeException {
-        private final String lookupKey;
-
-        private UnknownLookupKeyException(final String lookupKey) {
-            this.lookupKey = lookupKey;
-        }
-    }
-
 }
