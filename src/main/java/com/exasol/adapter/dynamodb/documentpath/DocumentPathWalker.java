@@ -11,7 +11,7 @@ import com.exasol.adapter.dynamodb.documentnode.DocumentObject;
 /**
  * This class walks a given path defined in {@link DocumentPathExpression} through a {@link DocumentNode} structure.
  */
-@java.lang.SuppressWarnings("squid:S119")//VisitorType does not fit naming conventions.
+@java.lang.SuppressWarnings("squid:S119") // VisitorType does not fit naming conventions.
 public class DocumentPathWalker<VisitorType> {
     private final DocumentPathExpression pathExpression;
 
@@ -68,7 +68,7 @@ public class DocumentPathWalker<VisitorType> {
         }
     }
 
-    @java.lang.SuppressWarnings("squid:S119")//VisitorType does not fit naming conventions.
+    @java.lang.SuppressWarnings("squid:S119") // VisitorType does not fit naming conventions.
     private Function<DocumentNode<VisitorType>, List<DocumentNode<VisitorType>>> getConverterFor(
             final PathSegment pathSegment) {
         final WalkVisitor<VisitorType> visitor = new WalkVisitor<>();
@@ -76,7 +76,7 @@ public class DocumentPathWalker<VisitorType> {
         return visitor.converter;
     }
 
-    @java.lang.SuppressWarnings("squid:S119")//VisitorType does not fit naming conventions.
+    @java.lang.SuppressWarnings("squid:S119") // VisitorType does not fit naming conventions.
     private static class WalkVisitor<VisitorType> implements PathSegmentVisitor {
         Function<DocumentNode<VisitorType>, List<DocumentNode<VisitorType>>> converter;
 

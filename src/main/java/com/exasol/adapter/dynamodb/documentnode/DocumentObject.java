@@ -5,7 +5,7 @@ import java.util.Map;
 /**
  * Interface for object document nodes.
  */
-@java.lang.SuppressWarnings("squid:S119")//VisitorType does not fit naming conventions.
+@java.lang.SuppressWarnings("squid:S119") // VisitorType does not fit naming conventions.
 public interface DocumentObject<VisitorType> extends DocumentNode<VisitorType> {
 
     /**

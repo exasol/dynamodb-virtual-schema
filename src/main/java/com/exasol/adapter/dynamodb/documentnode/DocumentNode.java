@@ -5,7 +5,7 @@ package com.exasol.adapter.dynamodb.documentnode;
  * different document databases. It accepts an generic visitor.
  */
 
-@java.lang.SuppressWarnings("squid:S119")//VisitorType does not fit naming conventions.
+@java.lang.SuppressWarnings("squid:S119") // VisitorType does not fit naming conventions.
 public interface DocumentNode<VisitorType> {
     /**
      * Accept a VisitorType visitor.

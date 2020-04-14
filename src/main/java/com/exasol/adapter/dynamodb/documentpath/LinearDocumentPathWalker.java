@@ -8,7 +8,7 @@ import com.exasol.adapter.dynamodb.documentnode.DocumentNode;
  *
  * In contrast to {@link DocumentPathWalker#walk(DocumentNode)} This classes walk method only returns one single value.
  */
-@java.lang.SuppressWarnings("squid:S119")//VisitorType does not fit naming conventions.
+@java.lang.SuppressWarnings("squid:S119") // VisitorType does not fit naming conventions.
 public class LinearDocumentPathWalker<VisitorType> {
 
     private final DocumentPathWalker<VisitorType> documentPathWalker;

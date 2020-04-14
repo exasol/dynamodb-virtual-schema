@@ -5,7 +5,7 @@ import java.util.List;
 /**
  * Interface for array / list document nodes.
  */
-@java.lang.SuppressWarnings("squid:S119")//VisitorType does not fit naming conventions.
+@java.lang.SuppressWarnings("squid:S119") // VisitorType does not fit naming conventions.
 public interface DocumentArray<VisitorType> extends DocumentNode<VisitorType> {
 
     /**
