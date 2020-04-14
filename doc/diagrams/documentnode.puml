@@ -1,0 +1,29 @@
+@startuml
+
+interface DocumentNode
+interface DocumentArray{
+getValueList()
+getValue(index)
+}
+interface DocumentObject{
+getKeyValueMap()
+get(key)
+hasKey(key)
+}
+interface DocumentValue
+interface DynamodbAttributeValueVisitor{
+visitString(string)
+visitInt(string)
+...()
+}
+
+DocumentNode <|-- DocumentArray
+DocumentNode <|-- DocumentObject
+DocumentNode <|-- DocumentValue
+
+DocumentArray <|-- DynamodbAttributeValue
+DocumentObject <|-- DynamodbAttributeValue
+DocumentValue <|-- DynamodbAttributeValue
+DynamodbAttributeValueVisitor <|-- DynamodbAttributeValue
+
+@enduml
