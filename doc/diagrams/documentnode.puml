@@ -4,15 +4,23 @@ interface DocumentNode<VisitorType>{
 {abstract} accept(VisitorType)
 }
 interface DocumentArray<VisitorType>{
-getValueList()
-getValue(index)
+{abstract} getValueList()
+{abstract} getValue(index)
 }
 interface DocumentObject<VisitorType>{
-getKeyValueMap()
-get(key)
-hasKey(key)
+{abstract} getKeyValueMap()
+{abstract} get(key)
+{abstract} hasKey(key)
 }
 interface DocumentValue<VisitorType>{
+}
+
+interface DynamodbVisitor{
+{abstract} visit(DynamodbList)
+{abstract} visit(DynamodbStringSet)
+{abstract} visit(DynamodbObject)
+{abstract} visit(DynamodbString)
+{abstract} visit(DynamodbNumber)
 }
 
 DocumentNode <|-- DocumentArray
