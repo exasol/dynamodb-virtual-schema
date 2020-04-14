@@ -27,6 +27,7 @@ public class JsonMappingValidator {
 
     /**
      * Creates an instance of {@link JsonMappingValidator}.
+     * 
      * @throws IOException if reading schema from resources fails.
      */
     public JsonMappingValidator() throws IOException {
@@ -51,7 +52,7 @@ public class JsonMappingValidator {
         }
     }
 
-    private void validate(final JSONObject schemaMappingDefinition, final String fileName){
+    private void validate(final JSONObject schemaMappingDefinition, final String fileName) {
         try {
             final Validator validator = Validator.builder().build();
             validator.performValidation(this.schema, schemaMappingDefinition);

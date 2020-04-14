@@ -69,13 +69,13 @@ public class AbstractValueMapperTest {
         }
 
         @Override
-        protected ValueExpression mapValue(final AttributeValue dynamodbProperty) throws ValueMapperException {
+        protected ValueExpression mapValue(final AttributeValue dynamodbProperty) {
             return StringLiteral.of(dynamodbProperty.getS());
         }
     }
 
     private static class ExceptionMockValueMapper extends AbstractValueMapper {
-        AbstractColumnMappingDefinition column;
+        private final AbstractColumnMappingDefinition column;
 
         public ExceptionMockValueMapper(final AbstractColumnMappingDefinition column) {
             super(column);

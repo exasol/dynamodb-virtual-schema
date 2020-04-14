@@ -18,24 +18,24 @@ import com.exasol.containers.ExasolContainer;
 import com.github.dockerjava.api.model.ContainerNetwork;
 
 /**
- * Test utils for the Exasol database.
+ * This class provides methods simplified methods for running typical commands on an Exasol test container.
  */
-public class ExasolTestUtils {
+public class ExasolTestInterface {
     public static final String ADAPTER_SCHEMA = "ADAPTER";
     public static final String DYNAMODB_ADAPTER = "DYNAMODB_ADAPTER";
-    private static final Logger LOGGER = LoggerFactory.getLogger(ExasolTestUtils.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ExasolTestInterface.class);
     private static final String VIRTUAL_SCHEMAS_JAR_NAME_AND_VERSION = "dynamodb-virtual-schemas-adapter-dist-0.2.0.jar";
     private static final Path PATH_TO_VIRTUAL_SCHEMAS_JAR = Path.of("target", VIRTUAL_SCHEMAS_JAR_NAME_AND_VERSION);
     private final ExasolContainer<? extends ExasolContainer<?>> container;
     private final Statement statement;
 
     /**
-     * Creates an instance of {@link ExasolTestUtils}.
+     * Creates an instance of {@link ExasolTestInterface}.
      * 
      * @param container exasol test container
      * @throws SQLException on SQL error
      */
-    public ExasolTestUtils(final ExasolContainer<? extends ExasolContainer<?>> container) throws SQLException {
+    public ExasolTestInterface(final ExasolContainer<? extends ExasolContainer<?>> container) throws SQLException {
         final Connection connection = container.createConnectionForUser(container.getUsername(),
                 container.getPassword());
         this.statement = connection.createStatement();

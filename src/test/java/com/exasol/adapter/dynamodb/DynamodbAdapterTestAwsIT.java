@@ -35,7 +35,7 @@ public class DynamodbAdapterTestAwsIT {
             .withLogConsumer(new Slf4jLogConsumer(LOGGER));
     private static final String TEST_SCHEMA = "TEST";
     private static final String DYNAMODB_CONNECTION = "DYNAMODB_CONNECTION";
-    private static ExasolTestUtils exasolTestUtils;
+    private static ExasolTestInterface exasolTestInterface;
 
     /**
      * Creates a Virtual Schema in the Exasol test container accessing DynamoDB on AWS.
@@ -43,13 +43,13 @@ public class DynamodbAdapterTestAwsIT {
     @BeforeAll
     static void beforeAll()
             throws SQLException, BucketAccessException, InterruptedException, java.util.concurrent.TimeoutException {
-        final DynamodbTestUtils dynamodbTestUtils = new DynamodbTestUtils();
-        exasolTestUtils = new ExasolTestUtils(EXASOL_CONTAINER);
-        exasolTestUtils.uploadDynamodbAdapterJar();
-        exasolTestUtils.createAdapterScript();
-        exasolTestUtils.createConnection(DYNAMODB_CONNECTION, dynamodbTestUtils.getDynamoUrl(),
-                dynamodbTestUtils.getDynamoUser(), dynamodbTestUtils.getDynamoPass());
-        exasolTestUtils.createDynamodbVirtualSchema(TEST_SCHEMA, DYNAMODB_CONNECTION, "");
+        final DynamodbTestInterface dynamodbTestInterface = new DynamodbTestInterface();
+        exasolTestInterface = new ExasolTestInterface(EXASOL_CONTAINER);
+        exasolTestInterface.uploadDynamodbAdapterJar();
+        exasolTestInterface.createAdapterScript();
+        exasolTestInterface.createConnection(DYNAMODB_CONNECTION, dynamodbTestInterface.getDynamoUrl(),
+                dynamodbTestInterface.getDynamoUser(), dynamodbTestInterface.getDynamoPass());
+        exasolTestInterface.createDynamodbVirtualSchema(TEST_SCHEMA, DYNAMODB_CONNECTION, "");
     }
 
     /**
@@ -57,7 +57,7 @@ public class DynamodbAdapterTestAwsIT {
      */
     @Test
     void testSelect() throws SQLException {
-        final ResultSet result = exasolTestUtils.getStatement()
+        final ResultSet result = exasolTestInterface.getStatement()
                 .executeQuery("SELECT * FROM " + TEST_SCHEMA + ".\"testTable\";");// table name is hardcoded in adapter
                                                                                   // definition (DynamodbAdapter)
         result.next();

@@ -45,20 +45,20 @@ public class DynamodbAdapterCreateAndDropTestLocalIT {
             .withNetwork(NETWORK).withExposedPorts(8888).withLogConsumer(new Slf4jLogConsumer(LOGGER));
     private static final String TEST_SCHEMA = "TEST";
     private static final String DYNAMODB_CONNECTION = "DYNAMODB_CONNECTION";
-    private static ExasolTestUtils exasolTestUtils;
+    private static ExasolTestInterface exasolTestInterface;
 
     /**
      * Creates a Virtual Schema in the Exasol test container accessing the local DynamoDB.
      */
     @BeforeAll
-    static void beforeAll() throws DynamodbTestUtils.NoNetworkFoundException, SQLException, InterruptedException,
+    static void beforeAll() throws DynamodbTestInterface.NoNetworkFoundException, SQLException, InterruptedException,
             BucketAccessException, TimeoutException {
-        final DynamodbTestUtils dynamodbTestUtils = new DynamodbTestUtils(LOCAL_DYNAMO, NETWORK);
-        exasolTestUtils = new ExasolTestUtils(EXASOL_CONTAINER);
-        exasolTestUtils.uploadDynamodbAdapterJar();
-        exasolTestUtils.createAdapterScript();
-        exasolTestUtils.createConnection(DYNAMODB_CONNECTION, dynamodbTestUtils.getDynamoUrl(),
-                dynamodbTestUtils.getDynamoUser(), dynamodbTestUtils.getDynamoPass());
+        final DynamodbTestInterface dynamodbTestInterface = new DynamodbTestInterface(LOCAL_DYNAMO, NETWORK);
+        exasolTestInterface = new ExasolTestInterface(EXASOL_CONTAINER);
+        exasolTestInterface.uploadDynamodbAdapterJar();
+        exasolTestInterface.createAdapterScript();
+        exasolTestInterface.createConnection(DYNAMODB_CONNECTION, dynamodbTestInterface.getDynamoUrl(),
+                dynamodbTestInterface.getDynamoUser(), dynamodbTestInterface.getDynamoPass());
     }
 
     @AfterAll
@@ -68,11 +68,11 @@ public class DynamodbAdapterCreateAndDropTestLocalIT {
 
     @Test
     public void testCreateAndDrop() throws SQLException, InterruptedException, BucketAccessException, TimeoutException {
-        exasolTestUtils.uploadMapping(MappingTestFiles.BASIC_MAPPING_FILE_NAME, "mappings/test.json");
-        exasolTestUtils.createDynamodbVirtualSchema(TEST_SCHEMA, DYNAMODB_CONNECTION,
+        exasolTestInterface.uploadMapping(MappingTestFiles.BASIC_MAPPING_FILE_NAME, "mappings/test.json");
+        exasolTestInterface.createDynamodbVirtualSchema(TEST_SCHEMA, DYNAMODB_CONNECTION,
                 "/bfsdefault/default/mappings/test.json");
-        assertThat(exasolTestUtils.testIfSchemaExists(TEST_SCHEMA), equalTo(true));
-        exasolTestUtils.dropVirtualSchema(TEST_SCHEMA);
-        assertThat(exasolTestUtils.testIfSchemaExists(TEST_SCHEMA), equalTo(false));
+        assertThat(exasolTestInterface.testIfSchemaExists(TEST_SCHEMA), equalTo(true));
+        exasolTestInterface.dropVirtualSchema(TEST_SCHEMA);
+        assertThat(exasolTestInterface.testIfSchemaExists(TEST_SCHEMA), equalTo(false));
     }
 }
