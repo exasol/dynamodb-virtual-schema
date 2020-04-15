@@ -5,7 +5,7 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * Using this class a path through a document can be expressed.
+ * This class allows to express path through a document.
  */
 public class DocumentPathExpression {
     private final List<PathSegment> path;
@@ -19,11 +19,11 @@ public class DocumentPathExpression {
     }
 
     /**
-     * Creates a sub path starting at startIndex until endIndex.
+     * Creates a subpath from startIndex (inclusive) til endIndex (exclusive).
      * 
      * @param startIndex index in path for new path to start
      * @param endIndex   index in path for new path to end
-     * @return new {@link DocumentPathExpression}
+     * @return {@link DocumentPathExpression} instance
      */
     public DocumentPathExpression getSubPath(final int startIndex, final int endIndex) {
         return new DocumentPathExpression(Collections.unmodifiableList(this.path.subList(startIndex, endIndex)));
@@ -87,7 +87,7 @@ public class DocumentPathExpression {
         /**
          * Finishes the build process of {@link DocumentPathExpression}.
          * 
-         * @return build {@link DocumentPathExpression}
+         * @return a new instance of {@link DocumentPathExpression}
          */
         public DocumentPathExpression build() {
             return new DocumentPathExpression(Collections.unmodifiableList(this.path));

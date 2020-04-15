@@ -6,7 +6,7 @@ import com.exasol.adapter.dynamodb.documentnode.DocumentNode;
  * This class is a simplified version of {@link DocumentPathWalker}. It has the limitation that it can only walk linear
  * paths. That means that the paths must not contain {@link ArrayAllPathSegment}s.
  *
- * In contrast to {@link DocumentPathWalker#walk(DocumentNode)} This classes walk method only returns one single value.
+ * In contrast to {@link DocumentPathWalker#walk(DocumentNode)}, this class's walk method returns one single value.
  */
 @java.lang.SuppressWarnings("squid:S119") // VisitorType does not fit naming conventions.
 public class LinearDocumentPathWalker<VisitorType> {

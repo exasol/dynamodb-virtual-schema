@@ -1,7 +1,7 @@
 package com.exasol.adapter.dynamodb.documentpath;
 
 /**
- * Exception thrown when the modeled path does not exist.
+ * This exception is thrown when the modeled path does not exist.
  */
 public class DocumentPathWalkerException extends Exception {
     private final String currentPath;

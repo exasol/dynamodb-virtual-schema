@@ -9,7 +9,7 @@ import java.util.List;
 public interface DocumentArray<VisitorType> extends DocumentNode<VisitorType> {
 
     /**
-     * Gives a list with document nodes wrapping the values of the list wrapped in this node.
+     * Returns a list with document nodes wrapping the values of the list wrapped in this node.
      * 
      * @return list of document nodes.
      */
