@@ -1,7 +1,9 @@
 package com.exasol.adapter.dynamodb.mapping;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import com.exasol.adapter.metadata.ColumnMetadata;
@@ -25,10 +27,18 @@ public class SchemaMappingDefinitionToSchemaMetadataConverter {
      */
     public SchemaMetadata convert(final SchemaMappingDefinition schemaMappingDefinition) throws IOException {
         final List<TableMetadata> tableMetadata = new ArrayList<>();
+        final HashMap<String, TableMappingDefinition> tableMappings = new HashMap<>();// concrete HashMap is used here
+                                                                                      // as it is serializable.
         for (final TableMappingDefinition table : schemaMappingDefinition.getTableMappings()) {
             tableMetadata.add(convertTable(table));
+            tableMappings.put(table.getExasolName(), table);
         }
-        return new SchemaMetadata("", tableMetadata);
+        /*
+         * Actually the tables should be serialized into TableSchema adapter notes. But as these do not work due to a
+         * bug, they are added here.
+         */
+        final String serialized = StringSerializer.serializeToString(new TableMappings(tableMappings));
+        return new SchemaMetadata(serialized, tableMetadata);
     }
 
     private TableMetadata convertTable(final TableMappingDefinition tableMappingDefinition) throws IOException {
@@ -52,6 +62,40 @@ public class SchemaMappingDefinitionToSchemaMetadataConverter {
     }
 
     /**
+     * Deserializes a {@link TableMappingDefinition} from {@link TableMetadata}.
+     *
+     * @param tableMetadata  metadata for the table to be deserialized
+     * @param schemaMetadata needed because the tables can't be serialized into the TableMetadata due to a bug
+     * @return deserialized {@link TableMappingDefinition}
+     * @throws IOException            if deserialization fails
+     * @throws ClassNotFoundException if deserialization fails
+     */
+    public TableMappingDefinition convertBackTable(final TableMetadata tableMetadata,
+            final SchemaMetadata schemaMetadata) throws IOException, ClassNotFoundException {
+        final TableMappingDefinition preliminaryTable = findTableInSchemaMetadata(tableMetadata.getName(),
+                schemaMetadata);
+        /*
+         * As the columns are transient in TableMappingDefinition, they must be deserialized from the ColumnMetadata and
+         * added separately.
+         */
+        final List<AbstractColumnMappingDefinition> columns = new ArrayList<>(tableMetadata.getColumns().size());
+        for (final ColumnMetadata columnMetadata : tableMetadata.getColumns()) {
+            columns.add(convertBackColumn(columnMetadata));
+        }
+        return new TableMappingDefinition(preliminaryTable, columns);
+    }
+
+    /**
+     * Workaround as tables cant be serialized to {@link TableMetadata}
+     */
+    private TableMappingDefinition findTableInSchemaMetadata(final String tableName,
+            final SchemaMetadata schemaMetadata) throws IOException, ClassNotFoundException {
+        final String serialized = schemaMetadata.getAdapterNotes();
+        final TableMappings tableMappings = (TableMappings) StringSerializer.deserializeFromString(serialized);
+        return tableMappings.mappings.get(tableName);
+    }
+
+    /**
      * Deserializes a {@link AbstractColumnMappingDefinition} from {@link ColumnMetadata}.
      *
      * @param columnMetadata {@link ColumnMetadata} to deserialized from
@@ -63,5 +107,19 @@ public class SchemaMappingDefinitionToSchemaMetadataConverter {
             throws IOException, ClassNotFoundException {
         final String serialized = columnMetadata.getAdapterNotes();
         return (AbstractColumnMappingDefinition) StringSerializer.deserializeFromString(serialized);
+    }
+
+    /**
+     * This class class is used as a fix for the bug, that {@link TableMetadata} can't store adapter notes. It gets
+     * serialized in the {@link SchemaMetadata} and stores a map that gives the {@link TableMappingDefinition} for its
+     * Exasol name.
+     */
+    private static class TableMappings implements Serializable {
+        private static final long serialVersionUID = -6920869661356098960L;
+        private final HashMap<String, TableMappingDefinition> mappings;
+
+        private TableMappings(final HashMap<String, TableMappingDefinition> mappings) {
+            this.mappings = mappings;
+        }
     }
 }

@@ -1,5 +1,6 @@
 package com.exasol.adapter.dynamodb.mapping;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -9,15 +10,31 @@ import java.util.List;
  * table in the Exasol Virtual Schema. Typically it also represents a DynamoDB table. But it can also represent the data
  * from a nested list or object. See {@link #isRootTable()} for details.
  */
-public class TableMappingDefinition {
+public class TableMappingDefinition implements Serializable {
+    private static final long serialVersionUID = 3568807256753213582L;
     private final String exasolName;
     private final boolean isRootTable;
-    private final List<AbstractColumnMappingDefinition> columns;
+    private final transient List<AbstractColumnMappingDefinition> columns; // The columns are serialized separately in
+                                                                           // {@link ColumnMetadata}.
 
     private TableMappingDefinition(final String exasolName, final boolean isRootTable,
             final List<AbstractColumnMappingDefinition> columns) {
         this.exasolName = exasolName;
         this.isRootTable = isRootTable;
+        this.columns = columns;
+    }
+
+    /**
+     * Creates an instance of {@link TableMappingDefinition} from deserialized version. As the columns are transient
+     * they need to be added again.
+     * 
+     * @param deserialized {@link TableMappingDefinition} retrieved from deserialization
+     * @param columns      Columns deserialized separately
+     */
+    TableMappingDefinition(final TableMappingDefinition deserialized,
+            final List<AbstractColumnMappingDefinition> columns) {
+        this.exasolName = deserialized.exasolName;
+        this.isRootTable = deserialized.isRootTable;
         this.columns = columns;
     }
 
