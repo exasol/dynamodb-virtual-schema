@@ -18,9 +18,6 @@ import org.junit.jupiter.api.Test;
 import com.exasol.adapter.AdapterException;
 import com.exasol.adapter.dynamodb.mapping.tostringmapping.ToStringColumnMappingDefinition;
 
-/**
- * Tests for {@link JsonMappingFactory}.
- */
 public class JsonMappingFactoryTest {
     private final MappingTestFiles mappingTestFiles = new MappingTestFiles();
 

@@ -3,7 +3,6 @@ package com.exasol.adapter.dynamodb;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 
-import java.io.File;
 import java.io.IOException;
 
 import org.junit.jupiter.api.*;
@@ -42,9 +41,6 @@ public class DynamodbTestInterfaceTestIT {
         dynamodbTestInterface.deleteCreatedTables();
     }
 
-    /**
-     * Test for {@link DynamodbTestInterface#importData(String, File)}
-     */
     @Test
     void testImportData() throws IOException {
         dynamodbTestInterface.createTable(TABLE_NAME, TestDocuments.BOOKS_ISBN_PROPERTY);

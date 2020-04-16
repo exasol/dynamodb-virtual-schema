@@ -14,9 +14,6 @@ import com.exasol.dynamodb.attributevalue.AttributeValueTestUtils;
 import com.exasol.dynamodb.resultwalker.IdentityDynamodbResultWalker;
 import com.exasol.sql.expression.ValueExpression;
 
-/**
- * Tests for {@link ToJsonValueMapper}
- */
 public class ToJsonValueMapperTest {
     private static final String DEST_COLUMN = "destColumn";
 

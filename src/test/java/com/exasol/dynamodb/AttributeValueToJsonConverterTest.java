@@ -15,9 +15,6 @@ import org.junit.jupiter.api.Test;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.exasol.dynamodb.attributevalue.AttributeValueTestUtils;
 
-/**
- * Test for {@link AttributeValueToJsonConverter}
- */
 public class AttributeValueToJsonConverterTest {
 
     @Test

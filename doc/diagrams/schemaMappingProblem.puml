@@ -1,0 +1,10 @@
+@startuml
+Document -> Dynamodb: start
+Dynamodb -> Dynamodb: step1
+Document <-- Dynamodb: DynamodbDocumentNode
+Document -> Document: walkThroughDocument
+Document -> Dynamodb: DynamodbDocumentNode
+Dynamodb -> Dynamodb: step2
+Document <-- Dynamodb: result
+
+@enduml
