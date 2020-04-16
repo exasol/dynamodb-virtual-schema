@@ -22,7 +22,7 @@ public class LinearDocumentPathWalkerTest {
     void testWalk() throws DocumentPathWalkerException {
         final DocumentPathExpression pathExpression = new DocumentPathExpression.Builder().addObjectLookup("key")
                 .build();
-        final DocumentNode result = new LinearDocumentPathWalker(pathExpression).walk(TEST_OBJECT_NODE);
+        final DocumentNode result = new LinearDocumentPathWalker(pathExpression).walkThroughDocument(TEST_OBJECT_NODE);
         assertThat(result, equalTo(NESTED_VALUE));
     }
 

@@ -31,23 +31,28 @@ public class DocumentPathWalker<VisitorType> {
      * @return documents attributes described in {@link DocumentPathExpression}.
      * @throws DocumentPathWalkerException if defined path does not exist in the given document
      */
-    public List<DocumentNode<VisitorType>> walk(final DocumentNode<VisitorType> rootNode)
+    public List<DocumentNode<VisitorType>> walkThroughDocument(final DocumentNode<VisitorType> rootNode)
             throws DocumentPathWalkerException {
-        return this.walk(rootNode, 0);
+        return this.performStep(rootNode, 0);
     }
 
-    private List<DocumentNode<VisitorType>> walk(final DocumentNode<VisitorType> thisNode, final int position)
-            throws DocumentPathWalkerException {
+    private List<DocumentNode<VisitorType>> performStep(final DocumentNode<VisitorType> thisNode,
+                                                        final int position) throws DocumentPathWalkerException {
         if (this.pathExpression.size() <= position) {
             return List.of(thisNode);
         }
-        final Function<DocumentNode<VisitorType>, List<DocumentNode<VisitorType>>> converter = getConverterFor(
+        final Function<DocumentNode<VisitorType>, List<DocumentNode<VisitorType>>> stepper = getStepperFor(
                 this.pathExpression.getPath().get(position));
+        return runTraverseStepper(stepper,thisNode,position);
+    }
+
+    private List<DocumentNode<VisitorType>> runTraverseStepper(
+            final Function<DocumentNode<VisitorType>, List<DocumentNode<VisitorType>>> traverseStepper,
+            final DocumentNode<VisitorType> thisNode, final int position) throws DocumentPathWalkerException {
         try {
-            final List<DocumentNode<VisitorType>> nextNodes = converter.apply(thisNode);
             final ArrayList<DocumentNode<VisitorType>> results = new ArrayList<>();
-            for (final DocumentNode<VisitorType> nextNode : nextNodes) {
-                results.addAll(walk(nextNode, position + 1));
+            for (final DocumentNode<VisitorType> nextNode : traverseStepper.apply(thisNode)) {
+                results.addAll(performStep(nextNode, position + 1));
             }
             return results;
         } catch (final InternalPathWalkException exception) {
@@ -55,34 +60,37 @@ public class DocumentPathWalker<VisitorType> {
         }
     }
 
-    private DocumentPathWalkerException addCurrentPathToException(final InternalPathWalkException exception, final int position)  {
+    private DocumentPathWalkerException addCurrentPathToException(final InternalPathWalkException exception,
+            final int position) {
         final DocumentPathExpression currentPath = this.pathExpression.getSubPath(0, position);
         final String currentPathString = new DocumentPathToStringConverter().convertToString(currentPath);
         return new DocumentPathWalkerException(exception.getMessage(), currentPathString);
     }
 
     @java.lang.SuppressWarnings("squid:S119") // VisitorType does not fit naming conventions.
-    private Function<DocumentNode<VisitorType>, List<DocumentNode<VisitorType>>> getConverterFor(
+    private Function<DocumentNode<VisitorType>, List<DocumentNode<VisitorType>>> getStepperFor(
             final PathSegment pathSegment) {
         final WalkVisitor<VisitorType> visitor = new WalkVisitor<>();
         pathSegment.accept(visitor);
-        return visitor.converter;
+        return visitor.getStepper();
     }
 
     @java.lang.SuppressWarnings("squid:S119") // VisitorType does not fit naming conventions.
     private static class WalkVisitor<VisitorType> implements PathSegmentVisitor {
-        Function<DocumentNode<VisitorType>, List<DocumentNode<VisitorType>>> converter;
+        Function<DocumentNode<VisitorType>, List<DocumentNode<VisitorType>>> stepper;
 
         @Override
         public void visit(final ObjectLookupPathSegment objectLookupPathSegment) {
-            this.converter = thisNode -> {
+            this.stepper = thisNode -> {
                 final String key = objectLookupPathSegment.getLookupKey();
                 if (!(thisNode instanceof DocumentObject)) {
-                    throw new InternalPathWalkException( "Can't perform key lookup on non object. (requested key= " + key + ")");
+                    throw new InternalPathWalkException(
+                            "Can't perform key lookup on non object. (requested key= " + key + ")");
                 }
                 final DocumentObject<VisitorType> thisObject = (DocumentObject<VisitorType>) thisNode;
                 if (!thisObject.hasKey(key)) {
-                    throw new InternalPathWalkException("The requested lookup key (" + key + ") is not present in this object.");
+                    throw new InternalPathWalkException(
+                            "The requested lookup key (" + key + ") is not present in this object.");
                 }
                 return List.of(thisObject.get(key));
             };
@@ -90,7 +98,7 @@ public class DocumentPathWalker<VisitorType> {
 
         @Override
         public void visit(final ArrayLookupPathSegment arrayLookupPathSegment) {
-            this.converter = thisNode -> {
+            this.stepper = thisNode -> {
                 final DocumentArray<VisitorType> thisArray = castNodeToArray(thisNode);
                 try {
                     return List.of(thisArray.getValue(arrayLookupPathSegment.getLookupIndex()));
@@ -109,16 +117,19 @@ public class DocumentPathWalker<VisitorType> {
 
         @Override
         public void visit(final ArrayAllPathSegment arrayAllPathSegment) {
-            this.converter = thisNode -> {
+            this.stepper = thisNode -> {
                 final DocumentArray<VisitorType> thisArray = castNodeToArray(thisNode);
-                return thisArray.getValueList();
+                return thisArray.getValuesList();
             };
+        }
+
+        public Function<DocumentNode<VisitorType>, List<DocumentNode<VisitorType>>> getStepper() {
+            return this.stepper;
         }
     }
 
-
     /**
-     * This exception is caught in {@link #walk(DocumentNode, int)} and converted into an
+     * This exception is caught in {@link #performStep(DocumentNode, int)} and converted into an
      * {@link DocumentPathWalkerException}. This step is done for appending the current path.
      */
     private static class InternalPathWalkException extends RuntimeException {

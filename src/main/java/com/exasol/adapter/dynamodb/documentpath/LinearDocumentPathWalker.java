@@ -3,10 +3,7 @@ package com.exasol.adapter.dynamodb.documentpath;
 import com.exasol.adapter.dynamodb.documentnode.DocumentNode;
 
 /**
- * This class is a simplified version of {@link DocumentPathWalker}. It has the limitation that it can only walk linear
- * paths. That means that the paths must not contain {@link ArrayAllPathSegment}s.
- *
- * In contrast to {@link DocumentPathWalker#walk(DocumentNode)}, this class's walk method returns one single value.
+ * This class is a simplified version of {@link DocumentPathWalker} for linear paths.
  */
 @java.lang.SuppressWarnings("squid:S119") // VisitorType does not fit naming conventions.
 public class LinearDocumentPathWalker<VisitorType> {
@@ -14,8 +11,9 @@ public class LinearDocumentPathWalker<VisitorType> {
     private final DocumentPathWalker<VisitorType> documentPathWalker;
 
     /**
-     * Creates a {@link LinearDocumentPathWalker}.
-     * 
+     * Creates a {@link LinearDocumentPathWalker}. This walker has the limitation that it can only walk linear paths.
+     * That is, the paths should not contain {@link ArrayAllPathSegment}s; otherwise it throws an exception.
+     *
      * @param pathExpression Path definition. Must not contain {@link ArrayAllPathSegment}s.
      * @throws DocumentPathWalkerException if path contains {@link ArrayAllPathSegment}s.
      */
@@ -25,14 +23,16 @@ public class LinearDocumentPathWalker<VisitorType> {
     }
 
     /**
-     * Walks the path defined in constructor through the given document.
+     * Walks the path defined in constructor through the given document. In contrast to
+     * {@link DocumentPathWalker#walkThroughDocument(DocumentNode)}, this method returns one single value.
      *
      * @param rootNode document to walk through
      * @return documents attribute described in {@link DocumentPathExpression}
      * @throws DocumentPathWalkerException if defined path does not exist in the given document
      */
-    public DocumentNode<VisitorType> walk(final DocumentNode<VisitorType> rootNode) throws DocumentPathWalkerException {
-        return this.documentPathWalker.walk(rootNode).get(0);
+    public DocumentNode<VisitorType> walkThroughDocument(final DocumentNode<VisitorType> rootNode)
+            throws DocumentPathWalkerException {
+        return this.documentPathWalker.walkThroughDocument(rootNode).get(0);
     }
 
     private void checkPathIsLinear(final DocumentPathExpression pathExpression) throws DocumentPathWalkerException {

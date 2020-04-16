@@ -48,9 +48,9 @@ public class DocumentPathExpression {
          * Appends a {@link PathSegment} to the current path.
          * 
          * @param segment path segment to append
-         * @return this for as fluent programming interface
+         * @return <code>this</code> instance for fluent programming
          */
-        public Builder add(final PathSegment segment) {
+        public Builder addPathSegment(final PathSegment segment) {
             this.path.add(segment);
             return this;
         }
@@ -59,29 +59,29 @@ public class DocumentPathExpression {
          * Appends an {@link ObjectLookupPathSegment} to the current path.
          * 
          * @param lookupKey lookup key for the {@link ObjectLookupPathSegment}
-         * @return this for as fluent programming interface
+         * @return <code>this</code> instance for fluent programming
          */
         public Builder addObjectLookup(final String lookupKey) {
-            return this.add(new ObjectLookupPathSegment(lookupKey));
+            return this.addPathSegment(new ObjectLookupPathSegment(lookupKey));
         }
 
         /**
          * Appends an {@link ArrayLookupPathSegment} to the current path.
          * 
          * @param lookupIndex lookup index for {@link ArrayLookupPathSegment}
-         * @return this for as fluent programming interface
+         * @return <code>this</code> instance for fluent programming
          */
         public Builder addArrayLookup(final int lookupIndex) {
-            return this.add(new ArrayLookupPathSegment(lookupIndex));
+            return this.addPathSegment(new ArrayLookupPathSegment(lookupIndex));
         }
 
         /**
          * Appends an {@link ArrayAllPathSegment} to the current path.
          *
-         * @return this for as fluent programming interface
+         * @return <code>this</code> instance for fluent programming
          */
         public Builder addArrayAll() {
-            return this.add(new ArrayAllPathSegment());
+            return this.addPathSegment(new ArrayAllPathSegment());
         }
 
         /**

@@ -1,7 +1,7 @@
 package com.exasol.adapter.dynamodb.documentpath;
 
 /**
- * Path segment defining an key lookup of an object e.g object.property
+ * Path segment defining a key lookup of an object.
  */
 public class ObjectLookupPathSegment implements PathSegment {
     private final String lookupKey;

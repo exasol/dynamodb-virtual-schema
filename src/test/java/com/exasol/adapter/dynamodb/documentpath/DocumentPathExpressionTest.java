@@ -22,8 +22,8 @@ public class DocumentPathExpressionTest {
         final ObjectLookupPathSegment pathSegment1 = new ObjectLookupPathSegment("key");
         final ObjectLookupPathSegment pathSegment2 = new ObjectLookupPathSegment("key2");
         final DocumentPathExpression pathExpression = new DocumentPathExpression.Builder()//
-                .add(pathSegment1)//
-                .add(pathSegment2)//
+                .addPathSegment(pathSegment1)//
+                .addPathSegment(pathSegment2)//
                 .build();
         assertAll(//
                 () -> assertThat(pathExpression.size(), equalTo(2)),
@@ -54,8 +54,8 @@ public class DocumentPathExpressionTest {
         final ObjectLookupPathSegment pathSegment1 = new ObjectLookupPathSegment("key");
         final ObjectLookupPathSegment pathSegment2 = new ObjectLookupPathSegment("key2");
         final DocumentPathExpression pathExpression = new DocumentPathExpression.Builder()//
-                .add(pathSegment1)//
-                .add(pathSegment2)//
+                .addPathSegment(pathSegment1)//
+                .addPathSegment(pathSegment2)//
                 .build().getSubPath(0, 1);
         assertAll(//
                 () -> assertThat(pathExpression.size(), equalTo(1)),

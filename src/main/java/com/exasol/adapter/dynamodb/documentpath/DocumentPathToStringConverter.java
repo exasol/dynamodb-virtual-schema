@@ -3,7 +3,7 @@ package com.exasol.adapter.dynamodb.documentpath;
 import java.util.List;
 
 /**
- * This class converts a {@link DocumentPathExpression} to string like /books/topics[1]
+ * This class converts a {@link DocumentPathExpression} to string like {@code "/books/topics[1]"}.
  */
 public class DocumentPathToStringConverter {
     public String convertToString(final DocumentPathExpression pathExpression) {
@@ -22,7 +22,7 @@ public class DocumentPathToStringConverter {
     private String pathSegmentToString(final PathSegment pathSegment) {
         final StringConverterVisitor visitor = new StringConverterVisitor();
         pathSegment.accept(visitor);
-        return visitor.result;
+        return visitor.getResult();
     }
 
     private static class StringConverterVisitor implements PathSegmentVisitor {
@@ -41,6 +41,10 @@ public class DocumentPathToStringConverter {
         @Override
         public void visit(final ArrayAllPathSegment arrayAllPathSegment) {
             this.result = "[*]";
+        }
+
+        public String getResult() {
+            return this.result;
         }
     }
 }

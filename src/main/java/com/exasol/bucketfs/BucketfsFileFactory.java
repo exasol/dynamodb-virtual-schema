@@ -13,7 +13,7 @@ public class BucketfsFileFactory {
     /**
      * Opens a file from bucketfs by a given path.
      * 
-     * @param path: bucketfs path. e.g. {@code /bfsdefault/default/folder/file.txt}
+     * @param path: bucketfs path, e.g. {@code /bfsdefault/default/folder/file.txt}
      * @return File defined by the path
      * @throws IllegalArgumentException if the path is invalid or outside of the BucketFS.
      */

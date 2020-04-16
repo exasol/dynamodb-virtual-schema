@@ -30,7 +30,7 @@ public class TableMappingDefinition {
      * @param destName Name of the Exasol table
      * @return {@link TableMappingDefinition.Builder}
      */
-    public static Builder builder(final String destName) {
+    public static Builder rootTableBuilder(final String destName) {
         return new Builder(destName, null);
     }
 
@@ -39,9 +39,10 @@ public class TableMappingDefinition {
      * create tables extracted from nested lists.
      *
      * @param destName Name of the Exasol table
+     * @param pathToNestedTable Path expression within the document to the nested table
      * @return Builder for {@link TableMappingDefinition}
      */
-    public static Builder builder(final String destName, final AbstractDynamodbResultWalker pathToNestedTable) {
+    public static Builder nestedTableBuilder(final String destName, final AbstractDynamodbResultWalker pathToNestedTable) {
         return new Builder(destName, pathToNestedTable);
     }
 

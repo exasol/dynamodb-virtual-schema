@@ -13,7 +13,7 @@ public class MockArrayNode implements DocumentArray<MockVisitor> {
     }
 
     @Override
-    public List<DocumentNode<MockVisitor>> getValueList() {
+    public List<DocumentNode<MockVisitor>> getValuesList() {
         return this.value;
     }
 
