@@ -22,7 +22,7 @@ public class SchemaMappingDefinitionToSchemaMetadataConverterTest {
     private static final String COLUMN_NAME = "json";
 
     public SchemaMappingDefinition getSchemaMapping() {
-        final TableMappingDefinition table = TableMappingDefinition.builder(TABLE_NAME, true)
+        final TableMappingDefinition table = TableMappingDefinition.rootTableBuilder(TABLE_NAME)
                 .withColumnMappingDefinition(
                         new ToJsonColumnMappingDefinition(new AbstractColumnMappingDefinition.ConstructorParameters(
                                 COLUMN_NAME, new IdentityDynamodbResultWalker(),

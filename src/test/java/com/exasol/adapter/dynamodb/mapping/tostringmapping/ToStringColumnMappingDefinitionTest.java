@@ -10,9 +10,6 @@ import com.exasol.adapter.dynamodb.mapping.AbstractColumnMappingDefinition;
 import com.exasol.adapter.metadata.DataType;
 import com.exasol.dynamodb.resultwalker.IdentityDynamodbResultWalker;
 
-/**
- * Tests for {@link ToStringColumnMappingDefinition}
- */
 public class ToStringColumnMappingDefinitionTest {
     private static final String DEST_COLUMN = "destColumn";
 

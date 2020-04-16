@@ -8,9 +8,6 @@ import java.io.IOException;
 
 import org.junit.jupiter.api.Test;
 
-/**
- * Test for {@link MappingTestFiles}
- */
 public class MappingTestFilesTest {
 
     @Test

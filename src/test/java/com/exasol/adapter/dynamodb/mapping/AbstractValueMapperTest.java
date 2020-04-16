@@ -17,9 +17,6 @@ import com.exasol.dynamodb.resultwalker.ObjectDynamodbResultWalker;
 import com.exasol.sql.expression.StringLiteral;
 import com.exasol.sql.expression.ValueExpression;
 
-/**
- * Tests for {@link AbstractValueMapper}
- */
 public class AbstractValueMapperTest {
     @Test
     void testLookup() throws DynamodbResultWalkerException, ValueMapperException {

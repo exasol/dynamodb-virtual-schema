@@ -19,9 +19,6 @@ import com.exasol.adapter.sql.SqlSelectList;
 import com.exasol.adapter.sql.SqlStatementSelect;
 import com.exasol.adapter.sql.SqlTable;
 
-/**
- * Tests for {@link QueryResultTableSchemaBuilder}
- */
 public class QueryResultTableSchemaBuilderTest {
     @Test
     void testBuildSelectStar() throws IOException, AdapterException {

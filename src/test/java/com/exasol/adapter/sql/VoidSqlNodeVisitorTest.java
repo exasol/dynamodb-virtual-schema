@@ -9,9 +9,6 @@ import java.lang.reflect.Method;
 
 import org.junit.jupiter.api.Test;
 
-/**
- * Tests for {@link VoidSqlNodeVisitor}
- */
 public class VoidSqlNodeVisitorTest {
     @Test
     void testUnimplementedException() {

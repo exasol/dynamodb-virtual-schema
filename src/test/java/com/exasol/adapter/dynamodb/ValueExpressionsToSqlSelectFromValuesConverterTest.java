@@ -15,9 +15,6 @@ import com.exasol.dynamodb.resultwalker.IdentityDynamodbResultWalker;
 import com.exasol.sql.expression.StringLiteral;
 import com.exasol.sql.expression.ValueExpression;
 
-/**
- * Tests for {@link ValueExpressionsToSqlSelectFromValuesConverter}.
- */
 public class ValueExpressionsToSqlSelectFromValuesConverterTest {
     QueryResultTableSchema getTestTable() {
         return new QueryResultTableSchema(List.of(new ToJsonColumnMappingDefinition(
