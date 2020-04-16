@@ -22,7 +22,7 @@ public class DynamodbAdapterProperties {
     /**
      * Check if the mapping definition property is set.
      *
-     * @return <code>true</code> if schema definition property is set
+     * @return {@code true} if schema definition property is set
      */
     public boolean hasMappingDefinition() {
         return this.properties.containsKey(MAPPING_KEY);

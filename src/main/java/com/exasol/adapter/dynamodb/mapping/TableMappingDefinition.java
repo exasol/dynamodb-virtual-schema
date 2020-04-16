@@ -38,11 +38,12 @@ public class TableMappingDefinition {
      * Gives an instance of the Builder for {@link TableMappingDefinition}. This version of the builder is used to
      * create tables extracted from nested lists.
      *
-     * @param destName Name of the Exasol table
+     * @param destName          Name of the Exasol table
      * @param pathToNestedTable Path expression within the document to the nested table
      * @return Builder for {@link TableMappingDefinition}
      */
-    public static Builder nestedTableBuilder(final String destName, final AbstractDynamodbResultWalker pathToNestedTable) {
+    public static Builder nestedTableBuilder(final String destName,
+            final AbstractDynamodbResultWalker pathToNestedTable) {
         return new Builder(destName, pathToNestedTable);
     }
 

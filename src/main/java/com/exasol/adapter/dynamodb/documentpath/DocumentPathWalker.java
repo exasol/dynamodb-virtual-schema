@@ -36,14 +36,14 @@ public class DocumentPathWalker<VisitorType> {
         return this.performStep(rootNode, 0);
     }
 
-    private List<DocumentNode<VisitorType>> performStep(final DocumentNode<VisitorType> thisNode,
-                                                        final int position) throws DocumentPathWalkerException {
+    private List<DocumentNode<VisitorType>> performStep(final DocumentNode<VisitorType> thisNode, final int position)
+            throws DocumentPathWalkerException {
         if (this.pathExpression.size() <= position) {
             return List.of(thisNode);
         }
         final Function<DocumentNode<VisitorType>, List<DocumentNode<VisitorType>>> stepper = getStepperFor(
                 this.pathExpression.getPath().get(position));
-        return runTraverseStepper(stepper,thisNode,position);
+        return runTraverseStepper(stepper, thisNode, position);
     }
 
     private List<DocumentNode<VisitorType>> runTraverseStepper(

@@ -48,7 +48,7 @@ public class DocumentPathExpression {
          * Appends a {@link PathSegment} to the current path.
          * 
          * @param segment path segment to append
-         * @return <code>this</code> instance for fluent programming
+         * @return {@code this} instance for fluent programming
          */
         public Builder addPathSegment(final PathSegment segment) {
             this.path.add(segment);
@@ -59,7 +59,7 @@ public class DocumentPathExpression {
          * Appends an {@link ObjectLookupPathSegment} to the current path.
          * 
          * @param lookupKey lookup key for the {@link ObjectLookupPathSegment}
-         * @return <code>this</code> instance for fluent programming
+         * @return {@code this} instance for fluent programming
          */
         public Builder addObjectLookup(final String lookupKey) {
             return this.addPathSegment(new ObjectLookupPathSegment(lookupKey));
@@ -69,7 +69,7 @@ public class DocumentPathExpression {
          * Appends an {@link ArrayLookupPathSegment} to the current path.
          * 
          * @param lookupIndex lookup index for {@link ArrayLookupPathSegment}
-         * @return <code>this</code> instance for fluent programming
+         * @return {@code this} instance for fluent programming
          */
         public Builder addArrayLookup(final int lookupIndex) {
             return this.addPathSegment(new ArrayLookupPathSegment(lookupIndex));
@@ -78,7 +78,7 @@ public class DocumentPathExpression {
         /**
          * Appends an {@link ArrayAllPathSegment} to the current path.
          *
-         * @return <code>this</code> instance for fluent programming
+         * @return {@code this} instance for fluent programming
          */
         public Builder addArrayAll() {
             return this.addPathSegment(new ArrayAllPathSegment());
