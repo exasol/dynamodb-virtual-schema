@@ -22,7 +22,8 @@ public class RowMapperTest {
         final ToJsonColumnMappingDefinition mappingDefinition = new ToJsonColumnMappingDefinition(
                 new AbstractColumnMappingDefinition.ConstructorParameters("test", new IdentityDynamodbResultWalker(),
                         AbstractColumnMappingDefinition.LookupFailBehaviour.EXCEPTION));
-        final QueryResultTableSchema queryResultTableSchema = new QueryResultTableSchema(List.of(mappingDefinition));
+        final QueryResultTableSchema queryResultTableSchema = new QueryResultTableSchema(null,
+                List.of(mappingDefinition));
         final List<ValueExpression> exasolRow = new RowMapper(queryResultTableSchema)
                 .mapRow(Map.of("testKey", AttributeValueTestUtils.forString("testValue")));
         assertThat(exasolRow.get(0).toString(), equalTo("{\"testKey\":\"testValue\"}"));

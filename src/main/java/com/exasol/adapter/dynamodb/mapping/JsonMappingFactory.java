@@ -26,6 +26,7 @@ import com.exasol.dynamodb.resultwalker.ObjectDynamodbResultWalker;
  */
 public class JsonMappingFactory implements MappingDefinitionFactory {
     private static final String DEST_TABLE_NAME_KEY = "destTable";
+    private static final String SRC_TABLE_NAME_KEY = "destTable";
     private static final String MAPPING_KEY = "mapping";
     private static final String FIELDS_KEY = "fields";
     private static final String TO_STRING_MAPPING_KEY = "toStringMapping";
@@ -91,7 +92,7 @@ public class JsonMappingFactory implements MappingDefinitionFactory {
 
     private void addRootDefinition(final JsonObject definition) throws MappingException {
         final TableMappingDefinition.Builder tableBuilder = TableMappingDefinition
-                .rootTableBuilder(definition.getString(DEST_TABLE_NAME_KEY));
+                .rootTableBuilder(definition.getString(DEST_TABLE_NAME_KEY), definition.getString(SRC_TABLE_NAME_KEY));
         visitRootMapping(definition.getJsonObject(MAPPING_KEY), new IdentityDynamodbResultWalker.Builder(),
                 tableBuilder);
         this.tables.add(tableBuilder.build());

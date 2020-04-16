@@ -18,11 +18,12 @@ import com.exasol.adapter.metadata.TableMetadata;
 import com.exasol.dynamodb.resultwalker.IdentityDynamodbResultWalker;
 
 public class SchemaMappingDefinitionToSchemaMetadataConverterTest {
-    private static final String TABLE_NAME = "testTable";
+    private static final String DEST_TABLE_NAME = "TEST";
+    private static final String SRC_TABLE_NAME = "srcTable";
     private static final String COLUMN_NAME = "json";
 
     public SchemaMappingDefinition getSchemaMapping() {
-        final TableMappingDefinition table = TableMappingDefinition.rootTableBuilder(TABLE_NAME)
+        final TableMappingDefinition table = TableMappingDefinition.rootTableBuilder(DEST_TABLE_NAME, SRC_TABLE_NAME)
                 .withColumnMappingDefinition(
                         new ToJsonColumnMappingDefinition(new AbstractColumnMappingDefinition.ConstructorParameters(
                                 COLUMN_NAME, new IdentityDynamodbResultWalker(),
@@ -37,12 +38,14 @@ public class SchemaMappingDefinitionToSchemaMetadataConverterTest {
         final SchemaMetadata schemaMetadata = new SchemaMappingDefinitionToSchemaMetadataConverter()
                 .convert(schemaMapping);
         final List<TableMetadata> tables = schemaMetadata.getTables();
-        assertThat(tables.size(), equalTo(1));
         final TableMetadata firstTable = tables.get(0);
-        assertThat(firstTable.getName(), equalTo(TABLE_NAME));
         final List<String> columnNames = firstTable.getColumns().stream().map(ColumnMetadata::getName)
                 .collect(Collectors.toList());
-        assertThat(columnNames, containsInAnyOrder(COLUMN_NAME));
+        assertAll(//
+                () -> assertThat(tables.size(), equalTo(1)), //
+                () -> assertThat(firstTable.getName(), equalTo(DEST_TABLE_NAME)),
+                () -> assertThat(columnNames, containsInAnyOrder(COLUMN_NAME))//
+        );
     }
 
     @Test
@@ -65,7 +68,8 @@ public class SchemaMappingDefinitionToSchemaMetadataConverterTest {
         final TableMappingDefinition tableMappingDefinition = converter.convertBackTable(firstTableMetadata,
                 schemaMetadata);
         assertAll(//
-                () -> assertThat(tableMappingDefinition.getExasolName(), equalTo(TABLE_NAME)), //
+                () -> assertThat(tableMappingDefinition.getExasolName(), equalTo(DEST_TABLE_NAME)), //
+                () -> assertThat(tableMappingDefinition.getRemoteName(), equalTo(SRC_TABLE_NAME)), //
                 () -> assertThat(tableMappingDefinition.getColumns().size(), equalTo(1)), //
                 () -> assertThat(tableMappingDefinition.getColumns().get(0).getExasolColumnName(), equalTo(COLUMN_NAME))//
         );

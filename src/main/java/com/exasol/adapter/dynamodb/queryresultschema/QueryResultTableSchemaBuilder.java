@@ -1,6 +1,5 @@
 package com.exasol.adapter.dynamodb.queryresultschema;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -8,7 +7,9 @@ import java.util.List;
 import com.exasol.adapter.AdapterException;
 import com.exasol.adapter.dynamodb.mapping.AbstractColumnMappingDefinition;
 import com.exasol.adapter.dynamodb.mapping.SchemaMappingDefinitionToSchemaMetadataConverter;
+import com.exasol.adapter.dynamodb.mapping.TableMappingDefinition;
 import com.exasol.adapter.metadata.ColumnMetadata;
+import com.exasol.adapter.metadata.SchemaMetadata;
 import com.exasol.adapter.metadata.TableMetadata;
 import com.exasol.adapter.sql.*;
 
@@ -21,12 +22,14 @@ public class QueryResultTableSchemaBuilder {
      * Builds the {@link QueryResultTableSchema} from an {@link SqlStatementSelect}
      * 
      * @param selectStatement select statement
+     * @param schemaMetadata  metadata of the schema
      * @return {@link QueryResultTableSchema}
      */
-    public QueryResultTableSchema build(final SqlStatement selectStatement) throws AdapterException {
+    public QueryResultTableSchema build(final SqlStatement selectStatement, final SchemaMetadata schemaMetadata)
+            throws AdapterException {
         final Visitor visitor = new Visitor();
         selectStatement.accept(visitor);
-        return visitor.getQueryResultTable();
+        return visitor.getQueryResultTable(schemaMetadata);
     }
 
     private static class Visitor extends VoidSqlNodeVisitor {
@@ -34,8 +37,11 @@ public class QueryResultTableSchemaBuilder {
         private String tableName;
         private TableMetadata tableMetadata;
 
-        private QueryResultTableSchema getQueryResultTable() {
-            return new QueryResultTableSchema(Collections.unmodifiableList(this.resultColumns));
+        private QueryResultTableSchema getQueryResultTable(final SchemaMetadata schemaMetadata) {
+            final SchemaMappingDefinitionToSchemaMetadataConverter converter = new SchemaMappingDefinitionToSchemaMetadataConverter();
+            final TableMappingDefinition tableMappingDefinition = converter.convertBackTable(this.tableMetadata,
+                    schemaMetadata);
+            return new QueryResultTableSchema(tableMappingDefinition, Collections.unmodifiableList(this.resultColumns));
         }
 
         @Override
@@ -46,7 +52,7 @@ public class QueryResultTableSchemaBuilder {
         }
 
         @Override
-        public Void visit(final SqlSelectList selectList) throws AdapterException {
+        public Void visit(final SqlSelectList selectList) {
             if (selectList.isRequestAnyColumn()) {
                 throw new UnsupportedOperationException(
                         "The current version of DynamoDB Virtual Schema does not support requesting any columns.");
@@ -59,23 +65,19 @@ public class QueryResultTableSchemaBuilder {
             return null;
         }
 
-        private void selectAllColumns() throws AdapterException {
-            try {
-                for (final ColumnMetadata columnMetadata : this.tableMetadata.getColumns()) {
-                    final AbstractColumnMappingDefinition columnMappingDefinition = new SchemaMappingDefinitionToSchemaMetadataConverter()
-                            .convertBackColumn(columnMetadata);
-                    this.resultColumns.add(columnMappingDefinition);
-                }
-            } catch (final IOException | ClassNotFoundException exception) {
-                throw new AdapterException("Failed parsing query failed. Cause: could not parse schema. Cause by "
-                        + exception.getMessage(), exception);
+        private void selectAllColumns() {
+            for (final ColumnMetadata columnMetadata : this.tableMetadata.getColumns()) {
+                final AbstractColumnMappingDefinition columnMappingDefinition = new SchemaMappingDefinitionToSchemaMetadataConverter()
+                        .convertBackColumn(columnMetadata);
+                this.resultColumns.add(columnMappingDefinition);
             }
         }
 
         @Override
         public Void visit(final SqlTable sqlTable) {
             if (this.tableName != null) {
-                throw new UnsupportedOperationException("Until now only one table can be queried per statement.");
+                throw new UnsupportedOperationException(
+                        "The current version of DynamoDB Virtual Schema does only support one table per statement.");
             }
             this.tableName = sqlTable.getName();
             this.tableMetadata = sqlTable.getMetadata();

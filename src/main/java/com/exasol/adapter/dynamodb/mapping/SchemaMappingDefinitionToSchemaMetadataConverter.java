@@ -28,7 +28,7 @@ public class SchemaMappingDefinitionToSchemaMetadataConverter {
     public SchemaMetadata convert(final SchemaMappingDefinition schemaMappingDefinition) throws IOException {
         final List<TableMetadata> tableMetadata = new ArrayList<>();
         final HashMap<String, TableMappingDefinition> tableMappings = new HashMap<>();// concrete HashMap is used here
-                                                                                      // as it is serializable.
+        // as it is serializable.
         for (final TableMappingDefinition table : schemaMappingDefinition.getTableMappings()) {
             tableMetadata.add(convertTable(table));
             tableMappings.put(table.getExasolName(), table);
@@ -67,13 +67,21 @@ public class SchemaMappingDefinitionToSchemaMetadataConverter {
      * @param tableMetadata  metadata for the table to be deserialized
      * @param schemaMetadata needed because the tables can't be serialized into the TableMetadata due to a bug
      * @return deserialized {@link TableMappingDefinition}
-     * @throws IOException            if deserialization fails
-     * @throws ClassNotFoundException if deserialization fails
+     * @throws IllegalStateException if deserialization fails
      */
     public TableMappingDefinition convertBackTable(final TableMetadata tableMetadata,
+            final SchemaMetadata schemaMetadata) {
+        try {
+            return convertBackTableIntern(tableMetadata, schemaMetadata);
+        } catch (final IOException | ClassNotFoundException exception) {
+            throw new IllegalStateException("Failed to deserialize TableMappingDefinition.", exception);
+        }
+    }
+
+    private TableMappingDefinition convertBackTableIntern(final TableMetadata tableMetadata,
             final SchemaMetadata schemaMetadata) throws IOException, ClassNotFoundException {
-        final TableMappingDefinition preliminaryTable = findTableInSchemaMetadata(tableMetadata.getName(),
-                schemaMetadata);
+        final TableMappingDefinition preliminaryTable;
+        preliminaryTable = findTableInSchemaMetadata(tableMetadata.getName(), schemaMetadata);
         /*
          * As the columns are transient in TableMappingDefinition, they must be deserialized from the ColumnMetadata and
          * added separately.
@@ -100,13 +108,15 @@ public class SchemaMappingDefinitionToSchemaMetadataConverter {
      *
      * @param columnMetadata {@link ColumnMetadata} to deserialized from
      * @return ColumnMappingDefinition
-     * @throws IOException            if deserialization fails
-     * @throws ClassNotFoundException if deserialization fails
+     * @throws IllegalStateException if deserialization fails
      */
-    public AbstractColumnMappingDefinition convertBackColumn(final ColumnMetadata columnMetadata)
-            throws IOException, ClassNotFoundException {
-        final String serialized = columnMetadata.getAdapterNotes();
-        return (AbstractColumnMappingDefinition) StringSerializer.deserializeFromString(serialized);
+    public AbstractColumnMappingDefinition convertBackColumn(final ColumnMetadata columnMetadata) {
+        try {
+            final String serialized = columnMetadata.getAdapterNotes();
+            return (AbstractColumnMappingDefinition) StringSerializer.deserializeFromString(serialized);
+        } catch (final IOException | ClassNotFoundException exception) {
+            throw new IllegalStateException("Failed to deserialize ColumnMappingDefinition.", exception);
+        }
     }
 
     /**

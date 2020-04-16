@@ -4,12 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
-import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
-import com.amazonaws.services.dynamodbv2.model.AttributeValue;
-import com.amazonaws.services.dynamodbv2.model.ScanRequest;
-import com.amazonaws.services.dynamodbv2.model.ScanResult;
 import com.exasol.ExaConnectionAccessException;
 import com.exasol.ExaConnectionInformation;
 import com.exasol.ExaMetadata;
@@ -28,7 +23,6 @@ import com.exasol.adapter.metadata.SchemaMetadata;
 import com.exasol.adapter.request.*;
 import com.exasol.adapter.response.*;
 import com.exasol.bucketfs.BucketfsFileFactory;
-import com.exasol.dynamodb.DynamodbConnectionFactory;
 import com.exasol.dynamodb.resultwalker.DynamodbResultWalkerException;
 import com.exasol.sql.expression.ValueExpression;
 
@@ -81,17 +75,6 @@ public class DynamodbAdapter implements VirtualSchemaAdapter {
         return file;
     }
 
-    /**
-     * Creates a connection to DynamoDB using the connection details from the {@code CREATE CONNECTION} statement.
-     */
-    private AmazonDynamoDB getConnection(final ExaMetadata exaMetadata, final AbstractAdapterRequest request)
-            throws ExaConnectionAccessException {
-        final AdapterProperties properties = getPropertiesFromRequest(request);
-        final ExaConnectionInformation connection = exaMetadata.getConnection(properties.getConnectionName());
-        return new DynamodbConnectionFactory().getLowLevelConnection(connection.getAddress(), connection.getUser(),
-                connection.getPassword());
-    }
-
     private AdapterProperties getPropertiesFromRequest(final AdapterRequest request) {
         return new AdapterProperties(request.getSchemaMetadataInfo().getProperties());
     }
@@ -122,37 +105,35 @@ public class DynamodbAdapter implements VirtualSchemaAdapter {
             throws AdapterException {
         try {
             return runPushdown(exaMetadata, request);
-        } catch (final ExaConnectionAccessException | DynamodbResultWalkerException exception) {
+        } catch (final ExaConnectionAccessException | DynamodbResultWalkerException | IOException exception) {
             throw new AdapterException("Unable to create Virtual Schema \"" + request.getVirtualSchemaName() + "\". "
                     + "Cause: " + exception.getMessage(), exception);
         }
     }
 
     private PushDownResponse runPushdown(final ExaMetadata exaMetadata, final PushDownRequest request)
-            throws AdapterException, ExaConnectionAccessException {
+            throws AdapterException, ExaConnectionAccessException, IOException {
         final QueryResultTableSchema queryResultTableSchema = new QueryResultTableSchemaBuilder()
-                .build(request.getSelect());
-        final ScanResult scanResult = runDynamodbQuery(exaMetadata, request);
-        final String selectFromValuesStatement = convertResult(scanResult, queryResultTableSchema);
+                .build(request.getSelect(), getSchemaMetadata(request));
+
+        final QueryRunner queryRunner = new QueryRunner(getConnectionInformation(exaMetadata, request));
+        final RowMapper rowMapper = new RowMapper(queryResultTableSchema);
+        final List<List<ValueExpression>> resultRows = new ArrayList<>();
+        queryRunner.runQuery(queryResultTableSchema).forEach(dynamodbRow -> {
+            resultRows.add(rowMapper.mapRow(dynamodbRow));
+        });
+        final String selectFromValuesStatement = new ValueExpressionsToSqlSelectFromValuesConverter()
+                .convert(queryResultTableSchema, resultRows);
+
         return PushDownResponse.builder()//
                 .pushDownSql(selectFromValuesStatement)//
                 .build();
     }
 
-    private ScanResult runDynamodbQuery(final ExaMetadata exaMetadata, final PushDownRequest request)
-            throws ExaConnectionAccessException {
-        final AmazonDynamoDB client = getConnection(exaMetadata, request);
-        return client.scan(new ScanRequest("JB_Books"));
-    }
-
-    private String convertResult(final ScanResult scanResult, final QueryResultTableSchema queryResultTableSchema)
-            throws AdapterException {
-        final List<List<ValueExpression>> resultRows = new ArrayList<>();
-        final RowMapper rowMapper = new RowMapper(queryResultTableSchema);
-        for (final Map<String, AttributeValue> dynamodbItem : scanResult.getItems()) {
-            resultRows.add(rowMapper.mapRow(dynamodbItem));
-        }
-        return new ValueExpressionsToSqlSelectFromValuesConverter().convert(queryResultTableSchema, resultRows);
+    private ExaConnectionInformation getConnectionInformation(final ExaMetadata exaMetadata,
+            final PushDownRequest request) throws ExaConnectionAccessException {
+        final AdapterProperties properties = getPropertiesFromRequest(request);
+        return exaMetadata.getConnection(properties.getConnectionName());
     }
 
     @Override

@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Map;
 
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
-import com.exasol.adapter.AdapterException;
 import com.exasol.adapter.dynamodb.mapping.AbstractColumnMappingDefinition;
 import com.exasol.adapter.dynamodb.mapping.AbstractValueMapper;
 import com.exasol.adapter.dynamodb.mapping.ValueMapperFactory;
@@ -31,7 +30,7 @@ public class RowMapper {
      *
      * @param dynamodbRow DynamoDB row
      */
-    public List<ValueExpression> mapRow(final Map<String, AttributeValue> dynamodbRow) throws AdapterException {
+    public List<ValueExpression> mapRow(final Map<String, AttributeValue> dynamodbRow) {
         final List<ValueExpression> resultValues = new ArrayList<>(this.queryResultTableSchema.getColumns().size());
         for (final AbstractColumnMappingDefinition resultColumn : this.queryResultTableSchema.getColumns()) {
             final AbstractValueMapper valueMapper = new ValueMapperFactory().getValueMapperForColumn(resultColumn);
