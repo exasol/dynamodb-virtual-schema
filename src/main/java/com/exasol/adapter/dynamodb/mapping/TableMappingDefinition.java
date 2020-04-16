@@ -46,9 +46,6 @@ public class TableMappingDefinition implements Serializable {
 
 
     /**
-     * Returns an instance of the Builder.
-
-    /**
      * Gives an instance of the Builder for {@link TableMappingDefinition}. This version of the builder is used to
      * create tables extracted from nested lists.
      *
