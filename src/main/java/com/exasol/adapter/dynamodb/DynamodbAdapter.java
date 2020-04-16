@@ -115,19 +115,20 @@ public class DynamodbAdapter implements VirtualSchemaAdapter {
             throws AdapterException, ExaConnectionAccessException, IOException {
         final QueryResultTableSchema queryResultTableSchema = new QueryResultTableSchemaBuilder()
                 .build(request.getSelect(), getSchemaMetadata(request));
-
-        final QueryRunner queryRunner = new QueryRunner(getConnectionInformation(exaMetadata, request));
-        final RowMapper rowMapper = new RowMapper(queryResultTableSchema);
-        final List<List<ValueExpression>> resultRows = new ArrayList<>();
-        queryRunner.runQuery(queryResultTableSchema).forEach(dynamodbRow -> {
-            resultRows.add(rowMapper.mapRow(dynamodbRow));
-        });
-        final String selectFromValuesStatement = new ValueExpressionsToSqlSelectFromValuesConverter()
-                .convert(queryResultTableSchema, resultRows);
-
+        final String selectFromValuesStatement = runQuery(exaMetadata, request, queryResultTableSchema);
         return PushDownResponse.builder()//
                 .pushDownSql(selectFromValuesStatement)//
                 .build();
+    }
+
+    private String runQuery(final ExaMetadata exaMetadata, final PushDownRequest request,
+            final QueryResultTableSchema queryResultTableSchema) throws ExaConnectionAccessException {
+        final QueryRunner queryRunner = new QueryRunner(getConnectionInformation(exaMetadata, request));
+        final RowMapper rowMapper = new RowMapper(queryResultTableSchema);
+        final List<List<ValueExpression>> resultRows = new ArrayList<>();
+        queryRunner.runQuery(queryResultTableSchema)
+                .forEach(dynamodbRow -> resultRows.add(rowMapper.mapRow(dynamodbRow)));
+        return new ValueExpressionsToSqlSelectFromValuesConverter().convert(queryResultTableSchema, resultRows);
     }
 
     private ExaConnectionInformation getConnectionInformation(final ExaMetadata exaMetadata,

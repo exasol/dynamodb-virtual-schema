@@ -20,10 +20,10 @@ public class TableMappingDefinition implements Serializable {
                                                                            // {@link ColumnMetadata}.
     private final AbstractDynamodbResultWalker pathToNestedTable;
 
-    private TableMappingDefinition(final String exasolName, final String externName,
+    private TableMappingDefinition(final String exasolName, final String remoteName,
             final List<AbstractColumnMappingDefinition> columns, final AbstractDynamodbResultWalker pathToNestedTable) {
         this.exasolName = exasolName;
-        this.remoteName = externName;
+        this.remoteName = remoteName;
         this.pathToNestedTable = pathToNestedTable;
         this.columns = columns;
     }
@@ -52,6 +52,7 @@ public class TableMappingDefinition implements Serializable {
      * create tables extracted from nested lists.
      *
      * @param destName          Name of the Exasol table
+     * @param remoteName        Name of the remote table
      * @param pathToNestedTable Path expression within the document to the nested table
      * @return Builder for {@link TableMappingDefinition}
      */

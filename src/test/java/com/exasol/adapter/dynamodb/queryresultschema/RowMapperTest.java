@@ -8,7 +8,6 @@ import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 
-import com.exasol.adapter.AdapterException;
 import com.exasol.adapter.dynamodb.mapping.AbstractColumnMappingDefinition;
 import com.exasol.adapter.dynamodb.mapping.tojsonmapping.ToJsonColumnMappingDefinition;
 import com.exasol.dynamodb.attributevalue.AttributeValueTestUtils;
@@ -18,7 +17,7 @@ import com.exasol.sql.expression.ValueExpression;
 public class RowMapperTest {
 
     @Test
-    public void testMapRow() throws AdapterException {
+    public void testMapRow() {
         final ToJsonColumnMappingDefinition mappingDefinition = new ToJsonColumnMappingDefinition(
                 new AbstractColumnMappingDefinition.ConstructorParameters("test", new IdentityDynamodbResultWalker(),
                         AbstractColumnMappingDefinition.LookupFailBehaviour.EXCEPTION));

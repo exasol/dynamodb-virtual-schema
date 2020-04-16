@@ -23,7 +23,8 @@ public class DocumentPathWalkerTest {
     @Test
     void testWalkEmptyPath() throws DocumentPathWalkerException {
         final DocumentPathExpression pathExpression = new DocumentPathExpression.Builder().build();
-        final List<DocumentNode> result = new DocumentPathWalker(pathExpression).walkThroughDocument(TEST_OBJECT_NODE);
+        final List<DocumentNode<MockVisitor>> result = new DocumentPathWalker<MockVisitor>(pathExpression)
+                .walkThroughDocument(TEST_OBJECT_NODE);
         assertThat(result, containsInAnyOrder(TEST_OBJECT_NODE));
     }
 
@@ -31,16 +32,17 @@ public class DocumentPathWalkerTest {
     void testWalkObjectPath() throws DocumentPathWalkerException {
         final DocumentPathExpression pathExpression = new DocumentPathExpression.Builder().addObjectLookup("key")
                 .build();
-        final List<DocumentNode> result = new DocumentPathWalker(pathExpression).walkThroughDocument(TEST_OBJECT_NODE);
+        final List<DocumentNode<MockVisitor>> result = new DocumentPathWalker<MockVisitor>(pathExpression)
+                .walkThroughDocument(TEST_OBJECT_NODE);
         assertThat(result, containsInAnyOrder(NESTED_VALUE1));
     }
 
     @Test
-    void testNotAnObject() throws DocumentPathWalkerException {
+    void testNotAnObject() {
         final DocumentPathExpression pathExpression = new DocumentPathExpression.Builder().addObjectLookup("key")
                 .addObjectLookup("key2").build();
         final DocumentPathWalkerException exception = assertThrows(DocumentPathWalkerException.class,
-                () -> new DocumentPathWalker(pathExpression).walkThroughDocument(TEST_OBJECT_NODE));
+                () -> new DocumentPathWalker<MockVisitor>(pathExpression).walkThroughDocument(TEST_OBJECT_NODE));
         assertAll(() -> assertThat(exception.getCurrentPath(), equalTo("/key")),
                 () -> assertThat(exception.getMessage(),
                         equalTo("Can't perform key lookup on non object. (requested key= key2) (current path= /key)")));
@@ -51,7 +53,7 @@ public class DocumentPathWalkerTest {
         final DocumentPathExpression pathExpression = new DocumentPathExpression.Builder().addObjectLookup("unknownKey")
                 .build();
         final DocumentPathWalkerException exception = assertThrows(DocumentPathWalkerException.class,
-                () -> new DocumentPathWalker(pathExpression).walkThroughDocument(TEST_OBJECT_NODE));
+                () -> new DocumentPathWalker<MockVisitor>(pathExpression).walkThroughDocument(TEST_OBJECT_NODE));
         assertAll(() -> assertThat(exception.getCurrentPath(), equalTo("/")), () -> assertThat(exception.getMessage(),
                 equalTo("The requested lookup key (unknownKey) is not present in this object. (current path= /)")));
     }
@@ -59,38 +61,40 @@ public class DocumentPathWalkerTest {
     @Test
     void testArrayLookup() throws DocumentPathWalkerException {
         final DocumentPathExpression pathExpression = new DocumentPathExpression.Builder().addArrayLookup(0).build();
-        final List<DocumentNode> result = new DocumentPathWalker(pathExpression).walkThroughDocument(TEST_ARRAY_NODE);
+        final List<DocumentNode<MockVisitor>> result = new DocumentPathWalker<MockVisitor>(pathExpression)
+                .walkThroughDocument(TEST_ARRAY_NODE);
         assertThat(result, containsInAnyOrder(NESTED_VALUE1));
     }
 
     @Test
-    void testOutOfBoundsArrayLookup() throws DocumentPathWalkerException {
+    void testOutOfBoundsArrayLookup() {
         final DocumentPathExpression pathExpression = new DocumentPathExpression.Builder().addArrayLookup(10).build();
         final DocumentPathWalkerException exception = assertThrows(DocumentPathWalkerException.class,
-                () -> new DocumentPathWalker(pathExpression).walkThroughDocument(TEST_ARRAY_NODE));
+                () -> new DocumentPathWalker<MockVisitor>(pathExpression).walkThroughDocument(TEST_ARRAY_NODE));
         assertThat(exception.getMessage(), equalTo("Can't perform array lookup: Index: 10 Size: 2 (current path= /)"));
     }
 
     @Test
-    void testArrayLookupOnNonArray() throws DocumentPathWalkerException {
+    void testArrayLookupOnNonArray() {
         final DocumentPathExpression pathExpression = new DocumentPathExpression.Builder().addArrayLookup(10).build();
         final DocumentPathWalkerException exception = assertThrows(DocumentPathWalkerException.class,
-                () -> new DocumentPathWalker(pathExpression).walkThroughDocument(TEST_OBJECT_NODE));
+                () -> new DocumentPathWalker<MockVisitor>(pathExpression).walkThroughDocument(TEST_OBJECT_NODE));
         assertThat(exception.getMessage(), equalTo("Can't perform array lookup on non array. (current path= /)"));
     }
 
     @Test
     void testArrayAll() throws DocumentPathWalkerException {
         final DocumentPathExpression pathExpression = new DocumentPathExpression.Builder().addArrayAll().build();
-        final List<DocumentNode> result = new DocumentPathWalker(pathExpression).walkThroughDocument(TEST_ARRAY_NODE);
+        final List<DocumentNode<MockVisitor>> result = new DocumentPathWalker<MockVisitor>(pathExpression)
+                .walkThroughDocument(TEST_ARRAY_NODE);
         assertThat(result, containsInAnyOrder(NESTED_VALUE1, NESTED_VALUE2));
     }
 
     @Test
-    void testArrayAllOnNonArray() throws DocumentPathWalkerException {
+    void testArrayAllOnNonArray() {
         final DocumentPathExpression pathExpression = new DocumentPathExpression.Builder().addArrayAll().build();
         final DocumentPathWalkerException exception = assertThrows(DocumentPathWalkerException.class,
-                () -> new DocumentPathWalker(pathExpression).walkThroughDocument(TEST_OBJECT_NODE));
+                () -> new DocumentPathWalker<MockVisitor>(pathExpression).walkThroughDocument(TEST_OBJECT_NODE));
         assertThat(exception.getMessage(), equalTo("Can't perform array lookup on non array. (current path= /)"));
     }
 }

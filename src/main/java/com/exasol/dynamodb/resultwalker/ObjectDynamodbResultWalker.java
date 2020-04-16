@@ -21,8 +21,7 @@ public class ObjectDynamodbResultWalker extends AbstractDynamodbResultWalker {
     }
 
     @Override
-    protected AttributeValue applyThis(final AttributeValue attributeValue, final String path)
-            throws DynamodbResultWalkerException {
+    protected AttributeValue applyThis(final AttributeValue attributeValue, final String path) {
         if (attributeValue.getM() == null) {
             throw new DynamodbResultWalkerException("Not an object", path);
         }

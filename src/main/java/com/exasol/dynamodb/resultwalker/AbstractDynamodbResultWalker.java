@@ -32,24 +32,21 @@ public abstract class AbstractDynamodbResultWalker implements Serializable {
      *
      * @return AttributeValue specified by the path modeled by a chain of this objects
      */
-    public AttributeValue walk(final Map<String, AttributeValue> item) throws DynamodbResultWalkerException {
+    public AttributeValue walk(final Map<String, AttributeValue> item) {
         final AttributeValue attributeValueRepresentingItem = new AttributeValue();
         attributeValueRepresentingItem.setM(item);
         return walk(attributeValueRepresentingItem, "");
     }
 
-    private AttributeValue walk(final AttributeValue attributeValue, final String path)
-            throws DynamodbResultWalkerException {
+    private AttributeValue walk(final AttributeValue attributeValue, final String path) {
         return applyNext(applyThis(attributeValue, path), path);
     }
 
-    protected abstract AttributeValue applyThis(AttributeValue attributeValue, String path)
-            throws DynamodbResultWalkerException;
+    protected abstract AttributeValue applyThis(AttributeValue attributeValue, String path);
 
     protected abstract String stepDescription();
 
-    private AttributeValue applyNext(final AttributeValue attributeValue, final String path)
-            throws DynamodbResultWalkerException {
+    private AttributeValue applyNext(final AttributeValue attributeValue, final String path) {
         if (this.next != null) {
             return this.next.walk(attributeValue, path + stepDescription());
         }

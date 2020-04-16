@@ -19,7 +19,8 @@ public class LinearDocumentPathWalkerTest {
     void testWalk() throws DocumentPathWalkerException {
         final DocumentPathExpression pathExpression = new DocumentPathExpression.Builder().addObjectLookup("key")
                 .build();
-        final DocumentNode result = new LinearDocumentPathWalker(pathExpression).walkThroughDocument(TEST_OBJECT_NODE);
+        final DocumentNode<MockVisitor> result = new LinearDocumentPathWalker<MockVisitor>(pathExpression)
+                .walkThroughDocument(TEST_OBJECT_NODE);
         assertThat(result, equalTo(NESTED_VALUE));
     }
 
@@ -27,7 +28,7 @@ public class LinearDocumentPathWalkerTest {
     void testNonLinearPath() {
         final DocumentPathExpression pathExpression = new DocumentPathExpression.Builder().addArrayAll().build();
         final DocumentPathWalkerException exception = assertThrows(DocumentPathWalkerException.class,
-                () -> new LinearDocumentPathWalker(pathExpression));
+                () -> new LinearDocumentPathWalker<MockVisitor>(pathExpression));
         assertThat(exception.getMessage(), equalTo(
                 "The given path is not a linear path. You can either remove the ArrayAllSegments from path or use a DocumentPathWalker."));
     }

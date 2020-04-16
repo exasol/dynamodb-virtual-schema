@@ -49,7 +49,7 @@ public class SchemaMappingDefinitionToSchemaMetadataConverterTest {
     }
 
     @Test
-    void testColumnSerialization() throws IOException, ClassNotFoundException {
+    void testColumnSerialization() throws IOException {
         final SchemaMappingDefinition schemaMapping = getSchemaMapping();
         final SchemaMetadata schemaMetadata = new SchemaMappingDefinitionToSchemaMetadataConverter()
                 .convert(schemaMapping);
@@ -60,7 +60,7 @@ public class SchemaMappingDefinitionToSchemaMetadataConverterTest {
     }
 
     @Test
-    void testTableSerialization() throws IOException, ClassNotFoundException {
+    void testTableSerialization() throws IOException {
         final SchemaMappingDefinition schemaMapping = getSchemaMapping();
         final SchemaMappingDefinitionToSchemaMetadataConverter converter = new SchemaMappingDefinitionToSchemaMetadataConverter();
         final SchemaMetadata schemaMetadata = converter.convert(schemaMapping);

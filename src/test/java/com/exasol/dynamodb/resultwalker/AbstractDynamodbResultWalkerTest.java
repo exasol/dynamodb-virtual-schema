@@ -30,14 +30,14 @@ public class AbstractDynamodbResultWalkerTest {
     }
 
     @Test
-    void testIdentityWalker() throws DynamodbResultWalkerException {
+    void testIdentityWalker() {
         final Map<String, AttributeValue> testData = getTestData();
         final IdentityDynamodbResultWalker walker = new IdentityDynamodbResultWalker();
         assertThat(walker.walk(testData).getM(), equalTo(testData));
     }
 
     @Test
-    void testChainedIdentityWalker() throws DynamodbResultWalkerException {
+    void testChainedIdentityWalker() {
         final Map<String, AttributeValue> testData = getTestData();
         final IdentityDynamodbResultWalker walker = new IdentityDynamodbResultWalker(
                 new IdentityDynamodbResultWalker());
@@ -45,14 +45,14 @@ public class AbstractDynamodbResultWalkerTest {
     }
 
     @Test
-    void testObjectWalker() throws DynamodbResultWalkerException {
+    void testObjectWalker() {
         final Map<String, AttributeValue> testData = getTestData();
         final ObjectDynamodbResultWalker walker = new ObjectDynamodbResultWalker("isbn", null);
         assertThat(walker.walk(testData), equalTo(testData.get("isbn")));
     }
 
     @Test
-    void testChainedObjectWalker() throws DynamodbResultWalkerException {
+    void testChainedObjectWalker() {
         final Map<String, AttributeValue> testData = getTestData();
         final ObjectDynamodbResultWalker walker = new ObjectDynamodbResultWalker("publisher",
                 new ObjectDynamodbResultWalker("name", null));

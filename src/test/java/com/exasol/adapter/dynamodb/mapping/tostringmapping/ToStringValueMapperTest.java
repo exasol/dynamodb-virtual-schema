@@ -10,7 +10,6 @@ import java.util.Map;
 import org.junit.jupiter.api.Test;
 
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
-import com.exasol.adapter.AdapterException;
 import com.exasol.adapter.dynamodb.mapping.AbstractColumnMappingDefinition;
 import com.exasol.dynamodb.resultwalker.ObjectDynamodbResultWalker;
 import com.exasol.sql.expression.ValueExpression;
@@ -23,7 +22,7 @@ public class ToStringValueMapperTest {
     private static final String DEST_COLUMN = "destColumn";
 
     @Test
-    void testConvertStringRowBasic() throws AdapterException {
+    void testConvertStringRowBasic() {
         final AbstractColumnMappingDefinition.ConstructorParameters columnParameters = new AbstractColumnMappingDefinition.ConstructorParameters(
                 DEST_COLUMN, new ObjectDynamodbResultWalker(TEST_SOURCE_COLUMN, null),
                 AbstractColumnMappingDefinition.LookupFailBehaviour.DEFAULT_VALUE);
@@ -35,7 +34,7 @@ public class ToStringValueMapperTest {
     }
 
     @Test
-    void testConvertNumberRowBasic() throws AdapterException {
+    void testConvertNumberRowBasic() {
         final AbstractColumnMappingDefinition.ConstructorParameters columnParameters = new AbstractColumnMappingDefinition.ConstructorParameters(
                 DEST_COLUMN, new ObjectDynamodbResultWalker(TEST_SOURCE_COLUMN, null),
                 AbstractColumnMappingDefinition.LookupFailBehaviour.DEFAULT_VALUE);
@@ -61,7 +60,7 @@ public class ToStringValueMapperTest {
     }
 
     @Test
-    void testConvertRowOverflowTruncate() throws AdapterException {
+    void testConvertRowOverflowTruncate() {
         final AbstractColumnMappingDefinition.ConstructorParameters columnParameters = new AbstractColumnMappingDefinition.ConstructorParameters(
                 DEST_COLUMN, new ObjectDynamodbResultWalker(TEST_SOURCE_COLUMN, null),
                 AbstractColumnMappingDefinition.LookupFailBehaviour.DEFAULT_VALUE);
