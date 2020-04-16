@@ -15,9 +15,6 @@ import com.exasol.adapter.dynamodb.mapping.AbstractColumnMappingDefinition;
 import com.exasol.dynamodb.resultwalker.ObjectDynamodbResultWalker;
 import com.exasol.sql.expression.ValueExpression;
 
-/**
- * Tests for {@link ToStringValueMapper}
- */
 public class ToStringValueMapperTest {
 
     private static final String TEST_STRING = "test";

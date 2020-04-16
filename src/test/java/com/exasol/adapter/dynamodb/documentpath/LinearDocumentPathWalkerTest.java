@@ -10,9 +10,6 @@ import org.junit.jupiter.api.Test;
 
 import com.exasol.adapter.dynamodb.documentnode.DocumentNode;
 
-/**
- * Tests for {@link LinearDocumentPathWalker}
- */
 public class LinearDocumentPathWalkerTest {
 
     private static final MockValueNode NESTED_VALUE = new MockValueNode();

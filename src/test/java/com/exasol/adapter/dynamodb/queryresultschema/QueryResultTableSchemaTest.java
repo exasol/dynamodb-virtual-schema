@@ -9,9 +9,6 @@ import org.junit.jupiter.api.Test;
 
 import com.exasol.adapter.dynamodb.mapping.MockColumnMappingDefinition;
 
-/**
- * Tests for {@link QueryResultTableSchema}
- */
 public class QueryResultTableSchemaTest {
     @Test
     void testSetAndGetColumns() {

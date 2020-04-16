@@ -13,9 +13,6 @@ import org.junit.jupiter.api.Test;
 
 import com.exasol.adapter.dynamodb.documentnode.DocumentNode;
 
-/**
- * Tests for {@link DocumentPathWalker}
- */
 public class DocumentPathWalkerTest {
 
     private static final MockValueNode NESTED_VALUE1 = new MockValueNode();

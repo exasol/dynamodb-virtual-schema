@@ -6,9 +6,6 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 
 import org.junit.jupiter.api.Test;
 
-/**
- * Tests for {@link DocumentPathExpression}
- */
 public class DocumentPathExpressionTest {
 
     @Test
