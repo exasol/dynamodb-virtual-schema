@@ -13,7 +13,7 @@ import javax.json.JsonValue;
 import org.junit.jupiter.api.Test;
 
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
-import com.exasol.dynamodb.attributevalue.AttributeValueTestUtils;
+import com.exasol.dynamodb.attributevalue.AttributeValueQuickCreator;
 
 public class AttributeValueToJsonConverterTest {
 
@@ -46,7 +46,7 @@ public class AttributeValueToJsonConverterTest {
 
     @Test
     void testConvertMap() {
-        final AttributeValue nestedAttributeValue = AttributeValueTestUtils.forString("some value");
+        final AttributeValue nestedAttributeValue = AttributeValueQuickCreator.forString("some value");
         final AttributeValue testMap = new AttributeValue();
         testMap.setM(Map.of("keyString", nestedAttributeValue));
         final JsonValue json = new AttributeValueToJsonConverter().convert(testMap);
@@ -56,8 +56,8 @@ public class AttributeValueToJsonConverterTest {
     @Test
     void testConvertList() {
         final AttributeValue attributeValue = new AttributeValue();
-        attributeValue
-                .setL(List.of(AttributeValueTestUtils.forString("test1"), AttributeValueTestUtils.forString("test2")));
+        attributeValue.setL(
+                List.of(AttributeValueQuickCreator.forString("test1"), AttributeValueQuickCreator.forString("test2")));
         final JsonValue json = new AttributeValueToJsonConverter().convert(attributeValue);
         assertThat(json.toString(), equalTo("[\"test1\",\"test2\"]"));
     }

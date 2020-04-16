@@ -27,7 +27,7 @@ public abstract class AbstractValueMapper {
      *
      * @param dynamodbRow to extract the value from
      * @return {@link ValueExpression} @ if specified property can't be extracted and
-     * {@link AbstractColumnMappingDefinition.LookupFailBehaviour} exception
+     *         {@link AbstractColumnMappingDefinition.LookupFailBehaviour} exception
      * @throws ValueMapperException if specified property can't be mapped and
      *                              {@link AbstractColumnMappingDefinition.LookupFailBehaviour} exception
      */
