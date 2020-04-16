@@ -26,7 +26,7 @@ import com.exasol.dynamodb.resultwalker.ObjectDynamodbResultWalker;
  */
 public class JsonMappingFactory implements MappingDefinitionFactory {
     private static final String DEST_TABLE_NAME_KEY = "destTable";
-    private static final String SRC_TABLE_NAME_KEY = "destTable";
+    private static final String SRC_TABLE_NAME_KEY = "srcTable";
     private static final String MAPPING_KEY = "mapping";
     private static final String FIELDS_KEY = "fields";
     private static final String TO_STRING_MAPPING_KEY = "toStringMapping";
