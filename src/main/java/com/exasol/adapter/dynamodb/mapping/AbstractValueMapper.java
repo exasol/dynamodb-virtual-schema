@@ -27,13 +27,14 @@ public abstract class AbstractValueMapper {
      *
      * @param dynamodbRow to extract the value from
      * @return {@link ValueExpression}
-     * @throws DynamodbResultWalkerException if specified property can't be extracted and
-     *                                       {@link AbstractColumnMappingDefinition.LookupFailBehaviour} exception
+     * @throws DynamodbResultWalkerException if specified property was not found and
+     *                                       {@link AbstractColumnMappingDefinition.LookupFailBehaviour} is set to
+     *                                       {@code EXCEPTION }
      * @throws ValueMapperException          if specified property can't be mapped and
-     *                                       {@link AbstractColumnMappingDefinition.LookupFailBehaviour} exception
+     *                                       {@link AbstractColumnMappingDefinition.LookupFailBehaviour} is set to
+     *                                       {@code EXCEPTION }
      */
-    public ValueExpression mapRow(final Map<String, AttributeValue> dynamodbRow)
-            throws DynamodbResultWalkerException, ValueMapperException {
+    public ValueExpression mapRow(final Map<String, AttributeValue> dynamodbRow) {
         try {
             final AttributeValue dynamodbProperty = this.column.getPathToSourceProperty().walk(dynamodbRow);
             return mapValue(dynamodbProperty);
@@ -54,5 +55,5 @@ public abstract class AbstractValueMapper {
      * @return the conversion result
      * @throws ValueMapperException if the value can't be mapped
      */
-    protected abstract ValueExpression mapValue(AttributeValue dynamodbProperty) throws ValueMapperException;
+    protected abstract ValueExpression mapValue(AttributeValue dynamodbProperty);
 }

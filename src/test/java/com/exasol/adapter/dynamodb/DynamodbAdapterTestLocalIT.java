@@ -44,7 +44,7 @@ public class DynamodbAdapterTestLocalIT {
             .withNetwork(NETWORK).withExposedPorts(8888).withLogConsumer(new Slf4jLogConsumer(LOGGER));
     private static final String TEST_SCHEMA = "TEST";
     private static final String DYNAMODB_CONNECTION = "DYNAMODB_CONNECTION";
-    private static final String DYNAMO_TABLE_NAME = "JB_Books";
+    private static final String DYNAMO_TABLE_NAME = "MY_BOOKS";
     private static DynamodbTestInterface dynamodbTestInterface;
     private static ExasolTestInterface exasolTestInterface;
 

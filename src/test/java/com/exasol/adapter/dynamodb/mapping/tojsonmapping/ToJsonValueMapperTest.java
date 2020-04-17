@@ -8,7 +8,6 @@ import java.util.Map;
 import org.junit.jupiter.api.Test;
 
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
-import com.exasol.adapter.AdapterException;
 import com.exasol.adapter.dynamodb.mapping.AbstractColumnMappingDefinition;
 import com.exasol.dynamodb.attributevalue.AttributeValueTestUtils;
 import com.exasol.dynamodb.resultwalker.IdentityDynamodbResultWalker;
@@ -18,7 +17,7 @@ public class ToJsonValueMapperTest {
     private static final String DEST_COLUMN = "destColumn";
 
     @Test
-    void testConvertRowBasic() throws AdapterException {
+    void testConvertRowBasic() {
         final ToJsonColumnMappingDefinition toStringColumnMappingDefinition = new ToJsonColumnMappingDefinition(
                 new AbstractColumnMappingDefinition.ConstructorParameters(DEST_COLUMN,
                         new IdentityDynamodbResultWalker(),

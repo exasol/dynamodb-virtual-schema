@@ -1,12 +1,10 @@
 package com.exasol.dynamodb.resultwalker;
 
-import com.exasol.adapter.AdapterException;
-
 /**
  * Exception thrown when the modeled path does not exist.
  */
 @SuppressWarnings("serial")
-public class DynamodbResultWalkerException extends AdapterException {
+public class DynamodbResultWalkerException extends RuntimeException {
     private final String currentPath;
 
     /**

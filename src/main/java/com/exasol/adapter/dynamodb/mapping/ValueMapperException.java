@@ -1,11 +1,9 @@
 package com.exasol.adapter.dynamodb.mapping;
 
-import com.exasol.adapter.AdapterException;
-
 /**
  * Exception on failures in column mapping
  */
-public class ValueMapperException extends AdapterException {
+public class ValueMapperException extends RuntimeException {
     private final AbstractColumnMappingDefinition causingColumn;
 
     /**

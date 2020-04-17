@@ -1,6 +1,5 @@
 package com.exasol.adapter.sql;
 
-import com.exasol.adapter.AdapterException;
 import com.exasol.adapter.dynamodb.queryresultschema.QueryResultTableSchemaBuilder;
 
 /**
@@ -11,7 +10,7 @@ public abstract class VoidSqlNodeVisitor implements SqlNodeVisitor<Void> {
     private static final String UNSUPPORTED_MESSAGE = "A handling for this SQL statement part was not implemented yet.";
 
     @Override
-    public Void visit(final SqlSelectList selectList) throws AdapterException {
+    public Void visit(final SqlSelectList selectList) {
         throw new UnsupportedOperationException(UNSUPPORTED_MESSAGE);
     }
 

@@ -19,7 +19,7 @@ import com.exasol.sql.expression.ValueExpression;
 
 public class AbstractValueMapperTest {
     @Test
-    void testLookup() throws DynamodbResultWalkerException, ValueMapperException {
+    void testLookup() {
         final ObjectDynamodbResultWalker resultWalker = new ObjectDynamodbResultWalker("isbn", null);
         final MockColumnMappingDefinition columnMappingDefinition = new MockColumnMappingDefinition("d", resultWalker,
                 AbstractColumnMappingDefinition.LookupFailBehaviour.EXCEPTION);

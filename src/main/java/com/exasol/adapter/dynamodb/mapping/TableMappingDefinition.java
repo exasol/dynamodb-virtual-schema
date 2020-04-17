@@ -1,26 +1,39 @@
 package com.exasol.adapter.dynamodb.mapping;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import com.exasol.dynamodb.resultwalker.AbstractDynamodbResultWalker;
+import com.exasol.adapter.dynamodb.documentpath.DocumentPathExpression;
 
 /**
  * Definition of a table mapping from DynamoDB table to Exasol Virtual Schema. Each instance of this class represents a
  * table in the Exasol Virtual Schema. Typically it also represents a DynamoDB table. But it can also represent the data
  * from a nested list or object. See {@link #isRootTable()} for details.
  */
-public class TableMappingDefinition {
+public class TableMappingDefinition implements Serializable {
+    private static final long serialVersionUID = 3568807256753213582L;
     private final String exasolName;
-    private final List<AbstractColumnMappingDefinition> columns;
-    private final AbstractDynamodbResultWalker pathToNestedTable;
+    private final String remoteName;
+    private final transient List<AbstractColumnMappingDefinition> columns; // The columns are serialized separately in
+                                                                           // {@link ColumnMetadata}.
+    private final DocumentPathExpression pathToNestedTable;
 
-    private TableMappingDefinition(final String exasolName, final List<AbstractColumnMappingDefinition> columns,
-            final AbstractDynamodbResultWalker pathToNestedTable) {
+    private TableMappingDefinition(final String exasolName, final String remoteName,
+            final List<AbstractColumnMappingDefinition> columns, final DocumentPathExpression pathToNestedTable) {
         this.exasolName = exasolName;
-        this.columns = columns;
+        this.remoteName = remoteName;
         this.pathToNestedTable = pathToNestedTable;
+        this.columns = columns;
+    }
+
+    TableMappingDefinition(final TableMappingDefinition deserialized,
+            final List<AbstractColumnMappingDefinition> columns) {
+        this.exasolName = deserialized.exasolName;
+        this.remoteName = deserialized.remoteName;
+        this.pathToNestedTable = deserialized.pathToNestedTable;
+        this.columns = columns;
     }
 
     /**
@@ -30,8 +43,9 @@ public class TableMappingDefinition {
      * @param destName Name of the Exasol table
      * @return {@link TableMappingDefinition.Builder}
      */
-    public static Builder rootTableBuilder(final String destName) {
-        return new Builder(destName, null);
+    public static Builder rootTableBuilder(final String destName, final String remoteName) {
+        final DocumentPathExpression emptyPath = new DocumentPathExpression.Builder().build();
+        return new Builder(destName, remoteName, emptyPath);
     }
 
     /**
@@ -39,12 +53,13 @@ public class TableMappingDefinition {
      * create tables extracted from nested lists.
      *
      * @param destName          Name of the Exasol table
+     * @param remoteName        Name of the remote table
      * @param pathToNestedTable Path expression within the document to the nested table
      * @return Builder for {@link TableMappingDefinition}
      */
-    public static Builder nestedTableBuilder(final String destName,
-            final AbstractDynamodbResultWalker pathToNestedTable) {
-        return new Builder(destName, pathToNestedTable);
+    public static Builder nestedTableBuilder(final String destName, final String remoteName,
+            final DocumentPathExpression pathToNestedTable) {
+        return new Builder(destName, remoteName, pathToNestedTable);
     }
 
     /**
@@ -54,6 +69,15 @@ public class TableMappingDefinition {
      */
     public String getExasolName() {
         return this.exasolName;
+    }
+
+    /**
+     * Get the name of the remote table that is mapped.
+     *
+     * @return name of the remote table
+     */
+    public String getRemoteName() {
+        return this.remoteName;
     }
 
     /**
@@ -72,7 +96,7 @@ public class TableMappingDefinition {
      *         list or map from DynamoDB
      */
     public boolean isRootTable() {
-        return this.pathToNestedTable == null;
+        return this.pathToNestedTable.size() == 0;
     }
 
     /**
@@ -80,11 +104,14 @@ public class TableMappingDefinition {
      */
     public static class Builder {
         private final String exasolName;
+        private final String remoteName;
         private final List<AbstractColumnMappingDefinition> columns = new ArrayList<>();
-        private final AbstractDynamodbResultWalker pathToNestedTable;
+        private final DocumentPathExpression pathToNestedTable;
 
-        private Builder(final String exasolName, final AbstractDynamodbResultWalker pathToNestedTable) {
+        private Builder(final String exasolName, final String remoteName,
+                final DocumentPathExpression pathToNestedTable) {
             this.exasolName = exasolName;
+            this.remoteName = remoteName;
             this.pathToNestedTable = pathToNestedTable;
         }
 
@@ -105,8 +132,8 @@ public class TableMappingDefinition {
          * @return {@link TableMappingDefinition}
          */
         public TableMappingDefinition build() {
-            return new TableMappingDefinition(this.exasolName, Collections.unmodifiableList(this.columns),
-                    this.pathToNestedTable);
+            return new TableMappingDefinition(this.exasolName, this.remoteName,
+                    Collections.unmodifiableList(this.columns), this.pathToNestedTable);
         }
     }
 }

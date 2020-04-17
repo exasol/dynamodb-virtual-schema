@@ -4,6 +4,7 @@ package com.exasol.adapter.dynamodb.documentpath;
  * This path segment defines an array lookup in an path expression.
  */
 public class ArrayLookupPathSegment implements PathSegment {
+    private static final long serialVersionUID = 2894278065231221419L;
     private final int lookupIndex;
 
     /**

@@ -12,7 +12,7 @@ import com.exasol.dynamodb.resultwalker.IdentityDynamodbResultWalker;
 public class HardCodedMappingFactory implements MappingDefinitionFactory {
     @Override
     public SchemaMappingDefinition getSchemaMapping() {
-        final TableMappingDefinition table = TableMappingDefinition.rootTableBuilder("testTable")
+        final TableMappingDefinition table = TableMappingDefinition.rootTableBuilder("testTable", "srcTable")
                 .withColumnMappingDefinition(
                         new ToJsonColumnMappingDefinition(new AbstractColumnMappingDefinition.ConstructorParameters(
                                 "json", new IdentityDynamodbResultWalker(),

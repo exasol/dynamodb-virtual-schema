@@ -25,7 +25,7 @@ public class ToStringValueMapper extends AbstractValueMapper {
     }
 
     @Override
-    protected ValueExpression mapValue(final AttributeValue dynamodbProperty) throws ValueMapperException {
+    protected ValueExpression mapValue(final AttributeValue dynamodbProperty) {
         final ToStringVisitor toStringVisitor = new ToStringVisitor();
         final AttributeValueWrapper attributeValueWrapper = new AttributeValueWrapper(dynamodbProperty);
         attributeValueWrapper.accept(toStringVisitor);
@@ -37,7 +37,7 @@ public class ToStringValueMapper extends AbstractValueMapper {
         }
     }
 
-    private String handleOverflowIfNecessary(final String sourceString) throws OverflowException {
+    private String handleOverflowIfNecessary(final String sourceString) {
         if (sourceString.length() > this.column.getExasolStringSize()) {
             return handleOverflow(sourceString);
         } else {
@@ -45,7 +45,7 @@ public class ToStringValueMapper extends AbstractValueMapper {
         }
     }
 
-    private String handleOverflow(final String tooLongSourceString) throws OverflowException {
+    private String handleOverflow(final String tooLongSourceString) {
         if (this.column.getOverflowBehaviour() == ToStringColumnMappingDefinition.OverflowBehaviour.TRUNCATE) {
             return tooLongSourceString.substring(0, this.column.getExasolStringSize());
         } else {
