@@ -26,10 +26,13 @@ public abstract class AbstractValueMapper {
      * Extracts {@link #column}s value from DynamoDB's result row.
      *
      * @param dynamodbRow to extract the value from
-     * @return {@link ValueExpression} @ if specified property can't be extracted and
-     *         {@link AbstractColumnMappingDefinition.LookupFailBehaviour} exception
-     * @throws ValueMapperException if specified property can't be mapped and
-     *                              {@link AbstractColumnMappingDefinition.LookupFailBehaviour} exception
+     * @return {@link ValueExpression}
+     * @throws DynamodbResultWalkerException if specified property was not found and
+     *                                       {@link AbstractColumnMappingDefinition.LookupFailBehaviour} is set to
+     *                                       {@code EXCEPTION }
+     * @throws ValueMapperException          if specified property can't be mapped and
+     *                                       {@link AbstractColumnMappingDefinition.LookupFailBehaviour} is set to
+     *                                       {@code EXCEPTION }
      */
     public ValueExpression mapRow(final Map<String, AttributeValue> dynamodbRow) {
         try {

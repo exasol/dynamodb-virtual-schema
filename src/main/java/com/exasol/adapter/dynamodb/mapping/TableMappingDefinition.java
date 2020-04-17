@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import com.exasol.dynamodb.resultwalker.AbstractDynamodbResultWalker;
+import com.exasol.adapter.dynamodb.documentpath.DocumentPathExpression;
 
 /**
  * Definition of a table mapping from DynamoDB table to Exasol Virtual Schema. Each instance of this class represents a
@@ -18,10 +18,10 @@ public class TableMappingDefinition implements Serializable {
     private final String remoteName;
     private final transient List<AbstractColumnMappingDefinition> columns; // The columns are serialized separately in
                                                                            // {@link ColumnMetadata}.
-    private final AbstractDynamodbResultWalker pathToNestedTable;
+    private final DocumentPathExpression pathToNestedTable;
 
     private TableMappingDefinition(final String exasolName, final String remoteName,
-            final List<AbstractColumnMappingDefinition> columns, final AbstractDynamodbResultWalker pathToNestedTable) {
+            final List<AbstractColumnMappingDefinition> columns, final DocumentPathExpression pathToNestedTable) {
         this.exasolName = exasolName;
         this.remoteName = remoteName;
         this.pathToNestedTable = pathToNestedTable;
@@ -44,7 +44,8 @@ public class TableMappingDefinition implements Serializable {
      * @return {@link TableMappingDefinition.Builder}
      */
     public static Builder rootTableBuilder(final String destName, final String remoteName) {
-        return new Builder(destName, remoteName, null);
+        final DocumentPathExpression emptyPath = new DocumentPathExpression.Builder().build();
+        return new Builder(destName, remoteName, emptyPath);
     }
 
     /**
@@ -57,7 +58,7 @@ public class TableMappingDefinition implements Serializable {
      * @return Builder for {@link TableMappingDefinition}
      */
     public static Builder nestedTableBuilder(final String destName, final String remoteName,
-            final AbstractDynamodbResultWalker pathToNestedTable) {
+            final DocumentPathExpression pathToNestedTable) {
         return new Builder(destName, remoteName, pathToNestedTable);
     }
 
@@ -95,7 +96,7 @@ public class TableMappingDefinition implements Serializable {
      *         list or map from DynamoDB
      */
     public boolean isRootTable() {
-        return this.pathToNestedTable == null;
+        return this.pathToNestedTable.size() == 0;
     }
 
     /**
@@ -105,10 +106,10 @@ public class TableMappingDefinition implements Serializable {
         private final String exasolName;
         private final String remoteName;
         private final List<AbstractColumnMappingDefinition> columns = new ArrayList<>();
-        private final AbstractDynamodbResultWalker pathToNestedTable;
+        private final DocumentPathExpression pathToNestedTable;
 
         private Builder(final String exasolName, final String remoteName,
-                final AbstractDynamodbResultWalker pathToNestedTable) {
+                final DocumentPathExpression pathToNestedTable) {
             this.exasolName = exasolName;
             this.remoteName = remoteName;
             this.pathToNestedTable = pathToNestedTable;
