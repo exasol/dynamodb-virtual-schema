@@ -123,10 +123,11 @@ public class DynamodbAdapter implements VirtualSchemaAdapter {
 
     private String runQuery(final ExaMetadata exaMetadata, final PushDownRequest request,
             final QueryResultTableSchema queryResultTableSchema) throws ExaConnectionAccessException {
-        final QueryRunner queryRunner = new QueryRunner(getConnectionInformation(exaMetadata, request));
+        final DynamodbQueryRunner dynamodbQueryRunner = new DynamodbQueryRunner(
+                getConnectionInformation(exaMetadata, request));
         final RowMapper rowMapper = new RowMapper(queryResultTableSchema);
         final List<List<ValueExpression>> resultRows = new ArrayList<>();
-        queryRunner.runQuery(queryResultTableSchema)
+        dynamodbQueryRunner.runQuery(queryResultTableSchema)
                 .forEach(dynamodbRow -> resultRows.add(rowMapper.mapRow(dynamodbRow)));
         return new ValueExpressionsToSqlSelectFromValuesConverter().convert(queryResultTableSchema, resultRows);
     }

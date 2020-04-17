@@ -19,7 +19,7 @@ public class DocumentPathExpression {
     }
 
     /**
-     * Creates a sub path from startIndex (inclusive) til endIndex (exclusive).
+     * Creates a subpath from startIndex (inclusive) til endIndex (exclusive).
      * 
      * @param startIndex index in path for new path to start
      * @param endIndex   index in path for new path to end

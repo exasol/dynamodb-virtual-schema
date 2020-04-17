@@ -13,16 +13,15 @@ import com.exasol.dynamodb.DynamodbConnectionFactory;
 /**
  * This class runs a DynamoDB query to fetch the data requested in a {@link QueryResultTableSchema}.
  */
-public class QueryRunner {
+public class DynamodbQueryRunner {
     private final ExaConnectionInformation connectionSettings;
 
     /**
-     * Creates an instance of {@link QueryRunner}.
+     * Creates an instance of {@link DynamodbQueryRunner}.
      *
      * @param connectionSettings connection information for the connection to DynamoDB
      */
-    public QueryRunner(final ExaConnectionInformation connectionSettings) {
-
+    public DynamodbQueryRunner(final ExaConnectionInformation connectionSettings) {
         this.connectionSettings = connectionSettings;
     }
 
@@ -34,7 +33,9 @@ public class QueryRunner {
      */
     public Stream<Map<String, AttributeValue>> runQuery(final QueryResultTableSchema query) {
         final AmazonDynamoDB client = getConnection();
-        return client.scan(new ScanRequest(query.getFromTable().getRemoteName())).getItems().stream();
+        final String tableName = query.getFromTable().getRemoteName();
+        final ScanRequest scanRequest = new ScanRequest(tableName);
+        return client.scan(scanRequest).getItems().stream();
     }
 
     private AmazonDynamoDB getConnection() {
