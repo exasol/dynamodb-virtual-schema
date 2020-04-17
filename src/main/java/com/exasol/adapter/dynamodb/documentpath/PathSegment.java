@@ -1,9 +1,11 @@
 package com.exasol.adapter.dynamodb.documentpath;
 
+import java.io.Serializable;
+
 /**
  * Interface for path segments used in a {@link DocumentPathExpression}.
  */
-public interface PathSegment {
+public interface PathSegment extends Serializable {
     /**
      * Accepts a {@link PathSegmentVisitor}
      * 

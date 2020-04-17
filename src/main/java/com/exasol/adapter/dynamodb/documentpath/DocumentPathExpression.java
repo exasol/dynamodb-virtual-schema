@@ -1,5 +1,6 @@
 package com.exasol.adapter.dynamodb.documentpath;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -7,11 +8,13 @@ import java.util.List;
 /**
  * This class allows to express path through a document.
  */
-public class DocumentPathExpression {
-    private final List<PathSegment> path;
+public class DocumentPathExpression implements Serializable {
+    private static final long serialVersionUID = -5010657725802907603L;
+    private final ArrayList<PathSegment> path;
 
     private DocumentPathExpression(final List<PathSegment> path) {
-        this.path = path;
+        this.path = new ArrayList<>(path.size());
+        this.path.addAll(path);
     }
 
     List<PathSegment> getPath() {

@@ -33,6 +33,7 @@ public class SchemaMappingDefinitionToSchemaMetadataConverter {
             tableMetadata.add(convertTable(table));
             tableMappings.put(table.getExasolName(), table);
         }
+        @SuppressWarnings("java:S125") //not commented out code
         /*
          * Actually the tables should be serialized into TableSchema adapter notes. But as these do not work due to a
          * bug, they are added here. {@see https://github.com/exasol/dynamodb-virtual-schema/issues/25}
