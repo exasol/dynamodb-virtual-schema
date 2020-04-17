@@ -38,6 +38,11 @@ public class DocumentPathExpression {
         return this.path.size();
     }
 
+    @Override
+    public String toString() {
+        return new DocumentPathToStringConverter().convertToString(this);
+    }
+
     /**
      * Builder for {@link DocumentPathExpression}.
      */
