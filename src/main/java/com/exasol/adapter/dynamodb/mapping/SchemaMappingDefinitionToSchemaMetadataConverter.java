@@ -81,8 +81,7 @@ public class SchemaMappingDefinitionToSchemaMetadataConverter {
 
     private TableMappingDefinition convertBackTableIntern(final TableMetadata tableMetadata,
             final SchemaMetadata schemaMetadata) throws IOException, ClassNotFoundException {
-        final TableMappingDefinition preliminaryTable;
-        preliminaryTable = findTableInSchemaMetadata(tableMetadata.getName(), schemaMetadata);
+        final TableMappingDefinition preliminaryTable = findTableInSchemaMetadata(tableMetadata.getName(), schemaMetadata);
         /*
          * As the columns are transient in TableMappingDefinition, they must be deserialized from the ColumnMetadata and
          * added separately.
