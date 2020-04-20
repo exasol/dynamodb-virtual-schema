@@ -36,15 +36,15 @@ public class DynamodbListTest {
     void testVisitor() {
         final VisitationCheck visitor = new VisitationCheck();
         new DynamodbDocumentNodeFactory().buildDocumentNode(LIST).accept(visitor);
-        assertThat(visitor.wasVisited, equalTo(true));
+        assertThat(visitor.visited, equalTo(true));
     }
 
     private static class VisitationCheck implements DynamodbNodeVisitor {
-        boolean wasVisited = false;
+        boolean visited = false;
 
         @Override
         public void visit(final DynamodbList value) {
-            this.wasVisited = true;
+            this.visited = true;
         }
 
         @Override

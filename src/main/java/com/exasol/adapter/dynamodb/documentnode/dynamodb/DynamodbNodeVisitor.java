@@ -36,7 +36,7 @@ public interface DynamodbNodeVisitor {
         defaultVisit("List");
     }
 
-    public default void visit(final DynamodbObject object) {
+    public default void visit(final DynamodbMap object) {
         defaultVisit("Object");
     }
 

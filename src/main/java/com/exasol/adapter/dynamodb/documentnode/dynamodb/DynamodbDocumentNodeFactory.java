@@ -4,8 +4,8 @@ import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.exasol.adapter.dynamodb.documentnode.DocumentNode;
 
 /**
- * This class builds document nodes for a given {@link AttributeValue}. Whether an object, an array, or a value-node is built
- * depends on the type of the {@link AttributeValue}.
+ * This class builds document nodes for a given {@link AttributeValue}. Whether an object, an array, or a value-node is
+ * built depends on the type of the {@link AttributeValue}.
  */
 public class DynamodbDocumentNodeFactory {
 
@@ -27,7 +27,7 @@ public class DynamodbDocumentNodeFactory {
         } else if (attributeValue.getBOOL() != null) {
             return new DynamodbBoolean(attributeValue.getBOOL());
         } else if (attributeValue.getM() != null) {
-            return new DynamodbObject(attributeValue.getM());
+            return new DynamodbMap(attributeValue.getM());
         } else if (attributeValue.getBS() != null) {
             return new DynamodbBinarySet(attributeValue.getBS());
         } else if (attributeValue.getL() != null) {

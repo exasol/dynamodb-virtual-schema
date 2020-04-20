@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.exasol.dynamodb.attributevalue.AttributeValueQuickCreator;
 
-public class DynamodbObjectTest {
+public class DynamodbMapTest {
     private static final String KEY = "key";
     private static final String VALUE = "value";
     private static final AttributeValue NESTED = AttributeValueQuickCreator.forString(VALUE);
@@ -18,27 +18,27 @@ public class DynamodbObjectTest {
 
     @Test
     void testGet() {
-        final DynamodbObject dynamodbList = (DynamodbObject) new DynamodbDocumentNodeFactory().buildDocumentNode(MAP);
+        final DynamodbMap dynamodbList = (DynamodbMap) new DynamodbDocumentNodeFactory().buildDocumentNode(MAP);
         final DynamodbString result = (DynamodbString) dynamodbList.get(KEY);
         assertThat(result.getValue(), equalTo(VALUE));
     }
 
     @Test
     void testGetKeyValueMap() {
-        final DynamodbObject dynamodbList = (DynamodbObject) new DynamodbDocumentNodeFactory().buildDocumentNode(MAP);
+        final DynamodbMap dynamodbList = (DynamodbMap) new DynamodbDocumentNodeFactory().buildDocumentNode(MAP);
         final DynamodbString result = (DynamodbString) dynamodbList.getKeyValueMap().get(KEY);
         assertThat(result.getValue(), equalTo(VALUE));
     }
 
     @Test
     void testSuccessfulHasKey() {
-        final DynamodbObject dynamodbList = (DynamodbObject) new DynamodbDocumentNodeFactory().buildDocumentNode(MAP);
+        final DynamodbMap dynamodbList = (DynamodbMap) new DynamodbDocumentNodeFactory().buildDocumentNode(MAP);
         assertThat(dynamodbList.hasKey(KEY), equalTo(true));
     }
 
     @Test
     void testNonExistingHasKey() {
-        final DynamodbObject dynamodbList = (DynamodbObject) new DynamodbDocumentNodeFactory().buildDocumentNode(MAP);
+        final DynamodbMap dynamodbList = (DynamodbMap) new DynamodbDocumentNodeFactory().buildDocumentNode(MAP);
         assertThat(dynamodbList.hasKey("unknownKey"), equalTo(false));
     }
 
@@ -46,15 +46,15 @@ public class DynamodbObjectTest {
     void testVisitor() {
         final VisitationCheck visitor = new VisitationCheck();
         new DynamodbDocumentNodeFactory().buildDocumentNode(MAP).accept(visitor);
-        assertThat(visitor.wasVisited, equalTo(true));
+        assertThat(visitor.visited, equalTo(true));
     }
 
     private static class VisitationCheck implements DynamodbNodeVisitor {
-        boolean wasVisited = false;
+        boolean visited = false;
 
         @Override
-        public void visit(final DynamodbObject value) {
-            this.wasVisited = true;
+        public void visit(final DynamodbMap value) {
+            this.visited = true;
         }
 
         @Override

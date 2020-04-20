@@ -10,15 +10,15 @@ import com.exasol.adapter.dynamodb.documentnode.DocumentObject;
 /**
  * This class represents a DynamoDB map value.
  */
-public class DynamodbObject implements DocumentObject<DynamodbNodeVisitor> {
+public class DynamodbMap implements DocumentObject<DynamodbNodeVisitor> {
     private final Map<String, AttributeValue> value;
 
     /**
-     * Creates an instance of {@link DynamodbObject}.
+     * Creates an instance of {@link DynamodbMap}.
      *
      * @param value value to hold
      */
-    public DynamodbObject(final Map<String, AttributeValue> value) {
+    public DynamodbMap(final Map<String, AttributeValue> value) {
         this.value = value;
     }
 
