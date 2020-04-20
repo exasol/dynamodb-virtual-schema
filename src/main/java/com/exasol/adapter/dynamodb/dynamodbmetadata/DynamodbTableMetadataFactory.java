@@ -8,7 +8,19 @@ import com.amazonaws.services.dynamodbv2.model.KeySchemaElement;
 import com.amazonaws.services.dynamodbv2.model.TableDescription;
 import com.exasol.adapter.dynamodb.documentpath.DocumentPathExpression;
 
+/**
+ * This class build {@link DynamodbTableMetadata} by fetching the required information using a {@code describeTable}
+ * call to DynamoDB.
+ */
 public class DynamodbTableMetadataFactory {
+
+    /**
+     * Builds {@link DynamodbTableMetadata} for a DynamoDB table.
+     * 
+     * @param connection DynamoDB connection used for {@code describeTable} call
+     * @param tableName  DynamoDB table name
+     * @return {@link DynamodbTableMetadata} describing the keys and indexes of the table
+     */
     public DynamodbTableMetadata forDynamodbTable(final AmazonDynamoDB connection, final String tableName) {
         final TableDescription tableDescription = connection.describeTable(tableName).getTable();
         final DynamodbKey primaryKey = extractKey(tableDescription.getKeySchema());
@@ -45,23 +57,19 @@ public class DynamodbTableMetadataFactory {
     }
 
     private List<DynamodbKey> extractLocalSecondaryIndex(final TableDescription tableDescription) {
-        if(tableDescription.getLocalSecondaryIndexes() != null) {
-            return tableDescription.getLocalSecondaryIndexes().stream().map(index ->
-                    extractKey(index.getKeySchema()))
+        if (tableDescription.getLocalSecondaryIndexes() != null) {
+            return tableDescription.getLocalSecondaryIndexes().stream().map(index -> extractKey(index.getKeySchema()))
                     .collect(Collectors.toList());
-        }
-        else{
+        } else {
             return List.of();
         }
     }
 
     private List<DynamodbKey> extractGlobalSecondaryIndex(final TableDescription tableDescription) {
-        if(tableDescription.getGlobalSecondaryIndexes() != null) {
-            return tableDescription.getGlobalSecondaryIndexes().stream().map(index ->
-                    extractKey(index.getKeySchema()))
+        if (tableDescription.getGlobalSecondaryIndexes() != null) {
+            return tableDescription.getGlobalSecondaryIndexes().stream().map(index -> extractKey(index.getKeySchema()))
                     .collect(Collectors.toList());
-        }
-        else{
+        } else {
             return List.of();
         }
     }
