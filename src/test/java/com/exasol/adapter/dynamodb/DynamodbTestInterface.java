@@ -145,9 +145,19 @@ public class DynamodbTestInterface {
      */
     public void createTable(final String tableName, final String keyName) {
         this.dynamoClient.createTable(tableName, List.of(new KeySchemaElement(keyName, KeyType.HASH)), // key schema
-                List.of(new AttributeDefinition(keyName, ScalarAttributeType.S)), // attribute definitions
+                List.of(new AttributeDefinition(keyName, ScalarAttributeType.S)),// attribute definitions
                 new ProvisionedThroughput(1L, 1L));
         this.tableNames.add(tableName);
+    }
+
+    /**
+     * Creates a DynamoDB table.
+     * 
+     * @param request {@link CreateTableRequest}
+     */
+    public void createTable(final CreateTableRequest request) {
+        this.dynamoClient.createTable(request);
+        this.tableNames.add(request.getTableName());
     }
 
     /**
