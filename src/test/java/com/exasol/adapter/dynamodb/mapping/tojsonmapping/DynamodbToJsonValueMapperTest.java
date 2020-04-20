@@ -7,25 +7,25 @@ import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 
-import com.amazonaws.services.dynamodbv2.model.AttributeValue;
+import com.exasol.adapter.dynamodb.documentnode.dynamodb.DynamodbMap;
+import com.exasol.adapter.dynamodb.documentpath.DocumentPathExpression;
 import com.exasol.adapter.dynamodb.mapping.AbstractColumnMappingDefinition;
+import com.exasol.adapter.dynamodb.mapping.tojsonmapping.dynamodb.DynamodbToJsonValueMapper;
 import com.exasol.dynamodb.attributevalue.AttributeValueQuickCreator;
-import com.exasol.dynamodb.resultwalker.IdentityDynamodbResultWalker;
 import com.exasol.sql.expression.ValueExpression;
 
-public class ToJsonValueMapperTest {
+public class DynamodbToJsonValueMapperTest {
     private static final String DEST_COLUMN = "destColumn";
 
     @Test
     void testConvertRowBasic() {
         final ToJsonColumnMappingDefinition toStringColumnMappingDefinition = new ToJsonColumnMappingDefinition(
                 new AbstractColumnMappingDefinition.ConstructorParameters(DEST_COLUMN,
-                        new IdentityDynamodbResultWalker(),
+                        new DocumentPathExpression.Builder().build(),
                         AbstractColumnMappingDefinition.LookupFailBehaviour.EXCEPTION));
-        final Map<String, AttributeValue> rootAttributeValue = Map.of("key",
-                AttributeValueQuickCreator.forString("value"));
-        final ValueExpression exasolCellValue = new ToJsonValueMapper(toStringColumnMappingDefinition)
-                .mapRow(rootAttributeValue);
+        final DynamodbMap testData = new DynamodbMap(Map.of("key", AttributeValueQuickCreator.forString("value")));
+        final ValueExpression exasolCellValue = new DynamodbToJsonValueMapper(toStringColumnMappingDefinition)
+                .mapRow(testData);
         assertThat(exasolCellValue.toString(), equalTo("{\"key\":\"value\"}"));
     }
 }

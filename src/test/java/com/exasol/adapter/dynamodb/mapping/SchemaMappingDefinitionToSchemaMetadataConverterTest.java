@@ -11,11 +11,11 @@ import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Test;
 
+import com.exasol.adapter.dynamodb.documentpath.DocumentPathExpression;
 import com.exasol.adapter.dynamodb.mapping.tojsonmapping.ToJsonColumnMappingDefinition;
 import com.exasol.adapter.metadata.ColumnMetadata;
 import com.exasol.adapter.metadata.SchemaMetadata;
 import com.exasol.adapter.metadata.TableMetadata;
-import com.exasol.dynamodb.resultwalker.IdentityDynamodbResultWalker;
 
 public class SchemaMappingDefinitionToSchemaMetadataConverterTest {
     private static final String DEST_TABLE_NAME = "TEST";
@@ -26,7 +26,7 @@ public class SchemaMappingDefinitionToSchemaMetadataConverterTest {
         final TableMappingDefinition table = TableMappingDefinition.rootTableBuilder(DEST_TABLE_NAME, SRC_TABLE_NAME)
                 .withColumnMappingDefinition(
                         new ToJsonColumnMappingDefinition(new AbstractColumnMappingDefinition.ConstructorParameters(
-                                COLUMN_NAME, new IdentityDynamodbResultWalker(),
+                                COLUMN_NAME, new DocumentPathExpression.Builder().build(),
                                 AbstractColumnMappingDefinition.LookupFailBehaviour.DEFAULT_VALUE)))
                 .build();
         return new SchemaMappingDefinition(List.of(table));

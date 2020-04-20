@@ -48,6 +48,22 @@ public class DocumentPathExpression implements Serializable {
         private final List<PathSegment> path = new ArrayList<>();
 
         /**
+         * Creates an instance of {@link Builder} with an empty path.
+         */
+        public Builder() {
+            // intentionally left empty.
+        }
+
+        /**
+         * Creates copy of {@link Builder}.
+         * 
+         * @param copy {@link Builder} to copy
+         */
+        public Builder(final Builder copy) {
+            this.path.addAll(copy.path);
+        }
+
+        /**
          * Appends a {@link PathSegment} to the current path.
          * 
          * @param segment path segment to append

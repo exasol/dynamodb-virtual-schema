@@ -8,7 +8,7 @@ public interface DynamodbNodeVisitor {
         defaultVisit("String");
     }
 
-    public default void visit(final DynamodbNumber string) {
+    public default void visit(final DynamodbNumber number) {
         defaultVisit("Number");
     }
 
@@ -16,7 +16,7 @@ public interface DynamodbNodeVisitor {
         defaultVisit("Binary");
     }
 
-    public default void visit(final DynamodbBoolean binary) {
+    public default void visit(final DynamodbBoolean bool) {
         defaultVisit("Boolean");
     }
 
@@ -36,7 +36,7 @@ public interface DynamodbNodeVisitor {
         defaultVisit("List");
     }
 
-    public default void visit(final DynamodbMap object) {
+    public default void visit(final DynamodbMap map) {
         defaultVisit("Object");
     }
 

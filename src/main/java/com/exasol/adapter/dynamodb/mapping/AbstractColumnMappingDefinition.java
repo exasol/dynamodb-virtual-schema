@@ -2,8 +2,8 @@ package com.exasol.adapter.dynamodb.mapping;
 
 import java.io.Serializable;
 
+import com.exasol.adapter.dynamodb.documentpath.DocumentPathExpression;
 import com.exasol.adapter.metadata.DataType;
-import com.exasol.dynamodb.resultwalker.AbstractDynamodbResultWalker;
 import com.exasol.sql.expression.ValueExpression;
 import com.exasol.sql.expression.rendering.ValueExpressionRenderer;
 import com.exasol.sql.rendering.StringRendererConfig;
@@ -20,7 +20,7 @@ import com.exasol.sql.rendering.StringRendererConfig;
 public abstract class AbstractColumnMappingDefinition implements Serializable {
     private static final long serialVersionUID = 48342992735371252L;
     private final String exasolColumnName;
-    private final AbstractDynamodbResultWalker pathToSourceProperty;
+    private final DocumentPathExpression pathToSourceProperty;
     private final LookupFailBehaviour lookupFailBehaviour;
 
     /**
@@ -85,7 +85,7 @@ public abstract class AbstractColumnMappingDefinition implements Serializable {
         return this.lookupFailBehaviour;
     }
 
-    AbstractDynamodbResultWalker getPathToSourceProperty() {
+    DocumentPathExpression getPathToSourceProperty() {
         return this.pathToSourceProperty;
     }
 
@@ -112,7 +112,7 @@ public abstract class AbstractColumnMappingDefinition implements Serializable {
      */
     public static class ConstructorParameters {
         private final String exasolColumnName;
-        private final AbstractDynamodbResultWalker pathToSourceProperty;
+        private final DocumentPathExpression pathToSourceProperty;
         private final LookupFailBehaviour lookupFailBehaviour;
 
         /**
@@ -120,12 +120,11 @@ public abstract class AbstractColumnMappingDefinition implements Serializable {
          * {@link AbstractColumnMappingDefinition#AbstractColumnMappingDefinition(ConstructorParameters)}
          *
          * @param exasolColumnName     name of the Exasol column
-         * @param pathToSourceProperty {@link AbstractDynamodbResultWalker} representing the path to the source DynamoDB
+         * @param pathToSourceProperty {@link DocumentPathExpression} representing the path to the source DynamoDB
          *                             property
          * @param lookupFailBehaviour  {@link LookupFailBehaviour} if the defined path does not exist
          */
-        public ConstructorParameters(final String exasolColumnName,
-                final AbstractDynamodbResultWalker pathToSourceProperty,
+        public ConstructorParameters(final String exasolColumnName, final DocumentPathExpression pathToSourceProperty,
                 final LookupFailBehaviour lookupFailBehaviour) {
             this.exasolColumnName = exasolColumnName;
             this.pathToSourceProperty = pathToSourceProperty;

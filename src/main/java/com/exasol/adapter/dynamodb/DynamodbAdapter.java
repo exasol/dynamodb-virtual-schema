@@ -12,10 +12,8 @@ import com.exasol.adapter.AdapterException;
 import com.exasol.adapter.AdapterProperties;
 import com.exasol.adapter.VirtualSchemaAdapter;
 import com.exasol.adapter.capabilities.Capabilities;
-import com.exasol.adapter.dynamodb.mapping.JsonMappingFactory;
-import com.exasol.adapter.dynamodb.mapping.MappingDefinitionFactory;
-import com.exasol.adapter.dynamodb.mapping.SchemaMappingDefinition;
-import com.exasol.adapter.dynamodb.mapping.SchemaMappingDefinitionToSchemaMetadataConverter;
+import com.exasol.adapter.dynamodb.documentnode.dynamodb.DynamodbNodeVisitor;
+import com.exasol.adapter.dynamodb.mapping.*;
 import com.exasol.adapter.dynamodb.queryresultschema.QueryResultTableSchema;
 import com.exasol.adapter.dynamodb.queryresultschema.QueryResultTableSchemaBuilder;
 import com.exasol.adapter.dynamodb.queryresultschema.RowMapper;
@@ -23,7 +21,6 @@ import com.exasol.adapter.metadata.SchemaMetadata;
 import com.exasol.adapter.request.*;
 import com.exasol.adapter.response.*;
 import com.exasol.bucketfs.BucketfsFileFactory;
-import com.exasol.dynamodb.resultwalker.DynamodbResultWalkerException;
 import com.exasol.sql.expression.ValueExpression;
 
 /**
@@ -105,7 +102,7 @@ public class DynamodbAdapter implements VirtualSchemaAdapter {
             throws AdapterException {
         try {
             return runPushdown(exaMetadata, request);
-        } catch (final ExaConnectionAccessException | DynamodbResultWalkerException | IOException exception) {
+        } catch (final ExaConnectionAccessException | IOException exception) {
             throw new AdapterException("Unable to create Virtual Schema \"" + request.getVirtualSchemaName() + "\". "
                     + "Cause: " + exception.getMessage(), exception);
         }
@@ -125,7 +122,8 @@ public class DynamodbAdapter implements VirtualSchemaAdapter {
             final QueryResultTableSchema queryResultTableSchema) throws ExaConnectionAccessException {
         final DynamodbQueryRunner dynamodbQueryRunner = new DynamodbQueryRunner(
                 getConnectionInformation(exaMetadata, request));
-        final RowMapper rowMapper = new RowMapper(queryResultTableSchema);
+        final RowMapper<DynamodbNodeVisitor> rowMapper = new RowMapper<>(queryResultTableSchema,
+                new DynamodbValueMapperFactory());
         final List<List<ValueExpression>> resultRows = new ArrayList<>();
         dynamodbQueryRunner.runQuery(queryResultTableSchema)
                 .forEach(dynamodbRow -> resultRows.add(rowMapper.mapRow(dynamodbRow)));

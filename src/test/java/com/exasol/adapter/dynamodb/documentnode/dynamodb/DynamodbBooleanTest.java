@@ -30,7 +30,7 @@ public class DynamodbBooleanTest {
         boolean visited = false;
 
         @Override
-        public void visit(final DynamodbBoolean value) {
+        public void visit(final DynamodbBoolean bool) {
             this.visited = true;
         }
 
