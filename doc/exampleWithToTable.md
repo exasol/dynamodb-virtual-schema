@@ -35,7 +35,7 @@ To achieve this we create the following mapping definition:
 
 ```
 {
-  "$schema": "../../main/resources/mappingLanguageSchema.json",
+  "$schema": "https://raw.githubusercontent.com/exasol/dynamodb-virtual-schema/master/src/main/resources/mappingLanguageSchema.json",
   "srcTable": "MY_BOOKS",
   "destTable": "BOOKS",
   "description": "Maps MY_BOOKS to BOOKS",
