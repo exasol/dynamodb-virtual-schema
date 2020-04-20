@@ -4,7 +4,7 @@ import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.exasol.adapter.dynamodb.documentnode.DocumentNode;
 
 /**
- * This class builds document nodes for a given {@link AttributeValue}. Weather a object- array- or value-node is built
+ * This class builds document nodes for a given {@link AttributeValue}. Whether an object, an array, or a value-node is built
  * depends on the type of the {@link AttributeValue}.
  */
 public class DynamodbDocumentNodeFactory {
@@ -13,7 +13,7 @@ public class DynamodbDocumentNodeFactory {
      * Builds a document node for a given {@link AttributeValue}.
      * 
      * @param attributeValue {@link AttributeValue} to wrap
-     * @return object- array- or value-node
+     * @return object, array, or value-node
      */
     public DocumentNode<DynamodbNodeVisitor> buildDocumentNode(final AttributeValue attributeValue) {
         if (attributeValue.getNULL() != null && attributeValue.getNULL()) {
