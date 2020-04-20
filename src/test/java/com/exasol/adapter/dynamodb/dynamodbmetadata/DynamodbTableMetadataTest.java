@@ -5,48 +5,42 @@ import static org.hamcrest.Matchers.*;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
 
 import com.exasol.utils.StringSerializer;
 
 class DynamodbTableMetadataTest {
-    DynamodbKey PRIMARY_KEY = new DynamodbKey(null, null);
-    DynamodbKey GLOBAL_INDEX = new DynamodbKey(null, null);
-    DynamodbKey LOCAL_INDEX = new DynamodbKey(null, null);
+    private static final DynamodbKey PRIMARY_KEY = new DynamodbKey(null, Optional.empty());
+    private static final DynamodbKey GLOBAL_INDEX = new DynamodbKey(null, Optional.empty());
+    private static final DynamodbKey LOCAL_INDEX = new DynamodbKey(null, Optional.empty());
+    private static final DynamodbTableMetadata TABLE_METADATA = new DynamodbTableMetadata(PRIMARY_KEY, List.of(LOCAL_INDEX), List.of(GLOBAL_INDEX));
 
-    private DynamodbTableMetadata getTableMetadata() {
-        return new DynamodbTableMetadata(this.PRIMARY_KEY, List.of(this.LOCAL_INDEX), List.of(this.GLOBAL_INDEX));
-    }
 
     @Test
     void testGetPrimaryKey() {
-        final DynamodbTableMetadata tableMetadata = getTableMetadata();
-        assertThat(tableMetadata.getPrimaryKey(), equalTo(this.PRIMARY_KEY));
+        assertThat(TABLE_METADATA.getPrimaryKey(), equalTo(PRIMARY_KEY));
     }
 
     @Test
     void tesGetLocalIndexes() {
-        final DynamodbTableMetadata tableMetadata = getTableMetadata();
-        assertThat(tableMetadata.getLocalIndexes(), containsInAnyOrder(this.LOCAL_INDEX));
+        assertThat(TABLE_METADATA.getLocalIndexes(), containsInAnyOrder(LOCAL_INDEX));
     }
 
     @Test
     void tesGetGlobalIndexes() {
-        final DynamodbTableMetadata tableMetadata = getTableMetadata();
-        assertThat(tableMetadata.getGlobalIndexes(), containsInAnyOrder(this.GLOBAL_INDEX));
+        assertThat(TABLE_METADATA.getGlobalIndexes(), containsInAnyOrder(GLOBAL_INDEX));
     }
 
     @Test
     void tesGetAllIndexes() {
-        final DynamodbTableMetadata tableMetadata = getTableMetadata();
-        assertThat(tableMetadata.getAllIndexes(), containsInAnyOrder(this.GLOBAL_INDEX, this.LOCAL_INDEX));
+        assertThat(TABLE_METADATA.getAllIndexes(), containsInAnyOrder(GLOBAL_INDEX, LOCAL_INDEX));
     }
 
     @Test
     void testSerialization() throws IOException, ClassNotFoundException {
-        final DynamodbTableMetadata tableMetadata = getTableMetadata();
-        final String serialized = StringSerializer.serializeToString(tableMetadata);
+        final String serialized = StringSerializer.serializeToString(TABLE_METADATA);
         final DynamodbTableMetadata result = (DynamodbTableMetadata) StringSerializer.deserializeFromString(serialized);
         assertThat(result.getPrimaryKey(), not(equalTo(null)));
     }

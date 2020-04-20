@@ -58,7 +58,7 @@ class DynamodbTableMetadataFactoryTestIT {
     void testSimplePrimaryKey() {
         final String keyName = "primary_key";
         dynamodbTestInterface.createTable(TABLE_NAME, keyName);
-        final DynamodbTableMetadata dynamodbTableMetadata = new DynamodbTableMetadataFactory().forDynamodbTable(getDynamodbConnection(),
+        final DynamodbTableMetadata dynamodbTableMetadata = new DynamodbTableMetadataFactory().buildMetadataForTable(getDynamodbConnection(),
                 TABLE_NAME);
         assertAll(//
                 () -> assertThat(dynamodbTableMetadata.getPrimaryKey().getPartitionKey().toString(), equalTo("/" + keyName)),
@@ -77,7 +77,7 @@ class DynamodbTableMetadataFactoryTestIT {
                         new AttributeDefinition(sortKey, ScalarAttributeType.S))
                 .withProvisionedThroughput(new ProvisionedThroughput(1L, 1L));
         dynamodbTestInterface.createTable(request);
-        final DynamodbTableMetadata dynamodbTableMetadata = new DynamodbTableMetadataFactory().forDynamodbTable(getDynamodbConnection(),
+        final DynamodbTableMetadata dynamodbTableMetadata = new DynamodbTableMetadataFactory().buildMetadataForTable(getDynamodbConnection(),
                 TABLE_NAME);
         assertAll(//
                 () -> assertThat(dynamodbTableMetadata.getPrimaryKey().getPartitionKey().toString(),
@@ -103,7 +103,7 @@ class DynamodbTableMetadataFactoryTestIT {
                                 new KeySchemaElement(indexKey, KeyType.RANGE))
                         .withIndexName("myIndex").withProjection(new Projection().withProjectionType("KEYS_ONLY")));
         dynamodbTestInterface.createTable(request);
-        final DynamodbTableMetadata dynamodbTableMetadata = new DynamodbTableMetadataFactory().forDynamodbTable(getDynamodbConnection(),
+        final DynamodbTableMetadata dynamodbTableMetadata = new DynamodbTableMetadataFactory().buildMetadataForTable(getDynamodbConnection(),
                 TABLE_NAME);
         final DynamodbKey index = dynamodbTableMetadata.getLocalIndexes().get(0);
         assertAll(//
@@ -132,7 +132,7 @@ class DynamodbTableMetadataFactoryTestIT {
                         .withIndexName("myIndex").withProjection(new Projection().withProjectionType("KEYS_ONLY"))
                         .withProvisionedThroughput(new ProvisionedThroughput(1L, 1L)));
         dynamodbTestInterface.createTable(request);
-        final DynamodbTableMetadata dynamodbTableMetadata = new DynamodbTableMetadataFactory().forDynamodbTable(getDynamodbConnection(),
+        final DynamodbTableMetadata dynamodbTableMetadata = new DynamodbTableMetadataFactory().buildMetadataForTable(getDynamodbConnection(),
                 TABLE_NAME);
         final DynamodbKey index = dynamodbTableMetadata.getGlobalIndexes().get(0);
         assertAll(//

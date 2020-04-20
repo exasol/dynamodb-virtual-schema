@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * This class describes the key and indexes of a DynamoDB table.
+ * This class describes the primary key and indexes of a DynamoDB table.
  */
 public class DynamodbTableMetadata implements Serializable {
     private static final long serialVersionUID = 7898591572006230212L;

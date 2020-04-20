@@ -1,6 +1,7 @@
 package com.exasol.adapter.dynamodb.dynamodbmetadata;
 
 import java.io.Serializable;
+import java.util.Optional;
 
 import com.exasol.adapter.dynamodb.documentpath.DocumentPathExpression;
 
@@ -18,9 +19,9 @@ public class DynamodbKey implements Serializable {
      * @param partitionKey partition key of this key
      * @param sortKey      sort key of this key. {@code null} if no sort key is present.
      */
-    public DynamodbKey(final DocumentPathExpression partitionKey, final DocumentPathExpression sortKey) {
+    public DynamodbKey(final DocumentPathExpression partitionKey, final Optional<DocumentPathExpression> sortKey) {
         this.partitionKey = partitionKey;
-        this.sortKey = sortKey;
+        this.sortKey = sortKey.orElse(null);
     }
 
     /**

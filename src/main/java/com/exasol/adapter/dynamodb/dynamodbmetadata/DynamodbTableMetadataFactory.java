@@ -1,15 +1,19 @@
 package com.exasol.adapter.dynamodb.dynamodbmetadata;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
+import com.amazonaws.services.dynamodbv2.model.GlobalSecondaryIndexDescription;
 import com.amazonaws.services.dynamodbv2.model.KeySchemaElement;
+import com.amazonaws.services.dynamodbv2.model.LocalSecondaryIndexDescription;
 import com.amazonaws.services.dynamodbv2.model.TableDescription;
 import com.exasol.adapter.dynamodb.documentpath.DocumentPathExpression;
 
 /**
- * This class build {@link DynamodbTableMetadata} by fetching the required information using a {@code describeTable}
+ * This class builds {@link DynamodbTableMetadata} by fetching the required information using a {@code describeTable}
  * call to DynamoDB.
  */
 public class DynamodbTableMetadataFactory {
@@ -21,7 +25,7 @@ public class DynamodbTableMetadataFactory {
      * @param tableName  DynamoDB table name
      * @return {@link DynamodbTableMetadata} describing the keys and indexes of the table
      */
-    public DynamodbTableMetadata forDynamodbTable(final AmazonDynamoDB connection, final String tableName) {
+    public DynamodbTableMetadata buildMetadataForTable(final AmazonDynamoDB connection, final String tableName) {
         final TableDescription tableDescription = connection.describeTable(tableName).getTable();
         final DynamodbKey primaryKey = extractKey(tableDescription.getKeySchema());
         final List<DynamodbKey> localIndexes = extractLocalSecondaryIndex(tableDescription);
@@ -31,7 +35,7 @@ public class DynamodbTableMetadataFactory {
 
     private DynamodbKey extractKey(final List<KeySchemaElement> keySchema) {
         final DocumentPathExpression partitionKey = extractPartitionKey(keySchema);
-        final DocumentPathExpression sortKey = extractSortKey(keySchema);
+        final Optional<DocumentPathExpression> sortKey = extractSortKey(keySchema);
         return new DynamodbKey(partitionKey, sortKey);
     }
 
@@ -43,34 +47,36 @@ public class DynamodbTableMetadataFactory {
             }
         }
         throw new IllegalStateException("Could not find partition key. "
-                + "That's strange because each Dynamodb table must define a partition key.");
+                + "This should not happen because each Dynamodb table must define a partition key.");
     }
 
-    private DocumentPathExpression extractSortKey(final List<KeySchemaElement> keySchema) {
+    private Optional<DocumentPathExpression> extractSortKey(final List<KeySchemaElement> keySchema) {
         for (final KeySchemaElement keySchemaElement : keySchema) {
             if (keySchemaElement.getKeyType().equals("RANGE")) {
                 final String keyName = keySchemaElement.getAttributeName();
-                return new DocumentPathExpression.Builder().addObjectLookup(keyName).build();
+                return Optional.of(new DocumentPathExpression.Builder().addObjectLookup(keyName).build());
             }
         }
-        return null;
+        return Optional.empty();
     }
 
     private List<DynamodbKey> extractLocalSecondaryIndex(final TableDescription tableDescription) {
-        if (tableDescription.getLocalSecondaryIndexes() != null) {
-            return tableDescription.getLocalSecondaryIndexes().stream().map(index -> extractKey(index.getKeySchema()))
+        final List<LocalSecondaryIndexDescription> localSecondaryIndexes = tableDescription.getLocalSecondaryIndexes();
+        if (localSecondaryIndexes != null) {
+            return localSecondaryIndexes.stream().map(index -> extractKey(index.getKeySchema()))
                     .collect(Collectors.toList());
         } else {
-            return List.of();
+            return Collections.emptyList();
         }
     }
 
     private List<DynamodbKey> extractGlobalSecondaryIndex(final TableDescription tableDescription) {
-        if (tableDescription.getGlobalSecondaryIndexes() != null) {
-            return tableDescription.getGlobalSecondaryIndexes().stream().map(index -> extractKey(index.getKeySchema()))
+        final List<GlobalSecondaryIndexDescription> globalSecondaryIndexes = tableDescription.getGlobalSecondaryIndexes();
+        if (globalSecondaryIndexes != null) {
+            return globalSecondaryIndexes.stream().map(index -> extractKey(index.getKeySchema()))
                     .collect(Collectors.toList());
         } else {
-            return List.of();
+            return Collections.emptyList();
         }
     }
 }
