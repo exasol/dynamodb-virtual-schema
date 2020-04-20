@@ -1,10 +1,11 @@
-package com.exasol.adapter.dynamodb.mapping.tojsonmapping;
+package com.exasol.adapter.dynamodb.mapping.tojsonmapping.dynamodb;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 
 import java.util.Map;
 
+import com.exasol.adapter.dynamodb.mapping.tojsonmapping.ToJsonColumnMappingDefinition;
 import org.junit.jupiter.api.Test;
 
 import com.exasol.adapter.dynamodb.documentnode.dynamodb.DynamodbMap;

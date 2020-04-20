@@ -1,9 +1,11 @@
 package com.exasol.adapter.dynamodb.mapping;
 
+import com.exasol.adapter.dynamodb.documentnode.DocumentNode;
+
 import java.util.Map;
 
 /**
- * Exception that is thrown on lookup error. It is caught in {@link AbstractValueMapper#mapRow(Map)} and handled
+ * Exception that is thrown on lookup error. It is caught in {@link AbstractValueMapper#mapRow(DocumentNode)} and handled
  * according to {@link AbstractColumnMappingDefinition#getLookupFailBehaviour()}
  */
 public class LookupValueMapperException extends ValueMapperException {

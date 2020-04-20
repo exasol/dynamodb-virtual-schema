@@ -27,7 +27,7 @@ public class RowMapperTest {
                         AbstractColumnMappingDefinition.LookupFailBehaviour.EXCEPTION));
         final QueryResultTableSchema queryResultTableSchema = new QueryResultTableSchema(null,
                 List.of(mappingDefinition));
-        final List<ValueExpression> exasolRow = new RowMapper<DynamodbNodeVisitor>(queryResultTableSchema,
+        final List<ValueExpression> exasolRow = new RowMapper<>(queryResultTableSchema,
                 new DynamodbValueMapperFactory())
                         .mapRow(new DynamodbMap(Map.of("testKey", AttributeValueQuickCreator.forString("testValue"))));
         assertThat(exasolRow.get(0).toString(), equalTo("{\"testKey\":\"testValue\"}"));

@@ -55,7 +55,7 @@ public class DocumentPathExpression implements Serializable {
         }
 
         /**
-         * Creates copy of {@link Builder}.
+         * Creates a copy of the given {@link Builder}.
          * 
          * @param copy {@link Builder} to copy
          */

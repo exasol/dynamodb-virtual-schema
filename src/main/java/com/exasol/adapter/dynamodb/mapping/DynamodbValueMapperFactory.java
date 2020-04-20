@@ -7,21 +7,16 @@ import com.exasol.adapter.dynamodb.mapping.tostringmapping.ToStringColumnMapping
 import com.exasol.adapter.dynamodb.mapping.tostringmapping.dynamodb.DynamodbToStringValueMapper;
 
 /**
- * Factory for {@link AbstractValueMapper}s.
+ * Factory for DynamoDB {@link AbstractValueMapper}s.
  */
 public class DynamodbValueMapperFactory implements ValueMapperFactory<DynamodbNodeVisitor> {
 
-    /**
-     * Builds a ValueMapper fitting into a ColumnMappingDefinition.
-     * 
-     * @param column ColumnMappingDefinition for which to build the ValueMapper
-     * @return built ValueMapper
-     */
+    @Override
     public AbstractValueMapper<DynamodbNodeVisitor> getValueMapperForColumn(
             final AbstractColumnMappingDefinition column) {
         final ColumnVisitor visitor = new ColumnVisitor();
         column.accept(visitor);
-        return visitor.valueMapper;
+        return visitor.getValueMapper();
     }
 
     private static class ColumnVisitor implements ColumnMappingDefinitionVisitor {
@@ -35,6 +30,10 @@ public class DynamodbValueMapperFactory implements ValueMapperFactory<DynamodbNo
         @Override
         public void visit(final ToJsonColumnMappingDefinition columnDefinition) {
             this.valueMapper = new DynamodbToJsonValueMapper(columnDefinition);
+        }
+
+        public AbstractValueMapper<DynamodbNodeVisitor> getValueMapper() {
+            return this.valueMapper;
         }
     }
 }

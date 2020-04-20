@@ -6,9 +6,12 @@ import com.exasol.adapter.dynamodb.documentnode.dynamodb.*;
 import com.exasol.adapter.dynamodb.mapping.tostringmapping.ToStringColumnMappingDefinition;
 import com.exasol.adapter.dynamodb.mapping.tostringmapping.ToStringValueMapper;
 
+/**
+ * {@link ToStringValueMapper} for DynamoDB values.
+ */
 public class DynamodbToStringValueMapper extends ToStringValueMapper<DynamodbNodeVisitor> {
     /**
-     * Creates an instance of {@link ToStringColumnMappingDefinition}
+     * Creates an instance of {@link DynamodbToStringValueMapper}.
      *
      * @param column {@link ToStringColumnMappingDefinition}
      */

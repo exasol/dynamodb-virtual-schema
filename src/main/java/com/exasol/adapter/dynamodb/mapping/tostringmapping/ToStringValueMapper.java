@@ -14,7 +14,7 @@ public abstract class ToStringValueMapper<DocumentVisitorType> extends AbstractV
     private final ToStringColumnMappingDefinition column;
 
     /**
-     * Creates an instance of {@link ToStringColumnMappingDefinition}
+     * Creates an instance of {@link ToStringValueMapper}.
      * 
      * @param column {@link ToStringColumnMappingDefinition}
      */

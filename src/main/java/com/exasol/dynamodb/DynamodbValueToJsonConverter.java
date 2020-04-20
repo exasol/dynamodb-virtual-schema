@@ -19,7 +19,7 @@ import com.exasol.adapter.dynamodb.documentnode.dynamodb.*;
 public class DynamodbValueToJsonConverter {
 
     /**
-     * Converts a DynamoDB {@link AttributeValue} to json
+     * Converts a DynamoDB document node to JSON.
      *
      * @param value DynamoDB value
      * @return JSON value
@@ -31,7 +31,7 @@ public class DynamodbValueToJsonConverter {
     }
 
     /**
-     * This visitor for {@link AttributeValue} converts its value into the JSON format.
+     * This visitor converts the visited value into the JSON format.
      */
     private static class ToJsonVisitor implements DynamodbNodeVisitor {
         JsonValue jsonValue;

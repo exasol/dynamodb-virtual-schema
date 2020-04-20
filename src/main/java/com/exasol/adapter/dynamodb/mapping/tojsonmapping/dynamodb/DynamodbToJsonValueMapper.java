@@ -9,6 +9,9 @@ import com.exasol.adapter.dynamodb.mapping.tojsonmapping.ToJsonColumnMappingDefi
 import com.exasol.adapter.dynamodb.mapping.tojsonmapping.ToJsonValueMapper;
 import com.exasol.dynamodb.DynamodbValueToJsonConverter;
 
+/**
+ * {@link ToJsonValueMapper} for DynamoDB values.
+ */
 public class DynamodbToJsonValueMapper extends ToJsonValueMapper<DynamodbNodeVisitor> {
 
     /**

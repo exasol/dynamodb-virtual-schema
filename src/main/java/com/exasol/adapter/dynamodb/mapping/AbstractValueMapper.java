@@ -23,9 +23,9 @@ public abstract class AbstractValueMapper<DocumentVisitorType> {
     }
 
     /**
-     * Extracts {@link #column}s value from DynamoDB's result row.
+     * Extracts {@link #column}s values from the given document.
      *
-     * @param dynamodbRow to extract the value from
+     * @param document to extract the value from
      * @return {@link ValueExpression}
      * @throws DocumentPathWalkerException if specified property was not found and
      *                                     {@link AbstractColumnMappingDefinition.LookupFailBehaviour} is set to
@@ -34,11 +34,11 @@ public abstract class AbstractValueMapper<DocumentVisitorType> {
      *                                     {@link AbstractColumnMappingDefinition.LookupFailBehaviour} is set to
      *                                     {@code EXCEPTION }
      */
-    public ValueExpression mapRow(final DocumentNode<DocumentVisitorType> dynamodbRow) {
+    public ValueExpression mapRow(final DocumentNode<DocumentVisitorType> document) {
         try {
             final LinearDocumentPathWalker<DocumentVisitorType> walker = new LinearDocumentPathWalker<>(
                     this.column.getPathToSourceProperty());
-            final DocumentNode<DocumentVisitorType> dynamodbProperty = walker.walkThroughDocument(dynamodbRow);
+            final DocumentNode<DocumentVisitorType> dynamodbProperty = walker.walkThroughDocument(document);
             return mapValue(dynamodbProperty);
         } catch (final DocumentPathWalkerException | LookupValueMapperException exception) {
             if (this.column

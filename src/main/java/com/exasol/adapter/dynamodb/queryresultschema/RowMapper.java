@@ -10,8 +10,9 @@ import com.exasol.adapter.dynamodb.mapping.ValueMapperFactory;
 import com.exasol.sql.expression.ValueExpression;
 
 /**
- * Maps DynamoDB rows to Exasol rows according to {@link QueryResultTableSchema}.
+ * Maps document data to Exasol rows according to {@link QueryResultTableSchema}.
  */
+@java.lang.SuppressWarnings("squid:S119") // DocumentVisitorType does not fit naming conventions.
 public class RowMapper<DocumentVisitorType> {
     private final QueryResultTableSchema queryResultTableSchema;
     private final ValueMapperFactory<DocumentVisitorType> valueMapperFactory;
@@ -29,16 +30,16 @@ public class RowMapper<DocumentVisitorType> {
     }
 
     /**
-     * Processes a row according to the given schema definition and gives an Exasol result row.
+     * Processes a document according to the given schema definition and gives an Exasol result row.
      *
-     * @param dynamodbRow DynamoDB row
+     * @param document document to map
      */
-    public List<ValueExpression> mapRow(final DocumentNode<DocumentVisitorType> dynamodbRow) {
+    public List<ValueExpression> mapRow(final DocumentNode<DocumentVisitorType> document) {
         final List<ValueExpression> resultValues = new ArrayList<>(this.queryResultTableSchema.getColumns().size());
         for (final AbstractColumnMappingDefinition resultColumn : this.queryResultTableSchema.getColumns()) {
             final AbstractValueMapper<DocumentVisitorType> valueMapper = this.valueMapperFactory
                     .getValueMapperForColumn(resultColumn);
-            final ValueExpression result = valueMapper.mapRow(dynamodbRow);
+            final ValueExpression result = valueMapper.mapRow(document);
             resultValues.add(result);
         }
         return resultValues;
