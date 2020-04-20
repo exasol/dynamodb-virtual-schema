@@ -17,7 +17,7 @@ public class DynamodbKey implements Serializable {
      * Creates an instance of {@link DynamodbKey}.
      * 
      * @param partitionKey partition key of this key
-     * @param sortKey      sort key of this key. {@code null} if no sort key is present.
+     * @param sortKey      sort key of this key
      */
     public DynamodbKey(final DocumentPathExpression partitionKey, final Optional<DocumentPathExpression> sortKey) {
         this.partitionKey = partitionKey;
