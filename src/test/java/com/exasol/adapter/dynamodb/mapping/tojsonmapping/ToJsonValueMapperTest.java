@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test;
 
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.exasol.adapter.dynamodb.mapping.AbstractColumnMappingDefinition;
-import com.exasol.dynamodb.attributevalue.AttributeValueTestUtils;
+import com.exasol.dynamodb.attributevalue.AttributeValueQuickCreator;
 import com.exasol.dynamodb.resultwalker.IdentityDynamodbResultWalker;
 import com.exasol.sql.expression.ValueExpression;
 
@@ -23,7 +23,7 @@ public class ToJsonValueMapperTest {
                         new IdentityDynamodbResultWalker(),
                         AbstractColumnMappingDefinition.LookupFailBehaviour.EXCEPTION));
         final Map<String, AttributeValue> rootAttributeValue = Map.of("key",
-                AttributeValueTestUtils.forString("value"));
+                AttributeValueQuickCreator.forString("value"));
         final ValueExpression exasolCellValue = new ToJsonValueMapper(toStringColumnMappingDefinition)
                 .mapRow(rootAttributeValue);
         assertThat(exasolCellValue.toString(), equalTo("{\"key\":\"value\"}"));

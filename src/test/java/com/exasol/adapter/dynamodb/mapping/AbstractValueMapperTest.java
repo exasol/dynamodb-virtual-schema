@@ -10,7 +10,7 @@ import java.util.Map;
 import org.junit.jupiter.api.Test;
 
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
-import com.exasol.dynamodb.attributevalue.AttributeValueTestUtils;
+import com.exasol.dynamodb.attributevalue.AttributeValueQuickCreator;
 import com.exasol.dynamodb.resultwalker.DynamodbResultWalkerException;
 import com.exasol.dynamodb.resultwalker.IdentityDynamodbResultWalker;
 import com.exasol.dynamodb.resultwalker.ObjectDynamodbResultWalker;
@@ -24,7 +24,7 @@ public class AbstractValueMapperTest {
         final MockColumnMappingDefinition columnMappingDefinition = new MockColumnMappingDefinition("d", resultWalker,
                 AbstractColumnMappingDefinition.LookupFailBehaviour.EXCEPTION);
         final String isbn = "123456789";
-        final AttributeValue isbnValue = AttributeValueTestUtils.forString(isbn);
+        final AttributeValue isbnValue = AttributeValueQuickCreator.forString(isbn);
         final ValueExpression valueExpression = new MockValueMapper(columnMappingDefinition)
                 .mapRow(Map.of("isbn", isbnValue));
         assertThat(valueExpression.toString(), equalTo(isbn));
