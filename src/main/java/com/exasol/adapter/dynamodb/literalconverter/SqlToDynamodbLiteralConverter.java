@@ -86,11 +86,12 @@ public class SqlToDynamodbLiteralConverter {
 
         public UnsupportedOperationException buildUnsupportedTypeException(final String type) {
             return new UnsupportedOperationException("DynamoDB has no corresponding literal for Exasol's " + type
-                    + " literal. Please remove this literal from the Capabilities.");
+                    + " literal. Please remove this literal from the capabilities.");
         }
     }
 
     private static class NotALiteralExceptionWrapper extends RuntimeException {
+        private static final long serialVersionUID = -2558397108956339878L;
         private final NotALiteralException exception;
 
         private NotALiteralExceptionWrapper(final NotALiteralException exception) {
