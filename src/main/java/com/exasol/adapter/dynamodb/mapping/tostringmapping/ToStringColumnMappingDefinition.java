@@ -7,7 +7,7 @@ import com.exasol.sql.expression.StringLiteral;
 import com.exasol.sql.expression.ValueExpression;
 
 /**
- * Extracts a string from the remote table and maps it to an Exasol VARCHAR column
+ * Extracts a string from the remote table and maps it to an Exasol VARCHAR column.
  */
 public class ToStringColumnMappingDefinition extends AbstractColumnMappingDefinition {
     private static final long serialVersionUID = -6772281079326146978L;
