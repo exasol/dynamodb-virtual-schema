@@ -78,15 +78,15 @@ public class DynamodbValueToJsonConverter {
 
         @Override
         public void visit(final DynamodbList list) {
-            convertList(list);
+            this.jsonValue = convertList(list);
         }
 
-        void convertList(final DocumentArray<DynamodbNodeVisitor> list) {
+        private JsonValue convertList(final DocumentArray<DynamodbNodeVisitor> list) {
             final JsonArrayBuilder arrayBuilder = Json.createArrayBuilder();
             for (final DocumentNode<DynamodbNodeVisitor> attributeValue : list.getValuesList()) {
                 arrayBuilder.add(new DynamodbValueToJsonConverter().convert(attributeValue));
             }
-            this.jsonValue = arrayBuilder.build();
+            return arrayBuilder.build();
         }
 
         @Override
@@ -96,12 +96,12 @@ public class DynamodbValueToJsonConverter {
 
         @Override
         public void visit(final DynamodbNumberSet numberSet) {
-            convertList(numberSet);
+            this.jsonValue = convertList(numberSet);
         }
 
         @Override
         public void visit(final DynamodbStringSet stringSet) {
-            convertList(stringSet);
+            this.jsonValue = convertList(stringSet);
         }
 
         /**

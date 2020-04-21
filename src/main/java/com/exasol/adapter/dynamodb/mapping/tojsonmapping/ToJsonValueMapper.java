@@ -13,7 +13,7 @@ import com.exasol.sql.expression.ValueExpression;
 public abstract class ToJsonValueMapper<DocumentVisitorType> extends AbstractValueMapper<DocumentVisitorType> {
 
     /**
-     * Creates an instance of {@link ToJsonValueMapper}
+     * Creates an instance of {@link ToJsonValueMapper}.
      * 
      * @param column {@link ToJsonColumnMappingDefinition}
      */

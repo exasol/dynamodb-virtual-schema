@@ -27,7 +27,7 @@ public class DynamodbToStringValueMapperTest {
             DEST_COLUMN, TEST_SOURCE_COLUMN_PATH, AbstractColumnMappingDefinition.LookupFailBehaviour.DEFAULT_VALUE);
 
     @Test
-    void testConvertStringRowBasic() {
+    void testConvertStringRow() {
         final String testString = "test";
         final ToStringColumnMappingDefinition toStringColumnMappingDefinition = new ToStringColumnMappingDefinition(
                 COLUMN_PARAMETERS, 100, null);
@@ -37,7 +37,7 @@ public class DynamodbToStringValueMapperTest {
     }
 
     @Test
-    void testConvertNumberRowBasic() {
+    void testConvertNumberRow() {
         final ToStringColumnMappingDefinition toStringColumnMappingDefinition = new ToStringColumnMappingDefinition(
                 COLUMN_PARAMETERS, 100, null);
         final String result = new DynamodbToStringValueMapper(toStringColumnMappingDefinition)

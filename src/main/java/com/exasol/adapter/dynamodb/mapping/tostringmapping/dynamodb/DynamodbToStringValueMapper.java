@@ -7,7 +7,7 @@ import com.exasol.adapter.dynamodb.mapping.tostringmapping.ToStringColumnMapping
 import com.exasol.adapter.dynamodb.mapping.tostringmapping.ToStringValueMapper;
 
 /**
- * {@link ToStringValueMapper} for DynamoDB values.
+ * This class represents {@link ToStringValueMapper} for DynamoDB values.
  */
 public class DynamodbToStringValueMapper extends ToStringValueMapper<DynamodbNodeVisitor> {
     /**
