@@ -1,5 +1,7 @@
 package com.exasol.adapter.dynamodb;
 
+import static com.exasol.adapter.capabilities.MainCapability.FILTER_EXPRESSIONS;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -12,11 +14,14 @@ import com.exasol.adapter.AdapterException;
 import com.exasol.adapter.AdapterProperties;
 import com.exasol.adapter.VirtualSchemaAdapter;
 import com.exasol.adapter.capabilities.Capabilities;
+import com.exasol.adapter.capabilities.LiteralCapability;
+import com.exasol.adapter.capabilities.PredicateCapability;
 import com.exasol.adapter.dynamodb.documentnode.dynamodb.DynamodbNodeVisitor;
 import com.exasol.adapter.dynamodb.mapping.*;
 import com.exasol.adapter.dynamodb.queryresultschema.QueryResultTableSchema;
 import com.exasol.adapter.dynamodb.queryresultschema.QueryResultTableSchemaBuilder;
 import com.exasol.adapter.dynamodb.queryresultschema.RowMapper;
+import com.exasol.adapter.dynamodb.queryrunner.DynamodbQueryRunner;
 import com.exasol.adapter.metadata.SchemaMetadata;
 import com.exasol.adapter.request.*;
 import com.exasol.adapter.response.*;
@@ -86,7 +91,8 @@ public class DynamodbAdapter implements VirtualSchemaAdapter {
     public GetCapabilitiesResponse getCapabilities(final ExaMetadata exaMetadata,
             final GetCapabilitiesRequest getCapabilitiesRequest) {
         final Capabilities.Builder builder = Capabilities.builder();
-        final Capabilities capabilities = builder.build();
+        final Capabilities capabilities = builder.addMain(FILTER_EXPRESSIONS).addPredicate(PredicateCapability.EQUAL)
+                .addLiteral(LiteralCapability.STRING).build();
         return GetCapabilitiesResponse //
                 .builder()//
                 .capabilities(capabilities)//
@@ -125,7 +131,7 @@ public class DynamodbAdapter implements VirtualSchemaAdapter {
         final RowMapper<DynamodbNodeVisitor> rowMapper = new RowMapper<>(queryResultTableSchema,
                 new DynamodbValueMapperFactory());
         final List<List<ValueExpression>> resultRows = new ArrayList<>();
-        dynamodbQueryRunner.runQuery(queryResultTableSchema)
+        dynamodbQueryRunner.runQuery(queryResultTableSchema, request.getSelect())
                 .forEach(dynamodbRow -> resultRows.add(rowMapper.mapRow(dynamodbRow)));
         return new ValueExpressionsToSqlSelectFromValuesConverter().convert(queryResultTableSchema, resultRows);
     }

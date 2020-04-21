@@ -85,7 +85,7 @@ public abstract class AbstractColumnMappingDefinition implements Serializable {
         return this.lookupFailBehaviour;
     }
 
-    DocumentPathExpression getPathToSourceProperty() {
+    public DocumentPathExpression getPathToSourceProperty() {
         return this.pathToSourceProperty;
     }
 

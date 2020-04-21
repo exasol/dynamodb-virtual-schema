@@ -142,7 +142,6 @@ public class DynamodbAdapterTestLocalIT {
     @Test
     void testMultiLineSelect() throws IOException, SQLException {
         dynamodbTestInterface.createTable(DYNAMO_TABLE_NAME, TestDocuments.BOOKS_ISBN_PROPERTY);
-        final ClassLoader classLoader = DynamodbAdapterTestLocalIT.class.getClassLoader();
         dynamodbTestInterface.importData(DYNAMO_TABLE_NAME, TestDocuments.BOOKS);
         final List<String> result = selectStringArray().rows;
         assertThat(result, containsInAnyOrder("123567", "123254545", "1235673"));
@@ -163,6 +162,19 @@ public class DynamodbAdapterTestLocalIT {
         }
         final SelectStringArrayResult result = selectStringArray();
         assertThat(result.rows, containsInAnyOrder(actualBookNames.toArray()));
+    }
+
+    @Test
+    void testSelection() throws IOException, SQLException {
+        dynamodbTestInterface.createTable(DYNAMO_TABLE_NAME, TestDocuments.BOOKS_ISBN_PROPERTY);
+        dynamodbTestInterface.importData(DYNAMO_TABLE_NAME, TestDocuments.BOOKS);
+        final ResultSet actualResultSet = exasolTestInterface.getStatement()
+                .executeQuery("SELECT \"ISBN\" FROM " + TEST_SCHEMA + ".\"BOOKS\" WHERE ISBN = '123567';");
+        int count = 0;
+        while (actualResultSet.next()) {
+            count++;
+        }
+        assertThat(count, equalTo(1));
     }
 
     private static final class SelectStringArrayResult {

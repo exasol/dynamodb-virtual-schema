@@ -2,11 +2,19 @@ package com.exasol.adapter.dynamodb.documentpath;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.not;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 import org.junit.jupiter.api.Test;
 
 public class DocumentPathExpressionTest {
+
+    private static final DocumentPathExpression TEST_PATH = new DocumentPathExpression.Builder().addObjectLookup("test")
+            .build();
+    private static final DocumentPathExpression EQUAL_PATH = new DocumentPathExpression.Builder()
+            .addObjectLookup("test").build();
+    private static final DocumentPathExpression OTHER_PATH = new DocumentPathExpression.Builder()
+            .addObjectLookup("other").build();
 
     @Test
     void testEmpty() {
@@ -58,5 +66,25 @@ public class DocumentPathExpressionTest {
                 () -> assertThat(pathExpression.size(), equalTo(1)),
                 () -> assertThat(pathExpression.getPath().get(0), equalTo(pathSegment1))//
         );
+    }
+
+    @Test
+    void testEquality() {
+        assertThat(TEST_PATH, equalTo(EQUAL_PATH));
+    }
+
+    @Test
+    void testHashEquality() {
+        assertThat(TEST_PATH.hashCode(), equalTo(EQUAL_PATH.hashCode()));
+    }
+
+    @Test
+    void testInequality() {
+        assertThat(TEST_PATH, not(equalTo(OTHER_PATH)));
+    }
+
+    @Test
+    void testHashInequality() {
+        assertThat(TEST_PATH.hashCode(), not(equalTo(OTHER_PATH.hashCode())));
     }
 }

@@ -7,7 +7,6 @@ import javax.json.JsonArrayBuilder;
 import javax.json.JsonObjectBuilder;
 import javax.json.JsonValue;
 
-import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.exasol.adapter.dynamodb.documentnode.DocumentArray;
 import com.exasol.adapter.dynamodb.documentnode.DocumentNode;
 import com.exasol.adapter.dynamodb.documentnode.dynamodb.*;

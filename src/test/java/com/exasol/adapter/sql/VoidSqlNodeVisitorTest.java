@@ -25,9 +25,5 @@ public class VoidSqlNodeVisitorTest {
 
     private static class Mock extends VoidSqlNodeVisitor {
 
-        @Override
-        public Void visit(final SqlStatementSelect select) {
-            return null;
-        }
     }
 }
