@@ -6,9 +6,9 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 
 import org.junit.jupiter.api.Test;
 
+import com.exasol.adapter.dynamodb.documentpath.DocumentPathExpression;
 import com.exasol.adapter.dynamodb.mapping.AbstractColumnMappingDefinition;
 import com.exasol.adapter.metadata.DataType;
-import com.exasol.dynamodb.resultwalker.IdentityDynamodbResultWalker;
 
 public class ToStringColumnMappingDefinitionTest {
     private static final String DEST_COLUMN = "destColumn";
@@ -18,7 +18,7 @@ public class ToStringColumnMappingDefinitionTest {
         final int stringLength = 10;
         final ToStringColumnMappingDefinition toStringColumnMappingDefinition = new ToStringColumnMappingDefinition(
                 new AbstractColumnMappingDefinition.ConstructorParameters(DEST_COLUMN,
-                        new IdentityDynamodbResultWalker(),
+                        new DocumentPathExpression.Builder().build(),
                         AbstractColumnMappingDefinition.LookupFailBehaviour.DEFAULT_VALUE),
                 stringLength, ToStringColumnMappingDefinition.OverflowBehaviour.TRUNCATE);
         assertAll(

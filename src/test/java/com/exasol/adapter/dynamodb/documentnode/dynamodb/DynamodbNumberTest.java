@@ -30,7 +30,7 @@ public class DynamodbNumberTest {
         boolean visited = false;
 
         @Override
-        public void visit(final DynamodbNumber string) {
+        public void visit(final DynamodbNumber number) {
             this.visited = true;
         }
 

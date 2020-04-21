@@ -53,7 +53,7 @@ public class DynamodbMapTest {
         boolean visited = false;
 
         @Override
-        public void visit(final DynamodbMap value) {
+        public void visit(final DynamodbMap map) {
             this.visited = true;
         }
 

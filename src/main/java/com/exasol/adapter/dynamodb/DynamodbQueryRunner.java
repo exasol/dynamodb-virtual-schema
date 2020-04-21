@@ -1,12 +1,13 @@
 package com.exasol.adapter.dynamodb;
 
-import java.util.Map;
 import java.util.stream.Stream;
 
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
-import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.amazonaws.services.dynamodbv2.model.ScanRequest;
 import com.exasol.ExaConnectionInformation;
+import com.exasol.adapter.dynamodb.documentnode.DocumentNode;
+import com.exasol.adapter.dynamodb.documentnode.dynamodb.DynamodbMap;
+import com.exasol.adapter.dynamodb.documentnode.dynamodb.DynamodbNodeVisitor;
 import com.exasol.adapter.dynamodb.queryresultschema.QueryResultTableSchema;
 import com.exasol.dynamodb.DynamodbConnectionFactory;
 
@@ -31,11 +32,11 @@ public class DynamodbQueryRunner {
      * @param query requested information
      * @return stream of results
      */
-    public Stream<Map<String, AttributeValue>> runQuery(final QueryResultTableSchema query) {
+    public Stream<DocumentNode<DynamodbNodeVisitor>> runQuery(final QueryResultTableSchema query) {
         final AmazonDynamoDB client = getConnection();
         final String tableName = query.getFromTable().getRemoteName();
         final ScanRequest scanRequest = new ScanRequest(tableName);
-        return client.scan(scanRequest).getItems().stream();
+        return client.scan(scanRequest).getItems().stream().map(DynamodbMap::new);
     }
 
     private AmazonDynamoDB getConnection() {

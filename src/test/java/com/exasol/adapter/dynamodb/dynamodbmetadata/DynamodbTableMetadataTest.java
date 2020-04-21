@@ -15,8 +15,8 @@ class DynamodbTableMetadataTest {
     private static final DynamodbKey PRIMARY_KEY = new DynamodbKey(null, Optional.empty());
     private static final DynamodbKey GLOBAL_INDEX = new DynamodbKey(null, Optional.empty());
     private static final DynamodbKey LOCAL_INDEX = new DynamodbKey(null, Optional.empty());
-    private static final DynamodbTableMetadata TABLE_METADATA = new DynamodbTableMetadata(PRIMARY_KEY, List.of(LOCAL_INDEX), List.of(GLOBAL_INDEX));
-
+    private static final DynamodbTableMetadata TABLE_METADATA = new DynamodbTableMetadata(PRIMARY_KEY,
+            List.of(LOCAL_INDEX), List.of(GLOBAL_INDEX));
 
     @Test
     void testGetPrimaryKey() {

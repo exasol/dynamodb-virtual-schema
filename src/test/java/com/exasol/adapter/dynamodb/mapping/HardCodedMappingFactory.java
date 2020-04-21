@@ -2,8 +2,8 @@ package com.exasol.adapter.dynamodb.mapping;
 
 import java.util.List;
 
+import com.exasol.adapter.dynamodb.documentpath.DocumentPathExpression;
 import com.exasol.adapter.dynamodb.mapping.tojsonmapping.ToJsonColumnMappingDefinition;
-import com.exasol.dynamodb.resultwalker.IdentityDynamodbResultWalker;
 
 /**
  * A {@link MappingDefinitionFactory} giving a hard coded mapping, with on single column mapping the whole document to a
@@ -15,7 +15,7 @@ public class HardCodedMappingFactory implements MappingDefinitionFactory {
         final TableMappingDefinition table = TableMappingDefinition.rootTableBuilder("testTable", "srcTable")
                 .withColumnMappingDefinition(
                         new ToJsonColumnMappingDefinition(new AbstractColumnMappingDefinition.ConstructorParameters(
-                                "json", new IdentityDynamodbResultWalker(),
+                                "json", new DocumentPathExpression.Builder().build(),
                                 AbstractColumnMappingDefinition.LookupFailBehaviour.DEFAULT_VALUE)))
                 .build();
         return new SchemaMappingDefinition(List.of(table));

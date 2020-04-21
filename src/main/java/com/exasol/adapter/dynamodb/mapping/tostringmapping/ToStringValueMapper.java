@@ -1,21 +1,20 @@
 package com.exasol.adapter.dynamodb.mapping.tostringmapping;
 
-import com.amazonaws.services.dynamodbv2.model.AttributeValue;
+import com.exasol.adapter.dynamodb.documentnode.DocumentNode;
 import com.exasol.adapter.dynamodb.mapping.AbstractValueMapper;
 import com.exasol.adapter.dynamodb.mapping.ValueMapperException;
-import com.exasol.dynamodb.attributevalue.AttributeValueVisitor;
-import com.exasol.dynamodb.attributevalue.AttributeValueWrapper;
 import com.exasol.sql.expression.StringLiteral;
 import com.exasol.sql.expression.ValueExpression;
 
 /**
  * ValueMapper for {@link ToStringColumnMappingDefinition}
  */
-public class ToStringValueMapper extends AbstractValueMapper {
+@java.lang.SuppressWarnings("squid:S119") // DocumentVisitorType does not fit naming conventions.
+public abstract class ToStringValueMapper<DocumentVisitorType> extends AbstractValueMapper<DocumentVisitorType> {
     private final ToStringColumnMappingDefinition column;
 
     /**
-     * Creates an instance of {@link ToStringColumnMappingDefinition}
+     * Creates an instance of {@link ToStringValueMapper}.
      * 
      * @param column {@link ToStringColumnMappingDefinition}
      */
@@ -25,17 +24,16 @@ public class ToStringValueMapper extends AbstractValueMapper {
     }
 
     @Override
-    protected ValueExpression mapValue(final AttributeValue dynamodbProperty) {
-        final ToStringVisitor toStringVisitor = new ToStringVisitor();
-        final AttributeValueWrapper attributeValueWrapper = new AttributeValueWrapper(dynamodbProperty);
-        attributeValueWrapper.accept(toStringVisitor);
-        final String stringValue = toStringVisitor.result;
+    protected ValueExpression mapValue(final DocumentNode<DocumentVisitorType> dynamodbProperty) {
+        final String stringValue = mapStringValue(dynamodbProperty);
         if (stringValue == null) {
             return this.column.getExasolDefaultValue();
         } else {
             return StringLiteral.of(handleOverflowIfNecessary(stringValue));
         }
     }
+
+    protected abstract String mapStringValue(DocumentNode<DocumentVisitorType> dynamodbProperty);
 
     private String handleOverflowIfNecessary(final String sourceString) {
         if (sourceString.length() > this.column.getExasolStringSize()) {
@@ -52,40 +50,6 @@ public class ToStringValueMapper extends AbstractValueMapper {
             throw new OverflowException(
                     "String overflow. You can either increase the string size if this column or set the overflow behaviour to truncate.",
                     this.column);
-        }
-    }
-
-    /**
-     * Visitor for {@link AttributeValue} that converts its value to string. If this is not possible an
-     * {@link UnsupportedOperationException} is thrown.
-     */
-    private static class ToStringVisitor implements AttributeValueVisitor {
-        private String result;
-
-        @Override
-        public void visitString(final String value) {
-            this.result = value;
-        }
-
-        @Override
-        public void visitNumber(final String value) {
-            this.result = value;
-        }
-
-        @Override
-        public void visitNull() {
-            this.result = null;
-        }
-
-        @Override
-        public void defaultVisit(final String typeName) {
-            throw new UnsupportedOperationException(
-                    "The DynamoDB type " + typeName + " cant't be converted to string. Try using a different mapping.");
-        }
-
-        @Override
-        public void visitBoolean(final boolean value) {
-            this.result = Boolean.TRUE.equals(value) ? "true" : "false";
         }
     }
 

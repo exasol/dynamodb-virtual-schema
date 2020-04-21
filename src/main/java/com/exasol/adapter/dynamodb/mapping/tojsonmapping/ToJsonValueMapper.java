@@ -1,21 +1,19 @@
 package com.exasol.adapter.dynamodb.mapping.tojsonmapping;
 
-import javax.json.JsonValue;
-
-import com.amazonaws.services.dynamodbv2.model.AttributeValue;
+import com.exasol.adapter.dynamodb.documentnode.DocumentNode;
 import com.exasol.adapter.dynamodb.mapping.AbstractColumnMappingDefinition;
 import com.exasol.adapter.dynamodb.mapping.AbstractValueMapper;
-import com.exasol.dynamodb.AttributeValueToJsonConverter;
 import com.exasol.sql.expression.StringLiteral;
 import com.exasol.sql.expression.ValueExpression;
 
 /**
- * ValueMapper for {@link ToJsonColumnMappingDefinition}
+ * ValueMapper for {@link ToJsonColumnMappingDefinition}.
  */
-public class ToJsonValueMapper extends AbstractValueMapper {
+@java.lang.SuppressWarnings("squid:S119") // DocumentVisitorType does not fit naming conventions.
+public abstract class ToJsonValueMapper<DocumentVisitorType> extends AbstractValueMapper<DocumentVisitorType> {
 
     /**
-     * Creates an instance of {@link ToJsonColumnMappingDefinition}
+     * Creates an instance of {@link ToJsonValueMapper}.
      * 
      * @param column {@link ToJsonColumnMappingDefinition}
      */
@@ -24,8 +22,9 @@ public class ToJsonValueMapper extends AbstractValueMapper {
     }
 
     @Override
-    protected ValueExpression mapValue(final AttributeValue dynamodbProperty) {
-        final JsonValue json = new AttributeValueToJsonConverter().convert(dynamodbProperty);
-        return StringLiteral.of(json.toString());
+    protected ValueExpression mapValue(final DocumentNode<DocumentVisitorType> dynamodbProperty) {
+        return StringLiteral.of(mapJsonValue(dynamodbProperty));
     }
+
+    protected abstract String mapJsonValue(final DocumentNode<DocumentVisitorType> dynamodbProperty);
 }
