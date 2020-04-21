@@ -7,7 +7,6 @@ import javax.json.JsonArrayBuilder;
 import javax.json.JsonObjectBuilder;
 import javax.json.JsonValue;
 
-import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.exasol.adapter.dynamodb.documentnode.DocumentArray;
 import com.exasol.adapter.dynamodb.documentnode.DocumentNode;
 import com.exasol.adapter.dynamodb.documentnode.dynamodb.*;
@@ -79,15 +78,15 @@ public class DynamodbValueToJsonConverter {
 
         @Override
         public void visit(final DynamodbList list) {
-            convertList(list);
+            this.jsonValue = convertList(list);
         }
 
-        void convertList(final DocumentArray<DynamodbNodeVisitor> list) {
+        private JsonValue convertList(final DocumentArray<DynamodbNodeVisitor> list) {
             final JsonArrayBuilder arrayBuilder = Json.createArrayBuilder();
             for (final DocumentNode<DynamodbNodeVisitor> attributeValue : list.getValuesList()) {
                 arrayBuilder.add(new DynamodbValueToJsonConverter().convert(attributeValue));
             }
-            this.jsonValue = arrayBuilder.build();
+            return arrayBuilder.build();
         }
 
         @Override
@@ -97,12 +96,12 @@ public class DynamodbValueToJsonConverter {
 
         @Override
         public void visit(final DynamodbNumberSet numberSet) {
-            convertList(numberSet);
+            this.jsonValue = convertList(numberSet);
         }
 
         @Override
         public void visit(final DynamodbStringSet stringSet) {
-            convertList(stringSet);
+            this.jsonValue = convertList(stringSet);
         }
 
         /**

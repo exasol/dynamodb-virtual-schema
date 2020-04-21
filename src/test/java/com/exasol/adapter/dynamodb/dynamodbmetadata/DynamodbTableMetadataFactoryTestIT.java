@@ -29,14 +29,8 @@ class DynamodbTableMetadataFactoryTestIT {
     public static final GenericContainer LOCAL_DYNAMO = new GenericContainer<>("amazon/dynamodb-local")
             .withNetwork(NETWORK).withExposedPorts(8000).withNetworkAliases("dynamo")
             .withCommand("-jar DynamoDBLocal.jar -sharedDb -dbPath .");
-    private static DynamodbTestInterface dynamodbTestInterface;
-
     private static final String TABLE_NAME = "test";
-
-    private AmazonDynamoDB getDynamodbConnection() {
-        return new DynamodbConnectionFactory().getLowLevelConnection(dynamodbTestInterface.getDynamoUrl(),
-                dynamodbTestInterface.getDynamoUser(), dynamodbTestInterface.getDynamoPass());
-    }
+    private static DynamodbTestInterface dynamodbTestInterface;
 
     @BeforeAll
     static void beforeAll() throws DynamodbTestInterface.NoNetworkFoundException, SQLException, InterruptedException,
@@ -44,24 +38,30 @@ class DynamodbTableMetadataFactoryTestIT {
         dynamodbTestInterface = new DynamodbTestInterface(LOCAL_DYNAMO, NETWORK);
     }
 
-    @AfterEach
-    void afterEach() {
-        dynamodbTestInterface.deleteCreatedTables();
-    }
-
     @AfterAll
     static void afterAll() {
         NETWORK.close();
+    }
+
+    private AmazonDynamoDB getDynamodbConnection() {
+        return new DynamodbConnectionFactory().getLowLevelConnection(dynamodbTestInterface.getDynamoUrl(),
+                dynamodbTestInterface.getDynamoUser(), dynamodbTestInterface.getDynamoPass());
+    }
+
+    @AfterEach
+    void afterEach() {
+        dynamodbTestInterface.deleteCreatedTables();
     }
 
     @Test
     void testSimplePrimaryKey() {
         final String keyName = "primary_key";
         dynamodbTestInterface.createTable(TABLE_NAME, keyName);
-        final DynamodbTableMetadata dynamodbTableMetadata = new DynamodbTableMetadataFactory().buildMetadataForTable(getDynamodbConnection(),
-                TABLE_NAME);
+        final DynamodbTableMetadata dynamodbTableMetadata = new DynamodbTableMetadataFactory()
+                .buildMetadataForTable(getDynamodbConnection(), TABLE_NAME);
         assertAll(//
-                () -> assertThat(dynamodbTableMetadata.getPrimaryKey().getPartitionKey().toString(), equalTo("/" + keyName)),
+                () -> assertThat(dynamodbTableMetadata.getPrimaryKey().getPartitionKey().toString(),
+                        equalTo("/" + keyName)),
                 () -> assertThat(dynamodbTableMetadata.getPrimaryKey().hasSortKey(), equalTo(false))//
         );
     }
@@ -77,8 +77,8 @@ class DynamodbTableMetadataFactoryTestIT {
                         new AttributeDefinition(sortKey, ScalarAttributeType.S))
                 .withProvisionedThroughput(new ProvisionedThroughput(1L, 1L));
         dynamodbTestInterface.createTable(request);
-        final DynamodbTableMetadata dynamodbTableMetadata = new DynamodbTableMetadataFactory().buildMetadataForTable(getDynamodbConnection(),
-                TABLE_NAME);
+        final DynamodbTableMetadata dynamodbTableMetadata = new DynamodbTableMetadataFactory()
+                .buildMetadataForTable(getDynamodbConnection(), TABLE_NAME);
         assertAll(//
                 () -> assertThat(dynamodbTableMetadata.getPrimaryKey().getPartitionKey().toString(),
                         equalTo("/" + partitionKey)),
@@ -103,8 +103,8 @@ class DynamodbTableMetadataFactoryTestIT {
                                 new KeySchemaElement(indexKey, KeyType.RANGE))
                         .withIndexName("myIndex").withProjection(new Projection().withProjectionType("KEYS_ONLY")));
         dynamodbTestInterface.createTable(request);
-        final DynamodbTableMetadata dynamodbTableMetadata = new DynamodbTableMetadataFactory().buildMetadataForTable(getDynamodbConnection(),
-                TABLE_NAME);
+        final DynamodbTableMetadata dynamodbTableMetadata = new DynamodbTableMetadataFactory()
+                .buildMetadataForTable(getDynamodbConnection(), TABLE_NAME);
         final DynamodbKey index = dynamodbTableMetadata.getLocalIndexes().get(0);
         assertAll(//
                 () -> assertThat(index.getPartitionKey().toString(), equalTo("/" + partitionKey)), //
@@ -132,8 +132,8 @@ class DynamodbTableMetadataFactoryTestIT {
                         .withIndexName("myIndex").withProjection(new Projection().withProjectionType("KEYS_ONLY"))
                         .withProvisionedThroughput(new ProvisionedThroughput(1L, 1L)));
         dynamodbTestInterface.createTable(request);
-        final DynamodbTableMetadata dynamodbTableMetadata = new DynamodbTableMetadataFactory().buildMetadataForTable(getDynamodbConnection(),
-                TABLE_NAME);
+        final DynamodbTableMetadata dynamodbTableMetadata = new DynamodbTableMetadataFactory()
+                .buildMetadataForTable(getDynamodbConnection(), TABLE_NAME);
         final DynamodbKey index = dynamodbTableMetadata.getGlobalIndexes().get(0);
         assertAll(//
                 () -> assertThat(index.getPartitionKey().toString(), equalTo("/" + indexKey1)), //

@@ -71,7 +71,8 @@ public class DynamodbTableMetadataFactory {
     }
 
     private List<DynamodbKey> extractGlobalSecondaryIndex(final TableDescription tableDescription) {
-        final List<GlobalSecondaryIndexDescription> globalSecondaryIndexes = tableDescription.getGlobalSecondaryIndexes();
+        final List<GlobalSecondaryIndexDescription> globalSecondaryIndexes = tableDescription
+                .getGlobalSecondaryIndexes();
         if (globalSecondaryIndexes != null) {
             return globalSecondaryIndexes.stream().map(index -> extractKey(index.getKeySchema()))
                     .collect(Collectors.toList());

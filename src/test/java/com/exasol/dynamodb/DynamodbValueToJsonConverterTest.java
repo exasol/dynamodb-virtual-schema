@@ -27,8 +27,7 @@ public class DynamodbValueToJsonConverterTest {
 
     private void testNumber(final double number) {
         final String numberString = String.valueOf(number);
-        final JsonValue json = new DynamodbValueToJsonConverter()
-                .convert(new DynamodbNumber(numberString));
+        final JsonValue json = new DynamodbValueToJsonConverter().convert(new DynamodbNumber(numberString));
         assertThat(json.toString(), equalTo(numberString));
     }
 
