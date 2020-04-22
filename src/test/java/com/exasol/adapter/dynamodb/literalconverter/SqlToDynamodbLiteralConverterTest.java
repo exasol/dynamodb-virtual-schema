@@ -58,9 +58,8 @@ class SqlToDynamodbLiteralConverterTest {
     }
 
     @Test
-    void testNonLiteral(){
+    void testNonLiteral() {
         final SqlNode nonLiteral = new SqlPredicateAnd(List.of());
-        assertThrows(NotALiteralException.class,
-                () -> CONVERTER.convert(nonLiteral));
+        assertThrows(NotALiteralException.class, () -> CONVERTER.convert(nonLiteral));
     }
 }

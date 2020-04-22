@@ -17,18 +17,16 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.exasol.ExaConnectionInformation;
+import com.exasol.adapter.AdapterException;
 import com.exasol.adapter.dynamodb.DynamodbTestInterface;
 import com.exasol.adapter.dynamodb.documentnode.DocumentNode;
 import com.exasol.adapter.dynamodb.documentnode.DocumentObject;
 import com.exasol.adapter.dynamodb.documentnode.dynamodb.DynamodbNodeVisitor;
-import com.exasol.adapter.dynamodb.mapping.AbstractColumnMappingDefinition;
-import com.exasol.adapter.dynamodb.mapping.TableMappingDefinition;
-import com.exasol.adapter.dynamodb.mapping.TestDocuments;
-import com.exasol.adapter.dynamodb.mapping.tojsonmapping.ToJsonColumnMappingDefinition;
+import com.exasol.adapter.dynamodb.documentnode.dynamodb.DynamodbString;
+import com.exasol.adapter.dynamodb.mapping.*;
 import com.exasol.adapter.dynamodb.queryresultschema.QueryResultTableSchema;
-import com.exasol.adapter.sql.SqlSelectList;
-import com.exasol.adapter.sql.SqlStatementSelect;
-import com.exasol.adapter.sql.SqlTable;
+import com.exasol.adapter.metadata.ColumnMetadata;
+import com.exasol.adapter.sql.*;
 import com.exasol.bucketfs.BucketAccessException;
 import com.exasol.dynamodb.DynamodbConnectionFactory;
 
@@ -41,16 +39,22 @@ class DynamodbQueryRunnerIT {
     public static final GenericContainer LOCAL_DYNAMO = new GenericContainer<>("amazon/dynamodb-local")
             .withNetwork(NETWORK).withExposedPorts(8000).withNetworkAliases("dynamo")
             .withCommand("-jar DynamoDBLocal.jar -sharedDb -dbPath .");
-    private static final String TABLE_NAME = "test";
     private static final String KEY_NAME = "isbn";
     private static DynamodbTestInterface dynamodbTestInterface;
 
+    private static TableMappingDefinition tableMapping;
+    private static QueryResultTableSchema queryResultTableSchema;
+
     @BeforeAll
     static void beforeAll() throws DynamodbTestInterface.NoNetworkFoundException, SQLException, InterruptedException,
-            BucketAccessException, TimeoutException, IOException {
+            BucketAccessException, TimeoutException, IOException, AdapterException {
+        tableMapping = new JsonMappingFactory(MappingTestFiles.BASIC_MAPPING_FILE).getSchemaMapping().getTableMappings()
+                .get(0);
+        queryResultTableSchema = new QueryResultTableSchema(tableMapping, tableMapping.getColumns());
+
         dynamodbTestInterface = new DynamodbTestInterface(LOCAL_DYNAMO, NETWORK);
-        dynamodbTestInterface.createTable(TABLE_NAME, KEY_NAME);
-        dynamodbTestInterface.importData(TABLE_NAME, TestDocuments.BOOKS);
+        dynamodbTestInterface.createTable(tableMapping.getRemoteName(), KEY_NAME);
+        dynamodbTestInterface.importData(tableMapping.getRemoteName(), TestDocuments.BOOKS);
     }
 
     @AfterAll
@@ -95,18 +99,34 @@ class DynamodbQueryRunnerIT {
     @Test
     void testSelectAll() {
         final DynamodbQueryRunner runner = getRunner();
-        final ToJsonColumnMappingDefinition column1 = new ToJsonColumnMappingDefinition(
-                new AbstractColumnMappingDefinition.ConstructorParameters("", null, null));
-        final TableMappingDefinition table = TableMappingDefinition.rootTableBuilder("", TABLE_NAME)
-                .withColumnMappingDefinition(column1).build();
-        final QueryResultTableSchema queryResultTableSchema = new QueryResultTableSchema(table, List.of(column1));
         final SqlStatementSelect selectStatement = new SqlStatementSelect.Builder()
-                .fromClause(new SqlTable(TABLE_NAME, null)).selectList(SqlSelectList.createSelectStarSelectList())
-                .build();
+                .fromClause(new SqlTable(tableMapping.getExasolName(), null))
+                .selectList(SqlSelectList.createSelectStarSelectList()).build();
         final List<DocumentNode<DynamodbNodeVisitor>> result = runner.runQuery(queryResultTableSchema, selectStatement)
                 .collect(Collectors.toList());
         assertThat(result.size(), equalTo(3));
         final DocumentObject<DynamodbNodeVisitor> first = (DocumentObject<DynamodbNodeVisitor>) result.get(0);
         assertThat(first.hasKey("author"), equalTo(true));
+    }
+
+    @Test
+    void testGetItemRequest() throws IOException {
+        final String isbn = "123567";
+        final DynamodbQueryRunner runner = getRunner();
+        final AbstractColumnMappingDefinition columnMapping = tableMapping.getColumns().stream()
+                .filter(column -> column.getExasolColumnName().equals("ISBN")).findAny().get();
+        final ColumnMetadata columnMetadata = new SchemaMappingDefinitionToSchemaMetadataConverter()
+                .convertColumn(columnMapping);
+        final SqlStatementSelect selectStatement = new SqlStatementSelect.Builder()
+                .fromClause(new SqlTable(tableMapping.getExasolName(), null))
+                .selectList(SqlSelectList.createSelectStarSelectList())
+                .whereClause(new SqlPredicateEqual(new SqlLiteralString(isbn), new SqlColumn(0, columnMetadata)))
+                .build();
+        final List<DocumentNode<DynamodbNodeVisitor>> result = runner.runQuery(queryResultTableSchema, selectStatement)
+                .collect(Collectors.toList());
+        assertThat(result.size(), equalTo(1));
+        final DocumentObject<DynamodbNodeVisitor> first = (DocumentObject<DynamodbNodeVisitor>) result.get(0);
+        final DynamodbString isbnResult = (DynamodbString) first.get("isbn");
+        assertThat(isbnResult.getValue(), equalTo(isbn));
     }
 }

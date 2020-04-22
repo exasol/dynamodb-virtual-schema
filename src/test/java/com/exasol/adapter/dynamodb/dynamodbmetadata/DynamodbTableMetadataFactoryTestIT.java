@@ -60,8 +60,7 @@ class DynamodbTableMetadataFactoryTestIT {
         final DynamodbTableMetadata dynamodbTableMetadata = new DynamodbTableMetadataFactory()
                 .buildMetadataForTable(getDynamodbConnection(), TABLE_NAME);
         assertAll(//
-                () -> assertThat(dynamodbTableMetadata.getPrimaryKey().getPartitionKey(),
-                        equalTo(keyName)),
+                () -> assertThat(dynamodbTableMetadata.getPrimaryKey().getPartitionKey(), equalTo(keyName)),
                 () -> assertThat(dynamodbTableMetadata.getPrimaryKey().hasSortKey(), equalTo(false))//
         );
     }
