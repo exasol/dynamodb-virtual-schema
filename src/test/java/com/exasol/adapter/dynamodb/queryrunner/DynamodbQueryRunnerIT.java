@@ -9,7 +9,10 @@ import java.util.List;
 import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.Network;
 import org.testcontainers.junit.jupiter.Container;
@@ -65,11 +68,6 @@ class DynamodbQueryRunnerIT {
     private AmazonDynamoDB getDynamodbConnection() {
         return new DynamodbConnectionFactory().getLowLevelConnection(dynamodbTestInterface.getDynamoUrl(),
                 dynamodbTestInterface.getDynamoUser(), dynamodbTestInterface.getDynamoPass());
-    }
-
-    @AfterEach
-    void afterEach() {
-        dynamodbTestInterface.deleteCreatedTables();
     }
 
     private DynamodbQueryRunner getRunner() {
