@@ -1,8 +1,7 @@
-package com.exasol.adapter.dynamodb.literalconverter;
+package com.exasol.adapter.dynamodb.literalconverter.dynamodb;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.startsWith;
+import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.math.BigDecimal;
@@ -10,40 +9,49 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
+import com.exasol.adapter.dynamodb.documentnode.dynamodb.DynamodbBoolean;
+import com.exasol.adapter.dynamodb.documentnode.dynamodb.DynamodbNull;
+import com.exasol.adapter.dynamodb.documentnode.dynamodb.DynamodbNumber;
+import com.exasol.adapter.dynamodb.documentnode.dynamodb.DynamodbString;
+import com.exasol.adapter.dynamodb.literalconverter.NotALiteralException;
 import com.exasol.adapter.sql.*;
 
-class SqlToDynamodbLiteralConverterTest {
-    private static final SqlToDynamodbLiteralConverter CONVERTER = new SqlToDynamodbLiteralConverter();
+class SqlLiteralToDynamodbValueConverterTest {
+    private static final SqlLiteralToDynamodbValueConverter CONVERTER = new SqlLiteralToDynamodbValueConverter();
 
     @Test
     void testConvertString() throws NotALiteralException {
         final String testValue = "test";
         final SqlNode literal = new SqlLiteralString(testValue);
-        assertThat(CONVERTER.convert(literal).getS(), equalTo(testValue));
+        final DynamodbString result = (DynamodbString) CONVERTER.convert(literal);
+        assertThat(result.getValue(), equalTo(testValue));
     }
 
     @Test
     void testConvertBoolean() throws NotALiteralException {
         final SqlNode literal = new SqlLiteralBool(true);
-        assertThat(CONVERTER.convert(literal).getBOOL(), equalTo(true));
+        final DynamodbBoolean result = (DynamodbBoolean) CONVERTER.convert(literal);
+        assertThat(result.getValue(), equalTo(true));
     }
 
     @Test
     void testConvertDouble() throws NotALiteralException {
         final SqlNode literal = new SqlLiteralDouble(0.1);
-        assertThat(CONVERTER.convert(literal).getN(), equalTo("0.1"));
+        final DynamodbNumber result = (DynamodbNumber) CONVERTER.convert(literal);
+        assertThat(result.getValue(), equalTo("0.1"));
     }
 
     @Test
     void testConvertExactNumeric() throws NotALiteralException {
         final SqlNode literal = new SqlLiteralExactnumeric(new BigDecimal(10));
-        assertThat(CONVERTER.convert(literal).getN(), equalTo("10"));
+        final DynamodbNumber result = (DynamodbNumber) CONVERTER.convert(literal);
+        assertThat(result.getValue(), equalTo("10"));
     }
 
     @Test
     void testConvertNull() throws NotALiteralException {
         final SqlNode literal = new SqlLiteralNull();
-        assertThat(CONVERTER.convert(literal).getNULL(), equalTo(true));
+        assertThat(CONVERTER.convert(literal), instanceOf(DynamodbNull.class));
     }
 
     @Test

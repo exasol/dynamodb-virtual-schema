@@ -25,11 +25,14 @@ import com.exasol.adapter.dynamodb.DynamodbTestInterface;
 import com.exasol.adapter.dynamodb.documentnode.DocumentNode;
 import com.exasol.adapter.dynamodb.documentnode.DocumentObject;
 import com.exasol.adapter.dynamodb.documentnode.dynamodb.DynamodbNodeVisitor;
-import com.exasol.adapter.dynamodb.documentnode.dynamodb.DynamodbString;
-import com.exasol.adapter.dynamodb.mapping.*;
-import com.exasol.adapter.dynamodb.queryresultschema.QueryResultTableSchema;
-import com.exasol.adapter.metadata.ColumnMetadata;
-import com.exasol.adapter.sql.*;
+import com.exasol.adapter.dynamodb.mapping.JsonMappingFactory;
+import com.exasol.adapter.dynamodb.mapping.MappingTestFiles;
+import com.exasol.adapter.dynamodb.mapping.TableMappingDefinition;
+import com.exasol.adapter.dynamodb.mapping.TestDocuments;
+import com.exasol.adapter.dynamodb.queryplan.DocumentQuery;
+import com.exasol.adapter.sql.SqlSelectList;
+import com.exasol.adapter.sql.SqlStatementSelect;
+import com.exasol.adapter.sql.SqlTable;
 import com.exasol.bucketfs.BucketAccessException;
 import com.exasol.dynamodb.DynamodbConnectionFactory;
 
@@ -46,14 +49,14 @@ class DynamodbQueryRunnerIT {
     private static DynamodbTestInterface dynamodbTestInterface;
 
     private static TableMappingDefinition tableMapping;
-    private static QueryResultTableSchema queryResultTableSchema;
+    private static DocumentQuery documentQuery;
 
     @BeforeAll
     static void beforeAll() throws DynamodbTestInterface.NoNetworkFoundException, SQLException, InterruptedException,
             BucketAccessException, TimeoutException, IOException, AdapterException {
         tableMapping = new JsonMappingFactory(MappingTestFiles.BASIC_MAPPING_FILE).getSchemaMapping().getTableMappings()
                 .get(0);
-        queryResultTableSchema = new QueryResultTableSchema(tableMapping, tableMapping.getColumns());
+        documentQuery = new DocumentQuery(tableMapping, tableMapping.getColumns());
 
         dynamodbTestInterface = new DynamodbTestInterface(LOCAL_DYNAMO, NETWORK);
         dynamodbTestInterface.createTable(tableMapping.getRemoteName(), KEY_NAME);
@@ -100,31 +103,10 @@ class DynamodbQueryRunnerIT {
         final SqlStatementSelect selectStatement = new SqlStatementSelect.Builder()
                 .fromClause(new SqlTable(tableMapping.getExasolName(), null))
                 .selectList(SqlSelectList.createSelectStarSelectList()).build();
-        final List<DocumentNode<DynamodbNodeVisitor>> result = runner.runQuery(queryResultTableSchema, selectStatement)
+        final List<DocumentNode<DynamodbNodeVisitor>> result = runner.runQuery(documentQuery, selectStatement)
                 .collect(Collectors.toList());
         assertThat(result.size(), equalTo(3));
         final DocumentObject<DynamodbNodeVisitor> first = (DocumentObject<DynamodbNodeVisitor>) result.get(0);
         assertThat(first.hasKey("author"), equalTo(true));
-    }
-
-    @Test
-    void testGetItemRequest() throws IOException {
-        final String isbn = "123567";
-        final DynamodbQueryRunner runner = getRunner();
-        final AbstractColumnMappingDefinition columnMapping = tableMapping.getColumns().stream()
-                .filter(column -> column.getExasolColumnName().equals("ISBN")).findAny().get();
-        final ColumnMetadata columnMetadata = new SchemaMappingDefinitionToSchemaMetadataConverter()
-                .convertColumn(columnMapping);
-        final SqlStatementSelect selectStatement = new SqlStatementSelect.Builder()
-                .fromClause(new SqlTable(tableMapping.getExasolName(), null))
-                .selectList(SqlSelectList.createSelectStarSelectList())
-                .whereClause(new SqlPredicateEqual(new SqlLiteralString(isbn), new SqlColumn(0, columnMetadata)))
-                .build();
-        final List<DocumentNode<DynamodbNodeVisitor>> result = runner.runQuery(queryResultTableSchema, selectStatement)
-                .collect(Collectors.toList());
-        assertThat(result.size(), equalTo(1));
-        final DocumentObject<DynamodbNodeVisitor> first = (DocumentObject<DynamodbNodeVisitor>) result.get(0);
-        final DynamodbString isbnResult = (DynamodbString) first.get("isbn");
-        assertThat(isbnResult.getValue(), equalTo(isbn));
     }
 }

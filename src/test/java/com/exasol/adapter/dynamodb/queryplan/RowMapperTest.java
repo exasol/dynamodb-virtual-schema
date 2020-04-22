@@ -1,4 +1,4 @@
-package com.exasol.adapter.dynamodb.queryresultschema;
+package com.exasol.adapter.dynamodb.queryplan;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
@@ -24,11 +24,9 @@ public class RowMapperTest {
                 new AbstractColumnMappingDefinition.ConstructorParameters("test",
                         new DocumentPathExpression.Builder().build(),
                         AbstractColumnMappingDefinition.LookupFailBehaviour.EXCEPTION));
-        final QueryResultTableSchema queryResultTableSchema = new QueryResultTableSchema(null,
-                List.of(mappingDefinition));
-        final List<ValueExpression> exasolRow = new RowMapper<>(queryResultTableSchema,
-                new DynamodbValueMapperFactory())
-                        .mapRow(new DynamodbMap(Map.of("testKey", AttributeValueQuickCreator.forString("testValue"))));
+        final DocumentQuery documentQuery = new DocumentQuery(null, List.of(mappingDefinition));
+        final List<ValueExpression> exasolRow = new RowMapper<>(documentQuery, new DynamodbValueMapperFactory())
+                .mapRow(new DynamodbMap(Map.of("testKey", AttributeValueQuickCreator.forString("testValue"))));
         assertThat(exasolRow.get(0).toString(), equalTo("{\"testKey\":\"testValue\"}"));
     }
 }

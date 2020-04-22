@@ -11,13 +11,13 @@ import org.junit.jupiter.api.Test;
 import com.exasol.adapter.dynamodb.documentpath.DocumentPathExpression;
 import com.exasol.adapter.dynamodb.mapping.AbstractColumnMappingDefinition;
 import com.exasol.adapter.dynamodb.mapping.tojsonmapping.ToJsonColumnMappingDefinition;
-import com.exasol.adapter.dynamodb.queryresultschema.QueryResultTableSchema;
+import com.exasol.adapter.dynamodb.queryplan.DocumentQuery;
 import com.exasol.sql.expression.StringLiteral;
 import com.exasol.sql.expression.ValueExpression;
 
 public class ValueExpressionsToSqlSelectFromValuesConverterTest {
-    QueryResultTableSchema getTestTable() {
-        return new QueryResultTableSchema(null,
+    DocumentQuery getTestTable() {
+        return new DocumentQuery(null,
                 List.of(new ToJsonColumnMappingDefinition(new AbstractColumnMappingDefinition.ConstructorParameters(
                         "json", new DocumentPathExpression.Builder().build(),
                         AbstractColumnMappingDefinition.LookupFailBehaviour.DEFAULT_VALUE))));

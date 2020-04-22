@@ -2,7 +2,7 @@ package com.exasol.adapter.dynamodb;
 
 import java.util.List;
 
-import com.exasol.adapter.dynamodb.queryresultschema.QueryResultTableSchema;
+import com.exasol.adapter.dynamodb.queryplan.DocumentQuery;
 import com.exasol.sql.expression.ValueExpression;
 
 /**
@@ -16,5 +16,5 @@ public interface ValueExpressionsToSqlConverter {
      * @param rows           List of ordered lists of {@link ValueExpression}
      * @return SQL Statement for push down response
      */
-    public String convert(final QueryResultTableSchema tableStructure, final List<List<ValueExpression>> rows);
+    public String convert(final DocumentQuery tableStructure, final List<List<ValueExpression>> rows);
 }

@@ -18,9 +18,9 @@ import com.exasol.adapter.capabilities.LiteralCapability;
 import com.exasol.adapter.capabilities.PredicateCapability;
 import com.exasol.adapter.dynamodb.documentnode.dynamodb.DynamodbNodeVisitor;
 import com.exasol.adapter.dynamodb.mapping.*;
-import com.exasol.adapter.dynamodb.queryresultschema.QueryResultTableSchema;
-import com.exasol.adapter.dynamodb.queryresultschema.QueryResultTableSchemaBuilder;
-import com.exasol.adapter.dynamodb.queryresultschema.RowMapper;
+import com.exasol.adapter.dynamodb.queryplan.DocumentQuery;
+import com.exasol.adapter.dynamodb.queryplan.DocumentQueryFactory;
+import com.exasol.adapter.dynamodb.queryplan.RowMapper;
 import com.exasol.adapter.dynamodb.queryrunner.DynamodbQueryRunner;
 import com.exasol.adapter.metadata.SchemaMetadata;
 import com.exasol.adapter.request.*;
@@ -116,24 +116,24 @@ public class DynamodbAdapter implements VirtualSchemaAdapter {
 
     private PushDownResponse runPushdown(final ExaMetadata exaMetadata, final PushDownRequest request)
             throws AdapterException, ExaConnectionAccessException, IOException {
-        final QueryResultTableSchema queryResultTableSchema = new QueryResultTableSchemaBuilder()
-                .build(request.getSelect(), getSchemaMetadata(request));
-        final String selectFromValuesStatement = runQuery(exaMetadata, request, queryResultTableSchema);
+        final DocumentQuery documentQuery = new DocumentQueryFactory().build(request.getSelect(),
+                getSchemaMetadata(request));
+        final String selectFromValuesStatement = runQuery(exaMetadata, request, documentQuery);
         return PushDownResponse.builder()//
                 .pushDownSql(selectFromValuesStatement)//
                 .build();
     }
 
     private String runQuery(final ExaMetadata exaMetadata, final PushDownRequest request,
-            final QueryResultTableSchema queryResultTableSchema) throws ExaConnectionAccessException {
+            final DocumentQuery documentQuery) throws ExaConnectionAccessException {
         final DynamodbQueryRunner dynamodbQueryRunner = new DynamodbQueryRunner(
                 getConnectionInformation(exaMetadata, request));
-        final RowMapper<DynamodbNodeVisitor> rowMapper = new RowMapper<>(queryResultTableSchema,
+        final RowMapper<DynamodbNodeVisitor> rowMapper = new RowMapper<>(documentQuery,
                 new DynamodbValueMapperFactory());
         final List<List<ValueExpression>> resultRows = new ArrayList<>();
-        dynamodbQueryRunner.runQuery(queryResultTableSchema, request.getSelect())
+        dynamodbQueryRunner.runQuery(documentQuery, request.getSelect())
                 .forEach(dynamodbRow -> resultRows.add(rowMapper.mapRow(dynamodbRow)));
-        return new ValueExpressionsToSqlSelectFromValuesConverter().convert(queryResultTableSchema, resultRows);
+        return new ValueExpressionsToSqlSelectFromValuesConverter().convert(documentQuery, resultRows);
     }
 
     private ExaConnectionInformation getConnectionInformation(final ExaMetadata exaMetadata,

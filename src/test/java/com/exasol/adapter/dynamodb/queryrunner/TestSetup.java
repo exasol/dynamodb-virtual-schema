@@ -8,7 +8,7 @@ import com.exasol.adapter.dynamodb.mapping.AbstractColumnMappingDefinition;
 import com.exasol.adapter.dynamodb.mapping.SchemaMappingDefinitionToSchemaMetadataConverter;
 import com.exasol.adapter.dynamodb.mapping.TableMappingDefinition;
 import com.exasol.adapter.dynamodb.mapping.tojsonmapping.ToJsonColumnMappingDefinition;
-import com.exasol.adapter.dynamodb.queryresultschema.QueryResultTableSchema;
+import com.exasol.adapter.dynamodb.queryplan.DocumentQuery;
 import com.exasol.adapter.metadata.ColumnMetadata;
 import com.exasol.adapter.sql.*;
 
@@ -20,8 +20,7 @@ class TestSetup {
     static final AbstractColumnMappingDefinition COLUMN2_MAPPING = columnForAttribute(COLUMN2_NAME);
     static final TableMappingDefinition TABLE_MAPPING = TableMappingDefinition.rootTableBuilder("", TABLE_NAME)
             .withColumnMappingDefinition(COLUMN1_MAPPING).withColumnMappingDefinition(COLUMN2_MAPPING).build();
-    static final QueryResultTableSchema QUERY_RESULT_TABLE_SCHEMA = new QueryResultTableSchema(TABLE_MAPPING,
-            List.of(COLUMN1_MAPPING));
+    static final DocumentQuery QUERY_RESULT_TABLE_SCHEMA = new DocumentQuery(TABLE_MAPPING, List.of(COLUMN1_MAPPING));
     final ColumnMetadata column1Metadata = new SchemaMappingDefinitionToSchemaMetadataConverter()
             .convertColumn(COLUMN1_MAPPING);
     final ColumnMetadata column2Metadata = new SchemaMappingDefinitionToSchemaMetadataConverter()

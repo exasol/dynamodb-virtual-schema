@@ -1,19 +1,19 @@
-package com.exasol.adapter.dynamodb.literalconverter;
+package com.exasol.adapter.dynamodb.literalconverter.dynamodb;
 
-import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.exasol.adapter.AdapterException;
+import com.exasol.adapter.dynamodb.documentnode.DocumentValue;
+import com.exasol.adapter.dynamodb.documentnode.dynamodb.*;
+import com.exasol.adapter.dynamodb.literalconverter.NotALiteralException;
+import com.exasol.adapter.dynamodb.literalconverter.SqlLiteralToDocumentValueConverter;
 import com.exasol.adapter.sql.*;
 
-/**
- * This class converts an Exasol Literal to an DynamoDB {@link AttributeValue}.
- */
-public class SqlToDynamodbLiteralConverter {
-
-    public AttributeValue convert(final SqlNode exasolLiteralNode) throws NotALiteralException {
+public class SqlLiteralToDynamodbValueConverter implements SqlLiteralToDocumentValueConverter<DynamodbNodeVisitor> {
+    @Override
+    public DocumentValue<DynamodbNodeVisitor> convert(final SqlNode exasolLiteralNode) throws NotALiteralException {
         try {
             final Converter converter = new Converter();
             exasolLiteralNode.accept(converter);
-            return converter.getAttributeValue();
+            return converter.getDynmaodbValue();
         } catch (final AdapterException exception) {
             // This should never happen, as we do not throw adapter exceptions in the visitor.
             throw new IllegalStateException("An unexpected adapter exception occurred", exception);
@@ -23,17 +23,17 @@ public class SqlToDynamodbLiteralConverter {
     }
 
     private static class Converter extends VoidSqlNodeVisitor {
-        AttributeValue attributeValue = new AttributeValue();
+        DocumentValue<DynamodbNodeVisitor> dynmaodbValue;
 
         @Override
         public Void visit(final SqlLiteralString sqlLiteralString) {
-            this.attributeValue.setS(sqlLiteralString.getValue());
+            this.dynmaodbValue = new DynamodbString(sqlLiteralString.getValue());
             return null;
         }
 
         @Override
         public Void visit(final SqlLiteralBool sqlLiteralBool) {
-            this.attributeValue.setBOOL(sqlLiteralBool.getValue());
+            this.dynmaodbValue = new DynamodbBoolean(sqlLiteralBool.getValue());
             return null;
         }
 
@@ -44,19 +44,19 @@ public class SqlToDynamodbLiteralConverter {
 
         @Override
         public Void visit(final SqlLiteralDouble sqlLiteralDouble) {
-            this.attributeValue.setN(String.valueOf(sqlLiteralDouble.getValue()));
+            this.dynmaodbValue = new DynamodbNumber(String.valueOf(sqlLiteralDouble.getValue()));
             return null;
         }
 
         @Override
         public Void visit(final SqlLiteralExactnumeric sqlLiteralExactnumeric) {
-            this.attributeValue.setN(String.valueOf(sqlLiteralExactnumeric.getValue()));
+            this.dynmaodbValue = new DynamodbNumber(String.valueOf(sqlLiteralExactnumeric.getValue()));
             return null;
         }
 
         @Override
         public Void visit(final SqlLiteralNull sqlLiteralNull) {
-            this.attributeValue.setNULL(true);
+            this.dynmaodbValue = new DynamodbNull();
             return null;
         }
 
@@ -75,8 +75,8 @@ public class SqlToDynamodbLiteralConverter {
             throw buildUnsupportedTypeException("interval");
         }
 
-        private AttributeValue getAttributeValue() {
-            return this.attributeValue;
+        private DocumentValue<DynamodbNodeVisitor> getDynmaodbValue() {
+            return this.dynmaodbValue;
         }
 
         @Override

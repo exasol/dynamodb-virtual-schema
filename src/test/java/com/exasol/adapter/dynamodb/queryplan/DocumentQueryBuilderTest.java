@@ -1,4 +1,4 @@
-package com.exasol.adapter.dynamodb.queryresultschema;
+package com.exasol.adapter.dynamodb.queryplan;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
@@ -20,7 +20,7 @@ import com.exasol.adapter.sql.SqlSelectList;
 import com.exasol.adapter.sql.SqlStatementSelect;
 import com.exasol.adapter.sql.SqlTable;
 
-public class QueryResultTableSchemaBuilderTest {
+public class DocumentQueryBuilderTest {
     @Test
     void testBuildSelectStar() throws IOException, AdapterException {
         final SchemaMetadata schemaMetadata = new SchemaMappingDefinitionToSchemaMetadataConverter()
@@ -29,8 +29,8 @@ public class QueryResultTableSchemaBuilderTest {
         final SqlStatementSelect statement = SqlStatementSelect.builder()
                 .fromClause(new SqlTable(tableMetadata.getName(), tableMetadata))
                 .selectList(SqlSelectList.createSelectStarSelectList()).build();
-        final QueryResultTableSchema resultTable = new QueryResultTableSchemaBuilder().build(statement, schemaMetadata);
-        final List<String> actualDestinationNames = resultTable.getColumns().stream()
+        final DocumentQuery resultTable = new DocumentQueryFactory().build(statement, schemaMetadata);
+        final List<String> actualDestinationNames = resultTable.getSelectList().stream()
                 .map(AbstractColumnMappingDefinition::getExasolColumnName).collect(Collectors.toList());
         final String[] expectedDestinationNames = tableMetadata.getColumns().stream().map(ColumnMetadata::getName)
                 .toArray(String[]::new);

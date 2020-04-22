@@ -1,4 +1,4 @@
-package com.exasol.adapter.dynamodb.queryresultschema;
+package com.exasol.adapter.dynamodb.queryplan;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -14,18 +14,18 @@ import com.exasol.adapter.metadata.TableMetadata;
 import com.exasol.adapter.sql.*;
 
 /**
- * Visitor for {@link com.exasol.adapter.sql.SqlStatementSelect} building a {@link QueryResultTableSchema}
+ * Visitor for {@link com.exasol.adapter.sql.SqlStatementSelect} building a {@link DocumentQuery}
  */
-public class QueryResultTableSchemaBuilder {
+public class DocumentQueryFactory {
 
     /**
-     * Builds the {@link QueryResultTableSchema} from an {@link SqlStatementSelect}
+     * Builds the {@link DocumentQuery} from an {@link SqlStatementSelect}
      * 
      * @param selectStatement select statement
      * @param schemaMetadata  metadata of the schema
-     * @return {@link QueryResultTableSchema}
+     * @return {@link DocumentQuery}
      */
-    public QueryResultTableSchema build(final SqlStatement selectStatement, final SchemaMetadata schemaMetadata)
+    public DocumentQuery build(final SqlStatement selectStatement, final SchemaMetadata schemaMetadata)
             throws AdapterException {
         final Visitor visitor = new Visitor();
         selectStatement.accept(visitor);
@@ -37,11 +37,11 @@ public class QueryResultTableSchemaBuilder {
         private String tableName;
         private TableMetadata tableMetadata;
 
-        private QueryResultTableSchema getQueryResultTable(final SchemaMetadata schemaMetadata) {
+        private DocumentQuery getQueryResultTable(final SchemaMetadata schemaMetadata) {
             final SchemaMappingDefinitionToSchemaMetadataConverter converter = new SchemaMappingDefinitionToSchemaMetadataConverter();
             final TableMappingDefinition tableMappingDefinition = converter.convertBackTable(this.tableMetadata,
                     schemaMetadata);
-            return new QueryResultTableSchema(tableMappingDefinition, Collections.unmodifiableList(this.resultColumns));
+            return new DocumentQuery(tableMappingDefinition, Collections.unmodifiableList(this.resultColumns));
         }
 
         @Override
