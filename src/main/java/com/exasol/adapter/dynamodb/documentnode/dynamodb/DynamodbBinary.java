@@ -8,6 +8,7 @@ import com.exasol.adapter.dynamodb.documentnode.DocumentValue;
  * This class represents a DynamoDB binary value.
  */
 public class DynamodbBinary implements DocumentValue<DynamodbNodeVisitor> {
+    private static final long serialVersionUID = -1085912088779479403L;
     private final ByteBuffer value;
 
     /**

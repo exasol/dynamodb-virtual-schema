@@ -41,7 +41,7 @@ public class DynamodbNumberSetTest {
         assertThat(visitor.visited, equalTo(true));
     }
 
-    private static class VisitationCheck implements DynamodbNodeVisitor {
+    private static class VisitationCheck implements IncompleteDynamodbNodeVisitor {
         boolean visited = false;
 
         @Override

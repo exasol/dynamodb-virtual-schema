@@ -32,7 +32,7 @@ public class DynamodbValueToJsonConverter {
     /**
      * This visitor converts the visited value into the JSON format.
      */
-    private static class ToJsonVisitor implements DynamodbNodeVisitor {
+    private static class ToJsonVisitor implements IncompleteDynamodbNodeVisitor {
         JsonValue jsonValue;
 
         @Override

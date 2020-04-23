@@ -11,6 +11,7 @@ import com.exasol.adapter.dynamodb.documentnode.DocumentNode;
  * This class represents a DynamoDB number set value.
  */
 public class DynamodbNumberSet implements DocumentArray<DynamodbNodeVisitor> {
+    private static final long serialVersionUID = 7289926315213567897L;
     private final Collection<String> value;
 
     /**
@@ -35,5 +36,9 @@ public class DynamodbNumberSet implements DocumentArray<DynamodbNodeVisitor> {
     @Override
     public void accept(final DynamodbNodeVisitor visitor) {
         visitor.visit(this);
+    }
+
+    Collection<String> getValue() {
+        return this.value;
     }
 }

@@ -6,6 +6,7 @@ import com.exasol.adapter.dynamodb.documentnode.DocumentValue;
  * This class represents a DynamoDB string value.
  */
 public class DynamodbString implements DocumentValue<DynamodbNodeVisitor> {
+    private static final long serialVersionUID = -8078166022358932302L;
     private final String value;
 
     /**

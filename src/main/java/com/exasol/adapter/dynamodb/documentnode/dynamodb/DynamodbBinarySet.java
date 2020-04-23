@@ -12,6 +12,7 @@ import com.exasol.adapter.dynamodb.documentnode.DocumentNode;
  * This class represents a DynamoDB binary set value.
  */
 public class DynamodbBinarySet implements DocumentArray<DynamodbNodeVisitor> {
+    private static final long serialVersionUID = 6474569329954861497L;
     private final Collection<ByteBuffer> value;
 
     /**
@@ -36,5 +37,9 @@ public class DynamodbBinarySet implements DocumentArray<DynamodbNodeVisitor> {
     @Override
     public void accept(final DynamodbNodeVisitor visitor) {
         visitor.visit(this);
+    }
+
+    Collection<ByteBuffer> getValue() {
+        return this.value;
     }
 }
