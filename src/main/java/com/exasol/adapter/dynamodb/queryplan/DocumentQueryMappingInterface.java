@@ -5,6 +5,9 @@ import java.util.List;
 import com.exasol.adapter.dynamodb.mapping.AbstractColumnMappingDefinition;
 import com.exasol.adapter.dynamodb.mapping.TableMappingDefinition;
 
+/**
+ * This interface gives access to the schema mapping information of a {@link DocumentQuery}.
+ */
 public interface DocumentQueryMappingInterface {
 
     /**

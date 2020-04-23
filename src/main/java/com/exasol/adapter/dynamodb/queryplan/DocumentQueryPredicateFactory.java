@@ -11,14 +11,31 @@ import com.exasol.adapter.dynamodb.mapping.AbstractColumnMappingDefinition;
 import com.exasol.adapter.dynamodb.mapping.SchemaMappingDefinitionToSchemaMetadataConverter;
 import com.exasol.adapter.sql.*;
 
+/**
+ * This class builds a{@link DocumentQueryPredicate} structure from a {@link SqlStatementSelect}s where clause. The new
+ * structure represents the same conditional logic but uses deserialized column definitions, literals of the remote
+ * database and is serializable.
+ */
+@java.lang.SuppressWarnings("squid:S119") // DocumentVisitorType does not fit naming conventions.
 public class DocumentQueryPredicateFactory<DocumentVisitorType> {
     private final SqlLiteralToDocumentValueConverter<DocumentVisitorType> literalConverter;
 
+    /**
+     * Creates an instance of {@link DocumentQueryPredicateFactory}.
+     * 
+     * @param literalConverter implementation specific converter for literals
+     */
     public DocumentQueryPredicateFactory(
             final SqlLiteralToDocumentValueConverter<DocumentVisitorType> literalConverter) {
         this.literalConverter = literalConverter;
     }
 
+    /**
+     * Converts the given SQL predicate into a {@link DocumentQueryPredicate} structure.
+     * 
+     * @param sqlPredicate SQL predicate to convert
+     * @return {@link DocumentQueryPredicate} structure
+     */
     public DocumentQueryPredicate<DocumentVisitorType> buildPredicateFor(final SqlNode sqlPredicate) {
         final Visitor visitor = new Visitor();
         if (sqlPredicate == null) {
