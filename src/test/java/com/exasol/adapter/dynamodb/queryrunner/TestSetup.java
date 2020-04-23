@@ -1,6 +1,7 @@
 package com.exasol.adapter.dynamodb.queryrunner;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 
 import com.exasol.adapter.dynamodb.documentpath.DocumentPathExpression;
@@ -8,6 +9,7 @@ import com.exasol.adapter.dynamodb.mapping.AbstractColumnMappingDefinition;
 import com.exasol.adapter.dynamodb.mapping.SchemaMappingDefinitionToSchemaMetadataConverter;
 import com.exasol.adapter.dynamodb.mapping.TableMappingDefinition;
 import com.exasol.adapter.dynamodb.mapping.tojsonmapping.ToJsonColumnMappingDefinition;
+import com.exasol.adapter.dynamodb.queryplan.AndPredicate;
 import com.exasol.adapter.dynamodb.queryplan.DocumentQuery;
 import com.exasol.adapter.metadata.ColumnMetadata;
 import com.exasol.adapter.sql.*;
@@ -20,7 +22,8 @@ class TestSetup {
     static final AbstractColumnMappingDefinition COLUMN2_MAPPING = columnForAttribute(COLUMN2_NAME);
     static final TableMappingDefinition TABLE_MAPPING = TableMappingDefinition.rootTableBuilder("", TABLE_NAME)
             .withColumnMappingDefinition(COLUMN1_MAPPING).withColumnMappingDefinition(COLUMN2_MAPPING).build();
-    static final DocumentQuery QUERY_RESULT_TABLE_SCHEMA = new DocumentQuery(TABLE_MAPPING, List.of(COLUMN1_MAPPING));
+    static final DocumentQuery QUERY_RESULT_TABLE_SCHEMA = new DocumentQuery(TABLE_MAPPING, List.of(COLUMN1_MAPPING),
+            new AndPredicate(Collections.emptyList()));
     final ColumnMetadata column1Metadata = new SchemaMappingDefinitionToSchemaMetadataConverter()
             .convertColumn(COLUMN1_MAPPING);
     final ColumnMetadata column2Metadata = new SchemaMappingDefinitionToSchemaMetadataConverter()

@@ -5,6 +5,7 @@ import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
+import java.util.Collections;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
@@ -18,8 +19,13 @@ public class DocumentQueryTest {
         final MockColumnMappingDefinition columnDefinition = new MockColumnMappingDefinition("", null, null);
         final TableMappingDefinition tableDefinition = TableMappingDefinition.rootTableBuilder("", "")
                 .withColumnMappingDefinition(columnDefinition).build();
-        final DocumentQuery documentQuery = new DocumentQuery(tableDefinition, List.of(columnDefinition));
-        assertAll(() -> assertThat(documentQuery.getSelectList(), containsInAnyOrder(columnDefinition)),
-                () -> assertThat(documentQuery.getFromTable(), equalTo(tableDefinition)));
+        final AndPredicate<Object> selection = new AndPredicate<>(Collections.emptyList());
+        final DocumentQuery<Object> documentQuery = new DocumentQuery<>(tableDefinition, List.of(columnDefinition),
+                selection);
+        assertAll(//
+                () -> assertThat(documentQuery.getSelectList(), containsInAnyOrder(columnDefinition)),
+                () -> assertThat(documentQuery.getFromTable(), equalTo(tableDefinition)),
+                () -> assertThat(documentQuery.getSelection(), equalTo(selection))//
+        );
     }
 }

@@ -6,4 +6,6 @@ public interface QueryPredicateVisitor<DocumentVisitorType> {
     public void visit(AndPredicate<DocumentVisitorType> andPredicate);
 
     public void visit(OrPredicate<DocumentVisitorType> orPredicate);
+
+    public void visit(NoPredicate<DocumentVisitorType> noPredicate);
 }

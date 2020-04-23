@@ -21,13 +21,17 @@ public class DocumentQueryPredicateFactory<DocumentVisitorType> {
 
     public DocumentQueryPredicate<DocumentVisitorType> buildPredicateFor(final SqlNode sqlPredicate) {
         final Visitor visitor = new Visitor();
-        try {
-            sqlPredicate.accept(visitor);
-        } catch (final AdapterException exception) {
-            // This should never happen, as we do not throw adapter exceptions in the visitor.
-            throw new IllegalStateException("An unexpected adapter exception occurred", exception);
+        if (sqlPredicate == null) {
+            return new NoPredicate<>();
+        } else {
+            try {
+                sqlPredicate.accept(visitor);
+            } catch (final AdapterException exception) {
+                // This should never happen, as we do not throw adapter exceptions in the visitor.
+                throw new IllegalStateException("An unexpected adapter exception occurred", exception);
+            }
+            return visitor.getPredicate();
         }
-        return visitor.getPredicate();
     }
 
     private class Visitor extends VoidSqlNodeVisitor {

@@ -17,6 +17,7 @@ import com.exasol.adapter.capabilities.Capabilities;
 import com.exasol.adapter.capabilities.LiteralCapability;
 import com.exasol.adapter.capabilities.PredicateCapability;
 import com.exasol.adapter.dynamodb.documentnode.dynamodb.DynamodbNodeVisitor;
+import com.exasol.adapter.dynamodb.literalconverter.dynamodb.SqlLiteralToDynamodbValueConverter;
 import com.exasol.adapter.dynamodb.mapping.*;
 import com.exasol.adapter.dynamodb.queryplan.DocumentQuery;
 import com.exasol.adapter.dynamodb.queryplan.DocumentQueryFactory;
@@ -116,8 +117,8 @@ public class DynamodbAdapter implements VirtualSchemaAdapter {
 
     private PushDownResponse runPushdown(final ExaMetadata exaMetadata, final PushDownRequest request)
             throws AdapterException, ExaConnectionAccessException, IOException {
-        final DocumentQuery documentQuery = new DocumentQueryFactory().build(request.getSelect(),
-                getSchemaMetadata(request));
+        final DocumentQuery<DynamodbNodeVisitor> documentQuery = new DocumentQueryFactory<DynamodbNodeVisitor>(
+                new SqlLiteralToDynamodbValueConverter()).build(request.getSelect(), getSchemaMetadata(request));
         final String selectFromValuesStatement = runQuery(exaMetadata, request, documentQuery);
         return PushDownResponse.builder()//
                 .pushDownSql(selectFromValuesStatement)//
