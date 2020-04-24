@@ -1,4 +1,4 @@
-package com.exasol.adapter.dynamodb.queryplan;
+package com.exasol.adapter.dynamodb.documentquery;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,7 +36,6 @@ public class RowMapper<DocumentVisitorType> {
      */
     public List<ValueExpression> mapRow(final DocumentNode<DocumentVisitorType> document) {
         final List<ValueExpression> resultValues = new ArrayList<>(this.documentQuery.getSelectList().size());
-
         for (final AbstractColumnMappingDefinition resultColumn : this.documentQuery.getSelectList()) {
             final AbstractValueMapper<DocumentVisitorType> valueMapper = this.valueMapperFactory
                     .getValueMapperForColumn(resultColumn);

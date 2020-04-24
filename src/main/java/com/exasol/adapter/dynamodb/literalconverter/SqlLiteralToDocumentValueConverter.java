@@ -8,5 +8,5 @@ import com.exasol.adapter.sql.SqlNode;
  */
 @java.lang.SuppressWarnings("squid:S119") // VisitorType does not fit naming conventions.
 public interface SqlLiteralToDocumentValueConverter<VisitorType> {
-    public DocumentValue<VisitorType> convert(SqlNode exasolLiteralNode) throws NotALiteralException;
+    public DocumentValue<VisitorType> convert(SqlNode exasolLiteralNode) throws NotLiteralException;
 }

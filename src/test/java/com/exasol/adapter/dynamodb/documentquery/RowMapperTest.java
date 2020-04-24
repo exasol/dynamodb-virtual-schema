@@ -1,9 +1,8 @@
-package com.exasol.adapter.dynamodb.queryplan;
+package com.exasol.adapter.dynamodb.documentquery;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -27,7 +26,7 @@ public class RowMapperTest {
                         new DocumentPathExpression.Builder().build(),
                         AbstractColumnMappingDefinition.LookupFailBehaviour.EXCEPTION));
         final DocumentQuery<DynamodbNodeVisitor> documentQuery = new DocumentQuery<>(null, List.of(mappingDefinition),
-                new AndPredicate<DynamodbNodeVisitor>(Collections.emptyList()));
+                new NoPredicate<>());
         final List<ValueExpression> exasolRow = new RowMapper<DynamodbNodeVisitor>(documentQuery,
                 new DynamodbValueMapperFactory())
                         .mapRow(new DynamodbMap(Map.of("testKey", AttributeValueQuickCreator.forString("testValue"))));

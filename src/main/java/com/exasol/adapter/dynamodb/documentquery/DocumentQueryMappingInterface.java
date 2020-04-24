@@ -1,4 +1,4 @@
-package com.exasol.adapter.dynamodb.queryplan;
+package com.exasol.adapter.dynamodb.documentquery;
 
 import java.util.List;
 
@@ -11,7 +11,7 @@ import com.exasol.adapter.dynamodb.mapping.TableMappingDefinition;
 public interface DocumentQueryMappingInterface {
 
     /**
-     * Gives the from table / document of the statement.
+     * Gives the table defined in the {@code FROM} clause of the statement.
      *
      * @return {{@link TableMappingDefinition}}
      */

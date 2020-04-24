@@ -1,7 +1,7 @@
 package com.exasol.adapter.sql;
 
 import com.exasol.adapter.AdapterException;
-import com.exasol.adapter.dynamodb.queryplan.DocumentQueryFactory;
+import com.exasol.adapter.dynamodb.documentquery.DocumentQueryFactory;
 
 /**
  * Facade for the {@link SqlNodeVisitor} interface implementing all methods with unsupported exception. This class is
@@ -11,221 +11,224 @@ public abstract class VoidSqlNodeVisitor implements SqlNodeVisitor<Void> {
 
     @Override
     public Void visit(final SqlStatementSelect select) throws AdapterException {
-        visitDefault();
+        visitUnimplemented();
         return null;
     }
 
     @Override
     public Void visit(final SqlSelectList selectList) {
-        visitDefault();
+        visitUnimplemented();
         return null;
     }
 
     @Override
     public Void visit(final SqlGroupBy groupBy) {
-        visitDefault();
+        visitUnimplemented();
         return null;
     }
 
     @Override
     public Void visit(final SqlColumn sqlColumn) {
-        visitDefault();
+        visitUnimplemented();
         return null;
     }
 
     @Override
     public Void visit(final SqlFunctionAggregate sqlFunctionAggregate) {
-        visitDefault();
+        visitUnimplemented();
         return null;
     }
 
     @Override
     public Void visit(final SqlFunctionAggregateGroupConcat sqlFunctionAggregateGroupConcat) {
-        visitDefault();
+        visitUnimplemented();
         return null;
     }
 
     @Override
     public Void visit(final SqlFunctionScalar sqlFunctionScalar) {
-        visitDefault();
+        visitUnimplemented();
         return null;
     }
 
     @Override
     public Void visit(final SqlFunctionScalarCase sqlFunctionScalarCase) {
-        visitDefault();
+        visitUnimplemented();
         return null;
     }
 
     @Override
     public Void visit(final SqlFunctionScalarCast sqlFunctionScalarCast) {
-        visitDefault();
+        visitUnimplemented();
         return null;
     }
 
     @Override
     public Void visit(final SqlFunctionScalarExtract sqlFunctionScalarExtract) {
-        visitDefault();
+        visitUnimplemented();
         return null;
     }
 
     @Override
     public Void visit(final SqlLimit sqlLimit) {
-        visitDefault();
+        visitUnimplemented();
         return null;
     }
 
     @Override
     public Void visit(final SqlLiteralBool sqlLiteralBool) {
-        visitDefault();
+        visitUnimplemented();
         return null;
     }
 
     @Override
     public Void visit(final SqlLiteralDate sqlLiteralDate) {
-        visitDefault();
+        visitUnimplemented();
         return null;
     }
 
     @Override
     public Void visit(final SqlLiteralDouble sqlLiteralDouble) {
-        visitDefault();
+        visitUnimplemented();
         return null;
     }
 
     @Override
     public Void visit(final SqlLiteralExactnumeric sqlLiteralExactnumeric) {
-        visitDefault();
+        visitUnimplemented();
         return null;
     }
 
     @Override
     public Void visit(final SqlLiteralNull sqlLiteralNull) {
-        visitDefault();
+        visitUnimplemented();
         return null;
     }
 
     @Override
     public Void visit(final SqlLiteralString sqlLiteralString) {
-        visitDefault();
+        visitUnimplemented();
         return null;
     }
 
     @Override
     public Void visit(final SqlLiteralTimestamp sqlLiteralTimestamp) {
-        visitDefault();
+        visitUnimplemented();
         return null;
     }
 
     @Override
     public Void visit(final SqlLiteralTimestampUtc sqlLiteralTimestampUtc) {
-        visitDefault();
+        visitUnimplemented();
         return null;
     }
 
     @Override
     public Void visit(final SqlLiteralInterval sqlLiteralInterval) {
-        visitDefault();
+        visitUnimplemented();
         return null;
     }
 
     @Override
     public Void visit(final SqlOrderBy sqlOrderBy) {
-        visitDefault();
+        visitUnimplemented();
         return null;
     }
 
     @Override
     public Void visit(final SqlPredicateAnd sqlPredicateAnd) throws AdapterException {
-        visitDefault();
+        visitUnimplemented();
         return null;
     }
 
     @Override
     public Void visit(final SqlPredicateBetween sqlPredicateBetween) {
-        visitDefault();
+        visitUnimplemented();
         return null;
     }
 
     @Override
     public Void visit(final SqlPredicateEqual sqlPredicateEqual) {
-        visitDefault();
+        visitUnimplemented();
         return null;
     }
 
     @Override
     public Void visit(final SqlPredicateInConstList sqlPredicateInConstList) {
-        visitDefault();
+        visitUnimplemented();
         return null;
     }
 
     @Override
     public Void visit(final SqlPredicateLess sqlPredicateLess) {
-        visitDefault();
+        visitUnimplemented();
         return null;
     }
 
     @Override
     public Void visit(final SqlPredicateLessEqual sqlPredicateLessEqual) {
-        visitDefault();
+        visitUnimplemented();
         return null;
     }
 
     @Override
     public Void visit(final SqlPredicateLike sqlPredicateLike) {
-        visitDefault();
+        visitUnimplemented();
         return null;
     }
 
     @Override
     public Void visit(final SqlPredicateLikeRegexp sqlPredicateLikeRegexp) {
-        visitDefault();
+        visitUnimplemented();
         return null;
     }
 
     @Override
     public Void visit(final SqlPredicateNot sqlPredicateNot) {
-        visitDefault();
+        visitUnimplemented();
         return null;
     }
 
     @Override
     public Void visit(final SqlPredicateNotEqual sqlPredicateNotEqual) {
-        visitDefault();
+        visitUnimplemented();
         return null;
     }
 
     @Override
     public Void visit(final SqlPredicateOr sqlPredicateOr) {
-        visitDefault();
+        visitUnimplemented();
         return null;
     }
 
     @Override
     public Void visit(final SqlPredicateIsNotNull sqlPredicateOr) {
-        visitDefault();
+        visitUnimplemented();
         return null;
     }
 
     @Override
     public Void visit(final SqlPredicateIsNull sqlPredicateOr) {
-        visitDefault();
+        visitUnimplemented();
         return null;
     }
 
     @Override
     public Void visit(final SqlTable sqlTable) {
-        visitDefault();
+        visitUnimplemented();
         return null;
     }
 
     @Override
     public Void visit(final SqlJoin sqlJoin) {
-        visitDefault();
+        visitUnimplemented();
         return null;
     }
 
-    public void visitDefault() {
+    /**
+     * This method is called when the specific visit method for a type was not implemented.
+     */
+    public void visitUnimplemented() {
         throw new UnsupportedOperationException("A handling for this SQL statement part was not implemented yet.");
     }
 }
