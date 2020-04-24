@@ -10,12 +10,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import com.exasol.adapter.dynamodb.remotetablequery.*;
 import org.junit.jupiter.api.Test;
 
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.exasol.adapter.dynamodb.documentnode.dynamodb.DynamodbNodeVisitor;
 import com.exasol.adapter.dynamodb.documentnode.dynamodb.DynamodbString;
-import com.exasol.adapter.dynamodb.documentquery.*;
 import com.exasol.adapter.dynamodb.dynamodbmetadata.DynamodbKey;
 import com.exasol.adapter.dynamodb.dynamodbmetadata.DynamodbTableMetadata;
 
@@ -31,7 +31,7 @@ public class DynamodbGetItemQueryPlanFactoryTest {
         final String filter = "test";
         final ColumnLiteralComparisonPredicate<DynamodbNodeVisitor> selection = new ColumnLiteralComparisonPredicate<>(
                 ComparisonPredicate.Operator.EQUAL, COLUMN1_MAPPING, new DynamodbString(filter));
-        final DocumentQuery<DynamodbNodeVisitor> documentQuery = new DocumentQuery<>(TABLE_MAPPING,
+        final RemoteTableQuery<DynamodbNodeVisitor> documentQuery = new RemoteTableQuery<>(TABLE_MAPPING,
                 TABLE_MAPPING.getColumns(), selection);
 
         final DynamodbTableMetadata dynamodbTableMetadata = new DynamodbTableMetadata(
@@ -47,13 +47,13 @@ public class DynamodbGetItemQueryPlanFactoryTest {
     @Test
     void testSimplePrimaryKeyWithSecondNonKeySelection() throws IOException, PlanDoesNotFitException {
         final String filter = "test";
-        final DocumentQueryPredicate<DynamodbNodeVisitor> selection = new BinaryLogicalOperator<>(List.of(
+        final QueryPredicate<DynamodbNodeVisitor> selection = new BinaryLogicalOperator<>(List.of(
                 new ColumnLiteralComparisonPredicate<>(ComparisonPredicate.Operator.EQUAL, COLUMN1_MAPPING,
                         new DynamodbString(filter)),
                 new ColumnLiteralComparisonPredicate<>(ComparisonPredicate.Operator.EQUAL, COLUMN2_MAPPING,
                         new DynamodbString("test2"))),
                 BinaryLogicalOperator.Operator.AND);
-        final DocumentQuery<DynamodbNodeVisitor> documentQuery = new DocumentQuery<>(TABLE_MAPPING,
+        final RemoteTableQuery<DynamodbNodeVisitor> documentQuery = new RemoteTableQuery<>(TABLE_MAPPING,
                 TABLE_MAPPING.getColumns(), selection);
 
         final DynamodbTableMetadata dynamodbTableMetadata = new DynamodbTableMetadata(
@@ -70,13 +70,13 @@ public class DynamodbGetItemQueryPlanFactoryTest {
     void testCompoundPrimaryKey() throws IOException, PlanDoesNotFitException {
         final String filter1 = "test";
         final String filter2 = "test2";
-        final DocumentQueryPredicate<DynamodbNodeVisitor> selection = new BinaryLogicalOperator<>(List.of(
+        final QueryPredicate<DynamodbNodeVisitor> selection = new BinaryLogicalOperator<>(List.of(
                 new ColumnLiteralComparisonPredicate<>(ComparisonPredicate.Operator.EQUAL, COLUMN1_MAPPING,
                         new DynamodbString(filter1)),
                 new ColumnLiteralComparisonPredicate<>(ComparisonPredicate.Operator.EQUAL, COLUMN2_MAPPING,
                         new DynamodbString(filter2))),
                 BinaryLogicalOperator.Operator.AND);
-        final DocumentQuery<DynamodbNodeVisitor> documentQuery = new DocumentQuery<>(TABLE_MAPPING,
+        final RemoteTableQuery<DynamodbNodeVisitor> documentQuery = new RemoteTableQuery<>(TABLE_MAPPING,
                 TABLE_MAPPING.getColumns(), selection);
 
         final DynamodbTableMetadata dynamodbTableMetadata = new DynamodbTableMetadata(
@@ -95,7 +95,7 @@ public class DynamodbGetItemQueryPlanFactoryTest {
         final DynamodbTableMetadata dynamodbTableMetadata = new DynamodbTableMetadata(
                 new DynamodbKey(COLUMN1_NAME, Optional.empty()), List.of(), List.of());
 
-        final DocumentQuery<DynamodbNodeVisitor> documentQuery = new DocumentQuery<>(TABLE_MAPPING,
+        final RemoteTableQuery<DynamodbNodeVisitor> documentQuery = new RemoteTableQuery<>(TABLE_MAPPING,
                 TABLE_MAPPING.getColumns(), new NoPredicate<>());
         final PlanDoesNotFitException exception = assertThrows(PlanDoesNotFitException.class,
                 () -> new DynamodbGetItemQueryPlanFactory().buildGetItemPlanIfPossible(documentQuery,
@@ -108,9 +108,9 @@ public class DynamodbGetItemQueryPlanFactoryTest {
     void testSelectionWithOr() throws IOException, PlanDoesNotFitException {
         final String filter1 = "test";
         final String filter2 = "test2";
-        final DocumentQueryPredicate<DynamodbNodeVisitor> selection = new BinaryLogicalOperator<>(
+        final QueryPredicate<DynamodbNodeVisitor> selection = new BinaryLogicalOperator<>(
                 List.of(new NoPredicate<>(), new NoPredicate<>()), BinaryLogicalOperator.Operator.OR);
-        final DocumentQuery<DynamodbNodeVisitor> documentQuery = new DocumentQuery<>(TABLE_MAPPING,
+        final RemoteTableQuery<DynamodbNodeVisitor> documentQuery = new RemoteTableQuery<>(TABLE_MAPPING,
                 TABLE_MAPPING.getColumns(), selection);
 
         final DynamodbTableMetadata dynamodbTableMetadata = new DynamodbTableMetadata(

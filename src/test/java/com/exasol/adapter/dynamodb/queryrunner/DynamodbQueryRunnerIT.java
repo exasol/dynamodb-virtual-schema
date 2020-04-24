@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 
+import com.exasol.adapter.dynamodb.remotetablequery.ColumnLiteralComparisonPredicate;
+import com.exasol.adapter.dynamodb.remotetablequery.ComparisonPredicate;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Tag;
@@ -26,11 +28,16 @@ import com.exasol.adapter.dynamodb.documentnode.DocumentNode;
 import com.exasol.adapter.dynamodb.documentnode.DocumentObject;
 import com.exasol.adapter.dynamodb.documentnode.dynamodb.DynamodbNodeVisitor;
 import com.exasol.adapter.dynamodb.documentnode.dynamodb.DynamodbString;
-import com.exasol.adapter.dynamodb.documentquery.ColumnLiteralComparisonPredicate;
-import com.exasol.adapter.dynamodb.documentquery.ComparisonPredicate;
-import com.exasol.adapter.dynamodb.documentquery.DocumentQuery;
-import com.exasol.adapter.dynamodb.documentquery.NoPredicate;
 import com.exasol.adapter.dynamodb.mapping.*;
+import com.exasol.adapter.dynamodb.mapping.JsonMappingFactory;
+import com.exasol.adapter.dynamodb.mapping.MappingTestFiles;
+import com.exasol.adapter.dynamodb.mapping.TableMappingDefinition;
+import com.exasol.adapter.dynamodb.mapping.TestDocuments;
+import com.exasol.adapter.dynamodb.remotetablequery.NoPredicate;
+import com.exasol.adapter.dynamodb.remotetablequery.RemoteTableQuery;
+import com.exasol.adapter.sql.SqlSelectList;
+import com.exasol.adapter.sql.SqlStatementSelect;
+import com.exasol.adapter.sql.SqlTable;
 import com.exasol.bucketfs.BucketAccessException;
 import com.exasol.dynamodb.DynamodbConnectionFactory;
 
@@ -53,7 +60,6 @@ class DynamodbQueryRunnerIT {
             BucketAccessException, TimeoutException, IOException, AdapterException {
         tableMapping = new JsonMappingFactory(MappingTestFiles.BASIC_MAPPING_FILE).getSchemaMapping().getTableMappings()
                 .get(0);
-
         dynamodbTestInterface = new DynamodbTestInterface(LOCAL_DYNAMO, NETWORK);
         dynamodbTestInterface.createTable(tableMapping.getRemoteName(), KEY_NAME);
         dynamodbTestInterface.importData(tableMapping.getRemoteName(), TestDocuments.BOOKS);
@@ -95,10 +101,10 @@ class DynamodbQueryRunnerIT {
 
     @Test
     void testSelectAll() {
-        final DocumentQuery<DynamodbNodeVisitor> documentQuery = new DocumentQuery<>(tableMapping,
+        final RemoteTableQuery<DynamodbNodeVisitor> remoteTableQuery = new RemoteTableQuery<>(tableMapping,
                 tableMapping.getColumns(), new NoPredicate<>());
         final DynamodbQueryRunner runner = getRunner();
-        final List<DocumentNode<DynamodbNodeVisitor>> result = runner.runQuery(documentQuery)
+        final List<DocumentNode<DynamodbNodeVisitor>> result = runner.runQuery(remoteTableQuery)
                 .collect(Collectors.toList());
         assertThat(result.size(), equalTo(3));
         final DocumentObject<DynamodbNodeVisitor> first = (DocumentObject<DynamodbNodeVisitor>) result.get(0);
@@ -113,7 +119,7 @@ class DynamodbQueryRunnerIT {
                 .filter(column -> column.getExasolColumnName().equals("ISBN")).findAny().get();
         final ColumnLiteralComparisonPredicate<DynamodbNodeVisitor> selection = new ColumnLiteralComparisonPredicate<>(
                 ComparisonPredicate.Operator.EQUAL, isbnColumn, new DynamodbString(isbn));
-        final DocumentQuery<DynamodbNodeVisitor> documentQuery = new DocumentQuery<>(tableMapping,
+        final RemoteTableQuery<DynamodbNodeVisitor> documentQuery = new RemoteTableQuery<>(tableMapping,
                 tableMapping.getColumns(), selection);
         final List<DocumentNode<DynamodbNodeVisitor>> result = runner.runQuery(documentQuery)
                 .collect(Collectors.toList());

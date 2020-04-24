@@ -7,13 +7,13 @@ import com.exasol.ExaConnectionInformation;
 import com.exasol.adapter.dynamodb.documentnode.DocumentNode;
 import com.exasol.adapter.dynamodb.documentnode.dynamodb.DynamodbMap;
 import com.exasol.adapter.dynamodb.documentnode.dynamodb.DynamodbNodeVisitor;
-import com.exasol.adapter.dynamodb.documentquery.DocumentQuery;
 import com.exasol.adapter.dynamodb.dynamodbmetadata.DynamodbTableMetadata;
 import com.exasol.adapter.dynamodb.dynamodbmetadata.DynamodbTableMetadataFactory;
+import com.exasol.adapter.dynamodb.remotetablequery.RemoteTableQuery;
 import com.exasol.dynamodb.DynamodbConnectionFactory;
 
 /**
- * This class runs a DynamoDB query to fetch the data requested in a {@link DocumentQuery}.
+ * This class runs a DynamoDB query to fetch the data requested in a {@link RemoteTableQuery}.
  */
 public class DynamodbQueryRunner {
     private final ExaConnectionInformation connectionSettings;
@@ -32,7 +32,8 @@ public class DynamodbQueryRunner {
      *
      * @return stream of results
      */
-    public Stream<DocumentNode<DynamodbNodeVisitor>> runQuery(final DocumentQuery<DynamodbNodeVisitor> documentQuery) {
+    public Stream<DocumentNode<DynamodbNodeVisitor>> runQuery(
+            final RemoteTableQuery<DynamodbNodeVisitor> documentQuery) {
         final AmazonDynamoDB client = getConnection();
         final DynamodbTableMetadata tableMetadata = new DynamodbTableMetadataFactory().buildMetadataForTable(client,
                 documentQuery.getFromTable().getRemoteName());

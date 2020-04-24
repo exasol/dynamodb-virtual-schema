@@ -7,8 +7,8 @@ import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.exasol.adapter.dynamodb.documentnode.dynamodb.DynamodbNodeToAttributeValueConverter;
 import com.exasol.adapter.dynamodb.documentnode.dynamodb.DynamodbNodeVisitor;
 import com.exasol.adapter.dynamodb.documentpath.DocumentPathExpression;
-import com.exasol.adapter.dynamodb.documentquery.*;
 import com.exasol.adapter.dynamodb.dynamodbmetadata.DynamodbTableMetadata;
+import com.exasol.adapter.dynamodb.remotetablequery.*;
 
 /**
  * This class builds a {@link DynamodbGetItemQueryPlan} if possible.
@@ -23,7 +23,7 @@ public class DynamodbGetItemQueryPlanFactory {
      * @return the generated plan
      * @throws PlanDoesNotFitException if this query can't be executed using a {@link DynamodbGetItemQueryPlan}
      */
-    public DynamodbGetItemQueryPlan buildGetItemPlanIfPossible(final DocumentQuery<DynamodbNodeVisitor> documentQuery,
+    public DynamodbGetItemQueryPlan buildGetItemPlanIfPossible(final RemoteTableQuery<DynamodbNodeVisitor> documentQuery,
             final DynamodbTableMetadata tableMetadata) throws PlanDoesNotFitException {
         final Visitor visitor = new Visitor(tableMetadata);
         try {
@@ -89,7 +89,7 @@ public class DynamodbGetItemQueryPlanFactory {
         public void visit(final BinaryLogicalOperator<DynamodbNodeVisitor> binaryLogicalOperator) {
             switch (binaryLogicalOperator.getOperator()) {
             case AND:
-                for (final DocumentQueryPredicate<DynamodbNodeVisitor> andedPredicate : binaryLogicalOperator
+                for (final QueryPredicate<DynamodbNodeVisitor> andedPredicate : binaryLogicalOperator
                         .getOperands()) {
                     andedPredicate.accept(this);
                 }

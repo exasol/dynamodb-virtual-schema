@@ -5,12 +5,12 @@ import java.util.List;
 
 import com.exasol.adapter.dynamodb.documentnode.dynamodb.DynamodbNodeVisitor;
 import com.exasol.adapter.dynamodb.documentpath.DocumentPathExpression;
-import com.exasol.adapter.dynamodb.documentquery.DocumentQuery;
-import com.exasol.adapter.dynamodb.documentquery.NoPredicate;
 import com.exasol.adapter.dynamodb.mapping.AbstractColumnMappingDefinition;
 import com.exasol.adapter.dynamodb.mapping.SchemaMappingDefinitionToSchemaMetadataConverter;
 import com.exasol.adapter.dynamodb.mapping.TableMappingDefinition;
 import com.exasol.adapter.dynamodb.mapping.tojsonmapping.ToJsonColumnMappingDefinition;
+import com.exasol.adapter.dynamodb.remotetablequery.NoPredicate;
+import com.exasol.adapter.dynamodb.remotetablequery.RemoteTableQuery;
 import com.exasol.adapter.metadata.ColumnMetadata;
 import com.exasol.adapter.sql.*;
 
@@ -22,7 +22,7 @@ class TestSetup {
     static final AbstractColumnMappingDefinition COLUMN2_MAPPING = columnForAttribute(COLUMN2_NAME);
     static final TableMappingDefinition TABLE_MAPPING = TableMappingDefinition.rootTableBuilder("", TABLE_NAME)
             .withColumnMappingDefinition(COLUMN1_MAPPING).withColumnMappingDefinition(COLUMN2_MAPPING).build();
-    static final DocumentQuery<DynamodbNodeVisitor> QUERY_RESULT_TABLE_SCHEMA = new DocumentQuery<>(TABLE_MAPPING,
+    static final RemoteTableQuery<DynamodbNodeVisitor> QUERY_RESULT_TABLE_SCHEMA = new RemoteTableQuery<>(TABLE_MAPPING,
             List.of(COLUMN1_MAPPING), new NoPredicate<>());
     final ColumnMetadata column1Metadata = new SchemaMappingDefinitionToSchemaMetadataConverter()
             .convertColumn(COLUMN1_MAPPING);

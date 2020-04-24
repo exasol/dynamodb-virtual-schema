@@ -1,8 +1,8 @@
 package com.exasol.adapter.dynamodb.queryrunner;
 
 import com.exasol.adapter.dynamodb.documentnode.dynamodb.DynamodbNodeVisitor;
-import com.exasol.adapter.dynamodb.documentquery.DocumentQuery;
 import com.exasol.adapter.dynamodb.dynamodbmetadata.DynamodbTableMetadata;
+import com.exasol.adapter.dynamodb.remotetablequery.RemoteTableQuery;
 
 /**
  * This class creates a {@link DynamodbQueryPlan} for a given request. It decides weather a {@code GetItem},
@@ -17,7 +17,7 @@ class DynamodbQueryPlanner {
      * @param tableMetadata DynamoDB table metadata for extracting the key structure
      * @return {@link DynamodbQueryPlan}
      */
-    public DynamodbQueryPlan planQuery(final DocumentQuery<DynamodbNodeVisitor> documentQuery,
+    public DynamodbQueryPlan planQuery(final RemoteTableQuery<DynamodbNodeVisitor> documentQuery,
             final DynamodbTableMetadata tableMetadata) {
         final String tableName = documentQuery.getFromTable().getRemoteName();
         try {
