@@ -7,9 +7,18 @@ import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.amazonaws.services.dynamodbv2.model.GetItemRequest;
 
+/**
+ * This class represents a DynamoDB {@code SCAN} operation.
+ */
 public class DynamodbGetItemQueryPlan implements DynamodbQueryPlan {
     private final GetItemRequest getItemRequest;
 
+    /**
+     * Creates an instance of {@link DynamodbGetItemQueryPlan}.
+     * 
+     * @param tableName table to query
+     * @param key       Primary key of the item to get
+     */
     public DynamodbGetItemQueryPlan(final String tableName, final Map<String, AttributeValue> key) {
         this.getItemRequest = new GetItemRequest().withTableName(tableName).withKey(key);
     }

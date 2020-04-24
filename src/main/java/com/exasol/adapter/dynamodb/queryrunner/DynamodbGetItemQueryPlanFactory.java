@@ -10,8 +10,19 @@ import com.exasol.adapter.dynamodb.documentpath.DocumentPathExpression;
 import com.exasol.adapter.dynamodb.documentquery.*;
 import com.exasol.adapter.dynamodb.dynamodbmetadata.DynamodbTableMetadata;
 
+/**
+ * This class builds a {@link DynamodbGetItemQueryPlan} if possible.
+ */
 public class DynamodbGetItemQueryPlanFactory {
 
+    /**
+     * Builds a {@link DynamodbGetItemQueryPlan} is possible for the given query.
+     * 
+     * @param documentQuery query to build the plan for
+     * @param tableMetadata DynamoDB table metadata used for checking the primary key
+     * @return the generated plan
+     * @throws PlanDoesNotFitException if this query can't be executed using a {@link DynamodbGetItemQueryPlan}
+     */
     public DynamodbGetItemQueryPlan buildGetItemPlanIfPossible(final DocumentQuery<DynamodbNodeVisitor> documentQuery,
             final DynamodbTableMetadata tableMetadata) throws PlanDoesNotFitException {
         final Visitor visitor = new Visitor(tableMetadata);
@@ -44,18 +55,6 @@ public class DynamodbGetItemQueryPlanFactory {
         private Visitor(final DynamodbTableMetadata tableMetadata) {
             this.tableMetadata = tableMetadata;
         }
-
-        /*
-         * private void tryToExtractKey(final SqlColumn column, final SqlNode literal) { try { final AttributeValue
-         * literalValue = new SqlToDynamodbLiteralConverter().convert(literal); final AbstractColumnMappingDefinition
-         * columnMapping = new SchemaMappingDefinitionToSchemaMetadataConverter()
-         * .convertBackColumn(column.getMetadata()); final DocumentPathExpression columnPath =
-         * columnMapping.getPathToSourceProperty(); tryToAddKey(this.tableMetadata.getPrimaryKey().getPartitionKey(),
-         * columnPath, literalValue); tryToAddKey(this.tableMetadata.getPrimaryKey().getSortKey(), columnPath,
-         * literalValue); } catch (final NotALiteralException exception) { throw new PlanDoesNotFitExceptionWrapper(new
-         * PlanDoesNotFitException(
-         * "This is not a getItem request as it contains equality predicates on non literals.")); } }
-         */
 
         @Override
         public void visit(
@@ -112,5 +111,4 @@ public class DynamodbGetItemQueryPlanFactory {
             return this.primaryKey;
         }
     }
-
 }
