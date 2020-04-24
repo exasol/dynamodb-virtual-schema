@@ -10,7 +10,6 @@ import com.exasol.adapter.dynamodb.documentnode.dynamodb.DynamodbNodeVisitor;
 import com.exasol.adapter.dynamodb.documentquery.DocumentQuery;
 import com.exasol.adapter.dynamodb.dynamodbmetadata.DynamodbTableMetadata;
 import com.exasol.adapter.dynamodb.dynamodbmetadata.DynamodbTableMetadataFactory;
-import com.exasol.adapter.sql.SqlStatement;
 import com.exasol.dynamodb.DynamodbConnectionFactory;
 
 /**
@@ -30,17 +29,14 @@ public class DynamodbQueryRunner {
 
     /**
      * Executes a query on DynamoDB.
-     * 
-     * @param query requested information
+     *
      * @return stream of results
      */
-    public Stream<DocumentNode<DynamodbNodeVisitor>> runQuery(final DocumentQuery schemaMappingPlan,
-            final SqlStatement query) {
+    public Stream<DocumentNode<DynamodbNodeVisitor>> runQuery(final DocumentQuery<DynamodbNodeVisitor> documentQuery) {
         final AmazonDynamoDB client = getConnection();
         final DynamodbTableMetadata tableMetadata = new DynamodbTableMetadataFactory().buildMetadataForTable(client,
-                schemaMappingPlan.getFromTable().getRemoteName());
-        final DynamodbQueryPlan queryPlan = new DynamodbQueryPlanner().planQuery(schemaMappingPlan, query,
-                tableMetadata);
+                documentQuery.getFromTable().getRemoteName());
+        final DynamodbQueryPlan queryPlan = new DynamodbQueryPlanner().planQuery(documentQuery, tableMetadata);
         return queryPlan.run(client).map(DynamodbMap::new);
     }
 

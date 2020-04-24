@@ -3,6 +3,7 @@ package com.exasol.adapter.dynamodb.queryrunner;
 import static com.exasol.adapter.dynamodb.queryrunner.TestSetup.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.IOException;
 import java.util.List;
@@ -14,9 +15,7 @@ import org.junit.jupiter.api.Test;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.exasol.adapter.dynamodb.documentnode.dynamodb.DynamodbNodeVisitor;
 import com.exasol.adapter.dynamodb.documentnode.dynamodb.DynamodbString;
-import com.exasol.adapter.dynamodb.documentquery.ColumnLiteralComparisonPredicate;
-import com.exasol.adapter.dynamodb.documentquery.ComparisonPredicate;
-import com.exasol.adapter.dynamodb.documentquery.DocumentQuery;
+import com.exasol.adapter.dynamodb.documentquery.*;
 import com.exasol.adapter.dynamodb.dynamodbmetadata.DynamodbKey;
 import com.exasol.adapter.dynamodb.dynamodbmetadata.DynamodbTableMetadata;
 
@@ -47,38 +46,78 @@ public class DynamodbGetItemQueryPlanFactoryTest {
 
     @Test
     void testSimplePrimaryKeyWithSecondNonKeySelection() throws IOException, PlanDoesNotFitException {
+        final String filter = "test";
+        final DocumentQueryPredicate<DynamodbNodeVisitor> selection = new BinaryLogicalOperator<>(List.of(
+                new ColumnLiteralComparisonPredicate<>(ComparisonPredicate.Operator.EQUAL, COLUMN1_MAPPING,
+                        new DynamodbString(filter)),
+                new ColumnLiteralComparisonPredicate<>(ComparisonPredicate.Operator.EQUAL, COLUMN2_MAPPING,
+                        new DynamodbString("test2"))),
+                BinaryLogicalOperator.Operator.AND);
+        final DocumentQuery<DynamodbNodeVisitor> documentQuery = new DocumentQuery<>(TABLE_MAPPING,
+                TABLE_MAPPING.getColumns(), selection);
 
+        final DynamodbTableMetadata dynamodbTableMetadata = new DynamodbTableMetadata(
+                new DynamodbKey(COLUMN1_NAME, Optional.empty()), List.of(), List.of());
+        final DynamodbGetItemQueryPlan getItemPlan = new DynamodbGetItemQueryPlanFactory()
+                .buildGetItemPlanIfPossible(documentQuery, dynamodbTableMetadata);
+        final Map<String, AttributeValue> key = getItemPlan.getGetItemRequest().getKey();
+        assertThat(getItemPlan.getGetItemRequest().getTableName(), equalTo(TABLE_NAME));
+        assertThat(key.size(), equalTo(1));
+        assertThat(key.get(COLUMN1_NAME).getS(), equalTo(filter));
     }
 
     @Test
     void testCompoundPrimaryKey() throws IOException, PlanDoesNotFitException {
+        final String filter1 = "test";
+        final String filter2 = "test2";
+        final DocumentQueryPredicate<DynamodbNodeVisitor> selection = new BinaryLogicalOperator<>(List.of(
+                new ColumnLiteralComparisonPredicate<>(ComparisonPredicate.Operator.EQUAL, COLUMN1_MAPPING,
+                        new DynamodbString(filter1)),
+                new ColumnLiteralComparisonPredicate<>(ComparisonPredicate.Operator.EQUAL, COLUMN2_MAPPING,
+                        new DynamodbString(filter2))),
+                BinaryLogicalOperator.Operator.AND);
+        final DocumentQuery<DynamodbNodeVisitor> documentQuery = new DocumentQuery<>(TABLE_MAPPING,
+                TABLE_MAPPING.getColumns(), selection);
 
+        final DynamodbTableMetadata dynamodbTableMetadata = new DynamodbTableMetadata(
+                new DynamodbKey(COLUMN1_NAME, Optional.of(COLUMN2_NAME)), List.of(), List.of());
+        final DynamodbGetItemQueryPlan getItemPlan = new DynamodbGetItemQueryPlanFactory()
+                .buildGetItemPlanIfPossible(documentQuery, dynamodbTableMetadata);
+        final Map<String, AttributeValue> key = getItemPlan.getGetItemRequest().getKey();
+        assertThat(getItemPlan.getGetItemRequest().getTableName(), equalTo(TABLE_NAME));
+        assertThat(key.size(), equalTo(2));
+        assertThat(key.get(COLUMN1_NAME).getS(), equalTo(filter1));
+        assertThat(key.get(COLUMN2_NAME).getS(), equalTo(filter2));
     }
 
-    /*
-     * @Test void testNoSelection() throws IOException, PlanDoesNotFitException {
-     * 
-     * final PlanDoesNotFitException exception = assertThrows(PlanDoesNotFitException.class, () -> new
-     * DynamodbGetItemQueryPlanFactory().buildGetItemPlanIfPossible(TABLE_NAME, selectStatement,
-     * dynamodbTableMetadata)); assertThat(exception.getMessage(),
-     * equalTo("This is not an getItem request as the query has no where clause and so no selection.")); }
-     * 
-     * @Test void testKeyWasNotSelected() throws IOException, PlanDoesNotFitException { final SqlStatement
-     * selectStatement = this.testSetup.getSelectWithWhereClause(new SqlPredicateAnd(List.of())); final
-     * DynamodbTableMetadata dynamodbTableMetadata = new DynamodbTableMetadata( new DynamodbKey(COLUMN1_NAME,
-     * Optional.empty()), List.of(), List.of()); final PlanDoesNotFitException exception =
-     * assertThrows(PlanDoesNotFitException.class, () -> new
-     * DynamodbGetItemQueryPlanFactory().buildGetItemPlanIfPossible(TABLE_NAME, selectStatement,
-     * dynamodbTableMetadata)); assertThat(exception.getMessage(),
-     * equalTo("Not a GetItem request as the partition key was not specified in the where clause.")); }
-     * 
-     * @Test void testUnsupportedPredicate() throws IOException, PlanDoesNotFitException { final SqlStatement
-     * selectStatement = this.testSetup.getSelectWithWhereClause(new SqlPredicateOr(List.of())); final
-     * DynamodbTableMetadata dynamodbTableMetadata = new DynamodbTableMetadata( new DynamodbKey(COLUMN1_NAME,
-     * Optional.empty()), List.of(), List.of()); final PlanDoesNotFitException exception =
-     * assertThrows(PlanDoesNotFitException.class, () -> new
-     * DynamodbGetItemQueryPlanFactory().buildGetItemPlanIfPossible(TABLE_NAME, selectStatement,
-     * dynamodbTableMetadata)); assertThat(exception.getMessage(),
-     * equalTo("This predicate is not supported for GetItem requests.")); }
-     */
+    @Test
+    void testNoSelection() throws IOException, PlanDoesNotFitException {
+        final DynamodbTableMetadata dynamodbTableMetadata = new DynamodbTableMetadata(
+                new DynamodbKey(COLUMN1_NAME, Optional.empty()), List.of(), List.of());
+
+        final DocumentQuery<DynamodbNodeVisitor> documentQuery = new DocumentQuery<>(TABLE_MAPPING,
+                TABLE_MAPPING.getColumns(), new NoPredicate<>());
+        final PlanDoesNotFitException exception = assertThrows(PlanDoesNotFitException.class,
+                () -> new DynamodbGetItemQueryPlanFactory().buildGetItemPlanIfPossible(documentQuery,
+                        dynamodbTableMetadata));
+        assertThat(exception.getMessage(),
+                equalTo("Not a GetItem request as the partition key was not specified in the where clause."));
+    }
+
+    @Test
+    void testSelectionWithOr() throws IOException, PlanDoesNotFitException {
+        final String filter1 = "test";
+        final String filter2 = "test2";
+        final DocumentQueryPredicate<DynamodbNodeVisitor> selection = new BinaryLogicalOperator<>(
+                List.of(new NoPredicate<>(), new NoPredicate<>()), BinaryLogicalOperator.Operator.OR);
+        final DocumentQuery<DynamodbNodeVisitor> documentQuery = new DocumentQuery<>(TABLE_MAPPING,
+                TABLE_MAPPING.getColumns(), selection);
+
+        final DynamodbTableMetadata dynamodbTableMetadata = new DynamodbTableMetadata(
+                new DynamodbKey(COLUMN1_NAME, Optional.of(COLUMN2_NAME)), List.of(), List.of());
+        final PlanDoesNotFitException exception = assertThrows(PlanDoesNotFitException.class,
+                () -> new DynamodbGetItemQueryPlanFactory().buildGetItemPlanIfPossible(documentQuery,
+                        dynamodbTableMetadata));
+        assertThat(exception.getMessage(), equalTo("OR operators are not supported for GetItem requests."));
+    }
 }

@@ -34,7 +34,7 @@ public class LinearDocumentPathWalker<VisitorType> {
         return this.documentPathWalker.walkThroughDocument(rootNode).get(0);
     }
 
-    private void checkPathIsLinear(final DocumentPathExpression pathExpression){
+    private void checkPathIsLinear(final DocumentPathExpression pathExpression) {
         for (final PathSegment pathSegment : pathExpression.getPath()) {
             if (pathSegment instanceof ArrayAllPathSegment) {
                 throw new DocumentPathWalkerException(

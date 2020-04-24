@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
+import com.exasol.adapter.dynamodb.documentnode.dynamodb.DynamodbNodeToAttributeValueConverter;
 import com.exasol.adapter.dynamodb.documentnode.dynamodb.DynamodbNodeVisitor;
 import com.exasol.adapter.dynamodb.documentpath.DocumentPathExpression;
 import com.exasol.adapter.dynamodb.documentquery.*;
@@ -64,23 +65,10 @@ public class DynamodbGetItemQueryPlanFactory {
             if (columnPath.size() != 1) {
                 return; // This is not an key attribute as it
             }
-        }
-
-        @Override
-        public void visit(final BinaryLogicalOperator<DynamodbNodeVisitor> binaryLogicalOperator) {
-            switch (binaryLogicalOperator.getOperator()) {
-            case AND:
-                for (final DocumentQueryPredicate<DynamodbNodeVisitor> andedPredicate : binaryLogicalOperator
-                        .getOperands()) {
-                    andedPredicate.accept(this);
-                }
-                break;
-            case OR:
-                throw new PlanDoesNotFitExceptionWrapper(
-                        new PlanDoesNotFitException("Or predicates are not supported for GetItem requests."));
-            default:
-                break;
-            }
+            final AttributeValue attributeValue = new DynamodbNodeToAttributeValueConverter()
+                    .convertToAttributeValue(columnLiteralComparisonPredicate.getLiteral());
+            tryToAddKey(this.tableMetadata.getPrimaryKey().getPartitionKey(), columnPath, attributeValue);
+            tryToAddKey(this.tableMetadata.getPrimaryKey().getSortKey(), columnPath, attributeValue);
         }
 
         private void tryToAddKey(final String key, final DocumentPathExpression columnPath,
@@ -95,6 +83,23 @@ public class DynamodbGetItemQueryPlanFactory {
                     }
                 }
                 this.primaryKey.put(key, value);
+            }
+        }
+
+        @Override
+        public void visit(final BinaryLogicalOperator<DynamodbNodeVisitor> binaryLogicalOperator) {
+            switch (binaryLogicalOperator.getOperator()) {
+            case AND:
+                for (final DocumentQueryPredicate<DynamodbNodeVisitor> andedPredicate : binaryLogicalOperator
+                        .getOperands()) {
+                    andedPredicate.accept(this);
+                }
+                break;
+            case OR:
+                throw new PlanDoesNotFitExceptionWrapper(
+                        new PlanDoesNotFitException("OR operators are not supported for GetItem requests."));
+            default:
+                break;
             }
         }
 

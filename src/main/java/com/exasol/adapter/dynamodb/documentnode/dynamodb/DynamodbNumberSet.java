@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.exasol.adapter.dynamodb.documentnode.DocumentArray;
-import com.exasol.adapter.dynamodb.documentnode.DocumentNode;
 
 /**
  * This class represents a DynamoDB number set value.

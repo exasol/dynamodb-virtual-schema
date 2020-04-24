@@ -21,7 +21,7 @@ public class DynamodbNumberSetTest {
     void testGetValue() {
         final DynamodbNumberSet dynamodbList = (DynamodbNumberSet) new DynamodbDocumentNodeFactory()
                 .buildDocumentNode(NUMBER_SET);
-        final DynamodbNumber result = (DynamodbNumber) dynamodbList.getValue(0);
+        final DynamodbNumber result = dynamodbList.getValue(0);
         assertThat(result.getValue(), equalTo(NUMBER_1));
     }
 
@@ -29,8 +29,8 @@ public class DynamodbNumberSetTest {
     void testGetValues() {
         final DynamodbNumberSet dynamodbList = (DynamodbNumberSet) new DynamodbDocumentNodeFactory()
                 .buildDocumentNode(NUMBER_SET);
-        final DynamodbNumber result1 = (DynamodbNumber) dynamodbList.getValuesList().get(0);
-        final DynamodbNumber result2 = (DynamodbNumber) dynamodbList.getValuesList().get(1);
+        final DynamodbNumber result1 = dynamodbList.getValuesList().get(0);
+        final DynamodbNumber result2 = dynamodbList.getValuesList().get(1);
         assertThat(List.of(result1.getValue(), result2.getValue()), containsInAnyOrder(NUMBER_1, NUMBER_2));
     }
 

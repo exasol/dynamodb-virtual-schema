@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.exasol.adapter.dynamodb.documentnode.DocumentArray;
-import com.exasol.adapter.dynamodb.documentnode.DocumentNode;
 
 /**
  * This class represents a DynamoDB binary set value.
@@ -21,7 +20,7 @@ public class DynamodbBinarySet implements DocumentArray<DynamodbNodeVisitor> {
      * @param value value to hold
      */
     public DynamodbBinarySet(final Collection<ByteBuffer> value) {
-         this.value = value.stream().map(DynamodbBinary::new).collect(Collectors.toList());
+        this.value = value.stream().map(DynamodbBinary::new).collect(Collectors.toList());
     }
 
     @Override
