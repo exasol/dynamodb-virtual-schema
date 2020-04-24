@@ -41,6 +41,9 @@ public class DynamodbAdapterTestLocalIT {
             .withCommand("-jar DynamoDBLocal.jar -sharedDb -dbPath .");
     @Container
     private static final ExasolContainer<? extends ExasolContainer<?>> EXASOL_CONTAINER = new ExasolContainer<>()
+            .withFileSystemBind("./target/jacoco-agent", "/jacoco-agent")
+            .withFileSystemBind("./target/jacoco-report", "/jacoco-report")
+            .withCommand("\"-javaagent:/jacoco-agent/org.jacoco.agent-runtime.jar=destfile=/jacoco-report/jacoco-it2.exec\"")
             .withNetwork(NETWORK).withExposedPorts(8888).withLogConsumer(new Slf4jLogConsumer(LOGGER));
     private static final String TEST_SCHEMA = "TEST";
     private static final String DYNAMODB_CONNECTION = "DYNAMODB_CONNECTION";
@@ -71,6 +74,10 @@ public class DynamodbAdapterTestLocalIT {
     @AfterAll
     static void afterAll() {
         NETWORK.close();
+        EXASOL_CONTAINER.getDockerClient()
+                .stopContainerCmd(EXASOL_CONTAINER.getContainerId())
+                .withTimeout(10)
+                .exec();
     }
 
     @AfterEach
