@@ -49,7 +49,7 @@ public interface IncompleteDynamodbNodeVisitor extends DynamodbNodeVisitor {
 
     @Override
     public default void visit(final DynamodbMap map) {
-        defaultVisit("Object");
+        defaultVisit("Map");
     }
 
     @Override

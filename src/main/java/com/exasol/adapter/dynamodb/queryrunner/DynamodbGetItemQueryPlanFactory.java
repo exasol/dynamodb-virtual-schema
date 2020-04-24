@@ -23,8 +23,9 @@ public class DynamodbGetItemQueryPlanFactory {
      * @return the generated plan
      * @throws PlanDoesNotFitException if this query can't be executed using a {@link DynamodbGetItemQueryPlan}
      */
-    public DynamodbGetItemQueryPlan buildGetItemPlanIfPossible(final RemoteTableQuery<DynamodbNodeVisitor> documentQuery,
-            final DynamodbTableMetadata tableMetadata) throws PlanDoesNotFitException {
+    public DynamodbGetItemQueryPlan buildGetItemPlanIfPossible(
+            final RemoteTableQuery<DynamodbNodeVisitor> documentQuery, final DynamodbTableMetadata tableMetadata)
+            throws PlanDoesNotFitException {
         final Visitor visitor = new Visitor(tableMetadata);
         try {
             documentQuery.getSelection().accept(visitor);
@@ -89,8 +90,7 @@ public class DynamodbGetItemQueryPlanFactory {
         public void visit(final BinaryLogicalOperator<DynamodbNodeVisitor> binaryLogicalOperator) {
             switch (binaryLogicalOperator.getOperator()) {
             case AND:
-                for (final QueryPredicate<DynamodbNodeVisitor> andedPredicate : binaryLogicalOperator
-                        .getOperands()) {
+                for (final QueryPredicate<DynamodbNodeVisitor> andedPredicate : binaryLogicalOperator.getOperands()) {
                     andedPredicate.accept(this);
                 }
                 break;
