@@ -3,7 +3,6 @@ package com.exasol.adapter.dynamodb.queryrunner;
 import static com.exasol.adapter.dynamodb.queryrunner.TestSetup.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.IOException;
 import java.util.List;
@@ -15,12 +14,11 @@ import org.junit.jupiter.api.Test;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.exasol.adapter.dynamodb.documentnode.dynamodb.DynamodbNodeVisitor;
 import com.exasol.adapter.dynamodb.documentnode.dynamodb.DynamodbString;
+import com.exasol.adapter.dynamodb.documentquery.ColumnLiteralComparisonPredicate;
+import com.exasol.adapter.dynamodb.documentquery.ComparisonPredicate;
+import com.exasol.adapter.dynamodb.documentquery.DocumentQuery;
 import com.exasol.adapter.dynamodb.dynamodbmetadata.DynamodbKey;
 import com.exasol.adapter.dynamodb.dynamodbmetadata.DynamodbTableMetadata;
-import com.exasol.adapter.dynamodb.queryplan.ColumnLiteralComparisonPredicate;
-import com.exasol.adapter.dynamodb.queryplan.ComparisonPredicate;
-import com.exasol.adapter.dynamodb.queryplan.DocumentQuery;
-import com.exasol.adapter.sql.*;
 
 public class DynamodbGetItemQueryPlanFactoryTest {
     final TestSetup testSetup;
@@ -57,36 +55,30 @@ public class DynamodbGetItemQueryPlanFactoryTest {
 
     }
 
-/*    @Test
-    void testNoSelection() throws IOException, PlanDoesNotFitException {
-
-        final PlanDoesNotFitException exception = assertThrows(PlanDoesNotFitException.class,
-                () -> new DynamodbGetItemQueryPlanFactory().buildGetItemPlanIfPossible(TABLE_NAME, selectStatement,
-                        dynamodbTableMetadata));
-        assertThat(exception.getMessage(),
-                equalTo("This is not an getItem request as the query has no where clause and so no selection."));
-    }
-
-    @Test
-    void testKeyWasNotSelected() throws IOException, PlanDoesNotFitException {
-        final SqlStatement selectStatement = this.testSetup.getSelectWithWhereClause(new SqlPredicateAnd(List.of()));
-        final DynamodbTableMetadata dynamodbTableMetadata = new DynamodbTableMetadata(
-                new DynamodbKey(COLUMN1_NAME, Optional.empty()), List.of(), List.of());
-        final PlanDoesNotFitException exception = assertThrows(PlanDoesNotFitException.class,
-                () -> new DynamodbGetItemQueryPlanFactory().buildGetItemPlanIfPossible(TABLE_NAME, selectStatement,
-                        dynamodbTableMetadata));
-        assertThat(exception.getMessage(),
-                equalTo("Not a GetItem request as the partition key was not specified in the where clause."));
-    }
-
-    @Test
-    void testUnsupportedPredicate() throws IOException, PlanDoesNotFitException {
-        final SqlStatement selectStatement = this.testSetup.getSelectWithWhereClause(new SqlPredicateOr(List.of()));
-        final DynamodbTableMetadata dynamodbTableMetadata = new DynamodbTableMetadata(
-                new DynamodbKey(COLUMN1_NAME, Optional.empty()), List.of(), List.of());
-        final PlanDoesNotFitException exception = assertThrows(PlanDoesNotFitException.class,
-                () -> new DynamodbGetItemQueryPlanFactory().buildGetItemPlanIfPossible(TABLE_NAME, selectStatement,
-                        dynamodbTableMetadata));
-        assertThat(exception.getMessage(), equalTo("This predicate is not supported for GetItem requests."));
-    }*/
+    /*
+     * @Test void testNoSelection() throws IOException, PlanDoesNotFitException {
+     * 
+     * final PlanDoesNotFitException exception = assertThrows(PlanDoesNotFitException.class, () -> new
+     * DynamodbGetItemQueryPlanFactory().buildGetItemPlanIfPossible(TABLE_NAME, selectStatement,
+     * dynamodbTableMetadata)); assertThat(exception.getMessage(),
+     * equalTo("This is not an getItem request as the query has no where clause and so no selection.")); }
+     * 
+     * @Test void testKeyWasNotSelected() throws IOException, PlanDoesNotFitException { final SqlStatement
+     * selectStatement = this.testSetup.getSelectWithWhereClause(new SqlPredicateAnd(List.of())); final
+     * DynamodbTableMetadata dynamodbTableMetadata = new DynamodbTableMetadata( new DynamodbKey(COLUMN1_NAME,
+     * Optional.empty()), List.of(), List.of()); final PlanDoesNotFitException exception =
+     * assertThrows(PlanDoesNotFitException.class, () -> new
+     * DynamodbGetItemQueryPlanFactory().buildGetItemPlanIfPossible(TABLE_NAME, selectStatement,
+     * dynamodbTableMetadata)); assertThat(exception.getMessage(),
+     * equalTo("Not a GetItem request as the partition key was not specified in the where clause.")); }
+     * 
+     * @Test void testUnsupportedPredicate() throws IOException, PlanDoesNotFitException { final SqlStatement
+     * selectStatement = this.testSetup.getSelectWithWhereClause(new SqlPredicateOr(List.of())); final
+     * DynamodbTableMetadata dynamodbTableMetadata = new DynamodbTableMetadata( new DynamodbKey(COLUMN1_NAME,
+     * Optional.empty()), List.of(), List.of()); final PlanDoesNotFitException exception =
+     * assertThrows(PlanDoesNotFitException.class, () -> new
+     * DynamodbGetItemQueryPlanFactory().buildGetItemPlanIfPossible(TABLE_NAME, selectStatement,
+     * dynamodbTableMetadata)); assertThat(exception.getMessage(),
+     * equalTo("This predicate is not supported for GetItem requests.")); }
+     */
 }

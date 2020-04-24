@@ -6,8 +6,8 @@ import java.util.Map;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.exasol.adapter.dynamodb.documentnode.dynamodb.DynamodbNodeVisitor;
 import com.exasol.adapter.dynamodb.documentpath.DocumentPathExpression;
+import com.exasol.adapter.dynamodb.documentquery.*;
 import com.exasol.adapter.dynamodb.dynamodbmetadata.DynamodbTableMetadata;
-import com.exasol.adapter.dynamodb.queryplan.*;
 
 public class DynamodbGetItemQueryPlanFactory {
 
@@ -57,19 +57,29 @@ public class DynamodbGetItemQueryPlanFactory {
          */
 
         @Override
-        public void visit(final AndPredicate<DynamodbNodeVisitor> andPredicate) {
-            for (final DocumentQueryPredicate<DynamodbNodeVisitor> andedPredicate : andPredicate.getAndedPredicates()) {
-                andedPredicate.accept(this);
-            }
-        }
-
-        @Override
         public void visit(
                 final ColumnLiteralComparisonPredicate<DynamodbNodeVisitor> columnLiteralComparisonPredicate) {
             final DocumentPathExpression columnPath = columnLiteralComparisonPredicate.getColumn()
                     .getPathToSourceProperty();
             if (columnPath.size() != 1) {
                 return; // This is not an key attribute as it
+            }
+        }
+
+        @Override
+        public void visit(final BinaryLogicalOperator<DynamodbNodeVisitor> binaryLogicalOperator) {
+            switch (binaryLogicalOperator.getOperator()) {
+            case AND:
+                for (final DocumentQueryPredicate<DynamodbNodeVisitor> andedPredicate : binaryLogicalOperator
+                        .getOperands()) {
+                    andedPredicate.accept(this);
+                }
+                break;
+            case OR:
+                throw new PlanDoesNotFitExceptionWrapper(
+                        new PlanDoesNotFitException("Or predicates are not supported for GetItem requests."));
+            default:
+                break;
             }
         }
 
@@ -86,12 +96,6 @@ public class DynamodbGetItemQueryPlanFactory {
                 }
                 this.primaryKey.put(key, value);
             }
-        }
-
-        @Override
-        public void visit(final OrPredicate<DynamodbNodeVisitor> orPredicate) {
-            throw new PlanDoesNotFitExceptionWrapper(
-                    new PlanDoesNotFitException("Or predicates are not supported for GetItem requests."));
         }
 
         @Override
