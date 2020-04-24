@@ -43,7 +43,7 @@ public class DynamodbAdapterTestLocalIT {
     private static final ExasolContainer<? extends ExasolContainer<?>> EXASOL_CONTAINER = new ExasolContainer<>()
             .withFileSystemBind("./target/jacoco-agent", "/jacoco-agent")
             .withFileSystemBind("./target/jacoco-report", "/jacoco-report")
-            .withCommand("\"-javaagent:/jacoco-agent/org.jacoco.agent-runtime.jar=destfile=/jacoco-report/jacoco-it2.exec\"")
+            .withCommand("\"-javaagent:/jacoco-agent/org.jacoco.agent-runtime.jar=destfile=/jacoco-report/jacoco-it2.exec\"")//TODO makes no sense here as code is executed in UDF
             .withNetwork(NETWORK).withExposedPorts(8888).withLogConsumer(new Slf4jLogConsumer(LOGGER));
     private static final String TEST_SCHEMA = "TEST";
     private static final String DYNAMODB_CONNECTION = "DYNAMODB_CONNECTION";
