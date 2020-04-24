@@ -1,4 +1,4 @@
-package com.exasol.adapter.dynamodb.queryplan;
+package com.exasol.adapter.dynamodb.documentquery;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test;
 
 import com.exasol.adapter.AdapterException;
 import com.exasol.adapter.dynamodb.documentnode.DocumentValue;
-import com.exasol.adapter.dynamodb.literalconverter.NotALiteralException;
+import com.exasol.adapter.dynamodb.literalconverter.NotLiteralException;
 import com.exasol.adapter.dynamodb.literalconverter.SqlLiteralToDocumentValueConverter;
 import com.exasol.adapter.dynamodb.mapping.AbstractColumnMappingDefinition;
 import com.exasol.adapter.dynamodb.mapping.HardCodedMappingFactory;
@@ -45,7 +45,7 @@ public class DocumentQueryBuilderTest {
     private class SqlLiteralToDocumentValueConverterStub implements SqlLiteralToDocumentValueConverter<Object> {
 
         @Override
-        public DocumentValue<Object> convert(final SqlNode exasolLiteralNode) throws NotALiteralException {
+        public DocumentValue<Object> convert(final SqlNode exasolLiteralNode) throws NotLiteralException {
             return new DocumentValueStub();
         }
     }

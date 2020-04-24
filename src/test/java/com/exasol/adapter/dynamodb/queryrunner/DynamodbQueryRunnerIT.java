@@ -5,15 +5,10 @@ import static org.hamcrest.Matchers.equalTo;
 
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 
-import com.exasol.adapter.dynamodb.documentnode.dynamodb.DynamodbString;
-import com.exasol.adapter.dynamodb.mapping.*;
-import com.exasol.adapter.metadata.ColumnMetadata;
-import com.exasol.adapter.sql.*;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Tag;
@@ -30,8 +25,12 @@ import com.exasol.adapter.dynamodb.DynamodbTestInterface;
 import com.exasol.adapter.dynamodb.documentnode.DocumentNode;
 import com.exasol.adapter.dynamodb.documentnode.DocumentObject;
 import com.exasol.adapter.dynamodb.documentnode.dynamodb.DynamodbNodeVisitor;
-import com.exasol.adapter.dynamodb.queryplan.AndPredicate;
-import com.exasol.adapter.dynamodb.queryplan.DocumentQuery;
+import com.exasol.adapter.dynamodb.documentnode.dynamodb.DynamodbString;
+import com.exasol.adapter.dynamodb.documentquery.DocumentQuery;
+import com.exasol.adapter.dynamodb.documentquery.NoPredicate;
+import com.exasol.adapter.dynamodb.mapping.*;
+import com.exasol.adapter.metadata.ColumnMetadata;
+import com.exasol.adapter.sql.*;
 import com.exasol.bucketfs.BucketAccessException;
 import com.exasol.dynamodb.DynamodbConnectionFactory;
 
@@ -55,8 +54,7 @@ class DynamodbQueryRunnerIT {
             BucketAccessException, TimeoutException, IOException, AdapterException {
         tableMapping = new JsonMappingFactory(MappingTestFiles.BASIC_MAPPING_FILE).getSchemaMapping().getTableMappings()
                 .get(0);
-        documentQuery = new DocumentQuery<>(tableMapping, tableMapping.getColumns(),
-                new AndPredicate<DynamodbNodeVisitor>(Collections.emptyList()));
+        documentQuery = new DocumentQuery<>(tableMapping, tableMapping.getColumns(), new NoPredicate<>());
 
         dynamodbTestInterface = new DynamodbTestInterface(LOCAL_DYNAMO, NETWORK);
         dynamodbTestInterface.createTable(tableMapping.getRemoteName(), KEY_NAME);

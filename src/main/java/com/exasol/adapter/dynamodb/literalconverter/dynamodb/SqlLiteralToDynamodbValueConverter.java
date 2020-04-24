@@ -3,13 +3,13 @@ package com.exasol.adapter.dynamodb.literalconverter.dynamodb;
 import com.exasol.adapter.AdapterException;
 import com.exasol.adapter.dynamodb.documentnode.DocumentValue;
 import com.exasol.adapter.dynamodb.documentnode.dynamodb.*;
-import com.exasol.adapter.dynamodb.literalconverter.NotALiteralException;
+import com.exasol.adapter.dynamodb.literalconverter.NotLiteralException;
 import com.exasol.adapter.dynamodb.literalconverter.SqlLiteralToDocumentValueConverter;
 import com.exasol.adapter.sql.*;
 
 public class SqlLiteralToDynamodbValueConverter implements SqlLiteralToDocumentValueConverter<DynamodbNodeVisitor> {
     @Override
-    public DocumentValue<DynamodbNodeVisitor> convert(final SqlNode exasolLiteralNode) throws NotALiteralException {
+    public DocumentValue<DynamodbNodeVisitor> convert(final SqlNode exasolLiteralNode) throws NotLiteralException {
         try {
             final Converter converter = new Converter();
             exasolLiteralNode.accept(converter);
@@ -17,7 +17,7 @@ public class SqlLiteralToDynamodbValueConverter implements SqlLiteralToDocumentV
         } catch (final AdapterException exception) {
             // This should never happen, as we do not throw adapter exceptions in the visitor.
             throw new IllegalStateException("An unexpected adapter exception occurred", exception);
-        } catch (final NotALiteralExceptionWrapper wrapper) {
+        } catch (final NotLiteralExceptionWrapper wrapper) {
             throw wrapper.getException();
         }
     }
@@ -80,8 +80,8 @@ public class SqlLiteralToDynamodbValueConverter implements SqlLiteralToDocumentV
         }
 
         @Override
-        public void visitDefault() {
-            throw new NotALiteralExceptionWrapper(new NotALiteralException());
+        public void visitUnimplemented() {
+            throw new NotLiteralExceptionWrapper(new NotLiteralException());
         }
 
         public UnsupportedOperationException buildUnsupportedTypeException(final String type) {
@@ -90,15 +90,15 @@ public class SqlLiteralToDynamodbValueConverter implements SqlLiteralToDocumentV
         }
     }
 
-    private static class NotALiteralExceptionWrapper extends RuntimeException {
+    private static class NotLiteralExceptionWrapper extends RuntimeException {
         private static final long serialVersionUID = -2558397108956339878L;
-        private final NotALiteralException exception;
+        private final NotLiteralException exception;
 
-        private NotALiteralExceptionWrapper(final NotALiteralException exception) {
+        private NotLiteralExceptionWrapper(final NotLiteralException exception) {
             this.exception = exception;
         }
 
-        private NotALiteralException getException() {
+        private NotLiteralException getException() {
             return this.exception;
         }
     }

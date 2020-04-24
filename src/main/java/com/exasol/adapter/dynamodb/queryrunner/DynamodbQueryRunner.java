@@ -7,9 +7,9 @@ import com.exasol.ExaConnectionInformation;
 import com.exasol.adapter.dynamodb.documentnode.DocumentNode;
 import com.exasol.adapter.dynamodb.documentnode.dynamodb.DynamodbMap;
 import com.exasol.adapter.dynamodb.documentnode.dynamodb.DynamodbNodeVisitor;
+import com.exasol.adapter.dynamodb.documentquery.DocumentQuery;
 import com.exasol.adapter.dynamodb.dynamodbmetadata.DynamodbTableMetadata;
 import com.exasol.adapter.dynamodb.dynamodbmetadata.DynamodbTableMetadataFactory;
-import com.exasol.adapter.dynamodb.queryplan.DocumentQuery;
 import com.exasol.adapter.sql.SqlStatement;
 import com.exasol.dynamodb.DynamodbConnectionFactory;
 

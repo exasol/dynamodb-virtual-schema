@@ -1,11 +1,10 @@
-package com.exasol.adapter.dynamodb.queryplan;
+package com.exasol.adapter.dynamodb.documentquery;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
-import java.util.Collections;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
@@ -19,7 +18,7 @@ public class DocumentQueryTest {
         final MockColumnMappingDefinition columnDefinition = new MockColumnMappingDefinition("", null, null);
         final TableMappingDefinition tableDefinition = TableMappingDefinition.rootTableBuilder("", "")
                 .withColumnMappingDefinition(columnDefinition).build();
-        final AndPredicate<Object> selection = new AndPredicate<>(Collections.emptyList());
+        final DocumentQueryPredicate<Object> selection = new NoPredicate<>();
         final DocumentQuery<Object> documentQuery = new DocumentQuery<>(tableDefinition, List.of(columnDefinition),
                 selection);
         assertAll(//

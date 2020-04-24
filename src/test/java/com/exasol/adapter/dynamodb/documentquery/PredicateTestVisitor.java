@@ -1,4 +1,4 @@
-package com.exasol.adapter.dynamodb.queryplan;
+package com.exasol.adapter.dynamodb.documentquery;
 
 class PredicateTestVisitor implements QueryPredicateVisitor<Object> {
     private Visited visited;
@@ -9,13 +9,8 @@ class PredicateTestVisitor implements QueryPredicateVisitor<Object> {
     }
 
     @Override
-    public void visit(final AndPredicate<Object> andPredicate) {
-        this.visited = Visited.AND;
-    }
-
-    @Override
-    public void visit(final OrPredicate<Object> orPredicate) {
-        this.visited = Visited.OR;
+    public void visit(final BinaryLogicalOperator<Object> binaryLogicalOperator) {
+        this.visited = Visited.BINARY_LOGICAL_OPERATOR;
     }
 
     @Override
@@ -28,6 +23,6 @@ class PredicateTestVisitor implements QueryPredicateVisitor<Object> {
     }
 
     enum Visited {
-        AND, OR, NO, COLUMN_LITERAL_COMPARISON
+        BINARY_LOGICAL_OPERATOR, OR, NO, COLUMN_LITERAL_COMPARISON
     }
 }

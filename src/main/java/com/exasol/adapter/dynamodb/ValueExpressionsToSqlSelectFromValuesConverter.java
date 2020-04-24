@@ -3,8 +3,8 @@ package com.exasol.adapter.dynamodb;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.exasol.adapter.dynamodb.documentquery.DocumentQueryMappingInterface;
 import com.exasol.adapter.dynamodb.mapping.AbstractColumnMappingDefinition;
-import com.exasol.adapter.dynamodb.queryplan.DocumentQueryMappingInterface;
 import com.exasol.sql.StatementFactory;
 import com.exasol.sql.ValueTable;
 import com.exasol.sql.ValueTableRow;

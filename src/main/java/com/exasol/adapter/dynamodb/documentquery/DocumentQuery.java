@@ -1,4 +1,4 @@
-package com.exasol.adapter.dynamodb.queryplan;
+package com.exasol.adapter.dynamodb.documentquery;
 
 import java.util.List;
 

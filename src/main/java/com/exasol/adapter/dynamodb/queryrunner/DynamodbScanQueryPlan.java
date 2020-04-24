@@ -7,9 +7,17 @@ import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.amazonaws.services.dynamodbv2.model.ScanRequest;
 
+/**
+ * This class represents a DynamoDB {@code SCAN} operation.
+ */
 class DynamodbScanQueryPlan implements DynamodbQueryPlan {
     private final ScanRequest scanRequest;
 
+    /**
+     * Creates an instance of {@link DynamodbScanQueryPlan}.
+     * 
+     * @param tableName table to scan
+     */
     protected DynamodbScanQueryPlan(final String tableName) {
         this.scanRequest = new ScanRequest().withTableName(tableName);
     }

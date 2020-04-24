@@ -1,11 +1,11 @@
-package com.exasol.adapter.dynamodb.queryplan;
+package com.exasol.adapter.dynamodb.documentquery;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 import com.exasol.adapter.AdapterException;
 import com.exasol.adapter.dynamodb.documentnode.DocumentValue;
-import com.exasol.adapter.dynamodb.literalconverter.NotALiteralException;
+import com.exasol.adapter.dynamodb.literalconverter.NotLiteralException;
 import com.exasol.adapter.dynamodb.literalconverter.SqlLiteralToDocumentValueConverter;
 import com.exasol.adapter.dynamodb.mapping.AbstractColumnMappingDefinition;
 import com.exasol.adapter.dynamodb.mapping.SchemaMappingDefinitionToSchemaMetadataConverter;
@@ -37,10 +37,10 @@ public class DocumentQueryPredicateFactory<DocumentVisitorType> {
      * @return {@link DocumentQueryPredicate} structure
      */
     public DocumentQueryPredicate<DocumentVisitorType> buildPredicateFor(final SqlNode sqlPredicate) {
-        final Visitor visitor = new Visitor();
         if (sqlPredicate == null) {
             return new NoPredicate<>();
         } else {
+            final Visitor visitor = new Visitor();
             try {
                 sqlPredicate.accept(visitor);
             } catch (final AdapterException exception) {
@@ -84,7 +84,7 @@ public class DocumentQueryPredicateFactory<DocumentVisitorType> {
                 final DocumentValue<DocumentVisitorType> literalValue = DocumentQueryPredicateFactory.this.literalConverter
                         .convert(literal);
                 this.predicate = new ColumnLiteralComparisonPredicate<>(operator, columnMapping, literalValue);
-            } catch (final NotALiteralException e) {
+            } catch (final NotLiteralException e) {
                 throw new IllegalStateException(
                         "This predicate or function is not supported in this version of this Virtual Schema.");
             }
@@ -92,13 +92,15 @@ public class DocumentQueryPredicateFactory<DocumentVisitorType> {
 
         @Override
         public Void visit(final SqlPredicateAnd sqlPredicateAnd) throws AdapterException {
-            this.predicate = new AndPredicate<>(convertPredicates(sqlPredicateAnd.getAndedPredicates()));
+            this.predicate = new BinaryLogicalOperator<>(convertPredicates(sqlPredicateAnd.getAndedPredicates()),
+                    BinaryLogicalOperator.Operator.AND);
             return null;
         }
 
         @Override
         public Void visit(final SqlPredicateOr sqlPredicateOr) {
-            this.predicate = new OrPredicate<>(convertPredicates(sqlPredicateOr.getOrPredicates()));
+            this.predicate = new BinaryLogicalOperator<>(convertPredicates(sqlPredicateOr.getOrPredicates()),
+                    BinaryLogicalOperator.Operator.OR);
             return null;
         }
 

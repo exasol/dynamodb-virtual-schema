@@ -32,10 +32,12 @@ public class ObjectLookupPathSegment implements PathSegment {
 
     @Override
     public boolean equals(final Object other) {
-        if (this == other)
+        if (this == other) {
             return true;
-        if (other == null || getClass() != other.getClass())
+        }
+        if (other == null || getClass() != other.getClass()) {
             return false;
+        }
 
         final ObjectLookupPathSegment that = (ObjectLookupPathSegment) other;
 
