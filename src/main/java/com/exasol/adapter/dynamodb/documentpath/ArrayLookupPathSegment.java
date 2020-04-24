@@ -29,4 +29,21 @@ public class ArrayLookupPathSegment implements PathSegment {
     public void accept(final PathSegmentVisitor visitor) {
         visitor.visit(this);
     }
+
+    @Override
+    public boolean equals(final Object other) {
+        if (this == other) {
+            return true;
+        }
+        if (other == null || getClass() != other.getClass()) {
+            return false;
+        }
+        final ArrayLookupPathSegment that = (ArrayLookupPathSegment) other;
+        return this.lookupIndex == that.lookupIndex;
+    }
+
+    @Override
+    public int hashCode() {
+        return this.lookupIndex;
+    }
 }

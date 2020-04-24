@@ -10,4 +10,14 @@ public class ArrayAllPathSegment implements PathSegment {
     public void accept(final PathSegmentVisitor visitor) {
         visitor.visit(this);
     }
+
+    @Override
+    public boolean equals(final Object other) {
+        return other != null && getClass() == other.getClass();
+    }
+
+    @Override
+    public int hashCode() {
+        return 0;
+    }
 }

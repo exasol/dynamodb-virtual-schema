@@ -9,6 +9,7 @@ import java.util.List;
  * This class allows to express path through a document.
  */
 public class DocumentPathExpression implements Serializable {
+    private static final DocumentPathExpression EMPTY_PATH = new DocumentPathExpression(List.of());
     private static final long serialVersionUID = -5010657725802907603L;
     private final ArrayList<PathSegment> path;
 
@@ -17,13 +18,22 @@ public class DocumentPathExpression implements Serializable {
         this.path.addAll(path);
     }
 
+    /**
+     * Gives an empty {@link DocumentPathExpression}.
+     *
+     * @return empty {@link DocumentPathExpression}
+     */
+    public static DocumentPathExpression empty() {
+        return EMPTY_PATH;
+    }
+
     List<PathSegment> getPath() {
         return this.path;
     }
 
     /**
      * Creates a subpath from startIndex (inclusive) til endIndex (exclusive).
-     * 
+     *
      * @param startIndex index in path for new path to start
      * @param endIndex   index in path for new path to end
      * @return {@link DocumentPathExpression} instance
@@ -34,11 +44,30 @@ public class DocumentPathExpression implements Serializable {
 
     /**
      * Gives the size of this path expression.
-     * 
+     *
      * @return size
      */
     public int size() {
         return this.path.size();
+    }
+
+    @Override
+    public boolean equals(final Object other) {
+        if (this == other) {
+            return true;
+        }
+        if (other == null || getClass() != other.getClass()) {
+            return false;
+        }
+
+        final DocumentPathExpression that = (DocumentPathExpression) other;
+
+        return this.path.equals(that.path);
+    }
+
+    @Override
+    public int hashCode() {
+        return this.path.hashCode();
     }
 
     @Override

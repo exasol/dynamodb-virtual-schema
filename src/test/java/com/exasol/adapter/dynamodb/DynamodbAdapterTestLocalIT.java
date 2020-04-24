@@ -142,7 +142,6 @@ public class DynamodbAdapterTestLocalIT {
     @Test
     void testMultiLineSelect() throws IOException, SQLException {
         dynamodbTestInterface.createTable(DYNAMO_TABLE_NAME, TestDocuments.BOOKS_ISBN_PROPERTY);
-        final ClassLoader classLoader = DynamodbAdapterTestLocalIT.class.getClassLoader();
         dynamodbTestInterface.importData(DYNAMO_TABLE_NAME, TestDocuments.BOOKS);
         final List<String> result = selectStringArray().rows;
         assertThat(result, containsInAnyOrder("123567", "123254545", "1235673"));

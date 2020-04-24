@@ -51,7 +51,14 @@ public class SchemaMappingDefinitionToSchemaMetadataConverter {
         return new TableMetadata(tableMappingDefinition.getExasolName(), adapterNotes, columnDefinitions, "");
     }
 
-    private ColumnMetadata convertColumn(final AbstractColumnMappingDefinition columnMappingDefinition)
+    /**
+     * Creates a {@link ColumnMetadata} for a given {@link AbstractColumnMappingDefinition}.
+     * 
+     * @param columnMappingDefinition to convert
+     * @return {@link ColumnMetadata}
+     * @throws IOException if serialization fails
+     */
+    public ColumnMetadata convertColumn(final AbstractColumnMappingDefinition columnMappingDefinition)
             throws IOException {
         final String serialized = StringSerializer.serializeToString(columnMappingDefinition);
         return ColumnMetadata.builder()//

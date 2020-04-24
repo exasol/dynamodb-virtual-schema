@@ -6,9 +6,9 @@ import com.exasol.sql.expression.StringLiteral;
 import com.exasol.sql.expression.ValueExpression;
 
 public class MockColumnMappingDefinition extends AbstractColumnMappingDefinition {
-    public MockColumnMappingDefinition(final String destinationName, final DocumentPathExpression resultWalker,
+    public MockColumnMappingDefinition(final String destinationName, final DocumentPathExpression sourcePath,
             final LookupFailBehaviour lookupFailBehaviour) {
-        super(new ConstructorParameters(destinationName, resultWalker, lookupFailBehaviour));
+        super(new ConstructorParameters(destinationName, sourcePath, lookupFailBehaviour));
     }
 
     @Override

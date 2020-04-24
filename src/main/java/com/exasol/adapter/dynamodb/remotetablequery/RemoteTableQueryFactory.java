@@ -1,10 +1,11 @@
-package com.exasol.adapter.dynamodb.queryresultschema;
+package com.exasol.adapter.dynamodb.remotetablequery;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 import com.exasol.adapter.AdapterException;
+import com.exasol.adapter.dynamodb.literalconverter.SqlLiteralToDocumentValueConverter;
 import com.exasol.adapter.dynamodb.mapping.AbstractColumnMappingDefinition;
 import com.exasol.adapter.dynamodb.mapping.SchemaMappingDefinitionToSchemaMetadataConverter;
 import com.exasol.adapter.dynamodb.mapping.TableMappingDefinition;
@@ -14,40 +15,47 @@ import com.exasol.adapter.metadata.TableMetadata;
 import com.exasol.adapter.sql.*;
 
 /**
- * Visitor for {@link com.exasol.adapter.sql.SqlStatementSelect} building a {@link QueryResultTableSchema}
+ * Visitor for {@link com.exasol.adapter.sql.SqlStatementSelect} building a {@link RemoteTableQuery}
  */
-public class QueryResultTableSchemaBuilder {
+@java.lang.SuppressWarnings("squid:S119") // DocumentVisitorType does not fit naming conventions.
+public class RemoteTableQueryFactory<DocumentVisitorType> {
+    private final QueryPredicateFactory<DocumentVisitorType> predicateFactory;
+
+    public RemoteTableQueryFactory(final SqlLiteralToDocumentValueConverter<DocumentVisitorType> literalConverter) {
+        this.predicateFactory = new QueryPredicateFactory<>(literalConverter);
+    }
 
     /**
-     * Builds the {@link QueryResultTableSchema} from an {@link SqlStatementSelect}
+     * Builds the {@link RemoteTableQuery} from an {@link SqlStatementSelect}
      * 
      * @param selectStatement select statement
      * @param schemaMetadata  metadata of the schema
-     * @return {@link QueryResultTableSchema}
+     * @return {@link RemoteTableQuery}
      */
-    public QueryResultTableSchema build(final SqlStatement selectStatement, final SchemaMetadata schemaMetadata)
-            throws AdapterException {
+    public RemoteTableQuery<DocumentVisitorType> build(final SqlStatement selectStatement,
+            final SchemaMetadata schemaMetadata) throws AdapterException {
         final Visitor visitor = new Visitor();
         selectStatement.accept(visitor);
-        return visitor.getQueryResultTable(schemaMetadata);
+        final SchemaMappingDefinitionToSchemaMetadataConverter converter = new SchemaMappingDefinitionToSchemaMetadataConverter();
+        final TableMappingDefinition tableMappingDefinition = converter.convertBackTable(visitor.tableMetadata,
+                schemaMetadata);
+        final QueryPredicate<DocumentVisitorType> selection = this.predicateFactory
+                .buildPredicateFor(visitor.getWhereClause());
+        return new RemoteTableQuery<>(tableMappingDefinition, Collections.unmodifiableList(visitor.resultColumns),
+                selection);
     }
 
     private static class Visitor extends VoidSqlNodeVisitor {
         private final List<AbstractColumnMappingDefinition> resultColumns = new ArrayList<>();
         private String tableName;
         private TableMetadata tableMetadata;
-
-        private QueryResultTableSchema getQueryResultTable(final SchemaMetadata schemaMetadata) {
-            final SchemaMappingDefinitionToSchemaMetadataConverter converter = new SchemaMappingDefinitionToSchemaMetadataConverter();
-            final TableMappingDefinition tableMappingDefinition = converter.convertBackTable(this.tableMetadata,
-                    schemaMetadata);
-            return new QueryResultTableSchema(tableMappingDefinition, Collections.unmodifiableList(this.resultColumns));
-        }
+        private SqlNode whereClause;
 
         @Override
         public Void visit(final SqlStatementSelect select) throws AdapterException {
             select.getFromClause().accept(this);
             select.getSelectList().accept(this);
+            this.whereClause = select.getWhereClause();
             return null;
         }
 
@@ -82,6 +90,10 @@ public class QueryResultTableSchemaBuilder {
             this.tableName = sqlTable.getName();
             this.tableMetadata = sqlTable.getMetadata();
             return null;
+        }
+
+        private SqlNode getWhereClause() {
+            return this.whereClause;
         }
     }
 }

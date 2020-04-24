@@ -10,7 +10,6 @@ import com.amazonaws.services.dynamodbv2.model.GlobalSecondaryIndexDescription;
 import com.amazonaws.services.dynamodbv2.model.KeySchemaElement;
 import com.amazonaws.services.dynamodbv2.model.LocalSecondaryIndexDescription;
 import com.amazonaws.services.dynamodbv2.model.TableDescription;
-import com.exasol.adapter.dynamodb.documentpath.DocumentPathExpression;
 
 /**
  * This class builds {@link DynamodbTableMetadata} by fetching the required information using a {@code describeTable}
@@ -34,27 +33,25 @@ public class DynamodbTableMetadataFactory {
     }
 
     private DynamodbKey extractKey(final List<KeySchemaElement> keySchema) {
-        final DocumentPathExpression partitionKey = extractPartitionKey(keySchema);
-        final Optional<DocumentPathExpression> sortKey = extractSortKey(keySchema);
+        final String partitionKey = extractPartitionKey(keySchema);
+        final Optional<String> sortKey = extractSortKey(keySchema);
         return new DynamodbKey(partitionKey, sortKey);
     }
 
-    private DocumentPathExpression extractPartitionKey(final List<KeySchemaElement> keySchema) {
+    private String extractPartitionKey(final List<KeySchemaElement> keySchema) {
         for (final KeySchemaElement keySchemaElement : keySchema) {
             if (keySchemaElement.getKeyType().equals("HASH")) {
-                final String keyName = keySchemaElement.getAttributeName();
-                return new DocumentPathExpression.Builder().addObjectLookup(keyName).build();
+                return keySchemaElement.getAttributeName();
             }
         }
         throw new IllegalStateException("Could not find partition key. "
                 + "This should not happen because each Dynamodb table must define a partition key.");
     }
 
-    private Optional<DocumentPathExpression> extractSortKey(final List<KeySchemaElement> keySchema) {
+    private Optional<String> extractSortKey(final List<KeySchemaElement> keySchema) {
         for (final KeySchemaElement keySchemaElement : keySchema) {
             if (keySchemaElement.getKeyType().equals("RANGE")) {
-                final String keyName = keySchemaElement.getAttributeName();
-                return Optional.of(new DocumentPathExpression.Builder().addObjectLookup(keyName).build());
+                return Optional.of(keySchemaElement.getAttributeName());
             }
         }
         return Optional.empty();
