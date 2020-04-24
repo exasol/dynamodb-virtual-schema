@@ -26,6 +26,8 @@ public class ExasolTestInterface {
     private static final Logger LOGGER = LoggerFactory.getLogger(ExasolTestInterface.class);
     private static final String VIRTUAL_SCHEMAS_JAR_NAME_AND_VERSION = "dynamodb-virtual-schemas-adapter-dist-0.2.0.jar";
     private static final Path PATH_TO_VIRTUAL_SCHEMAS_JAR = Path.of("target", VIRTUAL_SCHEMAS_JAR_NAME_AND_VERSION);
+    private static final String JACOCO_JAR_NAME = "org.jacoco.agent-runtime.jar";
+    private static final Path PATH_TO_JACOCO_JAR = Path.of("target","jacoco-agent", JACOCO_JAR_NAME);
     private final ExasolContainer<? extends ExasolContainer<?>> container;
     private final Statement statement;
 
@@ -56,6 +58,8 @@ public class ExasolTestInterface {
     public void uploadDynamodbAdapterJar() throws InterruptedException, BucketAccessException, TimeoutException {
         final Bucket bucket = this.container.getDefaultBucket();
         bucket.uploadFile(PATH_TO_VIRTUAL_SCHEMAS_JAR, VIRTUAL_SCHEMAS_JAR_NAME_AND_VERSION);
+        bucket.uploadFile(PATH_TO_JACOCO_JAR, JACOCO_JAR_NAME);
+
     }
 
     public void uploadMapping(final String name) throws InterruptedException, BucketAccessException, TimeoutException {
@@ -100,16 +104,21 @@ public class ExasolTestInterface {
      * @throws SQLException on SQL error
      */
     public void createAdapterScript() throws SQLException {
+
+
         createTestSchema(ADAPTER_SCHEMA);
         final StringBuilder statementBuilder = new StringBuilder(
                 "CREATE OR REPLACE JAVA ADAPTER SCRIPT " + ADAPTER_SCHEMA + "." + DYNAMODB_ADAPTER + " AS\n");
         final String hostIp = getTestHostIpAddress();
 
+
+        final StringBuilder jvmOptions = new StringBuilder("-javaagent:/buckets/bfsdefault/default/"+ JACOCO_JAR_NAME + "=destfile=/buckets/bfsdefault/default/jacoco-it2.exec");
         if (hostIp != null && !isNoDebugSystemPropertySet()) {
             // noinspection SpellCheckingInspection
-            statementBuilder.append("  %jvmoption -agentlib:jdwp=transport=dt_socket,server=n,address=").append(hostIp)
-                    .append(":8000,suspend=y;\n");
+            jvmOptions.append(" -agentlib:jdwp=transport=dt_socket,server=n,address=").append(hostIp)
+                    .append(":8000,suspend=y");
         }
+        statementBuilder.append("  %jvmoption ").append(jvmOptions).append(";\n");
         // noinspection SpellCheckingInspection
         statementBuilder.append("    %scriptclass com.exasol.adapter.RequestDispatcher;\n");
         statementBuilder.append("    %jar /buckets/bfsdefault/default/" + VIRTUAL_SCHEMAS_JAR_NAME_AND_VERSION + ";\n");
