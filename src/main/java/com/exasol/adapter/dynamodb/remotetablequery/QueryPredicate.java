@@ -1,4 +1,4 @@
-package com.exasol.adapter.dynamodb.queryplan;
+package com.exasol.adapter.dynamodb.remotetablequery;
 
 import java.io.Serializable;
 
@@ -7,6 +7,6 @@ import java.io.Serializable;
  * modeled.
  */
 @java.lang.SuppressWarnings("squid:S119") // DocumentVisitorType does not fit naming conventions.
-public interface DocumentQueryPredicate<DocumentVisitorType> extends Serializable {
+public interface QueryPredicate<DocumentVisitorType> extends Serializable {
     void accept(QueryPredicateVisitor<DocumentVisitorType> visitor);
 }

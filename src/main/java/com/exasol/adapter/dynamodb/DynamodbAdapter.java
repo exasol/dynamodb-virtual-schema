@@ -19,10 +19,10 @@ import com.exasol.adapter.capabilities.PredicateCapability;
 import com.exasol.adapter.dynamodb.documentnode.dynamodb.DynamodbNodeVisitor;
 import com.exasol.adapter.dynamodb.literalconverter.dynamodb.SqlLiteralToDynamodbValueConverter;
 import com.exasol.adapter.dynamodb.mapping.*;
-import com.exasol.adapter.dynamodb.queryplan.DocumentQuery;
-import com.exasol.adapter.dynamodb.queryplan.DocumentQueryFactory;
-import com.exasol.adapter.dynamodb.queryplan.RowMapper;
 import com.exasol.adapter.dynamodb.queryrunner.DynamodbQueryRunner;
+import com.exasol.adapter.dynamodb.remotetablequery.RemoteTableQuery;
+import com.exasol.adapter.dynamodb.remotetablequery.RemoteTableQueryFactory;
+import com.exasol.adapter.dynamodb.remotetablequery.RowMapper;
 import com.exasol.adapter.metadata.SchemaMetadata;
 import com.exasol.adapter.request.*;
 import com.exasol.adapter.response.*;
@@ -33,6 +33,8 @@ import com.exasol.sql.expression.ValueExpression;
  * DynamoDB Virtual Schema adapter.
  */
 public class DynamodbAdapter implements VirtualSchemaAdapter {
+    private static final Capabilities CAPABILITIES = Capabilities.builder().addMain(FILTER_EXPRESSIONS)
+            .addPredicate(PredicateCapability.EQUAL).addLiteral(LiteralCapability.STRING).build();
 
     @Override
     public CreateVirtualSchemaResponse createVirtualSchema(final ExaMetadata exaMetadata,
@@ -91,12 +93,9 @@ public class DynamodbAdapter implements VirtualSchemaAdapter {
     @Override
     public GetCapabilitiesResponse getCapabilities(final ExaMetadata exaMetadata,
             final GetCapabilitiesRequest getCapabilitiesRequest) {
-        final Capabilities.Builder builder = Capabilities.builder();
-        final Capabilities capabilities = builder.addMain(FILTER_EXPRESSIONS).addPredicate(PredicateCapability.EQUAL)
-                .addLiteral(LiteralCapability.STRING).build();
         return GetCapabilitiesResponse //
                 .builder()//
-                .capabilities(capabilities)//
+                .capabilities(CAPABILITIES)//
                 .build();
     }
 
@@ -117,24 +116,24 @@ public class DynamodbAdapter implements VirtualSchemaAdapter {
 
     private PushDownResponse runPushdown(final ExaMetadata exaMetadata, final PushDownRequest request)
             throws AdapterException, ExaConnectionAccessException, IOException {
-        final DocumentQuery<DynamodbNodeVisitor> documentQuery = new DocumentQueryFactory<DynamodbNodeVisitor>(
+        final RemoteTableQuery<DynamodbNodeVisitor> remoteTableQuery = new RemoteTableQueryFactory<DynamodbNodeVisitor>(
                 new SqlLiteralToDynamodbValueConverter()).build(request.getSelect(), getSchemaMetadata(request));
-        final String selectFromValuesStatement = runQuery(exaMetadata, request, documentQuery);
+        final String selectFromValuesStatement = runQuery(exaMetadata, request, remoteTableQuery);
         return PushDownResponse.builder()//
                 .pushDownSql(selectFromValuesStatement)//
                 .build();
     }
 
     private String runQuery(final ExaMetadata exaMetadata, final PushDownRequest request,
-            final DocumentQuery documentQuery) throws ExaConnectionAccessException {
+            final RemoteTableQuery remoteTableQuery) throws ExaConnectionAccessException {
         final DynamodbQueryRunner dynamodbQueryRunner = new DynamodbQueryRunner(
                 getConnectionInformation(exaMetadata, request));
-        final RowMapper<DynamodbNodeVisitor> rowMapper = new RowMapper<>(documentQuery,
+        final RowMapper<DynamodbNodeVisitor> rowMapper = new RowMapper<>(remoteTableQuery,
                 new DynamodbValueMapperFactory());
         final List<List<ValueExpression>> resultRows = new ArrayList<>();
-        dynamodbQueryRunner.runQuery(documentQuery, request.getSelect())
+        dynamodbQueryRunner.runQuery(remoteTableQuery, request.getSelect())
                 .forEach(dynamodbRow -> resultRows.add(rowMapper.mapRow(dynamodbRow)));
-        return new ValueExpressionsToSqlSelectFromValuesConverter().convert(documentQuery, resultRows);
+        return new ValueExpressionsToSqlSelectFromValuesConverter().convert(remoteTableQuery, resultRows);
     }
 
     private ExaConnectionInformation getConnectionInformation(final ExaMetadata exaMetadata,

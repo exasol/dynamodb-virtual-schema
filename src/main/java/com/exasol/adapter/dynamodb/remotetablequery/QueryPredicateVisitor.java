@@ -1,15 +1,13 @@
-package com.exasol.adapter.dynamodb.queryplan;
+package com.exasol.adapter.dynamodb.remotetablequery;
 
 /**
- * Visitor for {@link DocumentQueryPredicate}.
+ * Visitor for {@link QueryPredicate}.
  */
 @java.lang.SuppressWarnings("squid:S119") // DocumentVisitorType does not fit naming conventions.
 public interface QueryPredicateVisitor<DocumentVisitorType> {
     public void visit(ColumnLiteralComparisonPredicate<DocumentVisitorType> columnLiteralComparisonPredicate);
 
-    public void visit(AndPredicate<DocumentVisitorType> andPredicate);
-
-    public void visit(OrPredicate<DocumentVisitorType> orPredicate);
+    public void visit(BinaryLogicalOperator<DocumentVisitorType> binaryLogicalOperator);
 
     public void visit(NoPredicate<DocumentVisitorType> noPredicate);
 }

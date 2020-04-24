@@ -12,13 +12,13 @@ import com.exasol.adapter.dynamodb.documentpath.DocumentPathExpression;
 import com.exasol.adapter.dynamodb.mapping.AbstractColumnMappingDefinition;
 import com.exasol.adapter.dynamodb.mapping.TableMappingDefinition;
 import com.exasol.adapter.dynamodb.mapping.tojsonmapping.ToJsonColumnMappingDefinition;
-import com.exasol.adapter.dynamodb.queryplan.DocumentQueryMappingInterface;
+import com.exasol.adapter.dynamodb.remotetablequery.RemoteTableQueryMappingInterface;
 import com.exasol.sql.expression.StringLiteral;
 import com.exasol.sql.expression.ValueExpression;
 
 public class ValueExpressionsToSqlSelectFromValuesConverterTest {
-    DocumentQueryMappingInterface getDocumentQueryStub() {
-        return new DocumentQueryMappingInterface() {
+    RemoteTableQueryMappingInterface getDocumentQueryStub() {
+        return new RemoteTableQueryMappingInterface() {
             @Override
             public TableMappingDefinition getFromTable() {
                 return null;

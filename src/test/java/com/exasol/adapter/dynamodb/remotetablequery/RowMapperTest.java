@@ -1,9 +1,8 @@
-package com.exasol.adapter.dynamodb.queryplan;
+package com.exasol.adapter.dynamodb.remotetablequery;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -26,9 +25,9 @@ public class RowMapperTest {
                 new AbstractColumnMappingDefinition.ConstructorParameters("test",
                         new DocumentPathExpression.Builder().build(),
                         AbstractColumnMappingDefinition.LookupFailBehaviour.EXCEPTION));
-        final DocumentQuery<DynamodbNodeVisitor> documentQuery = new DocumentQuery<>(null, List.of(mappingDefinition),
-                new AndPredicate<DynamodbNodeVisitor>(Collections.emptyList()));
-        final List<ValueExpression> exasolRow = new RowMapper<DynamodbNodeVisitor>(documentQuery,
+        final RemoteTableQuery<DynamodbNodeVisitor> remoteTableQuery = new RemoteTableQuery<>(null,
+                List.of(mappingDefinition), new NoPredicate<>());
+        final List<ValueExpression> exasolRow = new RowMapper<DynamodbNodeVisitor>(remoteTableQuery,
                 new DynamodbValueMapperFactory())
                         .mapRow(new DynamodbMap(Map.of("testKey", AttributeValueQuickCreator.forString("testValue"))));
         assertThat(exasolRow.get(0).toString(), equalTo("{\"testKey\":\"testValue\"}"));

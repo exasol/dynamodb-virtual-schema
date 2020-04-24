@@ -1,4 +1,4 @@
-package com.exasol.adapter.dynamodb.queryplan;
+package com.exasol.adapter.dynamodb.remotetablequery;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -15,33 +15,33 @@ import com.exasol.adapter.metadata.TableMetadata;
 import com.exasol.adapter.sql.*;
 
 /**
- * Visitor for {@link com.exasol.adapter.sql.SqlStatementSelect} building a {@link DocumentQuery}
+ * Visitor for {@link com.exasol.adapter.sql.SqlStatementSelect} building a {@link RemoteTableQuery}
  */
 @java.lang.SuppressWarnings("squid:S119") // DocumentVisitorType does not fit naming conventions.
-public class DocumentQueryFactory<DocumentVisitorType> {
-    private final DocumentQueryPredicateFactory<DocumentVisitorType> predicateFactory;
+public class RemoteTableQueryFactory<DocumentVisitorType> {
+    private final QueryPredicateFactory<DocumentVisitorType> predicateFactory;
 
-    public DocumentQueryFactory(final SqlLiteralToDocumentValueConverter<DocumentVisitorType> literalConverter) {
-        this.predicateFactory = new DocumentQueryPredicateFactory<>(literalConverter);
+    public RemoteTableQueryFactory(final SqlLiteralToDocumentValueConverter<DocumentVisitorType> literalConverter) {
+        this.predicateFactory = new QueryPredicateFactory<>(literalConverter);
     }
 
     /**
-     * Builds the {@link DocumentQuery} from an {@link SqlStatementSelect}
+     * Builds the {@link RemoteTableQuery} from an {@link SqlStatementSelect}
      * 
      * @param selectStatement select statement
      * @param schemaMetadata  metadata of the schema
-     * @return {@link DocumentQuery}
+     * @return {@link RemoteTableQuery}
      */
-    public DocumentQuery<DocumentVisitorType> build(final SqlStatement selectStatement,
+    public RemoteTableQuery<DocumentVisitorType> build(final SqlStatement selectStatement,
             final SchemaMetadata schemaMetadata) throws AdapterException {
         final Visitor visitor = new Visitor();
         selectStatement.accept(visitor);
         final SchemaMappingDefinitionToSchemaMetadataConverter converter = new SchemaMappingDefinitionToSchemaMetadataConverter();
         final TableMappingDefinition tableMappingDefinition = converter.convertBackTable(visitor.tableMetadata,
                 schemaMetadata);
-        final DocumentQueryPredicate<DocumentVisitorType> selection = this.predicateFactory
+        final QueryPredicate<DocumentVisitorType> selection = this.predicateFactory
                 .buildPredicateFor(visitor.getWhereClause());
-        return new DocumentQuery<>(tableMappingDefinition, Collections.unmodifiableList(visitor.resultColumns),
+        return new RemoteTableQuery<>(tableMappingDefinition, Collections.unmodifiableList(visitor.resultColumns),
                 selection);
     }
 

@@ -1,10 +1,10 @@
-package com.exasol.adapter.dynamodb.queryplan;
+package com.exasol.adapter.dynamodb.remotetablequery;
 
 /**
  * This class represents a comparison between two values.
  */
 @java.lang.SuppressWarnings("squid:S119") // DocumentVisitorType does not fit naming conventions.
-public abstract class ComparisonPredicate<DocumentVisitorType> implements DocumentQueryPredicate<DocumentVisitorType> {
+public abstract class ComparisonPredicate<DocumentVisitorType> implements QueryPredicate<DocumentVisitorType> {
     private static final long serialVersionUID = 3143229347002333048L;
     private final Operator operator;
 

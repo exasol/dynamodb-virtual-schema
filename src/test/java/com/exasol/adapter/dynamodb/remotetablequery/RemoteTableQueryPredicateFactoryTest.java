@@ -1,4 +1,4 @@
-package com.exasol.adapter.dynamodb.queryplan;
+package com.exasol.adapter.dynamodb.remotetablequery;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
@@ -13,7 +13,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import com.exasol.adapter.dynamodb.documentnode.DocumentValue;
-import com.exasol.adapter.dynamodb.literalconverter.NotALiteralException;
+import com.exasol.adapter.dynamodb.literalconverter.NotLiteralException;
 import com.exasol.adapter.dynamodb.literalconverter.SqlLiteralToDocumentValueConverter;
 import com.exasol.adapter.dynamodb.mapping.AbstractColumnMappingDefinition;
 import com.exasol.adapter.dynamodb.mapping.SchemaMappingDefinitionToSchemaMetadataConverter;
@@ -21,19 +21,18 @@ import com.exasol.adapter.dynamodb.mapping.tojsonmapping.ToJsonColumnMappingDefi
 import com.exasol.adapter.metadata.ColumnMetadata;
 import com.exasol.adapter.sql.*;
 
-class DocumentQueryPredicateFactoryTest {
+class RemoteTableQueryPredicateFactoryTest {
     private static final AbstractColumnMappingDefinition COLUMN_MAPPING = new ToJsonColumnMappingDefinition(
             new AbstractColumnMappingDefinition.ConstructorParameters("name", null, null));
     private static final DocumentValue<Object> LITERAL = (DocumentValue<Object>) visitor -> {
     };
     private static final SqlLiteralToDocumentValueConverter<Object> LITERAL_FACTORY = new SqlLiteralToDocumentValueConverter<Object>() {
         @Override
-        public DocumentValue<Object> convert(final SqlNode exasolLiteralNode) throws NotALiteralException {
+        public DocumentValue<Object> convert(final SqlNode exasolLiteralNode) throws NotLiteralException {
             return LITERAL;
         }
     };
-    private static final DocumentQueryPredicateFactory<Object> FACTORY = new DocumentQueryPredicateFactory<Object>(
-            LITERAL_FACTORY);
+    private static final QueryPredicateFactory<Object> FACTORY = new QueryPredicateFactory<Object>(LITERAL_FACTORY);
     private static ColumnMetadata columnMetadata;
     private static SqlNode validColumnLiteralEqualityPredicate;
 
@@ -51,18 +50,26 @@ class DocumentQueryPredicateFactoryTest {
 
     @Test
     void testBuildAndPredicate() {
-        final AndPredicate<Object> andPredicate = (AndPredicate<Object>) FACTORY
+        final BinaryLogicalOperator<Object> binaryLogicalOperator = (BinaryLogicalOperator<Object>) FACTORY
                 .buildPredicateFor(new SqlPredicateAnd(List.of(validColumnLiteralEqualityPredicate)));
-        assertThat(andPredicate.getAndedPredicates().size(), equalTo(1));
-        assertThat(andPredicate.getAndedPredicates().get(0), instanceOf(ColumnLiteralComparisonPredicate.class));
+        assertAll(//
+                () -> assertThat(binaryLogicalOperator.getOperands().size(), equalTo(1)),
+                () -> assertThat(binaryLogicalOperator.getOperands().get(0),
+                        instanceOf(ColumnLiteralComparisonPredicate.class)),
+                () -> assertThat(binaryLogicalOperator.getOperator(), equalTo(BinaryLogicalOperator.Operator.AND))//
+        );
     }
 
     @Test
     void testBuildOrPredicate() {
-        final OrPredicate<Object> orPredicate = (OrPredicate<Object>) FACTORY
+        final BinaryLogicalOperator<Object> binaryLogicalOperator = (BinaryLogicalOperator<Object>) FACTORY
                 .buildPredicateFor(new SqlPredicateOr(List.of(validColumnLiteralEqualityPredicate)));
-        assertThat(orPredicate.getOredPredicates().size(), equalTo(1));
-        assertThat(orPredicate.getOredPredicates().get(0), instanceOf(ColumnLiteralComparisonPredicate.class));
+        assertAll(//
+                () -> assertThat(binaryLogicalOperator.getOperands().size(), equalTo(1)),
+                () -> assertThat(binaryLogicalOperator.getOperands().get(0),
+                        instanceOf(ColumnLiteralComparisonPredicate.class)),
+                () -> assertThat(binaryLogicalOperator.getOperator(), equalTo(BinaryLogicalOperator.Operator.OR))//
+        );
     }
 
     @Test
