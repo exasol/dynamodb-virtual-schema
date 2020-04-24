@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import com.exasol.adapter.dynamodb.remotetablequery.*;
 import org.junit.jupiter.api.Test;
 
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
@@ -18,6 +17,7 @@ import com.exasol.adapter.dynamodb.documentnode.dynamodb.DynamodbNodeVisitor;
 import com.exasol.adapter.dynamodb.documentnode.dynamodb.DynamodbString;
 import com.exasol.adapter.dynamodb.dynamodbmetadata.DynamodbKey;
 import com.exasol.adapter.dynamodb.dynamodbmetadata.DynamodbTableMetadata;
+import com.exasol.adapter.dynamodb.remotetablequery.*;
 
 public class DynamodbGetItemQueryPlanFactoryTest {
     final TestSetup testSetup;
