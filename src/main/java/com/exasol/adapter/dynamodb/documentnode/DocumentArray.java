@@ -13,7 +13,7 @@ public interface DocumentArray<VisitorType> extends DocumentNode<VisitorType> {
      * 
      * @return list of document nodes.
      */
-    public List<DocumentNode<VisitorType>> getValuesList();
+    public List<? extends DocumentNode<VisitorType>> getValuesList();
 
     /**
      * Gives a document node for an specific element of the wrapped array.

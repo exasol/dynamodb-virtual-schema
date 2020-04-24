@@ -4,6 +4,10 @@ import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.exasol.adapter.dynamodb.documentnode.DocumentNode;
 import com.exasol.adapter.dynamodb.documentnode.DocumentValue;
 
+import java.nio.ByteBuffer;
+import java.util.List;
+import java.util.stream.Collectors;
+
 /**
  * This class converts a {@link DocumentValue <DynamodbNodeVisitor>} into a DynamoDB {@link AttributeValue}.
  */
@@ -51,7 +55,8 @@ public class DynamodbNodeToAttributeValueConverter {
 
         @Override
         public void visit(final DynamodbBinarySet binarySet) {
-            this.result.setBS(binarySet.getValue());
+            final List<ByteBuffer> byteSet = binarySet.getValuesList().stream().map(DynamodbBinary::getValue).collect(Collectors.toList());
+            this.result.setBS(byteSet);
         }
 
         @Override

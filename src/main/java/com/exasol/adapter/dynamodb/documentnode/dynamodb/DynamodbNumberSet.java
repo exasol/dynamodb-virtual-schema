@@ -24,12 +24,12 @@ public class DynamodbNumberSet implements DocumentArray<DynamodbNodeVisitor> {
     }
 
     @Override
-    public List<DocumentNode<DynamodbNodeVisitor>> getValuesList() {
+    public List<DynamodbNumber> getValuesList() {
         return this.value.stream().map(DynamodbNumber::new).collect(Collectors.toList());
     }
 
     @Override
-    public DocumentNode<DynamodbNodeVisitor> getValue(final int index) {
+    public DynamodbNumber getValue(final int index) {
         return this.getValuesList().get(index);
     }
 

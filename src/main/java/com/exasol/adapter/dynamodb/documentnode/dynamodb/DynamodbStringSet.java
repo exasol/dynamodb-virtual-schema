@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.exasol.adapter.dynamodb.documentnode.DocumentArray;
-import com.exasol.adapter.dynamodb.documentnode.DocumentNode;
 
 /**
  * This class represents a DynamoDB string set value.
@@ -24,12 +23,12 @@ public class DynamodbStringSet implements DocumentArray<DynamodbNodeVisitor> {
     }
 
     @Override
-    public List<DocumentNode<DynamodbNodeVisitor>> getValuesList() {
+    public List<DynamodbString> getValuesList() {
         return this.value.stream().map(DynamodbString::new).collect(Collectors.toList());
     }
 
     @Override
-    public DocumentNode<DynamodbNodeVisitor> getValue(final int index) {
+    public DynamodbString getValue(final int index) {
         return this.getValuesList().get(index);
     }
 

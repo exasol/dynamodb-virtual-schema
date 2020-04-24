@@ -17,7 +17,7 @@ public class LinearDocumentPathWalker<VisitorType> {
      * @param pathExpression Path definition. Must not contain {@link ArrayAllPathSegment}s.
      * @throws DocumentPathWalkerException if path contains {@link ArrayAllPathSegment}s.
      */
-    public LinearDocumentPathWalker(final DocumentPathExpression pathExpression) throws DocumentPathWalkerException {
+    public LinearDocumentPathWalker(final DocumentPathExpression pathExpression) {
         checkPathIsLinear(pathExpression);
         this.documentPathWalker = new DocumentPathWalker<>(pathExpression);
     }
@@ -30,12 +30,11 @@ public class LinearDocumentPathWalker<VisitorType> {
      * @return documents attribute described in {@link DocumentPathExpression}
      * @throws DocumentPathWalkerException if defined path does not exist in the given document
      */
-    public DocumentNode<VisitorType> walkThroughDocument(final DocumentNode<VisitorType> rootNode)
-            throws DocumentPathWalkerException {
+    public DocumentNode<VisitorType> walkThroughDocument(final DocumentNode<VisitorType> rootNode) {
         return this.documentPathWalker.walkThroughDocument(rootNode).get(0);
     }
 
-    private void checkPathIsLinear(final DocumentPathExpression pathExpression) throws DocumentPathWalkerException {
+    private void checkPathIsLinear(final DocumentPathExpression pathExpression){
         for (final PathSegment pathSegment : pathExpression.getPath()) {
             if (pathSegment instanceof ArrayAllPathSegment) {
                 throw new DocumentPathWalkerException(
