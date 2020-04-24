@@ -1,4 +1,4 @@
-package com.exasol.adapter.dynamodb.documentquery;
+package com.exasol.adapter.dynamodb.remotetablequery;
 
 import java.util.List;
 
@@ -9,21 +9,22 @@ import com.exasol.adapter.dynamodb.mapping.TableMappingDefinition;
  * This class represents the whole query inside of one document.
  */
 @java.lang.SuppressWarnings("squid:S119") // DocumentVisitorType does not fit naming conventions.
-public class DocumentQuery<DocumentVisitorType> implements DocumentQueryMappingInterface {
+public class RemoteTableQuery<DocumentVisitorType> implements RemoteTableQueryMappingInterface {
 
     private final TableMappingDefinition fromTable;
     private final List<AbstractColumnMappingDefinition> selectList;
-    private final DocumentQueryPredicate<DocumentVisitorType> selection;
+    private final QueryPredicate<DocumentVisitorType> selection;
 
     /**
-     * Creates an instance of {@link DocumentQuery}.
+     * Creates an instance of {@link RemoteTableQuery}.
      * 
      * @param fromTable  remote table to query
      * @param selectList in correct order
      * @param selection  where clause
      */
-    public DocumentQuery(final TableMappingDefinition fromTable, final List<AbstractColumnMappingDefinition> selectList,
-            final DocumentQueryPredicate<DocumentVisitorType> selection) {
+    public RemoteTableQuery(final TableMappingDefinition fromTable,
+            final List<AbstractColumnMappingDefinition> selectList,
+            final QueryPredicate<DocumentVisitorType> selection) {
         this.fromTable = fromTable;
         this.selectList = selectList;
         this.selection = selection;
@@ -49,7 +50,7 @@ public class DocumentQuery<DocumentVisitorType> implements DocumentQueryMappingI
      * 
      * @return Predicate representing the selection
      */
-    public DocumentQueryPredicate<DocumentVisitorType> getSelection() {
+    public QueryPredicate<DocumentVisitorType> getSelection() {
         return this.selection;
     }
 }

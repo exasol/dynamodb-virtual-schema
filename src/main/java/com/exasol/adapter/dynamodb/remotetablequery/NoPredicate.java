@@ -1,10 +1,10 @@
-package com.exasol.adapter.dynamodb.documentquery;
+package com.exasol.adapter.dynamodb.remotetablequery;
 
 /**
  * This class represents the absence of a selection predicate.
  */
 @java.lang.SuppressWarnings("squid:S119") // DocumentVisitorType does not fit naming conventions.
-public class NoPredicate<DocumentVisitorType> implements DocumentQueryPredicate<DocumentVisitorType> {
+public class NoPredicate<DocumentVisitorType> implements QueryPredicate<DocumentVisitorType> {
     private static final long serialVersionUID = -7964488054466482230L;
 
     @Override

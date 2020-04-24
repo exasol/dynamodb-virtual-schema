@@ -1,4 +1,4 @@
-package com.exasol.adapter.dynamodb.documentquery;
+package com.exasol.adapter.dynamodb.remotetablequery;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -12,31 +12,30 @@ import com.exasol.adapter.dynamodb.mapping.SchemaMappingDefinitionToSchemaMetada
 import com.exasol.adapter.sql.*;
 
 /**
- * This class builds a{@link DocumentQueryPredicate} structure from a {@link SqlStatementSelect}s where clause. The new
+ * This class builds a{@link QueryPredicate} structure from a {@link SqlStatementSelect}s where clause. The new
  * structure represents the same conditional logic but uses deserialized column definitions, literals of the remote
  * database and is serializable.
  */
 @java.lang.SuppressWarnings("squid:S119") // DocumentVisitorType does not fit naming conventions.
-public class DocumentQueryPredicateFactory<DocumentVisitorType> {
+public class QueryPredicateFactory<DocumentVisitorType> {
     private final SqlLiteralToDocumentValueConverter<DocumentVisitorType> literalConverter;
 
     /**
-     * Creates an instance of {@link DocumentQueryPredicateFactory}.
+     * Creates an instance of {@link QueryPredicateFactory}.
      * 
      * @param literalConverter implementation specific converter for literals
      */
-    public DocumentQueryPredicateFactory(
-            final SqlLiteralToDocumentValueConverter<DocumentVisitorType> literalConverter) {
+    public QueryPredicateFactory(final SqlLiteralToDocumentValueConverter<DocumentVisitorType> literalConverter) {
         this.literalConverter = literalConverter;
     }
 
     /**
-     * Converts the given SQL predicate into a {@link DocumentQueryPredicate} structure.
+     * Converts the given SQL predicate into a {@link QueryPredicate} structure.
      * 
      * @param sqlPredicate SQL predicate to convert
-     * @return {@link DocumentQueryPredicate} structure
+     * @return {@link QueryPredicate} structure
      */
-    public DocumentQueryPredicate<DocumentVisitorType> buildPredicateFor(final SqlNode sqlPredicate) {
+    public QueryPredicate<DocumentVisitorType> buildPredicateFor(final SqlNode sqlPredicate) {
         if (sqlPredicate == null) {
             return new NoPredicate<>();
         } else {
@@ -52,7 +51,7 @@ public class DocumentQueryPredicateFactory<DocumentVisitorType> {
     }
 
     private class Visitor extends VoidSqlNodeVisitor {
-        private DocumentQueryPredicate<DocumentVisitorType> predicate;
+        private QueryPredicate<DocumentVisitorType> predicate;
 
         @Override
         public Void visit(final SqlPredicateEqual sqlPredicateEqual) {
@@ -81,7 +80,7 @@ public class DocumentQueryPredicateFactory<DocumentVisitorType> {
             try {
                 final AbstractColumnMappingDefinition columnMapping = new SchemaMappingDefinitionToSchemaMetadataConverter()
                         .convertBackColumn(column.getMetadata());
-                final DocumentValue<DocumentVisitorType> literalValue = DocumentQueryPredicateFactory.this.literalConverter
+                final DocumentValue<DocumentVisitorType> literalValue = QueryPredicateFactory.this.literalConverter
                         .convert(literal);
                 this.predicate = new ColumnLiteralComparisonPredicate<>(operator, columnMapping, literalValue);
             } catch (final NotLiteralException e) {
@@ -104,13 +103,13 @@ public class DocumentQueryPredicateFactory<DocumentVisitorType> {
             return null;
         }
 
-        private List<DocumentQueryPredicate<DocumentVisitorType>> convertPredicates(final List<SqlNode> sqlPredicates) {
-            final DocumentQueryPredicateFactory<DocumentVisitorType> factory = new DocumentQueryPredicateFactory<>(
-                    DocumentQueryPredicateFactory.this.literalConverter);
+        private List<QueryPredicate<DocumentVisitorType>> convertPredicates(final List<SqlNode> sqlPredicates) {
+            final QueryPredicateFactory<DocumentVisitorType> factory = new QueryPredicateFactory<>(
+                    QueryPredicateFactory.this.literalConverter);
             return sqlPredicates.stream().map(factory::buildPredicateFor).collect(Collectors.toList());
         }
 
-        private DocumentQueryPredicate<DocumentVisitorType> getPredicate() {
+        private QueryPredicate<DocumentVisitorType> getPredicate() {
             return this.predicate;
         }
     }

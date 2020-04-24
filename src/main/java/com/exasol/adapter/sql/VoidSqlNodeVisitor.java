@@ -1,11 +1,11 @@
 package com.exasol.adapter.sql;
 
 import com.exasol.adapter.AdapterException;
-import com.exasol.adapter.dynamodb.documentquery.DocumentQueryFactory;
+import com.exasol.adapter.dynamodb.remotetablequery.RemoteTableQueryFactory;
 
 /**
  * Facade for the {@link SqlNodeVisitor} interface implementing all methods with unsupported exception. This class is
- * used for keeping {@link DocumentQueryFactory} short and readable.
+ * used for keeping {@link RemoteTableQueryFactory} short and readable.
  */
 public abstract class VoidSqlNodeVisitor implements SqlNodeVisitor<Void> {
 

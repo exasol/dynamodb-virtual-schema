@@ -1,8 +1,8 @@
 package com.exasol.adapter.dynamodb.queryrunner;
 
 import com.exasol.adapter.dynamodb.documentnode.dynamodb.DynamodbNodeVisitor;
-import com.exasol.adapter.dynamodb.documentquery.DocumentQuery;
 import com.exasol.adapter.dynamodb.dynamodbmetadata.DynamodbTableMetadata;
+import com.exasol.adapter.dynamodb.remotetablequery.RemoteTableQuery;
 import com.exasol.adapter.sql.SqlStatement;
 
 /**
@@ -19,7 +19,7 @@ class DynamodbQueryPlanner {
      * @param tableMetadata     DynamoDB table metadata for extracting the key structure
      * @return {@link DynamodbQueryPlan}
      */
-    public DynamodbQueryPlan planQuery(final DocumentQuery<DynamodbNodeVisitor> schemaMappingPlan,
+    public DynamodbQueryPlan planQuery(final RemoteTableQuery<DynamodbNodeVisitor> schemaMappingPlan,
             final SqlStatement query, final DynamodbTableMetadata tableMetadata) {
         final String tableName = schemaMappingPlan.getFromTable().getRemoteName();
         return new DynamodbScanQueryPlan(tableName);

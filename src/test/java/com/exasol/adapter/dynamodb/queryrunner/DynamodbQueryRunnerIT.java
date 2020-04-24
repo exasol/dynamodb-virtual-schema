@@ -25,12 +25,12 @@ import com.exasol.adapter.dynamodb.DynamodbTestInterface;
 import com.exasol.adapter.dynamodb.documentnode.DocumentNode;
 import com.exasol.adapter.dynamodb.documentnode.DocumentObject;
 import com.exasol.adapter.dynamodb.documentnode.dynamodb.DynamodbNodeVisitor;
-import com.exasol.adapter.dynamodb.documentquery.DocumentQuery;
-import com.exasol.adapter.dynamodb.documentquery.NoPredicate;
 import com.exasol.adapter.dynamodb.mapping.JsonMappingFactory;
 import com.exasol.adapter.dynamodb.mapping.MappingTestFiles;
 import com.exasol.adapter.dynamodb.mapping.TableMappingDefinition;
 import com.exasol.adapter.dynamodb.mapping.TestDocuments;
+import com.exasol.adapter.dynamodb.remotetablequery.NoPredicate;
+import com.exasol.adapter.dynamodb.remotetablequery.RemoteTableQuery;
 import com.exasol.adapter.sql.SqlSelectList;
 import com.exasol.adapter.sql.SqlStatementSelect;
 import com.exasol.adapter.sql.SqlTable;
@@ -50,14 +50,14 @@ class DynamodbQueryRunnerIT {
     private static DynamodbTestInterface dynamodbTestInterface;
 
     private static TableMappingDefinition tableMapping;
-    private static DocumentQuery<DynamodbNodeVisitor> documentQuery;
+    private static RemoteTableQuery<DynamodbNodeVisitor> remoteTableQuery;
 
     @BeforeAll
     static void beforeAll() throws DynamodbTestInterface.NoNetworkFoundException, SQLException, InterruptedException,
             BucketAccessException, TimeoutException, IOException, AdapterException {
         tableMapping = new JsonMappingFactory(MappingTestFiles.BASIC_MAPPING_FILE).getSchemaMapping().getTableMappings()
                 .get(0);
-        documentQuery = new DocumentQuery<>(tableMapping, tableMapping.getColumns(), new NoPredicate<>());
+        remoteTableQuery = new RemoteTableQuery<>(tableMapping, tableMapping.getColumns(), new NoPredicate<>());
 
         dynamodbTestInterface = new DynamodbTestInterface(LOCAL_DYNAMO, NETWORK);
         dynamodbTestInterface.createTable(tableMapping.getRemoteName(), KEY_NAME);
@@ -104,7 +104,7 @@ class DynamodbQueryRunnerIT {
         final SqlStatementSelect selectStatement = new SqlStatementSelect.Builder()
                 .fromClause(new SqlTable(tableMapping.getExasolName(), null))
                 .selectList(SqlSelectList.createSelectStarSelectList()).build();
-        final List<DocumentNode<DynamodbNodeVisitor>> result = runner.runQuery(documentQuery, selectStatement)
+        final List<DocumentNode<DynamodbNodeVisitor>> result = runner.runQuery(remoteTableQuery, selectStatement)
                 .collect(Collectors.toList());
         assertThat(result.size(), equalTo(3));
         final DocumentObject<DynamodbNodeVisitor> first = (DocumentObject<DynamodbNodeVisitor>) result.get(0);

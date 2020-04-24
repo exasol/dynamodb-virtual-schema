@@ -1,4 +1,4 @@
-package com.exasol.adapter.dynamodb.documentquery;
+package com.exasol.adapter.dynamodb.remotetablequery;
 
 class PredicateTestVisitor implements QueryPredicateVisitor<Object> {
     private Visited visited;

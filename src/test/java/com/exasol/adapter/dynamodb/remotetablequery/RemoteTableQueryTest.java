@@ -1,4 +1,4 @@
-package com.exasol.adapter.dynamodb.documentquery;
+package com.exasol.adapter.dynamodb.remotetablequery;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
@@ -12,19 +12,19 @@ import org.junit.jupiter.api.Test;
 import com.exasol.adapter.dynamodb.mapping.MockColumnMappingDefinition;
 import com.exasol.adapter.dynamodb.mapping.TableMappingDefinition;
 
-public class DocumentQueryTest {
+public class RemoteTableQueryTest {
     @Test
     void testSetAndGetColumns() {
         final MockColumnMappingDefinition columnDefinition = new MockColumnMappingDefinition("", null, null);
         final TableMappingDefinition tableDefinition = TableMappingDefinition.rootTableBuilder("", "")
                 .withColumnMappingDefinition(columnDefinition).build();
-        final DocumentQueryPredicate<Object> selection = new NoPredicate<>();
-        final DocumentQuery<Object> documentQuery = new DocumentQuery<>(tableDefinition, List.of(columnDefinition),
-                selection);
+        final QueryPredicate<Object> selection = new NoPredicate<>();
+        final RemoteTableQuery<Object> remoteTableQuery = new RemoteTableQuery<>(tableDefinition,
+                List.of(columnDefinition), selection);
         assertAll(//
-                () -> assertThat(documentQuery.getSelectList(), containsInAnyOrder(columnDefinition)),
-                () -> assertThat(documentQuery.getFromTable(), equalTo(tableDefinition)),
-                () -> assertThat(documentQuery.getSelection(), equalTo(selection))//
+                () -> assertThat(remoteTableQuery.getSelectList(), containsInAnyOrder(columnDefinition)),
+                () -> assertThat(remoteTableQuery.getFromTable(), equalTo(tableDefinition)),
+                () -> assertThat(remoteTableQuery.getSelection(), equalTo(selection))//
         );
     }
 }

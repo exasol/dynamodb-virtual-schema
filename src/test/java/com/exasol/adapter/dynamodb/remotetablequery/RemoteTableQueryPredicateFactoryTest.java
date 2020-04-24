@@ -1,4 +1,4 @@
-package com.exasol.adapter.dynamodb.documentquery;
+package com.exasol.adapter.dynamodb.remotetablequery;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
@@ -21,7 +21,7 @@ import com.exasol.adapter.dynamodb.mapping.tojsonmapping.ToJsonColumnMappingDefi
 import com.exasol.adapter.metadata.ColumnMetadata;
 import com.exasol.adapter.sql.*;
 
-class DocumentQueryPredicateFactoryTest {
+class RemoteTableQueryPredicateFactoryTest {
     private static final AbstractColumnMappingDefinition COLUMN_MAPPING = new ToJsonColumnMappingDefinition(
             new AbstractColumnMappingDefinition.ConstructorParameters("name", null, null));
     private static final DocumentValue<Object> LITERAL = (DocumentValue<Object>) visitor -> {
@@ -32,8 +32,7 @@ class DocumentQueryPredicateFactoryTest {
             return LITERAL;
         }
     };
-    private static final DocumentQueryPredicateFactory<Object> FACTORY = new DocumentQueryPredicateFactory<Object>(
-            LITERAL_FACTORY);
+    private static final QueryPredicateFactory<Object> FACTORY = new QueryPredicateFactory<Object>(LITERAL_FACTORY);
     private static ColumnMetadata columnMetadata;
     private static SqlNode validColumnLiteralEqualityPredicate;
 

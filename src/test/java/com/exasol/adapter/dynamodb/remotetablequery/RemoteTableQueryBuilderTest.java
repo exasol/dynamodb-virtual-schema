@@ -1,4 +1,4 @@
-package com.exasol.adapter.dynamodb.documentquery;
+package com.exasol.adapter.dynamodb.remotetablequery;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
@@ -24,7 +24,7 @@ import com.exasol.adapter.sql.SqlSelectList;
 import com.exasol.adapter.sql.SqlStatementSelect;
 import com.exasol.adapter.sql.SqlTable;
 
-public class DocumentQueryBuilderTest {
+public class RemoteTableQueryBuilderTest {
     @Test
     void testBuildSelectStar() throws IOException, AdapterException {
         final SchemaMetadata schemaMetadata = new SchemaMappingDefinitionToSchemaMetadataConverter()
@@ -33,7 +33,7 @@ public class DocumentQueryBuilderTest {
         final SqlStatementSelect statement = SqlStatementSelect.builder()
                 .fromClause(new SqlTable(tableMetadata.getName(), tableMetadata))
                 .selectList(SqlSelectList.createSelectStarSelectList()).build();
-        final DocumentQuery<Object> resultTable = new DocumentQueryFactory<Object>(
+        final RemoteTableQuery<Object> resultTable = new RemoteTableQueryFactory<Object>(
                 new SqlLiteralToDocumentValueConverterStub()).build(statement, schemaMetadata);
         final List<String> actualDestinationNames = resultTable.getSelectList().stream()
                 .map(AbstractColumnMappingDefinition::getExasolColumnName).collect(Collectors.toList());
