@@ -10,7 +10,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeoutException;
 
-import com.exasol.JacocoServer;
+import com.exasol.jacoco.JacocoServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,7 +29,7 @@ public class ExasolTestInterface {
     private static final String VIRTUAL_SCHEMAS_JAR_NAME_AND_VERSION = "dynamodb-virtual-schemas-adapter-dist-0.2.0.jar";
     private static final Path PATH_TO_VIRTUAL_SCHEMAS_JAR = Path.of("target", VIRTUAL_SCHEMAS_JAR_NAME_AND_VERSION);
     private static final String JACOCO_JAR_NAME = "org.jacoco.agent-runtime.jar";
-    private static final Path PATH_TO_JACOCO_JAR = Path.of("target","jacoco-agent", JACOCO_JAR_NAME);
+    private static final Path PATH_TO_JACOCO_JAR = Path.of("target", "jacoco-agent", JACOCO_JAR_NAME);
     private final ExasolContainer<? extends ExasolContainer<?>> container;
     private final Statement statement;
     private static final String LOGGER_PORT = "3000";
@@ -42,7 +42,8 @@ public class ExasolTestInterface {
      * @param container exasol test container
      * @throws SQLException on SQL error
      */
-    public ExasolTestInterface(final ExasolContainer<? extends ExasolContainer<?>> container) throws SQLException, IOException {
+    public ExasolTestInterface(final ExasolContainer<? extends ExasolContainer<?>> container)
+            throws SQLException, IOException {
         final Connection connection = container.createConnectionForUser(container.getUsername(),
                 container.getPassword());
         this.statement = connection.createStatement();
@@ -109,7 +110,7 @@ public class ExasolTestInterface {
      * @throws SQLException on SQL error
      */
     public void createAdapterScript() throws SQLException {
-        if(!isNoDebugSystemPropertySet()) {
+        if (!isNoDebugSystemPropertySet()) {
             setScriptOutputAddress();
         }
 
@@ -118,11 +119,13 @@ public class ExasolTestInterface {
                 "CREATE OR REPLACE JAVA ADAPTER SCRIPT " + ADAPTER_SCHEMA + "." + DYNAMODB_ADAPTER + " AS\n");
         final String hostIp = getTestHostIpAddress();
 
-        if(hostIp != null) {
-            String jvmOptions = "-javaagent:/buckets/bfsdefault/default/" + JACOCO_JAR_NAME + "=output=tcpclient,address=" + hostIp + ",port=3002";
+        if (hostIp != null) {
+            String jvmOptions = "-javaagent:/buckets/bfsdefault/default/" + JACOCO_JAR_NAME
+                    + "=output=tcpclient,address=" + hostIp + ",port=3002";
             if (isNoDebugSystemPropertySet()) {
                 // noinspection SpellCheckingInspection
-                jvmOptions += " -agentlib:jdwp=transport=dt_socket,server=n,address=" + hostIp + ":" + DEBUGGER_PORT + ",suspend=y";
+                jvmOptions += " -agentlib:jdwp=transport=dt_socket,server=n,address=" + hostIp + ":" + DEBUGGER_PORT
+                        + ",suspend=y";
             }
             statementBuilder.append("  %jvmoption ").append(jvmOptions).append(";\n");
         }
@@ -137,7 +140,7 @@ public class ExasolTestInterface {
 
     private void setScriptOutputAddress() throws SQLException {
         final String hostIp = getTestHostIpAddress();
-        if(hostIp != null) {
+        if (hostIp != null) {
             final String sql = "ALTER SESSION SET SCRIPT_OUTPUT_ADDRESS='" + hostIp + ":" + SCRIPT_OUTPUT_PORT + "';";
             LOGGER.info(sql);
             this.statement.execute(sql);
@@ -181,7 +184,8 @@ public class ExasolTestInterface {
                 + "   SQL_DIALECT     = 'DYNAMO_DB'\n" + "	  MAPPING = '" + mapping + "'";
         final String hostIp = getTestHostIpAddress();
         if (hostIp != null) {
-            createStatement += "\n   DEBUG_ADDRESS   = '" + hostIp + ":" + LOGGER_PORT + "'\n" + "   LOG_LEVEL       =  'ALL'";
+            createStatement += "\n   DEBUG_ADDRESS   = '" + hostIp + ":" + LOGGER_PORT + "'\n"
+                    + "   LOG_LEVEL       =  'ALL'";
         }
         createStatement += ";";
         this.statement.execute(createStatement);
