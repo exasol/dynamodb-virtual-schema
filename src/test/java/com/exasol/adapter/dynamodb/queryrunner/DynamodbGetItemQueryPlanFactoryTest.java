@@ -6,6 +6,7 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -35,7 +36,7 @@ public class DynamodbGetItemQueryPlanFactoryTest {
                 TABLE_MAPPING.getColumns(), selection);
 
         final DynamodbTableMetadata dynamodbTableMetadata = new DynamodbTableMetadata(
-                new DynamodbKey(COLUMN1_NAME, Optional.empty()), List.of(), List.of());
+                new DynamodbKey(COLUMN1_NAME, Optional.empty()), Collections.emptyList(), Collections.emptyList());
         final DynamodbGetItemQueryPlan getItemPlan = new DynamodbGetItemQueryPlanFactory()
                 .buildGetItemPlanIfPossible(documentQuery, dynamodbTableMetadata);
         final Map<String, AttributeValue> key = getItemPlan.getGetItemRequest().getKey();
@@ -57,7 +58,7 @@ public class DynamodbGetItemQueryPlanFactoryTest {
                 TABLE_MAPPING.getColumns(), selection);
 
         final DynamodbTableMetadata dynamodbTableMetadata = new DynamodbTableMetadata(
-                new DynamodbKey(COLUMN1_NAME, Optional.empty()), List.of(), List.of());
+                new DynamodbKey(COLUMN1_NAME, Optional.empty()), Collections.emptyList(), Collections.emptyList());
         final DynamodbGetItemQueryPlan getItemPlan = new DynamodbGetItemQueryPlanFactory()
                 .buildGetItemPlanIfPossible(documentQuery, dynamodbTableMetadata);
         final Map<String, AttributeValue> key = getItemPlan.getGetItemRequest().getKey();
@@ -80,7 +81,7 @@ public class DynamodbGetItemQueryPlanFactoryTest {
                 TABLE_MAPPING.getColumns(), selection);
 
         final DynamodbTableMetadata dynamodbTableMetadata = new DynamodbTableMetadata(
-                new DynamodbKey(COLUMN1_NAME, Optional.of(COLUMN2_NAME)), List.of(), List.of());
+                new DynamodbKey(COLUMN1_NAME, Optional.of(COLUMN2_NAME)), Collections.emptyList(), Collections.emptyList());
         final DynamodbGetItemQueryPlan getItemPlan = new DynamodbGetItemQueryPlanFactory()
                 .buildGetItemPlanIfPossible(documentQuery, dynamodbTableMetadata);
         final Map<String, AttributeValue> key = getItemPlan.getGetItemRequest().getKey();
@@ -93,7 +94,7 @@ public class DynamodbGetItemQueryPlanFactoryTest {
     @Test
     void testNoSelection() throws IOException, PlanDoesNotFitException {
         final DynamodbTableMetadata dynamodbTableMetadata = new DynamodbTableMetadata(
-                new DynamodbKey(COLUMN1_NAME, Optional.empty()), List.of(), List.of());
+                new DynamodbKey(COLUMN1_NAME, Optional.empty()), Collections.emptyList(), Collections.emptyList());
 
         final RemoteTableQuery<DynamodbNodeVisitor> documentQuery = new RemoteTableQuery<>(TABLE_MAPPING,
                 TABLE_MAPPING.getColumns(), new NoPredicate<>());
@@ -114,7 +115,7 @@ public class DynamodbGetItemQueryPlanFactoryTest {
                 TABLE_MAPPING.getColumns(), selection);
 
         final DynamodbTableMetadata dynamodbTableMetadata = new DynamodbTableMetadata(
-                new DynamodbKey(COLUMN1_NAME, Optional.of(COLUMN2_NAME)), List.of(), List.of());
+                new DynamodbKey(COLUMN1_NAME, Optional.of(COLUMN2_NAME)), Collections.emptyList(), Collections.emptyList());
         final PlanDoesNotFitException exception = assertThrows(PlanDoesNotFitException.class,
                 () -> new DynamodbGetItemQueryPlanFactory().buildGetItemPlanIfPossible(documentQuery,
                         dynamodbTableMetadata));

@@ -9,7 +9,7 @@ import java.util.List;
  * This class allows to express path through a document.
  */
 public class DocumentPathExpression implements Serializable {
-    private static final DocumentPathExpression EMPTY_PATH = new DocumentPathExpression(List.of());
+    private static final DocumentPathExpression EMPTY_PATH = new DocumentPathExpression(Collections.emptyList());
     private static final long serialVersionUID = -5010657725802907603L;
     private final ArrayList<PathSegment> path;
 

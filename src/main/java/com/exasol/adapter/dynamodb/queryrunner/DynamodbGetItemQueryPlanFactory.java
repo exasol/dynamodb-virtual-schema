@@ -27,8 +27,8 @@ public class DynamodbGetItemQueryPlanFactory {
             final RemoteTableQuery<DynamodbNodeVisitor> documentQuery, final DynamodbTableMetadata tableMetadata)
             throws PlanDoesNotFitException {
         final Visitor visitor = new Visitor(tableMetadata);
+        documentQuery.getSelection().accept(visitor);
         try {
-            documentQuery.getSelection().accept(visitor);
             final Map<String, AttributeValue> key = visitor.getPrimaryKey();
             checkIfKeyIsComplete(key, tableMetadata);
             return new DynamodbGetItemQueryPlan(documentQuery.getFromTable().getRemoteName(), key);
@@ -63,7 +63,8 @@ public class DynamodbGetItemQueryPlanFactory {
             final DocumentPathExpression columnPath = columnLiteralComparisonPredicate.getColumn()
                     .getPathToSourceProperty();
             if (columnPath.size() != 1) {
-                return; // This is not an key attribute as it
+                return; // This is not an key attribute as this is a nested attribute and DynamoDB keys must not contain
+                        // nested attributes.
             }
             final AttributeValue attributeValue = new DynamodbNodeToAttributeValueConverter()
                     .convertToAttributeValue(columnLiteralComparisonPredicate.getLiteral());

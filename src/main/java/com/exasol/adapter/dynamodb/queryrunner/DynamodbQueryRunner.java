@@ -29,15 +29,16 @@ public class DynamodbQueryRunner {
 
     /**
      * Executes a query on DynamoDB.
-     *
+     * 
+     * @param remoteTableQuery the query to run
      * @return stream of results
      */
     public Stream<DocumentNode<DynamodbNodeVisitor>> runQuery(
-            final RemoteTableQuery<DynamodbNodeVisitor> documentQuery) {
+            final RemoteTableQuery<DynamodbNodeVisitor> remoteTableQuery) {
         final AmazonDynamoDB client = getConnection();
         final DynamodbTableMetadata tableMetadata = new DynamodbTableMetadataFactory().buildMetadataForTable(client,
-                documentQuery.getFromTable().getRemoteName());
-        final DynamodbQueryPlan queryPlan = new DynamodbQueryPlanner().planQuery(documentQuery, tableMetadata);
+                remoteTableQuery.getFromTable().getRemoteName());
+        final DynamodbQueryPlan queryPlan = new DynamodbQueryPlanner().planQuery(remoteTableQuery, tableMetadata);
         return queryPlan.run(client).map(DynamodbMap::new);
     }
 

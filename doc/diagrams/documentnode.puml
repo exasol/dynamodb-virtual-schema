@@ -4,7 +4,7 @@ interface DocumentNode<VisitorType>{
 {abstract} accept(VisitorType)
 }
 interface DocumentArray<VisitorType>{
-{abstract} getValueList()
+{abstract} getValueList() : List<DocumentNode<? extends VisitorType>>
 {abstract} getValue(index)
 }
 interface DocumentObject<VisitorType>{

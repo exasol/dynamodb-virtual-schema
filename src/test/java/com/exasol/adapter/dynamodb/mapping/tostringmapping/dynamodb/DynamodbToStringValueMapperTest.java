@@ -4,6 +4,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import java.util.Collections;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
@@ -51,7 +52,7 @@ public class DynamodbToStringValueMapperTest {
                 COLUMN_PARAMETERS, 100, null);
         final UnsupportedOperationException exception = assertThrows(UnsupportedOperationException.class,
                 () -> new DynamodbToStringValueMapper(toStringColumnMappingDefinition)
-                        .mapStringValue(new DynamodbList(List.of())));
+                        .mapStringValue(new DynamodbList(Collections.emptyList())));
         assertThat(exception.getMessage(),
                 equalTo("The DynamoDB type List cant't be converted to string. Try using a different mapping."));
     }
