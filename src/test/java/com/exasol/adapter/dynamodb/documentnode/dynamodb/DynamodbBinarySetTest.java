@@ -22,7 +22,7 @@ public class DynamodbBinarySetTest {
     void testGetValue() {
         final DynamodbBinarySet dynamodbList = (DynamodbBinarySet) new DynamodbDocumentNodeFactory()
                 .buildDocumentNode(BINARY_SET);
-        final DynamodbBinary result = (DynamodbBinary) dynamodbList.getValue(0);
+        final DynamodbBinary result = dynamodbList.getValue(0);
         assertThat(result.getValue(), equalTo(BINARY_1));
     }
 
@@ -30,8 +30,8 @@ public class DynamodbBinarySetTest {
     void testGetValues() {
         final DynamodbBinarySet dynamodbList = (DynamodbBinarySet) new DynamodbDocumentNodeFactory()
                 .buildDocumentNode(BINARY_SET);
-        final DynamodbBinary result1 = (DynamodbBinary) dynamodbList.getValuesList().get(0);
-        final DynamodbBinary result2 = (DynamodbBinary) dynamodbList.getValuesList().get(1);
+        final DynamodbBinary result1 = dynamodbList.getValuesList().get(0);
+        final DynamodbBinary result2 = dynamodbList.getValuesList().get(1);
         assertThat(List.of(result1.getValue(), result2.getValue()), containsInAnyOrder(BINARY_1, BINARY_2));
     }
 
@@ -42,7 +42,7 @@ public class DynamodbBinarySetTest {
         assertThat(visitor.visited, equalTo(true));
     }
 
-    private static class VisitationCheck implements DynamodbNodeVisitor {
+    private static class VisitationCheck implements IncompleteDynamodbNodeVisitor {
         boolean visited = false;
 
         @Override

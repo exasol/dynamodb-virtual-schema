@@ -21,7 +21,7 @@ import com.exasol.adapter.dynamodb.mapping.tojsonmapping.ToJsonColumnMappingDefi
 import com.exasol.adapter.metadata.ColumnMetadata;
 import com.exasol.adapter.sql.*;
 
-class RemoteTableQueryPredicateFactoryTest {
+class QueryPredicateFactoryTest {
     private static final AbstractColumnMappingDefinition COLUMN_MAPPING = new ToJsonColumnMappingDefinition(
             new AbstractColumnMappingDefinition.ConstructorParameters("name", null, null));
     private static final DocumentValue<Object> LITERAL = (DocumentValue<Object>) visitor -> {

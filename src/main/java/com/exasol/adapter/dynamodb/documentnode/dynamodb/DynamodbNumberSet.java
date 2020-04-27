@@ -5,12 +5,12 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.exasol.adapter.dynamodb.documentnode.DocumentArray;
-import com.exasol.adapter.dynamodb.documentnode.DocumentNode;
 
 /**
  * This class represents a DynamoDB number set value.
  */
 public class DynamodbNumberSet implements DocumentArray<DynamodbNodeVisitor> {
+    private static final long serialVersionUID = 7289926315213567897L;
     private final Collection<String> value;
 
     /**
@@ -23,17 +23,21 @@ public class DynamodbNumberSet implements DocumentArray<DynamodbNodeVisitor> {
     }
 
     @Override
-    public List<DocumentNode<DynamodbNodeVisitor>> getValuesList() {
+    public List<DynamodbNumber> getValuesList() {
         return this.value.stream().map(DynamodbNumber::new).collect(Collectors.toList());
     }
 
     @Override
-    public DocumentNode<DynamodbNodeVisitor> getValue(final int index) {
+    public DynamodbNumber getValue(final int index) {
         return this.getValuesList().get(index);
     }
 
     @Override
     public void accept(final DynamodbNodeVisitor visitor) {
         visitor.visit(this);
+    }
+
+    Collection<String> getValue() {
+        return this.value;
     }
 }

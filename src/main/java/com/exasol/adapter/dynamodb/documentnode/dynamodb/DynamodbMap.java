@@ -11,6 +11,7 @@ import com.exasol.adapter.dynamodb.documentnode.DocumentObject;
  * This class represents a DynamoDB map value.
  */
 public class DynamodbMap implements DocumentObject<DynamodbNodeVisitor> {
+    private static final long serialVersionUID = -3577529528412194549L;
     private final Map<String, AttributeValue> value;
 
     /**
@@ -42,5 +43,9 @@ public class DynamodbMap implements DocumentObject<DynamodbNodeVisitor> {
     @Override
     public void accept(final DynamodbNodeVisitor visitor) {
         visitor.visit(this);
+    }
+
+    Map<String, AttributeValue> getValue() {
+        return this.value;
     }
 }

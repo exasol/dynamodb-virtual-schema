@@ -5,6 +5,7 @@ import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.math.BigDecimal;
+import java.util.Collections;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
@@ -67,7 +68,7 @@ class SqlLiteralToDynamodbValueConverterTest {
 
     @Test
     void testNonLiteral() {
-        final SqlNode nonLiteral = new SqlPredicateAnd(List.of());
+        final SqlNode nonLiteral = new SqlPredicateAnd(Collections.emptyList());
         assertThrows(NotLiteralException.class, () -> CONVERTER.convert(nonLiteral));
     }
 }

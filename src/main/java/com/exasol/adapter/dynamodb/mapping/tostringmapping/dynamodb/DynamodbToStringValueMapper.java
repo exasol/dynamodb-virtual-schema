@@ -30,7 +30,7 @@ public class DynamodbToStringValueMapper extends ToStringValueMapper<DynamodbNod
      * Visitor for {@link AttributeValue} that converts its value to string. If this is not possible an
      * {@link UnsupportedOperationException} is thrown.
      */
-    private static class ToStringVisitor implements DynamodbNodeVisitor {
+    private static class ToStringVisitor implements IncompleteDynamodbNodeVisitor {
         private String result;
 
         @Override

@@ -6,13 +6,13 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.exasol.adapter.dynamodb.documentnode.DocumentArray;
-import com.exasol.adapter.dynamodb.documentnode.DocumentNode;
 
 /**
  * This class represents a DynamoDB binary set value.
  */
 public class DynamodbBinarySet implements DocumentArray<DynamodbNodeVisitor> {
-    private final Collection<ByteBuffer> value;
+    private static final long serialVersionUID = 6474569329954861497L;
+    private final List<DynamodbBinary> value;
 
     /**
      * Creates an instance of {@link DynamodbBinarySet}.
@@ -20,16 +20,16 @@ public class DynamodbBinarySet implements DocumentArray<DynamodbNodeVisitor> {
      * @param value value to hold
      */
     public DynamodbBinarySet(final Collection<ByteBuffer> value) {
-        this.value = value;
+        this.value = value.stream().map(DynamodbBinary::new).collect(Collectors.toList());
     }
 
     @Override
-    public List<DocumentNode<DynamodbNodeVisitor>> getValuesList() {
-        return this.value.stream().map(DynamodbBinary::new).collect(Collectors.toList());
+    public List<DynamodbBinary> getValuesList() {
+        return this.value;
     }
 
     @Override
-    public DocumentNode<DynamodbNodeVisitor> getValue(final int index) {
+    public DynamodbBinary getValue(final int index) {
         return this.getValuesList().get(index);
     }
 

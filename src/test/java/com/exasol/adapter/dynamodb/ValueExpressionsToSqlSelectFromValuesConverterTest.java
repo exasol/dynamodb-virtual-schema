@@ -17,7 +17,7 @@ import com.exasol.sql.expression.StringLiteral;
 import com.exasol.sql.expression.ValueExpression;
 
 public class ValueExpressionsToSqlSelectFromValuesConverterTest {
-    RemoteTableQueryMappingInterface getDocumentQueryStub() {
+    RemoteTableQueryMappingInterface getRemoteTableQueryStub() {
         return new RemoteTableQueryMappingInterface() {
             @Override
             public TableMappingDefinition getFromTable() {
@@ -37,7 +37,7 @@ public class ValueExpressionsToSqlSelectFromValuesConverterTest {
     @Test
     public void testEmptyConvert() {
         final ValueExpressionsToSqlSelectFromValuesConverter converter = new ValueExpressionsToSqlSelectFromValuesConverter();
-        final String sql = converter.convert(getDocumentQueryStub(), Collections.emptyList());
+        final String sql = converter.convert(getRemoteTableQueryStub(), Collections.emptyList());
         assertThat(sql, equalTo("SELECT * FROM (VALUES ('')) WHERE FALSE"));
     }
 
@@ -46,7 +46,7 @@ public class ValueExpressionsToSqlSelectFromValuesConverterTest {
         final String testString = "test";
         final ValueExpression stringFrame = StringLiteral.of(testString);
         final ValueExpressionsToSqlSelectFromValuesConverter converter = new ValueExpressionsToSqlSelectFromValuesConverter();
-        final String sql = converter.convert(getDocumentQueryStub(), List.of(List.of(stringFrame)));
+        final String sql = converter.convert(getRemoteTableQueryStub(), List.of(List.of(stringFrame)));
         assertThat(sql, equalTo("SELECT * FROM (VALUES ('" + testString + "'))"));
     }
 
@@ -58,7 +58,7 @@ public class ValueExpressionsToSqlSelectFromValuesConverterTest {
         final ValueExpression stringFrame2 = StringLiteral.of(testString2);
 
         final ValueExpressionsToSqlSelectFromValuesConverter converter = new ValueExpressionsToSqlSelectFromValuesConverter();
-        final String sql = converter.convert(getDocumentQueryStub(),
+        final String sql = converter.convert(getRemoteTableQueryStub(),
                 List.of(List.of(stringFrame1), List.of(stringFrame2)));
         assertThat(sql, equalTo("SELECT * FROM (VALUES ('" + testString1 + "'), ('" + testString2 + "'))"));
     }

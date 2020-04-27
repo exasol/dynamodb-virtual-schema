@@ -11,6 +11,7 @@ import com.exasol.adapter.dynamodb.documentnode.DocumentNode;
  * This class represents a DynamoDB list value.
  */
 public class DynamodbList implements DocumentArray<DynamodbNodeVisitor> {
+    private static final long serialVersionUID = 4513516964977921365L;
     private final List<AttributeValue> value;
 
     /**
@@ -36,5 +37,9 @@ public class DynamodbList implements DocumentArray<DynamodbNodeVisitor> {
     @Override
     public void accept(final DynamodbNodeVisitor visitor) {
         visitor.visit(this);
+    }
+
+    List<AttributeValue> getValue() {
+        return this.value;
     }
 }
