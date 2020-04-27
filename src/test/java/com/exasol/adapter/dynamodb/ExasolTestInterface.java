@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeoutException;
 
+import com.github.dockerjava.api.model.ContainerNetwork;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testcontainers.containers.Container;
@@ -162,15 +163,12 @@ public class ExasolTestInterface {
      * Hacky method for retrieving the host address for access from inside the docker container.
      */
     private String getTestHostIpAddress() {
-        try {
-            final Container.ExecResult execResult = this.container.execInContainer("/sbin/ip", "-4", "route", "list",
-                    "match", "0/0");
-            final String[] parts = execResult.getStdout().split(" ");
-            return parts[2];
-        } catch (final IOException | InterruptedException exception) {
-            exception.printStackTrace();
+        final Map<String, ContainerNetwork> networks = this.container.getContainerInfo().getNetworkSettings()
+                .getNetworks();
+        if (networks.size() == 0) {
             return null;
         }
+        return networks.values().iterator().next().getGateway();
     }
 
     /**
