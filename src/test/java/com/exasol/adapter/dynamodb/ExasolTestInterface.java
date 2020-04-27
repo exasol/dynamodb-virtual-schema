@@ -122,7 +122,7 @@ public class ExasolTestInterface {
         if (hostIp != null) {
             String jvmOptions = "-javaagent:/buckets/bfsdefault/default/" + JACOCO_JAR_NAME
                     + "=output=tcpclient,address=" + hostIp + ",port=3002";
-            if (isNoDebugSystemPropertySet()) {
+            if (!isNoDebugSystemPropertySet()) {
                 // noinspection SpellCheckingInspection
                 jvmOptions += " -agentlib:jdwp=transport=dt_socket,server=n,address=" + hostIp + ":" + DEBUGGER_PORT
                         + ",suspend=y";
