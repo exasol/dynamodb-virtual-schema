@@ -29,25 +29,25 @@ import org.jacoco.core.runtime.RemoteControlReader;
 import org.jacoco.core.runtime.RemoteControlWriter;
 
 /**
- * This class starts a socket server to collect the code coverage data from the jacoco agent in the udfs.
- * The collected data is dumped to a local file.
+ * This class starts a socket server to collect the code coverage data from the jacoco agent in the udfs. The collected
+ * data is dumped to a local file.
  */
 public final class JacocoServer implements Runnable {
 
     private static final String DESTFILE = Path.of("target", "jacoco-udf.exec").toString();
-    private final ExecutionDataWriter fileWriter;
-    private static JacocoServer instance;
     private static final int PORT = 3002;
+    private static JacocoServer instance;
+    private final ExecutionDataWriter fileWriter;
+
+    private JacocoServer() throws IOException {
+        this.fileWriter = new ExecutionDataWriter(new FileOutputStream(DESTFILE));
+    }
 
     public static void startIfNotRunning() throws IOException {
         if (instance == null) {
             instance = new JacocoServer();
             new Thread(instance).start();
         }
-    }
-
-    private JacocoServer() throws IOException {
-        this.fileWriter = new ExecutionDataWriter(new FileOutputStream(DESTFILE));
     }
 
     @Override

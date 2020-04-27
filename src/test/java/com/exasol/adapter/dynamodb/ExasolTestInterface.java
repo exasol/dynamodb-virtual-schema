@@ -10,13 +10,13 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeoutException;
 
-import com.exasol.jacoco.JacocoServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.exasol.bucketfs.Bucket;
 import com.exasol.bucketfs.BucketAccessException;
 import com.exasol.containers.ExasolContainer;
+import com.exasol.jacoco.JacocoServer;
 import com.github.dockerjava.api.model.ContainerNetwork;
 
 /**
@@ -30,11 +30,11 @@ public class ExasolTestInterface {
     private static final Path PATH_TO_VIRTUAL_SCHEMAS_JAR = Path.of("target", VIRTUAL_SCHEMAS_JAR_NAME_AND_VERSION);
     private static final String JACOCO_JAR_NAME = "org.jacoco.agent-runtime.jar";
     private static final Path PATH_TO_JACOCO_JAR = Path.of("target", "jacoco-agent", JACOCO_JAR_NAME);
-    private final ExasolContainer<? extends ExasolContainer<?>> container;
-    private final Statement statement;
     private static final String LOGGER_PORT = "3000";
     private static final int SCRIPT_OUTPUT_PORT = 3001;
     private static final String DEBUGGER_PORT = "8000";
+    private final ExasolContainer<? extends ExasolContainer<?>> container;
+    private final Statement statement;
 
     /**
      * Creates an instance of {@link ExasolTestInterface}.

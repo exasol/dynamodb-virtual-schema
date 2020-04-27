@@ -71,10 +71,7 @@ public class DynamodbAdapterTestLocalIT {
     @AfterAll
     static void afterAll() {
         NETWORK.close();
-        EXASOL_CONTAINER.getDockerClient()
-                .stopContainerCmd(EXASOL_CONTAINER.getContainerId())
-                .withTimeout(10)
-                .exec();
+        EXASOL_CONTAINER.getDockerClient().stopContainerCmd(EXASOL_CONTAINER.getContainerId()).withTimeout(10).exec();
     }
 
     @AfterEach
