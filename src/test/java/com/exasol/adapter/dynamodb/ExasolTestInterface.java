@@ -13,6 +13,7 @@ import java.util.concurrent.TimeoutException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.exasol.LogProxy;
 import com.exasol.bucketfs.Bucket;
 import com.exasol.bucketfs.BucketAccessException;
 import com.exasol.containers.ExasolContainer;
@@ -49,6 +50,7 @@ public class ExasolTestInterface {
         this.statement = connection.createStatement();
         this.container = container;
         JacocoServer.startIfNotRunning();
+        LogProxy.startIfNotRunning();
     }
 
     /**
@@ -110,9 +112,7 @@ public class ExasolTestInterface {
      * @throws SQLException on SQL error
      */
     public void createAdapterScript() throws SQLException {
-        if (!isNoDebugSystemPropertySet()) {
-            setScriptOutputAddress();
-        }
+        setScriptOutputAddress();
 
         createTestSchema(ADAPTER_SCHEMA);
         final StringBuilder statementBuilder = new StringBuilder(
