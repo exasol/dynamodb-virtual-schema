@@ -48,6 +48,7 @@ public class LogProxy implements Runnable {
         @Override
         public void run() {
             try {
+                System.out.println("connected logger");
                 final BufferedReader reader = new BufferedReader(new InputStreamReader(this.socket.getInputStream()));
                 IOUtils.copy(this.socket.getInputStream(), System.out);
             } catch (final IOException exception) {
