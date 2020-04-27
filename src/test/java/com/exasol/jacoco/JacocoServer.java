@@ -59,7 +59,7 @@ public final class JacocoServer implements Runnable {
                 new Thread(handler).start();
             }
         } catch (final IOException e) {
-            e.printStackTrace();
+            throw new RuntimeException("Could not start jacoco server");
         }
     }
 
