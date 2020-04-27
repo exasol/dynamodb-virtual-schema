@@ -12,13 +12,13 @@ import java.util.concurrent.TimeoutException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.testcontainers.containers.Container;
 
 import com.exasol.LogProxy;
 import com.exasol.bucketfs.Bucket;
 import com.exasol.bucketfs.BucketAccessException;
 import com.exasol.containers.ExasolContainer;
 import com.exasol.jacoco.JacocoServer;
-import com.github.dockerjava.api.model.ContainerNetwork;
 
 /**
  * This class provides methods simplified methods for running typical commands on an Exasol test container.
@@ -162,12 +162,15 @@ public class ExasolTestInterface {
      * Hacky method for retrieving the host address for access from inside the docker container.
      */
     private String getTestHostIpAddress() {
-        final Map<String, ContainerNetwork> networks = this.container.getContainerInfo().getNetworkSettings()
-                .getNetworks();
-        if (networks.size() == 0) {
+        try {
+            final Container.ExecResult execResult = this.container.execInContainer("/sbin/ip", "-4", "route", "list",
+                    "match", "0/0");
+            final String[] parts = execResult.getStdout().split(" ");
+            return parts[2];
+        } catch (final IOException | InterruptedException exception) {
+            exception.printStackTrace();
             return null;
         }
-        return networks.values().iterator().next().getGateway();
     }
 
     /**
