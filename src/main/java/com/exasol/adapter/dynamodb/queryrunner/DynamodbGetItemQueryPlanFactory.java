@@ -27,14 +27,14 @@ public class DynamodbGetItemQueryPlanFactory {
             final RemoteTableQuery<DynamodbNodeVisitor> documentQuery, final DynamodbTableMetadata tableMetadata)
             throws PlanDoesNotFitException {
         final Visitor visitor = new Visitor(tableMetadata);
-        documentQuery.getSelection().accept(visitor);
         try {
-            final Map<String, AttributeValue> key = visitor.getPrimaryKey();
-            checkIfKeyIsComplete(key, tableMetadata);
-            return new DynamodbGetItemQueryPlan(documentQuery.getFromTable().getRemoteName(), key);
+            documentQuery.getSelection().accept(visitor);
         } catch (final PlanDoesNotFitExceptionWrapper wrapper) {
             throw wrapper.getWrappedException();
         }
+        final Map<String, AttributeValue> key = visitor.getPrimaryKey();
+        checkIfKeyIsComplete(key, tableMetadata);
+        return new DynamodbGetItemQueryPlan(documentQuery.getFromTable().getRemoteName(), key);
     }
 
     private void checkIfKeyIsComplete(final Map<String, AttributeValue> key, final DynamodbTableMetadata tableMetadata)

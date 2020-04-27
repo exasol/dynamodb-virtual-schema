@@ -5,7 +5,7 @@ interface DocumentNode<VisitorType>{
 }
 interface DocumentArray<VisitorType>{
 {abstract} getValueList() : List<DocumentNode<? extends VisitorType>>
-{abstract} getValue(index)
+{abstract} getValue(index) : DocumentNode<VisitorType>
 }
 interface DocumentObject<VisitorType>{
 {abstract} getKeyValueMap()

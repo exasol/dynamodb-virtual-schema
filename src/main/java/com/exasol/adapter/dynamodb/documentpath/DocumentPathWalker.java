@@ -121,6 +121,8 @@ public class DocumentPathWalker<VisitorType> {
             };
         }
 
+        @SuppressWarnings("java:S1452") // Use of wildcard is ok in this case as loss of type information is
+        // acceptable.
         public Function<DocumentNode<VisitorType>, List<? extends DocumentNode<VisitorType>>> getStepper() {
             return this.stepper;
         }
