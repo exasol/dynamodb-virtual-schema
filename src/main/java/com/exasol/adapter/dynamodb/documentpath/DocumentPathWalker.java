@@ -31,24 +31,22 @@ public class DocumentPathWalker<VisitorType> {
      * @return documents attributes described in {@link DocumentPathExpression}.
      * @throws DocumentPathWalkerException if defined path does not exist in the given document
      */
-    public List<DocumentNode<VisitorType>> walkThroughDocument(final DocumentNode<VisitorType> rootNode)
-            throws DocumentPathWalkerException {
+    public List<DocumentNode<VisitorType>> walkThroughDocument(final DocumentNode<VisitorType> rootNode) {
         return this.performStep(rootNode, 0);
     }
 
-    private List<DocumentNode<VisitorType>> performStep(final DocumentNode<VisitorType> thisNode, final int position)
-            throws DocumentPathWalkerException {
+    private List<DocumentNode<VisitorType>> performStep(final DocumentNode<VisitorType> thisNode, final int position) {
         if (this.pathExpression.size() <= position) {
             return List.of(thisNode);
         }
-        final Function<DocumentNode<VisitorType>, List<DocumentNode<VisitorType>>> stepper = getStepperFor(
+        final Function<DocumentNode<VisitorType>, List<? extends DocumentNode<VisitorType>>> stepper = getStepperFor(
                 this.pathExpression.getPath().get(position));
         return runTraverseStepper(stepper, thisNode, position);
     }
 
     private List<DocumentNode<VisitorType>> runTraverseStepper(
-            final Function<DocumentNode<VisitorType>, List<DocumentNode<VisitorType>>> traverseStepper,
-            final DocumentNode<VisitorType> thisNode, final int position) throws DocumentPathWalkerException {
+            final Function<DocumentNode<VisitorType>, List<? extends DocumentNode<VisitorType>>> traverseStepper,
+            final DocumentNode<VisitorType> thisNode, final int position) {
         try {
             final ArrayList<DocumentNode<VisitorType>> results = new ArrayList<>();
             for (final DocumentNode<VisitorType> nextNode : traverseStepper.apply(thisNode)) {
@@ -68,7 +66,7 @@ public class DocumentPathWalker<VisitorType> {
     }
 
     @java.lang.SuppressWarnings("squid:S119") // VisitorType does not fit naming conventions.
-    private Function<DocumentNode<VisitorType>, List<DocumentNode<VisitorType>>> getStepperFor(
+    private Function<DocumentNode<VisitorType>, List<? extends DocumentNode<VisitorType>>> getStepperFor(
             final PathSegment pathSegment) {
         final WalkVisitor<VisitorType> visitor = new WalkVisitor<>();
         pathSegment.accept(visitor);
@@ -77,7 +75,7 @@ public class DocumentPathWalker<VisitorType> {
 
     @java.lang.SuppressWarnings("squid:S119") // VisitorType does not fit naming conventions.
     private static class WalkVisitor<VisitorType> implements PathSegmentVisitor {
-        Function<DocumentNode<VisitorType>, List<DocumentNode<VisitorType>>> stepper;
+        Function<DocumentNode<VisitorType>, List<? extends DocumentNode<VisitorType>>> stepper;
 
         @Override
         public void visit(final ObjectLookupPathSegment objectLookupPathSegment) {
@@ -123,7 +121,9 @@ public class DocumentPathWalker<VisitorType> {
             };
         }
 
-        public Function<DocumentNode<VisitorType>, List<DocumentNode<VisitorType>>> getStepper() {
+        @SuppressWarnings("java:S1452") // Use of wildcard is ok in this case as loss of type information is
+        // acceptable.
+        public Function<DocumentNode<VisitorType>, List<? extends DocumentNode<VisitorType>>> getStepper() {
             return this.stepper;
         }
     }

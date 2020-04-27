@@ -13,7 +13,9 @@ public interface DocumentArray<VisitorType> extends DocumentNode<VisitorType> {
      * 
      * @return list of document nodes.
      */
-    public List<DocumentNode<VisitorType>> getValuesList();
+    @SuppressWarnings("java:S1452") // Use of wildcard is ok in this case as loss of type information is
+                                    // acceptable.
+    public List<? extends DocumentNode<VisitorType>> getValuesList();
 
     /**
      * Gives a document node for an specific element of the wrapped array.

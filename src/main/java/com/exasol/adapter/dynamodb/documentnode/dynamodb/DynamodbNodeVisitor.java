@@ -4,51 +4,23 @@ package com.exasol.adapter.dynamodb.documentnode.dynamodb;
  * Visitor for Dynamodb document nodes.
  */
 public interface DynamodbNodeVisitor {
-    public default void visit(final DynamodbString string) {
-        defaultVisit("String");
-    }
+    public void visit(final DynamodbString string);
 
-    public default void visit(final DynamodbNumber number) {
-        defaultVisit("Number");
-    }
+    public void visit(final DynamodbNumber number);
 
-    public default void visit(final DynamodbBinary binary) {
-        defaultVisit("Binary");
-    }
+    public void visit(final DynamodbBinary binary);
 
-    public default void visit(final DynamodbBoolean bool) {
-        defaultVisit("Boolean");
-    }
+    public void visit(final DynamodbBoolean bool);
 
-    public default void visit(final DynamodbStringSet stringSet) {
-        defaultVisit("StringSet");
-    }
+    public void visit(final DynamodbStringSet stringSet);
 
-    public default void visit(final DynamodbBinarySet binarySet) {
-        defaultVisit("BinarySet");
-    }
+    public void visit(final DynamodbBinarySet binarySet);
 
-    public default void visit(final DynamodbNumberSet numberSet) {
-        defaultVisit("NumberSet");
-    }
+    public void visit(final DynamodbNumberSet numberSet);
 
-    public default void visit(final DynamodbList list) {
-        defaultVisit("List");
-    }
+    public void visit(final DynamodbList list);
 
-    public default void visit(final DynamodbMap map) {
-        defaultVisit("Object");
-    }
+    public void visit(final DynamodbMap map);
 
-    public default void visit(final DynamodbNull nullValue) {
-        defaultVisit("Null");
-    }
-
-    /**
-     * Called when the specific visit method was not implemented. This method can for example be used for throwing an
-     * {@link UnsupportedOperationException}.
-     *
-     * @param typeName name of the DynamoDB type to visit.
-     */
-    public void defaultVisit(final String typeName);
+    public void visit(final DynamodbNull nullValue);
 }

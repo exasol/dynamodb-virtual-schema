@@ -6,6 +6,7 @@ import com.exasol.adapter.dynamodb.documentnode.DocumentValue;
  * This class represents a DynamoDB boolean value.
  */
 public class DynamodbBoolean implements DocumentValue<DynamodbNodeVisitor> {
+    private static final long serialVersionUID = -8216771560801320405L;
     private final boolean value;
 
     /**
