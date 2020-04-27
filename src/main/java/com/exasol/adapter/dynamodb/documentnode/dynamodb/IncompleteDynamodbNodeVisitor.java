@@ -1,8 +1,8 @@
 package com.exasol.adapter.dynamodb.documentnode.dynamodb;
 
 /**
- * This facade for the {@link DynamodbNodeVisitor} interface implements all method with a default implementation that
- * calls the {@link #defaultVisit(String)} with the type as string. Is is used to keep code readable if only a few
+ * This facade for the {@link DynamodbNodeVisitor} interface implements all methods with a default implementation that
+ * calls the {@link #defaultVisit(String)} with the type as string. It is used to keep code readable if only a few
  * methods are implemented.
  */
 public interface IncompleteDynamodbNodeVisitor extends DynamodbNodeVisitor {

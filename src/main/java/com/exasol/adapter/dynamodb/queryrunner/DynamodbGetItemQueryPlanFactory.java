@@ -16,7 +16,7 @@ import com.exasol.adapter.dynamodb.remotetablequery.*;
 public class DynamodbGetItemQueryPlanFactory {
 
     /**
-     * Builds a {@link DynamodbGetItemQueryPlan} is possible for the given query.
+     * Builds a {@link DynamodbGetItemQueryPlan} if possible for the given query.
      * 
      * @param documentQuery query to build the plan for
      * @param tableMetadata DynamoDB table metadata used for checking the primary key
@@ -77,7 +77,7 @@ public class DynamodbGetItemQueryPlanFactory {
             if (columnPath.equals(new DocumentPathExpression.Builder().addObjectLookup(key).build())) {
                 if (this.primaryKey.containsKey(key)) {
                     if (this.primaryKey.get(key).equals(value)) {
-                        return; // duplicate condition. We just skip this key.
+                        return; // Duplicate condition, skip this key.
                     } else {
                         throw new PlanDoesNotFitExceptionWrapper(new PlanDoesNotFitException(
                                 "This is not a getItem request as the same key is restricted in the where clause twice."));
