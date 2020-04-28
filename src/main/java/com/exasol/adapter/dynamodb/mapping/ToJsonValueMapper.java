@@ -1,8 +1,6 @@
-package com.exasol.adapter.dynamodb.mapping.tojsonmapping;
+package com.exasol.adapter.dynamodb.mapping;
 
 import com.exasol.adapter.dynamodb.documentnode.DocumentNode;
-import com.exasol.adapter.dynamodb.mapping.AbstractColumnMappingDefinition;
-import com.exasol.adapter.dynamodb.mapping.AbstractValueMapper;
 import com.exasol.sql.expression.StringLiteral;
 import com.exasol.sql.expression.ValueExpression;
 

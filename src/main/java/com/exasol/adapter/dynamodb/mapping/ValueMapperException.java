@@ -12,7 +12,7 @@ public class ValueMapperException extends RuntimeException {
      * @param message Exception message
      * @param column  {@link AbstractColumnMappingDefinition} that caused exception
      */
-    public ValueMapperException(final String message, final AbstractColumnMappingDefinition column) {
+    ValueMapperException(final String message, final AbstractColumnMappingDefinition column) {
         super(message);
         this.causingColumn = column;
     }

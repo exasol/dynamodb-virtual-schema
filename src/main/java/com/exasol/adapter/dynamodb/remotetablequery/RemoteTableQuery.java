@@ -3,13 +3,14 @@ package com.exasol.adapter.dynamodb.remotetablequery;
 import java.util.List;
 
 import com.exasol.adapter.dynamodb.mapping.AbstractColumnMappingDefinition;
+import com.exasol.adapter.dynamodb.mapping.SchemaMappingQuery;
 import com.exasol.adapter.dynamodb.mapping.TableMappingDefinition;
 
 /**
  * This class represents the whole query inside of one document.
  */
 @java.lang.SuppressWarnings("squid:S119") // DocumentVisitorType does not fit naming conventions.
-public class RemoteTableQuery<DocumentVisitorType> implements RemoteTableQueryMappingInterface {
+public class RemoteTableQuery<DocumentVisitorType> implements SchemaMappingQuery {
 
     private final TableMappingDefinition fromTable;
     private final List<AbstractColumnMappingDefinition> selectList;

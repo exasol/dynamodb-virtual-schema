@@ -1,8 +1,5 @@
 package com.exasol.adapter.dynamodb.mapping;
 
-import com.exasol.adapter.dynamodb.mapping.tojsonmapping.ToJsonColumnMappingDefinition;
-import com.exasol.adapter.dynamodb.mapping.tostringmapping.ToStringColumnMappingDefinition;
-
 /**
  * Visitor for {@link AbstractColumnMappingDefinition}.
  */

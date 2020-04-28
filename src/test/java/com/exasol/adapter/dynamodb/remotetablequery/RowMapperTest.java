@@ -12,8 +12,9 @@ import com.exasol.adapter.dynamodb.documentnode.dynamodb.DynamodbMap;
 import com.exasol.adapter.dynamodb.documentnode.dynamodb.DynamodbNodeVisitor;
 import com.exasol.adapter.dynamodb.documentpath.DocumentPathExpression;
 import com.exasol.adapter.dynamodb.mapping.AbstractColumnMappingDefinition;
-import com.exasol.adapter.dynamodb.mapping.DynamodbValueMapperFactory;
-import com.exasol.adapter.dynamodb.mapping.tojsonmapping.ToJsonColumnMappingDefinition;
+import com.exasol.adapter.dynamodb.mapping.RowMapper;
+import com.exasol.adapter.dynamodb.mapping.ToJsonColumnMappingDefinition;
+import com.exasol.adapter.dynamodb.mapping.dynamodb.DynamodbValueMapperFactory;
 import com.exasol.dynamodb.attributevalue.AttributeValueQuickCreator;
 import com.exasol.sql.expression.ValueExpression;
 

@@ -5,10 +5,9 @@ import static org.hamcrest.Matchers.equalTo;
 
 import org.junit.jupiter.api.Test;
 
-import com.exasol.adapter.dynamodb.mapping.tojsonmapping.ToJsonColumnMappingDefinition;
-import com.exasol.adapter.dynamodb.mapping.tojsonmapping.dynamodb.DynamodbToJsonValueMapper;
-import com.exasol.adapter.dynamodb.mapping.tostringmapping.ToStringColumnMappingDefinition;
-import com.exasol.adapter.dynamodb.mapping.tostringmapping.dynamodb.DynamodbToStringValueMapper;
+import com.exasol.adapter.dynamodb.mapping.dynamodb.DynamodbToJsonValueMapper;
+import com.exasol.adapter.dynamodb.mapping.dynamodb.DynamodbToStringValueMapper;
+import com.exasol.adapter.dynamodb.mapping.dynamodb.DynamodbValueMapperFactory;
 
 public class DynamodbValueMapperFactoryTest {
 

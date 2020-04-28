@@ -14,7 +14,7 @@ public class LookupValueMapperException extends ValueMapperException {
      * @param message Exception message
      * @param column  {@link AbstractColumnMappingDefinition} that caused exception
      */
-    public LookupValueMapperException(final String message, final AbstractColumnMappingDefinition column) {
+    LookupValueMapperException(final String message, final AbstractColumnMappingDefinition column) {
         super(message, column);
     }
 }

@@ -10,15 +10,15 @@ import org.junit.jupiter.api.Test;
 
 import com.exasol.adapter.dynamodb.documentpath.DocumentPathExpression;
 import com.exasol.adapter.dynamodb.mapping.AbstractColumnMappingDefinition;
+import com.exasol.adapter.dynamodb.mapping.SchemaMappingQuery;
 import com.exasol.adapter.dynamodb.mapping.TableMappingDefinition;
-import com.exasol.adapter.dynamodb.mapping.tojsonmapping.ToJsonColumnMappingDefinition;
-import com.exasol.adapter.dynamodb.remotetablequery.RemoteTableQueryMappingInterface;
+import com.exasol.adapter.dynamodb.mapping.ToJsonColumnMappingDefinition;
 import com.exasol.sql.expression.StringLiteral;
 import com.exasol.sql.expression.ValueExpression;
 
 public class ValueExpressionsToSqlSelectFromValuesConverterTest {
-    RemoteTableQueryMappingInterface getRemoteTableQueryStub() {
-        return new RemoteTableQueryMappingInterface() {
+    SchemaMappingQuery getRemoteTableQueryStub() {
+        return new SchemaMappingQuery() {
             @Override
             public TableMappingDefinition getFromTable() {
                 return null;

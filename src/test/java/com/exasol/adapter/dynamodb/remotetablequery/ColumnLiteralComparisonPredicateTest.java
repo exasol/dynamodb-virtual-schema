@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test;
 
 import com.exasol.adapter.dynamodb.documentnode.DocumentValue;
 import com.exasol.adapter.dynamodb.mapping.AbstractColumnMappingDefinition;
-import com.exasol.adapter.dynamodb.mapping.tojsonmapping.ToJsonColumnMappingDefinition;
+import com.exasol.adapter.dynamodb.mapping.ToJsonColumnMappingDefinition;
 
 class ColumnLiteralComparisonPredicateTest {
     private static final ComparisonPredicate.Operator OPERATOR = ComparisonPredicate.Operator.EQUAL;

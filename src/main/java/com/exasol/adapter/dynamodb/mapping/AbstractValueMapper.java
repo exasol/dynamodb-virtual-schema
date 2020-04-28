@@ -18,7 +18,7 @@ public abstract class AbstractValueMapper<DocumentVisitorType> {
      * 
      * @param column ColumnMappingDefinition defining the mapping
      */
-    public AbstractValueMapper(final AbstractColumnMappingDefinition column) {
+    AbstractValueMapper(final AbstractColumnMappingDefinition column) {
         this.column = column;
     }
 
