@@ -1,4 +1,4 @@
-package com.exasol.adapter.dynamodb.mapping.tojsonmapping.dynamodb;
+package com.exasol.adapter.dynamodb.mapping.dynamodb;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test;
 import com.exasol.adapter.dynamodb.documentnode.dynamodb.DynamodbMap;
 import com.exasol.adapter.dynamodb.documentpath.DocumentPathExpression;
 import com.exasol.adapter.dynamodb.mapping.AbstractColumnMappingDefinition;
-import com.exasol.adapter.dynamodb.mapping.tojsonmapping.ToJsonColumnMappingDefinition;
+import com.exasol.adapter.dynamodb.mapping.ToJsonColumnMappingDefinition;
 import com.exasol.dynamodb.attributevalue.AttributeValueQuickCreator;
 import com.exasol.sql.expression.ValueExpression;
 

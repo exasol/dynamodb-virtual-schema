@@ -1,4 +1,4 @@
-package com.exasol.adapter.dynamodb.mapping.tostringmapping.dynamodb;
+package com.exasol.adapter.dynamodb.mapping.dynamodb;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
@@ -13,7 +13,7 @@ import com.exasol.adapter.dynamodb.documentnode.dynamodb.DynamodbNumber;
 import com.exasol.adapter.dynamodb.documentnode.dynamodb.DynamodbString;
 import com.exasol.adapter.dynamodb.documentpath.DocumentPathExpression;
 import com.exasol.adapter.dynamodb.mapping.AbstractColumnMappingDefinition;
-import com.exasol.adapter.dynamodb.mapping.tostringmapping.ToStringColumnMappingDefinition;
+import com.exasol.adapter.dynamodb.mapping.ToStringColumnMappingDefinition;
 
 public class DynamodbToStringValueMapperTest {
 

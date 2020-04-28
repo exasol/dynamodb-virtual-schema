@@ -1,10 +1,7 @@
-package com.exasol.adapter.dynamodb.mapping;
+package com.exasol.adapter.dynamodb.mapping.dynamodb;
 
 import com.exasol.adapter.dynamodb.documentnode.dynamodb.DynamodbNodeVisitor;
-import com.exasol.adapter.dynamodb.mapping.tojsonmapping.ToJsonColumnMappingDefinition;
-import com.exasol.adapter.dynamodb.mapping.tojsonmapping.dynamodb.DynamodbToJsonValueMapper;
-import com.exasol.adapter.dynamodb.mapping.tostringmapping.ToStringColumnMappingDefinition;
-import com.exasol.adapter.dynamodb.mapping.tostringmapping.dynamodb.DynamodbToStringValueMapper;
+import com.exasol.adapter.dynamodb.mapping.*;
 
 /**
  * Factory for DynamoDB {@link AbstractValueMapper}s.

@@ -3,13 +3,11 @@ package com.exasol.adapter.dynamodb.mapping;
 import javax.json.JsonObject;
 
 import com.exasol.adapter.dynamodb.documentpath.DocumentPathExpression;
-import com.exasol.adapter.dynamodb.mapping.tojsonmapping.ToJsonColumnMappingDefinition;
-import com.exasol.adapter.dynamodb.mapping.tostringmapping.ToStringColumnMappingDefinition;
 
 /**
  * This class builds ColumnMappingDefinitions from a JSON definition. It is used in the {@link JsonMappingFactory}.
  */
-public class JsonColumnMappingFactory {
+class JsonColumnMappingFactory {
     private static final String MAX_LENGTH_KEY = "maxLength";
     private static final int DEFAULT_MAX_LENGTH = 254;
     private static final String OVERFLOW_KEY = "overflow";

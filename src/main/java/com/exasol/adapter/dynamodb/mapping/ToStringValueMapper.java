@@ -1,8 +1,6 @@
-package com.exasol.adapter.dynamodb.mapping.tostringmapping;
+package com.exasol.adapter.dynamodb.mapping;
 
 import com.exasol.adapter.dynamodb.documentnode.DocumentNode;
-import com.exasol.adapter.dynamodb.mapping.AbstractValueMapper;
-import com.exasol.adapter.dynamodb.mapping.ValueMapperException;
 import com.exasol.sql.expression.StringLiteral;
 import com.exasol.sql.expression.ValueExpression;
 

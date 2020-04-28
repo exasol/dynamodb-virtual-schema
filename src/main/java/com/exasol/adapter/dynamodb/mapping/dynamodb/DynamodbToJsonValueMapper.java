@@ -1,12 +1,12 @@
-package com.exasol.adapter.dynamodb.mapping.tojsonmapping.dynamodb;
+package com.exasol.adapter.dynamodb.mapping.dynamodb;
 
 import javax.json.JsonValue;
 
 import com.exasol.adapter.dynamodb.documentnode.DocumentNode;
 import com.exasol.adapter.dynamodb.documentnode.dynamodb.DynamodbNodeVisitor;
 import com.exasol.adapter.dynamodb.mapping.AbstractColumnMappingDefinition;
-import com.exasol.adapter.dynamodb.mapping.tojsonmapping.ToJsonColumnMappingDefinition;
-import com.exasol.adapter.dynamodb.mapping.tojsonmapping.ToJsonValueMapper;
+import com.exasol.adapter.dynamodb.mapping.ToJsonColumnMappingDefinition;
+import com.exasol.adapter.dynamodb.mapping.ToJsonValueMapper;
 import com.exasol.dynamodb.DynamodbValueToJsonConverter;
 
 /**

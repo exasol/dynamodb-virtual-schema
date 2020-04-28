@@ -21,7 +21,7 @@ import org.json.JSONTokener;
  * API.
  * </p>
  */
-public class JsonMappingValidator {
+class JsonMappingValidator {
     private static final String MAPPING_LANGUAGE_SCHEMA = "mappingLanguageSchema.json";
     private final Schema schema;
 

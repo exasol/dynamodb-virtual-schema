@@ -16,7 +16,6 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
 import com.exasol.adapter.AdapterException;
-import com.exasol.adapter.dynamodb.mapping.tostringmapping.ToStringColumnMappingDefinition;
 
 public class JsonMappingFactoryTest {
     private final MappingTestFiles mappingTestFiles = new MappingTestFiles();

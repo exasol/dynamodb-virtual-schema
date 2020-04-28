@@ -1,7 +1,5 @@
-package com.exasol.adapter.dynamodb.mapping.tostringmapping;
+package com.exasol.adapter.dynamodb.mapping;
 
-import com.exasol.adapter.dynamodb.mapping.AbstractColumnMappingDefinition;
-import com.exasol.adapter.dynamodb.mapping.ColumnMappingDefinitionVisitor;
 import com.exasol.adapter.metadata.DataType;
 import com.exasol.sql.expression.StringLiteral;
 import com.exasol.sql.expression.ValueExpression;

@@ -1,10 +1,10 @@
-package com.exasol.adapter.dynamodb.mapping.tostringmapping.dynamodb;
+package com.exasol.adapter.dynamodb.mapping.dynamodb;
 
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.exasol.adapter.dynamodb.documentnode.DocumentNode;
 import com.exasol.adapter.dynamodb.documentnode.dynamodb.*;
-import com.exasol.adapter.dynamodb.mapping.tostringmapping.ToStringColumnMappingDefinition;
-import com.exasol.adapter.dynamodb.mapping.tostringmapping.ToStringValueMapper;
+import com.exasol.adapter.dynamodb.mapping.ToStringColumnMappingDefinition;
+import com.exasol.adapter.dynamodb.mapping.ToStringValueMapper;
 
 /**
  * This class represents {@link ToStringValueMapper} for DynamoDB values.

@@ -1,4 +1,4 @@
-package com.exasol.adapter.dynamodb.mapping.tostringmapping;
+package com.exasol.adapter.dynamodb.mapping;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
@@ -8,7 +8,6 @@ import org.junit.jupiter.api.Test;
 
 import com.exasol.adapter.dynamodb.documentnode.DocumentNode;
 import com.exasol.adapter.dynamodb.documentpath.DocumentPathExpression;
-import com.exasol.adapter.dynamodb.mapping.AbstractColumnMappingDefinition;
 import com.exasol.sql.expression.ValueExpression;
 
 public class ToStringValueMapperTest {

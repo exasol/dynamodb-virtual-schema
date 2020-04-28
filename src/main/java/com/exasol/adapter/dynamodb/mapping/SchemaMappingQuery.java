@@ -1,14 +1,11 @@
-package com.exasol.adapter.dynamodb.remotetablequery;
+package com.exasol.adapter.dynamodb.mapping;
 
 import java.util.List;
 
-import com.exasol.adapter.dynamodb.mapping.AbstractColumnMappingDefinition;
-import com.exasol.adapter.dynamodb.mapping.TableMappingDefinition;
-
 /**
- * This interface gives access to the schema mapping information of a {@link RemoteTableQuery}.
+ * This interface defines the access to the schema mapping relevant information of a query.
  */
-public interface RemoteTableQueryMappingInterface {
+public interface SchemaMappingQuery {
 
     /**
      * Gives the table defined in the {@code FROM} clause of the statement.

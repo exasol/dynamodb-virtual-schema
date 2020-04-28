@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.exasol.adapter.dynamodb.mapping.AbstractColumnMappingDefinition;
-import com.exasol.adapter.dynamodb.remotetablequery.RemoteTableQueryMappingInterface;
+import com.exasol.adapter.dynamodb.mapping.SchemaMappingQuery;
 import com.exasol.sql.StatementFactory;
 import com.exasol.sql.ValueTable;
 import com.exasol.sql.ValueTableRow;
@@ -19,16 +19,14 @@ import com.exasol.sql.rendering.StringRendererConfig;
  */
 public class ValueExpressionsToSqlSelectFromValuesConverter {
 
-    public String convert(final RemoteTableQueryMappingInterface tableStructure,
-            final List<List<ValueExpression>> rows) {
+    public String convert(final SchemaMappingQuery tableStructure, final List<List<ValueExpression>> rows) {
         final StringRendererConfig config = StringRendererConfig.builder().quoteIdentifiers(true).build();
         final SelectRenderer renderer = new SelectRenderer(config);
         convertToSelect(tableStructure, rows).accept(renderer);
         return renderer.render();
     }
 
-    private Select convertToSelect(final RemoteTableQueryMappingInterface tableStructure,
-            final List<List<ValueExpression>> rows) {
+    private Select convertToSelect(final SchemaMappingQuery tableStructure, final List<List<ValueExpression>> rows) {
         final Select select = StatementFactory.getInstance().select();
         final ValueTable valueTable = new ValueTable(select);
 
@@ -47,7 +45,7 @@ public class ValueExpressionsToSqlSelectFromValuesConverter {
         return select;
     }
 
-    private List<ValueExpression> getDefaultValueRow(final RemoteTableQueryMappingInterface tableStructure) {
+    private List<ValueExpression> getDefaultValueRow(final SchemaMappingQuery tableStructure) {
         return tableStructure.getSelectList().stream().map(AbstractColumnMappingDefinition::getExasolDefaultValue)
                 .collect(Collectors.toList());
     }

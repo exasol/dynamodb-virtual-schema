@@ -28,7 +28,7 @@ public abstract class AbstractColumnMappingDefinition implements Serializable {
      * 
      * @param parameters parameter object
      */
-    public AbstractColumnMappingDefinition(final ConstructorParameters parameters) {
+    AbstractColumnMappingDefinition(final ConstructorParameters parameters) {
         this.exasolColumnName = parameters.exasolColumnName;
         this.pathToSourceProperty = parameters.pathToSourceProperty;
         this.lookupFailBehaviour = parameters.lookupFailBehaviour;
