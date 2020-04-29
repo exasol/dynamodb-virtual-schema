@@ -52,8 +52,7 @@ public final class JacocoServer implements Runnable {
 
     @Override
     public void run() {
-        try {
-            final ServerSocket server = new ServerSocket(PORT);
+        try (final ServerSocket server = new ServerSocket(PORT)) {
             while (true) {
                 final Handler handler = new Handler(server.accept(), this.fileWriter);
                 new Thread(handler).start();

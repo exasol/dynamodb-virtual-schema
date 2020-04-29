@@ -10,16 +10,15 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeoutException;
 
-import com.github.dockerjava.api.model.ContainerNetwork;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.testcontainers.containers.Container;
 
 import com.exasol.LogProxy;
 import com.exasol.bucketfs.Bucket;
 import com.exasol.bucketfs.BucketAccessException;
 import com.exasol.containers.ExasolContainer;
 import com.exasol.jacoco.JacocoServer;
+import com.github.dockerjava.api.model.ContainerNetwork;
 
 /**
  * This class provides methods simplified methods for running typical commands on an Exasol test container.
@@ -121,12 +120,12 @@ public class ExasolTestInterface {
         final String hostIp = getTestHostIpAddress();
 
         if (hostIp != null) {
-            String jvmOptions = "-javaagent:/buckets/bfsdefault/default/" + JACOCO_JAR_NAME
-                    + "=output=tcpclient,address=" + hostIp + ",port=3002";
+            final StringBuilder jvmOptions = new StringBuilder("-javaagent:/buckets/bfsdefault/default/"
+                    + JACOCO_JAR_NAME + "=output=tcpclient,address=" + hostIp + ",port=3002");
             if (!isNoDebugSystemPropertySet()) {
                 // noinspection SpellCheckingInspection
-                jvmOptions += " -agentlib:jdwp=transport=dt_socket,server=n,address=" + hostIp + ":" + DEBUGGER_PORT
-                        + ",suspend=y";
+                jvmOptions.append(" -agentlib:jdwp=transport=dt_socket,server=n,address=").append(hostIp).append(":")
+                        .append(DEBUGGER_PORT).append(",suspend=y");
             }
             statementBuilder.append("  %jvmoption ").append(jvmOptions).append(";\n");
         }
