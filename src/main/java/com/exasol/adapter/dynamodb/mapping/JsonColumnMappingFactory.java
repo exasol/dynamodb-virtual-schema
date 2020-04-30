@@ -2,14 +2,12 @@ package com.exasol.adapter.dynamodb.mapping;
 
 import javax.json.JsonObject;
 
-import com.exasol.adapter.dynamodb.mapping.tojsonmapping.ToJsonColumnMappingDefinition;
-import com.exasol.adapter.dynamodb.mapping.tostringmapping.ToStringColumnMappingDefinition;
-import com.exasol.dynamodb.resultwalker.AbstractDynamodbResultWalkerBuilder;
+import com.exasol.adapter.dynamodb.documentpath.DocumentPathExpression;
 
 /**
  * This class builds ColumnMappingDefinitions from a JSON definition. It is used in the {@link JsonMappingFactory}.
  */
-public class JsonColumnMappingFactory {
+class JsonColumnMappingFactory {
     private static final String MAX_LENGTH_KEY = "maxLength";
     private static final int DEFAULT_MAX_LENGTH = 254;
     private static final String OVERFLOW_KEY = "overflow";
@@ -18,24 +16,24 @@ public class JsonColumnMappingFactory {
     private static final ToStringColumnMappingDefinition.OverflowBehaviour DEFAULT_TO_STRING_OVERFLOW = ToStringColumnMappingDefinition.OverflowBehaviour.TRUNCATE;
     private static final AbstractColumnMappingDefinition.LookupFailBehaviour DEFAULT_LOOKUP_BEHAVIOUR = AbstractColumnMappingDefinition.LookupFailBehaviour.DEFAULT_VALUE;
 
-    void addStringColumnIfPossible(final JsonObject definition, final AbstractDynamodbResultWalkerBuilder resultWalker,
+    void addStringColumnIfPossible(final JsonObject definition, final DocumentPathExpression.Builder sourcePath,
             final TableMappingDefinition.Builder tableBuilder, final String dynamodbPropertyName,
             final boolean isRootLevel) throws JsonMappingFactory.MappingException {
         if (isRootLevel) {
             throw new JsonMappingFactory.MappingException(
                     "ToStringMapping is not allowed at root level. You probably want to replace it with a \"fields\" definition.");
         }
-        addStringColumn(definition, resultWalker, tableBuilder, dynamodbPropertyName);
+        addStringColumn(definition, sourcePath, tableBuilder, dynamodbPropertyName);
     }
 
-    private void addStringColumn(final JsonObject definition, final AbstractDynamodbResultWalkerBuilder resultWalker,
+    private void addStringColumn(final JsonObject definition, final DocumentPathExpression.Builder sourcePath,
             final TableMappingDefinition.Builder tableBuilder, final String dynamodbPropertyName)
             throws JsonMappingFactory.MappingException {
         final int maxLength = definition.getInt(MAX_LENGTH_KEY, DEFAULT_MAX_LENGTH);
         final ToStringColumnMappingDefinition.OverflowBehaviour overflowBehaviour = readStringOverflowBehaviour(
                 definition);
         final AbstractColumnMappingDefinition.ConstructorParameters columnParameters = readColumnProperties(definition,
-                resultWalker, dynamodbPropertyName);
+                sourcePath.build(), dynamodbPropertyName);
         tableBuilder.withColumnMappingDefinition(
                 new ToStringColumnMappingDefinition(columnParameters, maxLength, overflowBehaviour));
     }
@@ -49,12 +47,12 @@ public class JsonColumnMappingFactory {
     }
 
     private AbstractColumnMappingDefinition.ConstructorParameters readColumnProperties(final JsonObject definition,
-            final AbstractDynamodbResultWalkerBuilder resultWalker, final String dynamodbPropertyName)
+            final DocumentPathExpression sourcePath, final String dynamodbPropertyName)
             throws JsonMappingFactory.MappingException {
         final String exasolColumnName = readExasolColumnName(definition, dynamodbPropertyName);
         final AbstractColumnMappingDefinition.LookupFailBehaviour lookupFailBehaviour = readLookupFailBehaviour(
                 definition);
-        return new AbstractColumnMappingDefinition.ConstructorParameters(exasolColumnName, resultWalker.build(),
+        return new AbstractColumnMappingDefinition.ConstructorParameters(exasolColumnName, sourcePath,
                 lookupFailBehaviour);
     }
 
@@ -76,12 +74,12 @@ public class JsonColumnMappingFactory {
         return exasolColumnName.toUpperCase();
     }
 
-    void addToJsonColumn(final JsonObject definition, final AbstractDynamodbResultWalkerBuilder resultWalker,
+    void addToJsonColumn(final JsonObject definition, final DocumentPathExpression.Builder sourcePath,
             final TableMappingDefinition.Builder tableBuilder, final String dynamodbPropertyName)
             throws JsonMappingFactory.MappingException {
         final String exasolColumnName = readExasolColumnName(definition, dynamodbPropertyName);
         final AbstractColumnMappingDefinition.ConstructorParameters columnParameters = new AbstractColumnMappingDefinition.ConstructorParameters(
-                exasolColumnName, resultWalker.build(),
+                exasolColumnName, sourcePath.build(),
                 AbstractColumnMappingDefinition.LookupFailBehaviour.DEFAULT_VALUE);
         tableBuilder.withColumnMappingDefinition(new ToJsonColumnMappingDefinition(columnParameters));
     }

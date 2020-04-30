@@ -4,6 +4,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.not;
 
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Map;
 import java.util.concurrent.TimeoutException;
@@ -53,7 +54,7 @@ public class DynamodbAdapterRefreshTestLocalIT {
      */
     @BeforeAll
     static void beforeAll() throws DynamodbTestInterface.NoNetworkFoundException, SQLException, InterruptedException,
-            BucketAccessException, TimeoutException {
+            BucketAccessException, TimeoutException, IOException {
         dynamodbTestInterface = new DynamodbTestInterface(LOCAL_DYNAMO, NETWORK);
         exasolTestInterface = new ExasolTestInterface(EXASOL_CONTAINER);
         exasolTestInterface.uploadDynamodbAdapterJar();

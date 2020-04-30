@@ -4,77 +4,113 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import java.util.Collections;
 import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 
-import com.amazonaws.services.dynamodbv2.model.AttributeValue;
-import com.exasol.dynamodb.attributevalue.AttributeValueTestUtils;
-import com.exasol.dynamodb.resultwalker.DynamodbResultWalkerException;
-import com.exasol.dynamodb.resultwalker.IdentityDynamodbResultWalker;
-import com.exasol.dynamodb.resultwalker.ObjectDynamodbResultWalker;
-import com.exasol.sql.expression.StringLiteral;
+import com.exasol.adapter.dynamodb.documentnode.DocumentNode;
+import com.exasol.adapter.dynamodb.documentnode.DocumentObject;
+import com.exasol.adapter.dynamodb.documentnode.DocumentValue;
+import com.exasol.adapter.dynamodb.documentpath.DocumentPathExpression;
+import com.exasol.adapter.dynamodb.documentpath.DocumentPathWalkerException;
 import com.exasol.sql.expression.ValueExpression;
 
-/**
- * Tests for {@link AbstractValueMapper}
- */
 public class AbstractValueMapperTest {
     @Test
-    void testLookup() throws DynamodbResultWalkerException, ValueMapperException {
-        final ObjectDynamodbResultWalker resultWalker = new ObjectDynamodbResultWalker("isbn", null);
-        final MockColumnMappingDefinition columnMappingDefinition = new MockColumnMappingDefinition("d", resultWalker,
+    void testLookup() {
+        final DocumentPathExpression sourcePath = new DocumentPathExpression.Builder().addObjectLookup("isbn").build();
+        final MockColumnMappingDefinition columnMappingDefinition = new MockColumnMappingDefinition("d", sourcePath,
                 AbstractColumnMappingDefinition.LookupFailBehaviour.EXCEPTION);
-        final String isbn = "123456789";
-        final AttributeValue isbnValue = AttributeValueTestUtils.forString(isbn);
-        final ValueExpression valueExpression = new MockValueMapper(columnMappingDefinition)
-                .mapRow(Map.of("isbn", isbnValue));
-        assertThat(valueExpression.toString(), equalTo(isbn));
+
+        final ValueMapperStub valueMapperStub = new ValueMapperStub(columnMappingDefinition);
+        final StubDocumentObject testObject = new StubDocumentObject();
+        valueMapperStub.mapRow(testObject);
+        assertThat(valueMapperStub.remoteValue, equalTo(StubDocumentObject.MAP.get("isbn")));
     }
 
     @Test
-    void testNullLookupFailBehaviour() throws ValueMapperException, DynamodbResultWalkerException {
-        final ObjectDynamodbResultWalker resultWalker = new ObjectDynamodbResultWalker("nonExistingColumn", null);
-        final MockColumnMappingDefinition columnMappingDefinition = new MockColumnMappingDefinition("d", resultWalker,
+    void testNullLookupFailBehaviour() throws ValueMapperException {
+        final DocumentPathExpression sourcePath = new DocumentPathExpression.Builder()
+                .addObjectLookup("nonExistingColumn").build();
+        final MockColumnMappingDefinition columnMappingDefinition = new MockColumnMappingDefinition("d", sourcePath,
                 AbstractColumnMappingDefinition.LookupFailBehaviour.DEFAULT_VALUE);
-        final ValueExpression valueExpression = new MockValueMapper(columnMappingDefinition)
-                .mapRow(Collections.emptyMap());
+        final ValueExpression valueExpression = new ValueMapperStub(columnMappingDefinition)
+                .mapRow(new StubDocumentObject());
         assertThat(valueExpression.toString(), equalTo("default"));
     }
 
     @Test
     void testExceptionLookupFailBehaviour() {
-        final ObjectDynamodbResultWalker resultWalker = new ObjectDynamodbResultWalker("nonExistingColumn", null);
-        final MockColumnMappingDefinition columnMappingDefinition = new MockColumnMappingDefinition("d", resultWalker,
+        final DocumentPathExpression sourcePath = new DocumentPathExpression.Builder()
+                .addObjectLookup("nonExistingColumn").build();
+        final MockColumnMappingDefinition columnMappingDefinition = new MockColumnMappingDefinition("d", sourcePath,
                 AbstractColumnMappingDefinition.LookupFailBehaviour.EXCEPTION);
-        assertThrows(DynamodbResultWalkerException.class,
-                () -> new MockValueMapper(columnMappingDefinition).mapRow(Collections.emptyMap()));
+        assertThrows(DocumentPathWalkerException.class,
+                () -> new ValueMapperStub(columnMappingDefinition).mapRow(new StubDocumentObject()));
     }
 
     @Test
     public void testColumnMappingException() {
         final String columnName = "name";
         final MockColumnMappingDefinition mappingDefinition = new MockColumnMappingDefinition(columnName,
-                new IdentityDynamodbResultWalker(), AbstractColumnMappingDefinition.LookupFailBehaviour.EXCEPTION);
+                new DocumentPathExpression.Builder().build(),
+                AbstractColumnMappingDefinition.LookupFailBehaviour.EXCEPTION);
         final ValueMapperException exception = assertThrows(ValueMapperException.class,
-                () -> new ExceptionMockValueMapper(mappingDefinition).mapRow(Map.of()));
+                () -> new ExceptionMockValueMapper(mappingDefinition).mapRow(new StubDocumentObject()));
         assertThat(exception.getCausingColumn().getExasolColumnName(), equalTo(columnName));
     }
 
-    private static class MockValueMapper extends AbstractValueMapper {
+    private static class DummyVisitor {
 
-        public MockValueMapper(final AbstractColumnMappingDefinition column) {
+    }
+
+    private static class StubDocumentObject implements DocumentObject<DummyVisitor> {
+        private static final Map<String, DocumentNode<DummyVisitor>> MAP = Map.of("isbn", new StubDocumentValue());
+
+        @Override
+        public Map<String, DocumentNode<DummyVisitor>> getKeyValueMap() {
+            return MAP;
+        }
+
+        @Override
+        public DocumentNode<DummyVisitor> get(final String key) {
+            return MAP.get(key);
+        }
+
+        @Override
+        public boolean hasKey(final String key) {
+            return MAP.containsKey(key);
+        }
+
+        @Override
+        public void accept(final DummyVisitor visitor) {
+
+        }
+    }
+
+    private static class StubDocumentValue implements DocumentValue<DummyVisitor> {
+
+        @Override
+        public void accept(final DummyVisitor visitor) {
+
+        }
+    }
+
+    private static class ValueMapperStub extends AbstractValueMapper<DummyVisitor> {
+        private DocumentNode<DummyVisitor> remoteValue;
+
+        public ValueMapperStub(final AbstractColumnMappingDefinition column) {
             super(column);
         }
 
         @Override
-        protected ValueExpression mapValue(final AttributeValue dynamodbProperty) {
-            return StringLiteral.of(dynamodbProperty.getS());
+        protected ValueExpression mapValue(final DocumentNode<DummyVisitor> remoteValue) {
+            this.remoteValue = remoteValue;
+            return null;
         }
     }
 
-    private static class ExceptionMockValueMapper extends AbstractValueMapper {
+    private static class ExceptionMockValueMapper extends AbstractValueMapper<DummyVisitor> {
         private final AbstractColumnMappingDefinition column;
 
         public ExceptionMockValueMapper(final AbstractColumnMappingDefinition column) {
@@ -83,7 +119,7 @@ public class AbstractValueMapperTest {
         }
 
         @Override
-        protected ValueExpression mapValue(final AttributeValue dynamodbProperty) throws ValueMapperException {
+        protected ValueExpression mapValue(final DocumentNode<DummyVisitor> dynamodbProperty) {
             throw new ValueMapperException("mocMessage", this.column);
         }
     }

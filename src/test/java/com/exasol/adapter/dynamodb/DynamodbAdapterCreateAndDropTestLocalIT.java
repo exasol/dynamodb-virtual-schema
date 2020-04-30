@@ -3,6 +3,7 @@ package com.exasol.adapter.dynamodb;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.concurrent.TimeoutException;
 
@@ -52,7 +53,7 @@ public class DynamodbAdapterCreateAndDropTestLocalIT {
      */
     @BeforeAll
     static void beforeAll() throws DynamodbTestInterface.NoNetworkFoundException, SQLException, InterruptedException,
-            BucketAccessException, TimeoutException {
+            BucketAccessException, TimeoutException, IOException {
         final DynamodbTestInterface dynamodbTestInterface = new DynamodbTestInterface(LOCAL_DYNAMO, NETWORK);
         exasolTestInterface = new ExasolTestInterface(EXASOL_CONTAINER);
         exasolTestInterface.uploadDynamodbAdapterJar();

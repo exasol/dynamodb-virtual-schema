@@ -9,9 +9,6 @@ import java.lang.reflect.Method;
 
 import org.junit.jupiter.api.Test;
 
-/**
- * Tests for {@link VoidSqlNodeVisitor}
- */
 public class VoidSqlNodeVisitorTest {
     @Test
     void testUnimplementedException() {
@@ -28,9 +25,5 @@ public class VoidSqlNodeVisitorTest {
 
     private static class Mock extends VoidSqlNodeVisitor {
 
-        @Override
-        public Void visit(final SqlStatementSelect select) {
-            return null;
-        }
     }
 }

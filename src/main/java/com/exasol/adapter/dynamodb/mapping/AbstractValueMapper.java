@@ -1,15 +1,15 @@
 package com.exasol.adapter.dynamodb.mapping;
 
-import java.util.Map;
-
-import com.amazonaws.services.dynamodbv2.model.AttributeValue;
-import com.exasol.dynamodb.resultwalker.DynamodbResultWalkerException;
+import com.exasol.adapter.dynamodb.documentnode.DocumentNode;
+import com.exasol.adapter.dynamodb.documentpath.DocumentPathWalkerException;
+import com.exasol.adapter.dynamodb.documentpath.LinearDocumentPathWalker;
 import com.exasol.sql.expression.ValueExpression;
 
 /**
  * Abstract class for extracting a value specified in an ColumnMappingDefinition from a DynamoDB row.
  */
-public abstract class AbstractValueMapper {
+@java.lang.SuppressWarnings("squid:S119") // DocumentVisitorType does not fit naming conventions.
+public abstract class AbstractValueMapper<DocumentVisitorType> {
     private final AbstractColumnMappingDefinition column;
 
     /**
@@ -18,26 +18,29 @@ public abstract class AbstractValueMapper {
      * 
      * @param column ColumnMappingDefinition defining the mapping
      */
-    public AbstractValueMapper(final AbstractColumnMappingDefinition column) {
+    AbstractValueMapper(final AbstractColumnMappingDefinition column) {
         this.column = column;
     }
 
     /**
-     * Extracts {@link #column}s value from DynamoDB's result row.
+     * Extracts {@link #column}s values from the given document.
      *
-     * @param dynamodbRow to extract the value from
+     * @param document to extract the value from
      * @return {@link ValueExpression}
-     * @throws DynamodbResultWalkerException if specified property can't be extracted and
-     *                                       {@link AbstractColumnMappingDefinition.LookupFailBehaviour} exception
-     * @throws ValueMapperException          if specified property can't be mapped and
-     *                                       {@link AbstractColumnMappingDefinition.LookupFailBehaviour} exception
+     * @throws DocumentPathWalkerException if specified property was not found and
+     *                                     {@link AbstractColumnMappingDefinition.LookupFailBehaviour} is set to
+     *                                     {@code EXCEPTION }
+     * @throws ValueMapperException        if specified property can't be mapped and
+     *                                     {@link AbstractColumnMappingDefinition.LookupFailBehaviour} is set to
+     *                                     {@code EXCEPTION }
      */
-    public ValueExpression mapRow(final Map<String, AttributeValue> dynamodbRow)
-            throws DynamodbResultWalkerException, ValueMapperException {
+    public ValueExpression mapRow(final DocumentNode<DocumentVisitorType> document) {
         try {
-            final AttributeValue dynamodbProperty = this.column.getPathToSourceProperty().walk(dynamodbRow);
+            final LinearDocumentPathWalker<DocumentVisitorType> walker = new LinearDocumentPathWalker<>(
+                    this.column.getPathToSourceProperty());
+            final DocumentNode<DocumentVisitorType> dynamodbProperty = walker.walkThroughDocument(document);
             return mapValue(dynamodbProperty);
-        } catch (final DynamodbResultWalkerException | LookupValueMapperException exception) {
+        } catch (final DocumentPathWalkerException | LookupValueMapperException exception) {
             if (this.column
                     .getLookupFailBehaviour() == AbstractColumnMappingDefinition.LookupFailBehaviour.DEFAULT_VALUE) {
                 return this.column.getExasolDefaultValue();
@@ -54,5 +57,5 @@ public abstract class AbstractValueMapper {
      * @return the conversion result
      * @throws ValueMapperException if the value can't be mapped
      */
-    protected abstract ValueExpression mapValue(AttributeValue dynamodbProperty) throws ValueMapperException;
+    protected abstract ValueExpression mapValue(DocumentNode<DocumentVisitorType> dynamodbProperty);
 }

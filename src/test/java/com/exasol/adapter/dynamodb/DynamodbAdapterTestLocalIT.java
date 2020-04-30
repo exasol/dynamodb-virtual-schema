@@ -44,7 +44,7 @@ public class DynamodbAdapterTestLocalIT {
             .withNetwork(NETWORK).withExposedPorts(8888).withLogConsumer(new Slf4jLogConsumer(LOGGER));
     private static final String TEST_SCHEMA = "TEST";
     private static final String DYNAMODB_CONNECTION = "DYNAMODB_CONNECTION";
-    private static final String DYNAMO_TABLE_NAME = "JB_Books";
+    private static final String DYNAMO_TABLE_NAME = "MY_BOOKS";
     private static DynamodbTestInterface dynamodbTestInterface;
     private static ExasolTestInterface exasolTestInterface;
 
@@ -53,7 +53,7 @@ public class DynamodbAdapterTestLocalIT {
      */
     @BeforeAll
     static void beforeAll() throws DynamodbTestInterface.NoNetworkFoundException, SQLException, InterruptedException,
-            BucketAccessException, TimeoutException {
+            BucketAccessException, TimeoutException, IOException {
         dynamodbTestInterface = new DynamodbTestInterface(LOCAL_DYNAMO, NETWORK);
         exasolTestInterface = new ExasolTestInterface(EXASOL_CONTAINER);
         exasolTestInterface.uploadDynamodbAdapterJar();
@@ -71,6 +71,7 @@ public class DynamodbAdapterTestLocalIT {
     @AfterAll
     static void afterAll() {
         NETWORK.close();
+        EXASOL_CONTAINER.getDockerClient().stopContainerCmd(EXASOL_CONTAINER.getContainerId()).withTimeout(10).exec();
     }
 
     @AfterEach
@@ -142,7 +143,6 @@ public class DynamodbAdapterTestLocalIT {
     @Test
     void testMultiLineSelect() throws IOException, SQLException {
         dynamodbTestInterface.createTable(DYNAMO_TABLE_NAME, TestDocuments.BOOKS_ISBN_PROPERTY);
-        final ClassLoader classLoader = DynamodbAdapterTestLocalIT.class.getClassLoader();
         dynamodbTestInterface.importData(DYNAMO_TABLE_NAME, TestDocuments.BOOKS);
         final List<String> result = selectStringArray().rows;
         assertThat(result, containsInAnyOrder("123567", "123254545", "1235673"));

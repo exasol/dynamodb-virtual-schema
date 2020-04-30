@@ -1,0 +1,56 @@
+@startuml
+
+interface DocumentNode<VisitorType>{
+{abstract} accept(VisitorType)
+}
+interface DocumentArray<VisitorType>{
+{abstract} getValueList() : List<DocumentNode<? extends VisitorType>>
+{abstract} getValue(index) : DocumentNode<VisitorType>
+}
+interface DocumentObject<VisitorType>{
+{abstract} getKeyValueMap()
+{abstract} get(key)
+{abstract} hasKey(key)
+}
+interface DocumentValue<VisitorType>{
+}
+
+interface DynamodbVisitor{
+{abstract} visit(DynamodbList)
+{abstract} visit(DynamodbStringSet)
+{abstract} visit(DynamodbObject)
+{abstract} visit(DynamodbString)
+{abstract} visit(DynamodbNumber)
+}
+
+DocumentNode <|-- DocumentArray
+DocumentNode <|-- DocumentObject
+DocumentNode <|-- DocumentValue
+
+DocumentArray <|-- DynamodbList
+DocumentArray <|-- DynamodbStringSet
+DocumentObject <|-- DynamodbObject
+DocumentValue <|-- DynamodbString
+DocumentValue <|-- DynamodbNumber
+
+class DynamodbList{
+accept(DynamodbVisitor)
+}
+
+class DynamodbStringSet{
+accept(DynamodbVisitor)
+}
+
+class DynamodbObject{
+accept(DynamodbVisitor)
+}
+
+class DynamodbString{
+accept(DynamodbVisitor)
+}
+
+class DynamodbNumber{
+accept(DynamodbVisitor)
+}
+
+@enduml

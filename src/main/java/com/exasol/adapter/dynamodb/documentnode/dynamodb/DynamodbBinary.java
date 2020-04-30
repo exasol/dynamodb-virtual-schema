@@ -1,0 +1,36 @@
+package com.exasol.adapter.dynamodb.documentnode.dynamodb;
+
+import java.nio.ByteBuffer;
+
+import com.exasol.adapter.dynamodb.documentnode.DocumentValue;
+
+/**
+ * This class represents a DynamoDB binary value.
+ */
+public class DynamodbBinary implements DocumentValue<DynamodbNodeVisitor> {
+    private static final long serialVersionUID = -1085912088779479403L;
+    private final byte[] value;
+
+    /**
+     * Creates an instance of {@link DynamodbBinary}.
+     *
+     * @param value value to hold
+     */
+    public DynamodbBinary(final ByteBuffer value) {
+        this.value = value.array();
+    }
+
+    /**
+     * Gives the binary value.
+     *
+     * @return value of the string
+     */
+    public ByteBuffer getValue() {
+        return ByteBuffer.wrap(this.value);
+    }
+
+    @Override
+    public void accept(final DynamodbNodeVisitor visitor) {
+        visitor.visit(this);
+    }
+}

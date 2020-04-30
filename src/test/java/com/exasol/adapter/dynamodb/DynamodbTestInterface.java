@@ -151,6 +151,16 @@ public class DynamodbTestInterface {
     }
 
     /**
+     * Creates a DynamoDB table.
+     * 
+     * @param request {@link CreateTableRequest}
+     */
+    public void createTable(final CreateTableRequest request) {
+        this.dynamoClient.createTable(request);
+        this.tableNames.add(request.getTableName());
+    }
+
+    /**
      * Deletes a DynamoDB table.
      * 
      * @param tableName name of the DynamoDB table to delete

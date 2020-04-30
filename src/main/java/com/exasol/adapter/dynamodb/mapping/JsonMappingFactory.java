@@ -13,9 +13,7 @@ import javax.json.JsonObject;
 import javax.json.JsonReader;
 
 import com.exasol.adapter.AdapterException;
-import com.exasol.dynamodb.resultwalker.AbstractDynamodbResultWalkerBuilder;
-import com.exasol.dynamodb.resultwalker.IdentityDynamodbResultWalker;
-import com.exasol.dynamodb.resultwalker.ObjectDynamodbResultWalker;
+import com.exasol.adapter.dynamodb.documentpath.DocumentPathExpression;
 
 /**
  * This {@link MappingDefinitionFactory} reads a {@link SchemaMappingDefinition} from JSON files.
@@ -26,6 +24,7 @@ import com.exasol.dynamodb.resultwalker.ObjectDynamodbResultWalker;
  */
 public class JsonMappingFactory implements MappingDefinitionFactory {
     private static final String DEST_TABLE_NAME_KEY = "destTable";
+    private static final String SRC_TABLE_NAME_KEY = "srcTable";
     private static final String MAPPING_KEY = "mapping";
     private static final String FIELDS_KEY = "fields";
     private static final String TO_STRING_MAPPING_KEY = "toStringMapping";
@@ -91,33 +90,31 @@ public class JsonMappingFactory implements MappingDefinitionFactory {
 
     private void addRootDefinition(final JsonObject definition) throws MappingException {
         final TableMappingDefinition.Builder tableBuilder = TableMappingDefinition
-                .builder(definition.getString(DEST_TABLE_NAME_KEY), true);
-        visitRootMapping(definition.getJsonObject(MAPPING_KEY), new IdentityDynamodbResultWalker.Builder(),
-                tableBuilder);
+                .rootTableBuilder(definition.getString(DEST_TABLE_NAME_KEY), definition.getString(SRC_TABLE_NAME_KEY));
+        visitRootMapping(definition.getJsonObject(MAPPING_KEY), new DocumentPathExpression.Builder(), tableBuilder);
         this.tables.add(tableBuilder.build());
     }
 
-    private void visitRootMapping(final JsonObject definition,
-            final AbstractDynamodbResultWalkerBuilder walkerToThisPath,
+    private void visitRootMapping(final JsonObject definition, final DocumentPathExpression.Builder sourcePath,
             final TableMappingDefinition.Builder tableBuilder) throws MappingException {
-        visitMapping(definition, walkerToThisPath, tableBuilder, null, true);
+        visitMapping(definition, sourcePath, tableBuilder, null, true);
     }
 
-    private void visitMapping(final JsonObject definition, final AbstractDynamodbResultWalkerBuilder walkerToThisPath,
+    private void visitMapping(final JsonObject definition, final DocumentPathExpression.Builder sourcePath,
             final TableMappingDefinition.Builder tableBuilder, final String propertyName, final boolean isRootLevel)
             throws MappingException {
         final JsonColumnMappingFactory columnMappingFactory = new JsonColumnMappingFactory();
         switch (getMappingType(definition)) {
         case TO_STRING_MAPPING_KEY:
-            columnMappingFactory.addStringColumnIfPossible(definition.getJsonObject(TO_STRING_MAPPING_KEY),
-                    walkerToThisPath, tableBuilder, propertyName, isRootLevel);
+            columnMappingFactory.addStringColumnIfPossible(definition.getJsonObject(TO_STRING_MAPPING_KEY), sourcePath,
+                    tableBuilder, propertyName, isRootLevel);
             break;
         case TO_JSON_MAPPING_KEY:
-            columnMappingFactory.addToJsonColumn(definition.getJsonObject(TO_JSON_MAPPING_KEY), walkerToThisPath,
+            columnMappingFactory.addToJsonColumn(definition.getJsonObject(TO_JSON_MAPPING_KEY), sourcePath,
                     tableBuilder, propertyName);
             break;
         case FIELDS_KEY:
-            visitChildren(definition.getJsonObject(FIELDS_KEY), walkerToThisPath, tableBuilder);
+            visitChildren(definition.getJsonObject(FIELDS_KEY), sourcePath, tableBuilder);
             break;
         case "":// no mapping definition
             break;
@@ -137,12 +134,12 @@ public class JsonMappingFactory implements MappingDefinitionFactory {
         }
     }
 
-    private void visitChildren(final JsonObject definition, final AbstractDynamodbResultWalkerBuilder walkerToThisPath,
+    private void visitChildren(final JsonObject definition, final DocumentPathExpression.Builder sourcePath,
             final TableMappingDefinition.Builder tableBuilder) throws MappingException {
         for (final String dynamodbPropertyName : definition.keySet()) {
-            final ObjectDynamodbResultWalker.Builder walker = new ObjectDynamodbResultWalker.Builder(walkerToThisPath,
-                    dynamodbPropertyName);
-            visitMapping(definition.getJsonObject(dynamodbPropertyName), walker, tableBuilder, dynamodbPropertyName,
+            final DocumentPathExpression.Builder newBuilder = new DocumentPathExpression.Builder(sourcePath)
+                    .addObjectLookup(dynamodbPropertyName);
+            visitMapping(definition.getJsonObject(dynamodbPropertyName), newBuilder, tableBuilder, dynamodbPropertyName,
                     false);
         }
     }

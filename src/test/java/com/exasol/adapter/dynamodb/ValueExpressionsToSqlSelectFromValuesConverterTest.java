@@ -8,27 +8,36 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
+import com.exasol.adapter.dynamodb.documentpath.DocumentPathExpression;
 import com.exasol.adapter.dynamodb.mapping.AbstractColumnMappingDefinition;
-import com.exasol.adapter.dynamodb.mapping.tojsonmapping.ToJsonColumnMappingDefinition;
-import com.exasol.adapter.dynamodb.queryresultschema.QueryResultTableSchema;
-import com.exasol.dynamodb.resultwalker.IdentityDynamodbResultWalker;
+import com.exasol.adapter.dynamodb.mapping.SchemaMappingQuery;
+import com.exasol.adapter.dynamodb.mapping.TableMappingDefinition;
+import com.exasol.adapter.dynamodb.mapping.ToJsonColumnMappingDefinition;
 import com.exasol.sql.expression.StringLiteral;
 import com.exasol.sql.expression.ValueExpression;
 
-/**
- * Tests for {@link ValueExpressionsToSqlSelectFromValuesConverter}.
- */
 public class ValueExpressionsToSqlSelectFromValuesConverterTest {
-    QueryResultTableSchema getTestTable() {
-        return new QueryResultTableSchema(List.of(new ToJsonColumnMappingDefinition(
-                new AbstractColumnMappingDefinition.ConstructorParameters("json", new IdentityDynamodbResultWalker(),
-                        AbstractColumnMappingDefinition.LookupFailBehaviour.DEFAULT_VALUE))));
+    SchemaMappingQuery getRemoteTableQueryStub() {
+        return new SchemaMappingQuery() {
+            @Override
+            public TableMappingDefinition getFromTable() {
+                return null;
+            }
+
+            @Override
+            public List<AbstractColumnMappingDefinition> getSelectList() {
+                return List
+                        .of(new ToJsonColumnMappingDefinition(new AbstractColumnMappingDefinition.ConstructorParameters(
+                                "json", new DocumentPathExpression.Builder().build(),
+                                AbstractColumnMappingDefinition.LookupFailBehaviour.DEFAULT_VALUE)));
+            }
+        };
     }
 
     @Test
     public void testEmptyConvert() {
         final ValueExpressionsToSqlSelectFromValuesConverter converter = new ValueExpressionsToSqlSelectFromValuesConverter();
-        final String sql = converter.convert(getTestTable(), Collections.emptyList());
+        final String sql = converter.convert(getRemoteTableQueryStub(), Collections.emptyList());
         assertThat(sql, equalTo("SELECT * FROM (VALUES ('')) WHERE FALSE"));
     }
 
@@ -37,7 +46,7 @@ public class ValueExpressionsToSqlSelectFromValuesConverterTest {
         final String testString = "test";
         final ValueExpression stringFrame = StringLiteral.of(testString);
         final ValueExpressionsToSqlSelectFromValuesConverter converter = new ValueExpressionsToSqlSelectFromValuesConverter();
-        final String sql = converter.convert(getTestTable(), List.of(List.of(stringFrame)));
+        final String sql = converter.convert(getRemoteTableQueryStub(), List.of(List.of(stringFrame)));
         assertThat(sql, equalTo("SELECT * FROM (VALUES ('" + testString + "'))"));
     }
 
@@ -49,7 +58,8 @@ public class ValueExpressionsToSqlSelectFromValuesConverterTest {
         final ValueExpression stringFrame2 = StringLiteral.of(testString2);
 
         final ValueExpressionsToSqlSelectFromValuesConverter converter = new ValueExpressionsToSqlSelectFromValuesConverter();
-        final String sql = converter.convert(getTestTable(), List.of(List.of(stringFrame1), List.of(stringFrame2)));
+        final String sql = converter.convert(getRemoteTableQueryStub(),
+                List.of(List.of(stringFrame1), List.of(stringFrame2)));
         assertThat(sql, equalTo("SELECT * FROM (VALUES ('" + testString1 + "'), ('" + testString2 + "'))"));
     }
 }

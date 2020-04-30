@@ -1,14 +1,28 @@
 [
   {
     "isbn": "123567",
-    "name": "bad book 1"
+    "name": "bad book 1",
+    "author": {
+      "name": "Jakob Braun"
+    },
+    "topics": [
+      "Exasol",
+      "DynamoDB",
+      "Virtual Schema"
+    ]
   },
   {
     "isbn": "123254545",
-    "name": "bad book 2"
+    "name": "bad book 2",
+    "author": {
+      "name": "Jakob Braun"
+    }
   },
   {
     "isbn": "1235673",
-    "name": "boring book"
+    "name": "boring book",
+    "author": {
+      "name": "Jakob Braun"
+    }
   }
 ]

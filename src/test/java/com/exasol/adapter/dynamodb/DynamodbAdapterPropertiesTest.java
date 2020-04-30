@@ -11,9 +11,6 @@ import org.junit.jupiter.api.Test;
 import com.exasol.adapter.AdapterException;
 import com.exasol.adapter.AdapterProperties;
 
-/**
- * Tests for {@link DynamodbAdapterProperties}.
- */
 public class DynamodbAdapterPropertiesTest {
     private static final String BUCKETFS_PATH = "/bfsdefault/default/mappings/mapping.json";
 

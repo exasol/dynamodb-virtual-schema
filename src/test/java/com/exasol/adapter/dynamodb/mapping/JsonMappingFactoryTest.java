@@ -16,11 +16,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
 import com.exasol.adapter.AdapterException;
-import com.exasol.adapter.dynamodb.mapping.tostringmapping.ToStringColumnMappingDefinition;
 
-/**
- * Tests for {@link JsonMappingFactory}.
- */
 public class JsonMappingFactoryTest {
     private final MappingTestFiles mappingTestFiles = new MappingTestFiles();
 
@@ -52,6 +48,7 @@ public class JsonMappingFactoryTest {
                 .filter(column -> column.getExasolColumnName().equals("NAME")).findAny().get();
         assertAll(() -> assertThat(tables.size(), equalTo(1)), //
                 () -> assertThat(table.getExasolName(), equalTo("BOOKS")),
+                () -> assertThat(table.getRemoteName(), equalTo("MY_BOOKS")),
                 () -> assertThat(columnNames, containsInAnyOrder("ISBN", "NAME", "AUTHOR_NAME")),
                 () -> assertThat(isbnColumn.getExasolStringSize(), equalTo(20)),
                 () -> assertThat(isbnColumn.getOverflowBehaviour(),
