@@ -2,8 +2,8 @@ package com.exasol.adapter.dynamodb.documentnode;
 
 import java.util.Map;
 
-//TODO replace by JSON
 public class MockObjectNode implements DocumentObject<Object> {
+    private static final long serialVersionUID = -8862311988922376399L;
     private final Map<String, DocumentNode<Object>> value;
 
     public MockObjectNode(final Map<String, DocumentNode<Object>> value) {

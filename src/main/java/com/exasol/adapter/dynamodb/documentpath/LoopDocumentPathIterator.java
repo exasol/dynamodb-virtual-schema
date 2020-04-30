@@ -4,9 +4,11 @@ import com.exasol.adapter.dynamodb.documentnode.DocumentArray;
 import com.exasol.adapter.dynamodb.documentnode.DocumentNode;
 
 /**
- * This class iterates over {@link ArrayAllPathSegment}.
- * 
- * @param <VisitorType>
+ * This class iterates over {@link ArrayAllPathSegment}. It enumerates all combinations of arrays indexes for the arrays
+ * in the given document that are matched by {@link ArrayAllPathSegment}s in the given path.
+ *
+ * For paths with multiple {@link ArrayAllPathSegment}s one object of this class only handles the first one and
+ * delegates the remaining path to another instance ({@link #nestedIterator}).
  */
 @java.lang.SuppressWarnings("squid:S119") // VisitorType does not fit naming conventions.
 public class LoopDocumentPathIterator<VisitorType> implements DocumentPathIterator {
@@ -15,13 +17,13 @@ public class LoopDocumentPathIterator<VisitorType> implements DocumentPathIterat
     private final DocumentPathExpression pathOfNextIterator;
     private final DocumentNode<VisitorType> document;
     private int currentIndex = -1;
-    private DocumentPathIterator nextIterator;
+    private DocumentPathIterator nestedIterator;
 
     /**
      * Creates an instance of {@link LoopDocumentPathIterator}.
      * 
-     * @param path     path definition
-     * @param document document to iterate
+     * @param path     path definition used for extracting the {@link ArrayAllPathSegment}s to iterate
+     * @param document document used for reading the array sizes
      */
     public LoopDocumentPathIterator(final DocumentPathExpression path, final DocumentNode<VisitorType> document) {
         this.document = document;
@@ -36,26 +38,29 @@ public class LoopDocumentPathIterator<VisitorType> implements DocumentPathIterat
 
     /**
      * Moves iterator to the next combination.
+     *
+     * If the the nestedIterator still has combinations these are taken first. Otherwise a new nested iterator is build
+     * for the sub document of the next index of this iterator.
      * 
      * @return {@code true} if could move to next; {@code false} if there was no remaining combination to iterate.
      */
     public boolean next() {
         while (true) {
-            if (this.nextIterator != null && this.nextIterator.next()) {
+            if (this.nestedIterator != null && this.nestedIterator.next()) {
                 return true;
             } else if (hasSelfNext()) {
-                loadNextIterator();
+                loadNestedIterator();
             } else {
                 return false;
             }
         }
     }
 
-    private void loadNextIterator() {
+    private void loadNestedIterator() {
         this.currentIndex++;
         final DocumentNode<VisitorType> subDocument = new DocumentPathWalker<VisitorType>(this.pathOfThisIterator, this)
                 .walkThroughDocument(this.document);
-        this.nextIterator = new DocumentPathIteratorFactory<VisitorType>().buildFor(this.pathOfNextIterator,
+        this.nestedIterator = new DocumentPathIteratorFactory<VisitorType>().buildFor(this.pathOfNextIterator,
                 subDocument);
     }
 
@@ -67,10 +72,10 @@ public class LoopDocumentPathIterator<VisitorType> implements DocumentPathIterat
     public int getIndexFor(final DocumentPathExpression pathToRequestedArrayAll) {
         if (pathToRequestedArrayAll.equals(this.pathOfThisIterator)) {// This request is for our array
             return this.currentIndex;
-        } else if (this.nextIterator != null && pathToRequestedArrayAll.startsWith(this.pathOfThisIterator)) {
+        } else if (this.nestedIterator != null && pathToRequestedArrayAll.startsWith(this.pathOfThisIterator)) {
             final DocumentPathExpression remainingPathToRequestedArrayAll = pathToRequestedArrayAll
                     .getSubPath(this.pathOfThisIterator.size(), pathToRequestedArrayAll.size());
-            return this.nextIterator.getIndexFor(remainingPathToRequestedArrayAll);
+            return this.nestedIterator.getIndexFor(remainingPathToRequestedArrayAll);
         } else {
             throw new IllegalStateException("The requested path does not match the path that this iterator unwinds.");
         }

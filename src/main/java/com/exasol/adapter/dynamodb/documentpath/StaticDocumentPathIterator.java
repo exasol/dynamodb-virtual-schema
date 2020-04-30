@@ -1,5 +1,8 @@
 package com.exasol.adapter.dynamodb.documentpath;
 
+/**
+ * This is an iterator that does exactly one iterations. It is used if no iteration needs to be done.
+ */
 public class StaticDocumentPathIterator implements DocumentPathIterator {
     private boolean wasCalled = false;
 
