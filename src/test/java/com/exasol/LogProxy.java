@@ -38,6 +38,15 @@ public final class LogProxy implements Runnable {
         }
     }
 
+    @Override
+    protected void finalize() throws Throwable {
+        try {
+            this.server.close();
+        } finally {
+            super.finalize();
+        }
+    }
+
     private static class Logger implements Runnable {
         private final Socket socket;
 
@@ -53,15 +62,6 @@ public final class LogProxy implements Runnable {
             } catch (final IOException exception) {
                 exception.printStackTrace();
             }
-        }
-    }
-
-    @Override
-    protected void finalize() throws Throwable {
-        try {
-            this.server.close();
-        } finally {
-            super.finalize();
         }
     }
 }
