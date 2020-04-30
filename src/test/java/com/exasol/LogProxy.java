@@ -55,4 +55,13 @@ public final class LogProxy implements Runnable {
             }
         }
     }
+
+    @Override
+    protected void finalize() throws Throwable {
+        try {
+            this.server.close();
+        } finally {
+            super.finalize();
+        }
+    }
 }
