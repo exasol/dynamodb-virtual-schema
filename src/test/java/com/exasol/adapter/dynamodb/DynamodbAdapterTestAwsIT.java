@@ -4,6 +4,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 
+import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
@@ -41,8 +42,8 @@ public class DynamodbAdapterTestAwsIT {
      * Creates a Virtual Schema in the Exasol test container accessing DynamoDB on AWS.
      */
     @BeforeAll
-    static void beforeAll()
-            throws SQLException, BucketAccessException, InterruptedException, java.util.concurrent.TimeoutException {
+    static void beforeAll() throws SQLException, BucketAccessException, InterruptedException,
+            java.util.concurrent.TimeoutException, IOException {
         final DynamodbTestInterface dynamodbTestInterface = new DynamodbTestInterface();
         exasolTestInterface = new ExasolTestInterface(EXASOL_CONTAINER);
         exasolTestInterface.uploadDynamodbAdapterJar();
