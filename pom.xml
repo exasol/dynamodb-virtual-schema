@@ -9,12 +9,13 @@
     <description>Adapter for DynamoDB data access from Virtual Schemas.</description>
     <url>https://github.com/exasol/virtual-schema-dynamodb</url>
     <properties>
-        <product.version>0.2.0</product.version>
+        <product.version>0.2.1</product.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <java.version>11</java.version>
         <junit.version>5.4.2</junit.version>
         <junit.platform.version>1.4.2</junit.platform.version>
+        <jacoco.version>0.8.5</jacoco.version>
         <vscommon.version>8.0.2</vscommon.version>
         <gpg.skip>true</gpg.skip>
         <org.testcontainers.version>1.12.3</org.testcontainers.version>
@@ -189,6 +190,24 @@
             <artifactId>sql-statement-builder</artifactId>
             <version>3.1.0</version>
         </dependency>
+        <dependency>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-dependency-plugin</artifactId>
+            <version>3.1.2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jacoco</groupId>
+            <artifactId>org.jacoco.agent</artifactId>
+            <version>${jacoco.version}</version>
+            <classifier>runtime</classifier>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.jacoco</groupId>
+            <artifactId>org.jacoco.core</artifactId>
+            <version>${jacoco.version}</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
     <build>
         <plugins>
@@ -236,7 +255,7 @@
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
-                <version>0.8.5</version>
+                <version>${jacoco.version}</version>
                 <executions>
                     <execution>
                         <id>prepare-agent</id>
@@ -263,6 +282,17 @@
                         <goals>
                             <goal>report-integration</goal>
                         </goals>
+                    </execution>
+                    <execution>
+                        <id>report-udf-integration</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>report-integration</goal>
+                        </goals>
+                        <configuration>
+                            <dataFile>${project.build.directory}/jacoco-udf.exec</dataFile>
+                            <outputDirectory>${project.reporting.outputDirectory}/jacoco-udf</outputDirectory>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>
@@ -294,6 +324,24 @@
                     <source>${java.version}</source>
                     <target>${java.version}</target>
                 </configuration>
+            </plugin>
+            <plugin>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>copy-jacoco</id>
+                        <goals>
+                            <goal>copy-dependencies</goal>
+                        </goals>
+                        <phase>compile</phase>
+                        <configuration>
+                            <includeArtifactIds>org.jacoco.agent</includeArtifactIds>
+                            <includeClassifiers>runtime</includeClassifiers>
+                            <outputDirectory>${project.build.directory}/jacoco-agent</outputDirectory>
+                            <stripVersion>true</stripVersion>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>

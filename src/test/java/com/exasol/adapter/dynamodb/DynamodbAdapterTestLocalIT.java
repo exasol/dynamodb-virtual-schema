@@ -53,7 +53,7 @@ public class DynamodbAdapterTestLocalIT {
      */
     @BeforeAll
     static void beforeAll() throws DynamodbTestInterface.NoNetworkFoundException, SQLException, InterruptedException,
-            BucketAccessException, TimeoutException {
+            BucketAccessException, TimeoutException, IOException {
         dynamodbTestInterface = new DynamodbTestInterface(LOCAL_DYNAMO, NETWORK);
         exasolTestInterface = new ExasolTestInterface(EXASOL_CONTAINER);
         exasolTestInterface.uploadDynamodbAdapterJar();
@@ -71,6 +71,7 @@ public class DynamodbAdapterTestLocalIT {
     @AfterAll
     static void afterAll() {
         NETWORK.close();
+        EXASOL_CONTAINER.getDockerClient().stopContainerCmd(EXASOL_CONTAINER.getContainerId()).withTimeout(10).exec();
     }
 
     @AfterEach
