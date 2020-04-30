@@ -76,6 +76,37 @@ public class DocumentPathExpression implements Serializable {
     }
 
     /**
+     * Gives the index of the first {@link ArrayAllPathSegment}.
+     *
+     * @return index of the first {@link ArrayAllPathSegment}; {@code -1} if not found.
+     */
+    int indexOfFirstArrayAllSegment() {
+        int index = 0;
+        for (final PathSegment pathSegment : this.path) {
+            if (pathSegment instanceof ArrayAllPathSegment) {
+                return index;
+            }
+            index++;
+        }
+        return -1;
+    }
+
+    /**
+     * Checks if this path expression starts with an other path expression. If the path expressions are equal
+     * {@code true} is returned.
+     * 
+     * @param other sub path expression
+     * @return {@code true} if this path starts with the other path
+     */
+    public boolean startsWith(final DocumentPathExpression other) {
+        if (other.size() > this.size()) {
+            return false;
+        }
+        final DocumentPathExpression thisSubpathWithLengthOfOther = this.getSubPath(0, other.size());
+        return thisSubpathWithLengthOfOther.equals(other);
+    }
+
+    /**
      * Builder for {@link DocumentPathExpression}.
      */
     public static class Builder {

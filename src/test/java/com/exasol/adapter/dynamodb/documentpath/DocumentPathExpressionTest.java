@@ -87,4 +87,17 @@ public class DocumentPathExpressionTest {
     void testHashInequality() {
         assertThat(TEST_PATH.hashCode(), not(equalTo(OTHER_PATH.hashCode())));
     }
+
+    @Test
+    void testStartsWith() {
+        final String key = "key";
+        final DocumentPathExpression pathA = new DocumentPathExpression.Builder().addObjectLookup(key).addArrayAll()
+                .build();
+        final DocumentPathExpression pathB = new DocumentPathExpression.Builder().addObjectLookup(key).build();
+        assertAll(//
+                () -> assertThat(pathA.startsWith(pathB), equalTo(true)),
+                () -> assertThat(pathB.startsWith(pathA), equalTo(false)),
+                () -> assertThat(pathA.startsWith(pathA), equalTo(true))//
+        );
+    }
 }
