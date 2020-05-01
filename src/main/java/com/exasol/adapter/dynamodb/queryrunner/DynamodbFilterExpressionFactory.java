@@ -62,28 +62,35 @@ public class DynamodbFilterExpressionFactory {
         @Override
         public void visit(final LogicalOperator<DynamodbNodeVisitor> logicalOperator) {
             final List<QueryPredicate<DynamodbNodeVisitor>> operands = logicalOperator.getOperands();
-            final DynamodbFilterExpressionFactory expressionFactory = new DynamodbFilterExpressionFactory();
             assert operands.size() > 1;// otherwise this operator should have been replaced in {@link
                                        // DynamodbQuerySelectionFilter}.
-            final String firstOperandsExpression = expressionFactory.buildFilterExpression(operands.get(0),
-                    this.valueListBuilder);
-            final String comparisionOperatorsExpression = getComparisionOperatorsExpression(
-                    logicalOperator.getOperator());
+            final String firstOperandsExpression = new DynamodbFilterExpressionFactory()
+                    .buildFilterExpression(operands.get(0), this.valueListBuilder);
+            final LogicalOperator.Operator operator = logicalOperator.getOperator();
             if (operands.size() > 2) {
-                final List<QueryPredicate<DynamodbNodeVisitor>> remainingOperands = operands.subList(1,
-                        operands.size());
-                final LogicalOperator<DynamodbNodeVisitor> logicalOperatorForRemaining = new LogicalOperator<>(
-                        remainingOperands, logicalOperator.getOperator());
-                final String expressionForRemaining = expressionFactory
-                        .buildFilterExpression(logicalOperatorForRemaining, this.valueListBuilder);
-                this.filterExpression = firstOperandsExpression + " " + comparisionOperatorsExpression + "  ("
-                        + expressionForRemaining + ")";
+                convertLogicOperatorWithMoreThanTwoOperands(operands, firstOperandsExpression, operator);
             } else {
-                final String secondOperandsExpression = expressionFactory.buildFilterExpression(operands.get(1),
-                        this.valueListBuilder);
-                this.filterExpression = firstOperandsExpression + " " + comparisionOperatorsExpression + " "
-                        + secondOperandsExpression;
+                convertLogicOperatorWithTwoOperands(operands, firstOperandsExpression, operator);
             }
+        }
+
+        private void convertLogicOperatorWithTwoOperands(List<QueryPredicate<DynamodbNodeVisitor>> operands,
+                String firstOperandsExpression, LogicalOperator.Operator operator) {
+            final String secondOperandsExpression = new DynamodbFilterExpressionFactory()
+                    .buildFilterExpression(operands.get(1), this.valueListBuilder);
+            this.filterExpression = firstOperandsExpression + " " + getComparisionOperatorsExpression(operator) + " "
+                    + secondOperandsExpression;
+        }
+
+        private void convertLogicOperatorWithMoreThanTwoOperands(List<QueryPredicate<DynamodbNodeVisitor>> operands,
+                String firstOperandsExpression, LogicalOperator.Operator operator) {
+            final List<QueryPredicate<DynamodbNodeVisitor>> remainingOperands = operands.subList(1, operands.size());
+            final LogicalOperator<DynamodbNodeVisitor> logicalOperatorForRemaining = new LogicalOperator<>(
+                    remainingOperands, operator);
+            final String expressionForRemaining = new DynamodbFilterExpressionFactory()
+                    .buildFilterExpression(logicalOperatorForRemaining, this.valueListBuilder);
+            this.filterExpression = firstOperandsExpression + " " + getComparisionOperatorsExpression(operator) + "  ("
+                    + expressionForRemaining + ")";
         }
 
         private String getComparisionOperatorsExpression(final LogicalOperator.Operator operator) {

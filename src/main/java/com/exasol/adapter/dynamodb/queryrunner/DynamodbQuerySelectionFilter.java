@@ -62,12 +62,22 @@ class DynamodbQuerySelectionFilter {
         @Override
         public void visit(final LogicalOperator<DynamodbNodeVisitor> logicalOperator) {
             final LogicalOperator.Operator operator = logicalOperator.getOperator();
-            final List<QueryPredicate<DynamodbNodeVisitor>> inputOperands = logicalOperator.getOperands();
+            final List<QueryPredicate<DynamodbNodeVisitor>> filteredOperands = filterOperands(logicalOperator,
+                    operator);
+            if (filteredOperands.isEmpty()) {
+                this.filtered = new NoPredicate<>();
+            } else if (filteredOperands.size() == 1) {
+                this.filtered = filteredOperands.get(0);
+            } else {
+                this.filtered = new LogicalOperator<>(filteredOperands, operator);
+            }
+        }
+
+        private List<QueryPredicate<DynamodbNodeVisitor>> filterOperands(
+                final LogicalOperator<DynamodbNodeVisitor> logicalOperator, final LogicalOperator.Operator operator) {
             final List<QueryPredicate<DynamodbNodeVisitor>> filteredOperands = new ArrayList<>();
-            for (final QueryPredicate<DynamodbNodeVisitor> operand : inputOperands) {
-                final FilterVisitor filter = new FilterVisitor(this.whitelist, this.isNegated);
-                operand.accept(filter);
-                final QueryPredicate<DynamodbNodeVisitor> filteredOperand = filter.filtered;
+            for (final QueryPredicate<DynamodbNodeVisitor> operand : logicalOperator.getOperands()) {
+                final QueryPredicate<DynamodbNodeVisitor> filteredOperand = filterOperand(operand);
                 if (!(filteredOperand instanceof NoPredicate)) {
                     filteredOperands.add(filteredOperand);
                 } else if (!this.isNegated && operator.equals(LogicalOperator.Operator.OR)
@@ -77,13 +87,13 @@ class DynamodbQuerySelectionFilter {
                                     + " Please simplify the query or use a different DynamoDB operation.");
                 }
             }
-            if (filteredOperands.isEmpty()) {
-                this.filtered = new NoPredicate<>();
-            } else if (filteredOperands.size() == 1) {
-                this.filtered = filteredOperands.get(0);
-            } else {
-                this.filtered = new LogicalOperator<>(filteredOperands, operator);
-            }
+            return filteredOperands;
+        }
+
+        private QueryPredicate<DynamodbNodeVisitor> filterOperand(final QueryPredicate<DynamodbNodeVisitor> operand) {
+            final FilterVisitor filter = new FilterVisitor(this.whitelist, this.isNegated);
+            operand.accept(filter);
+            return filter.filtered;
         }
 
         @Override
