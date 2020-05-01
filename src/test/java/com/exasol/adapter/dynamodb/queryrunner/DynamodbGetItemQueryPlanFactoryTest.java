@@ -28,7 +28,7 @@ public class DynamodbGetItemQueryPlanFactoryTest {
     }
 
     @Test
-    void testSimplePrimaryKey() throws IOException, PlanDoesNotFitException {
+    void testSimplePrimaryKey() throws PlanDoesNotFitException {
         final String filter = "test";
         final ColumnLiteralComparisonPredicate<DynamodbNodeVisitor> selection = new ColumnLiteralComparisonPredicate<>(
                 ComparisonPredicate.Operator.EQUAL, COLUMN1_MAPPING, new DynamodbString(filter));
@@ -46,7 +46,7 @@ public class DynamodbGetItemQueryPlanFactoryTest {
     }
 
     @Test
-    void testSimplePrimaryKeyWithSecondNonKeySelection() throws IOException, PlanDoesNotFitException {
+    void testSimplePrimaryKeyWithSecondNonKeySelection() throws PlanDoesNotFitException {
         final String filter = "test";
         final QueryPredicate<DynamodbNodeVisitor> selection = new LogicalOperator<>(List.of(
                 new ColumnLiteralComparisonPredicate<>(ComparisonPredicate.Operator.EQUAL, COLUMN1_MAPPING,
@@ -68,7 +68,7 @@ public class DynamodbGetItemQueryPlanFactoryTest {
     }
 
     @Test
-    void testCompoundPrimaryKey() throws IOException, PlanDoesNotFitException {
+    void testCompoundPrimaryKey() throws PlanDoesNotFitException {
         final String filter1 = "test";
         final String filter2 = "test2";
         final QueryPredicate<DynamodbNodeVisitor> selection = new LogicalOperator<>(List.of(
@@ -93,7 +93,7 @@ public class DynamodbGetItemQueryPlanFactoryTest {
     }
 
     @Test
-    void testNoSelection() throws IOException, PlanDoesNotFitException {
+    void testNoSelection() throws PlanDoesNotFitException {
         final DynamodbTableMetadata dynamodbTableMetadata = new DynamodbTableMetadata(
                 new DynamodbKey(COLUMN1_NAME, Optional.empty()), Collections.emptyList(), Collections.emptyList());
 
@@ -107,7 +107,7 @@ public class DynamodbGetItemQueryPlanFactoryTest {
     }
 
     @Test
-    void testSelectionWithOr() throws IOException, PlanDoesNotFitException {
+    void testSelectionWithOr() throws PlanDoesNotFitException {
         final String filter1 = "test";
         final String filter2 = "test2";
         final QueryPredicate<DynamodbNodeVisitor> selection = new LogicalOperator<>(

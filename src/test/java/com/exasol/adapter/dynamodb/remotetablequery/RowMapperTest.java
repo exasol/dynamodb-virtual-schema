@@ -28,9 +28,8 @@ public class RowMapperTest {
                         AbstractColumnMappingDefinition.LookupFailBehaviour.EXCEPTION));
         final RemoteTableQuery<DynamodbNodeVisitor> remoteTableQuery = new RemoteTableQuery<>(null,
                 List.of(mappingDefinition), new NoPredicate<>());
-        final List<ValueExpression> exasolRow = new RowMapper<DynamodbNodeVisitor>(remoteTableQuery,
-                new DynamodbValueMapperFactory())
-                        .mapRow(new DynamodbMap(Map.of("testKey", AttributeValueQuickCreator.forString("testValue"))));
+        final List<ValueExpression> exasolRow = new RowMapper<>(remoteTableQuery, new DynamodbValueMapperFactory())
+                .mapRow(new DynamodbMap(Map.of("testKey", AttributeValueQuickCreator.forString("testValue"))));
         assertThat(exasolRow.get(0).toString(), equalTo("{\"testKey\":\"testValue\"}"));
     }
 }

@@ -13,7 +13,6 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import com.exasol.adapter.dynamodb.documentnode.DocumentValue;
-import com.exasol.adapter.dynamodb.literalconverter.NotLiteralException;
 import com.exasol.adapter.dynamodb.literalconverter.SqlLiteralToDocumentValueConverter;
 import com.exasol.adapter.dynamodb.mapping.AbstractColumnMappingDefinition;
 import com.exasol.adapter.dynamodb.mapping.SchemaMappingDefinitionToSchemaMetadataConverter;
@@ -26,13 +25,8 @@ class QueryPredicateFactoryTest {
             new AbstractColumnMappingDefinition.ConstructorParameters("name", null, null));
     private static final DocumentValue<Object> LITERAL = (DocumentValue<Object>) visitor -> {
     };
-    private static final SqlLiteralToDocumentValueConverter<Object> LITERAL_FACTORY = new SqlLiteralToDocumentValueConverter<Object>() {
-        @Override
-        public DocumentValue<Object> convert(final SqlNode exasolLiteralNode) throws NotLiteralException {
-            return LITERAL;
-        }
-    };
-    private static final QueryPredicateFactory<Object> FACTORY = new QueryPredicateFactory<Object>(LITERAL_FACTORY);
+    private static final SqlLiteralToDocumentValueConverter<Object> LITERAL_FACTORY = exasolLiteralNode -> LITERAL;
+    private static final QueryPredicateFactory<Object> FACTORY = new QueryPredicateFactory<>(LITERAL_FACTORY);
     private static ColumnMetadata columnMetadata;
     private static SqlNode validColumnLiteralEqualityPredicate;
 

@@ -5,6 +5,7 @@ import static org.hamcrest.Matchers.equalTo;
 
 import org.junit.jupiter.api.Test;
 
+import com.exasol.adapter.dynamodb.documentnode.dynamodb.DynamodbNodeVisitor;
 import com.exasol.adapter.dynamodb.mapping.dynamodb.DynamodbToJsonValueMapper;
 import com.exasol.adapter.dynamodb.mapping.dynamodb.DynamodbToStringValueMapper;
 import com.exasol.adapter.dynamodb.mapping.dynamodb.DynamodbValueMapperFactory;
@@ -18,7 +19,7 @@ public class DynamodbValueMapperFactoryTest {
     void testToStringMapping() {
         final ToStringColumnMappingDefinition mappingDefinition = new ToStringColumnMappingDefinition(COLUMN_PARAMETERS,
                 10, null);
-        final AbstractValueMapper valueMapper = new DynamodbValueMapperFactory()
+        final AbstractValueMapper<DynamodbNodeVisitor> valueMapper = new DynamodbValueMapperFactory()
                 .getValueMapperForColumn(mappingDefinition);
         assertThat(valueMapper.getClass(), equalTo(DynamodbToStringValueMapper.class));
     }
@@ -26,7 +27,7 @@ public class DynamodbValueMapperFactoryTest {
     @Test
     void testToJsonMapping() {
         final ToJsonColumnMappingDefinition mappingDefinition = new ToJsonColumnMappingDefinition(COLUMN_PARAMETERS);
-        final AbstractValueMapper valueMapper = new DynamodbValueMapperFactory()
+        final AbstractValueMapper<DynamodbNodeVisitor> valueMapper = new DynamodbValueMapperFactory()
                 .getValueMapperForColumn(mappingDefinition);
         assertThat(valueMapper.getClass(), equalTo(DynamodbToJsonValueMapper.class));
     }

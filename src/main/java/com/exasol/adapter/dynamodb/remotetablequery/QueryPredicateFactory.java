@@ -90,7 +90,7 @@ public class QueryPredicateFactory<DocumentVisitorType> {
         }
 
         @Override
-        public Void visit(final SqlPredicateAnd sqlPredicateAnd) throws AdapterException {
+        public Void visit(final SqlPredicateAnd sqlPredicateAnd) {
             this.predicate = new LogicalOperator<>(convertPredicates(sqlPredicateAnd.getAndedPredicates()),
                     LogicalOperator.Operator.AND);
             return null;

@@ -116,7 +116,7 @@ public class DynamodbAdapter implements VirtualSchemaAdapter {
 
     private PushDownResponse runPushdown(final ExaMetadata exaMetadata, final PushDownRequest request)
             throws AdapterException, ExaConnectionAccessException, IOException {
-        final RemoteTableQuery<DynamodbNodeVisitor> remoteTableQuery = new RemoteTableQueryFactory<DynamodbNodeVisitor>(
+        final RemoteTableQuery<DynamodbNodeVisitor> remoteTableQuery = new RemoteTableQueryFactory<>(
                 new SqlLiteralToDynamodbValueConverter()).build(request.getSelect(), getSchemaMetadata(request));
         final String selectFromValuesStatement = runQuery(exaMetadata, request, remoteTableQuery);
         return PushDownResponse.builder()//
