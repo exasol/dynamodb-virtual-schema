@@ -1,17 +1,18 @@
 package com.exasol.adapter.dynamodb.queryrunner;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
+
 import java.util.List;
 import java.util.Optional;
 
-import com.exasol.adapter.dynamodb.documentnode.dynamodb.DynamodbNodeVisitor;
-import com.exasol.adapter.dynamodb.dynamodbmetadata.DynamodbKey;
-import com.exasol.adapter.dynamodb.remotetablequery.LogicalOperator;
-import com.exasol.adapter.dynamodb.remotetablequery.ColumnLiteralComparisonPredicate;
-import com.exasol.adapter.dynamodb.remotetablequery.NoPredicate;
 import org.junit.jupiter.api.Test;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
+import com.exasol.adapter.dynamodb.documentnode.dynamodb.DynamodbNodeVisitor;
+import com.exasol.adapter.dynamodb.dynamodbmetadata.DynamodbKey;
+import com.exasol.adapter.dynamodb.remotetablequery.ColumnLiteralComparisonPredicate;
+import com.exasol.adapter.dynamodb.remotetablequery.LogicalOperator;
+import com.exasol.adapter.dynamodb.remotetablequery.NoPredicate;
 
 class DynamodbQueryKeyFinderTest {
     private static final String PARTITION_KEY = "partitionKey";
@@ -34,7 +35,7 @@ class DynamodbQueryKeyFinderTest {
     }
 
     @Test
-    void testKeysWithNoPrimarySelectionAreFiltered(){
+    void testKeysWithNoPrimarySelectionAreFiltered() {
         final DynamodbKey result = new DynamodbQueryKeyFinder().findMostSelectiveKey(new NoPredicate<>(), this.KEYS);
         assertThat(result, equalTo(null));
     }

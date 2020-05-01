@@ -45,13 +45,6 @@ public class LogicalOperator<DocumentVisitorType> implements QueryPredicate<Docu
         visitor.visit(this);
     }
 
-    /**
-     * Possible operators.
-     */
-    public enum Operator {
-        AND, OR
-    }
-
     @Override
     public boolean equals(final Object other) {
         if (this == other) {
@@ -71,5 +64,12 @@ public class LogicalOperator<DocumentVisitorType> implements QueryPredicate<Docu
     public int hashCode() {
         final int operandsHashCode = this.operands.hashCode();
         return 31 * operandsHashCode + this.operator.hashCode();
+    }
+
+    /**
+     * Possible operators.
+     */
+    public enum Operator {
+        AND, OR
     }
 }

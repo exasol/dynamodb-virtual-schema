@@ -123,8 +123,9 @@ class DynamodbQueryRunnerIT {
     }
 
     @Test
-    void testQueryRequest(){
+    void testQueryRequest() {
         final DynamodbQueryQueryPlan query = new DynamodbQueryQueryPlan(tableMapping.getRemoteName());
-        query.run(new DynamodbConnectionFactory().getLowLevelConnection(dynamodbTestInterface.getDynamoUrl(), dynamodbTestInterface.getDynamoUser(), dynamodbTestInterface.getDynamoPass()));
+        query.run(new DynamodbConnectionFactory().getLowLevelConnection(dynamodbTestInterface.getDynamoUrl(),
+                dynamodbTestInterface.getDynamoUser(), dynamodbTestInterface.getDynamoPass()));
     }
 }

@@ -10,8 +10,8 @@ import com.amazonaws.services.dynamodbv2.model.AttributeValue;
  * The map can be passed to the DynamoDB API.
  */
 public class DynamodbValueListBuilder implements DynamodbValueListBuilderAddValueInterface {
-    private int counter = 0;
     private final Map<String, AttributeValue> valueMap = new HashMap<>();
+    private int counter = 0;
 
     @Override
     public String addValue(final AttributeValue valueToAdd) {

@@ -24,14 +24,14 @@ class DynamodbQuerySelectionFilter {
     public QueryPredicate<DynamodbNodeVisitor> filter(final QueryPredicate<DynamodbNodeVisitor> selection,
             final List<String> whitelist) {
         final FilterVisitor filterVisitor = new FilterVisitor(whitelist, false);
-            selection.accept(filterVisitor);
+        selection.accept(filterVisitor);
         return filterVisitor.getFiltered();
     }
 
     private static class FilterVisitor implements QueryPredicateVisitor<DynamodbNodeVisitor> {
         private final List<String> whitelist;
-        private QueryPredicate<DynamodbNodeVisitor> filtered;
         private final boolean isNegated;
+        private QueryPredicate<DynamodbNodeVisitor> filtered;
 
         private FilterVisitor(final List<String> whitelist, final boolean isNegated) {
             this.whitelist = whitelist;

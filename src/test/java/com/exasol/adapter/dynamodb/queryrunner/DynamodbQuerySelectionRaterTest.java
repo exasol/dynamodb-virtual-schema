@@ -8,9 +8,9 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 
 import com.exasol.adapter.dynamodb.documentnode.dynamodb.DynamodbNodeVisitor;
-import com.exasol.adapter.dynamodb.remotetablequery.LogicalOperator;
 import com.exasol.adapter.dynamodb.remotetablequery.ColumnLiteralComparisonPredicate;
 import com.exasol.adapter.dynamodb.remotetablequery.ComparisonPredicate;
+import com.exasol.adapter.dynamodb.remotetablequery.LogicalOperator;
 import com.exasol.adapter.dynamodb.remotetablequery.NoPredicate;
 
 class DynamodbQuerySelectionRaterTest {
@@ -38,8 +38,8 @@ class DynamodbQuerySelectionRaterTest {
 
     @Test
     void testAndWithOneEqualityAndOneNoPredicate() {
-        final int rating = new DynamodbQuerySelectionRater().rate(
-                new LogicalOperator<>(List.of(EQUAL, new NoPredicate<>()), LogicalOperator.Operator.AND));
+        final int rating = new DynamodbQuerySelectionRater()
+                .rate(new LogicalOperator<>(List.of(EQUAL, new NoPredicate<>()), LogicalOperator.Operator.AND));
         assertThat(rating, equalTo(DynamodbQuerySelectionRater.RATING_EQUALITY));
     }
 
@@ -52,8 +52,8 @@ class DynamodbQuerySelectionRaterTest {
 
     @Test
     void testOrWithOneEqualityAndOneNoPredicate() {
-        final int rating = new DynamodbQuerySelectionRater().rate(
-                new LogicalOperator<>(List.of(EQUAL, new NoPredicate<>()), LogicalOperator.Operator.OR));
+        final int rating = new DynamodbQuerySelectionRater()
+                .rate(new LogicalOperator<>(List.of(EQUAL, new NoPredicate<>()), LogicalOperator.Operator.OR));
         assertThat(rating, equalTo(DynamodbQuerySelectionRater.RATING_NO_SELECTIVITY));
     }
 }

@@ -11,8 +11,8 @@ import org.junit.jupiter.api.Test;
 class LogicalOperatorTest {
     private static final NoPredicate<Object> NO_PREDICATE = new NoPredicate<>();
     private static final LogicalOperator.Operator OPERATOR = LogicalOperator.Operator.AND;
-    private static final LogicalOperator<Object> TEST_PREDICATE = new LogicalOperator<>(
-            List.of(NO_PREDICATE), OPERATOR);
+    private static final LogicalOperator<Object> TEST_PREDICATE = new LogicalOperator<>(List.of(NO_PREDICATE),
+            OPERATOR);
 
     @Test
     void testGetAndedPredicates() {

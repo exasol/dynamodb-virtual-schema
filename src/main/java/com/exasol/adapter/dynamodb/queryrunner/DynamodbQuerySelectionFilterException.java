@@ -9,6 +9,7 @@ public class DynamodbQuerySelectionFilterException extends RuntimeException {
 
     /**
      * Creates an instance of {@link DynamodbQuerySelectionFilterException}
+     * 
      * @param message exception message
      */
     public DynamodbQuerySelectionFilterException(final String message) {

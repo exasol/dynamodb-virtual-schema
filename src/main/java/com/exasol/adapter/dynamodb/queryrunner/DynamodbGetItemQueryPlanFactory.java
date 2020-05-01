@@ -32,7 +32,8 @@ public class DynamodbGetItemQueryPlanFactory {
         return new DynamodbGetItemQueryPlan(documentQuery.getFromTable().getRemoteName(), key);
     }
 
-    private void checkIfKeyIsComplete(final Map<String, AttributeValue> key, final DynamodbTableMetadata tableMetadata) {
+    private void checkIfKeyIsComplete(final Map<String, AttributeValue> key,
+            final DynamodbTableMetadata tableMetadata) {
         if (key.size() < 1) {
             throw new PlanDoesNotFitException(
                     "Not a GetItem request as the partition key was not specified in the where clause.");

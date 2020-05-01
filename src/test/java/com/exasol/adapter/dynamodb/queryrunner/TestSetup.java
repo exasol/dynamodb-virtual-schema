@@ -41,18 +41,17 @@ class TestSetup {
                 new AbstractColumnMappingDefinition.ConstructorParameters(attributeName, path, null));
     }
 
-    SqlStatement getSelectWithWhereClause(final SqlNode sqlNode) {
-        return SqlStatementSelect.builder().fromClause(new SqlTable(TABLE_NAME, null))
-                .selectList(SqlSelectList.createSelectStarSelectList()).whereClause(sqlNode).build();
-    }
-
-    public static ColumnLiteralComparisonPredicate<DynamodbNodeVisitor> getCompareForColumn(
-            final String propertyName) {
+    public static ColumnLiteralComparisonPredicate<DynamodbNodeVisitor> getCompareForColumn(final String propertyName) {
         final DocumentPathExpression sourcePath = new DocumentPathExpression.Builder().addObjectLookup(propertyName)
                 .build();
         final ToJsonColumnMappingDefinition column = new ToJsonColumnMappingDefinition(
                 new AbstractColumnMappingDefinition.ConstructorParameters("columnName", sourcePath, null));
         return new ColumnLiteralComparisonPredicate<>(ComparisonPredicate.Operator.EQUAL, column,
                 new DynamodbString(""));
+    }
+
+    SqlStatement getSelectWithWhereClause(final SqlNode sqlNode) {
+        return SqlStatementSelect.builder().fromClause(new SqlTable(TABLE_NAME, null))
+                .selectList(SqlSelectList.createSelectStarSelectList()).whereClause(sqlNode).build();
     }
 }

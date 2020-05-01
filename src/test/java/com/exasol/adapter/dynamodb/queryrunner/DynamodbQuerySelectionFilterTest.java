@@ -10,16 +10,17 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 
 import com.exasol.adapter.dynamodb.documentnode.dynamodb.DynamodbNodeVisitor;
-import com.exasol.adapter.dynamodb.remotetablequery.*;
+import com.exasol.adapter.dynamodb.remotetablequery.ColumnLiteralComparisonPredicate;
+import com.exasol.adapter.dynamodb.remotetablequery.LogicalOperator;
+import com.exasol.adapter.dynamodb.remotetablequery.NoPredicate;
+import com.exasol.adapter.dynamodb.remotetablequery.QueryPredicate;
 
 class DynamodbQuerySelectionFilterTest {
     private static final String WHITELISTED_NAME = "nameThatIsOnWhitelist";
-    private static final ColumnLiteralComparisonPredicate<DynamodbNodeVisitor> WHITELISTED_PREDICATE = TestSetup.getCompareForColumn(
-            WHITELISTED_NAME);
-    private static final ColumnLiteralComparisonPredicate<DynamodbNodeVisitor> NON_WHITELISTED_PREDICATE = TestSetup.getCompareForColumn(
-            "nameNotOnWhitelist");
-
-
+    private static final ColumnLiteralComparisonPredicate<DynamodbNodeVisitor> WHITELISTED_PREDICATE = TestSetup
+            .getCompareForColumn(WHITELISTED_NAME);
+    private static final ColumnLiteralComparisonPredicate<DynamodbNodeVisitor> NON_WHITELISTED_PREDICATE = TestSetup
+            .getCompareForColumn("nameNotOnWhitelist");
 
     @Test
     void testWhitelistedColumnIsNotFiltered() throws PlanDoesNotFitException {
@@ -57,8 +58,8 @@ class DynamodbQuerySelectionFilterTest {
 
     @Test
     void testFilterAndWithNoResults() throws PlanDoesNotFitException {
-        final LogicalOperator<DynamodbNodeVisitor> and = new LogicalOperator<>(
-                List.of(NON_WHITELISTED_PREDICATE), LogicalOperator.Operator.AND);
+        final LogicalOperator<DynamodbNodeVisitor> and = new LogicalOperator<>(List.of(NON_WHITELISTED_PREDICATE),
+                LogicalOperator.Operator.AND);
         final QueryPredicate<DynamodbNodeVisitor> result = new DynamodbQuerySelectionFilter().filter(and,
                 List.of(WHITELISTED_NAME));
         assertThat(result, equalTo(new NoPredicate<>()));
@@ -66,8 +67,8 @@ class DynamodbQuerySelectionFilterTest {
 
     @Test
     void testFilterOrWithOnlyWhitelisted() throws PlanDoesNotFitException {
-        final LogicalOperator<DynamodbNodeVisitor> or = new LogicalOperator<>(
-                List.of(WHITELISTED_PREDICATE), LogicalOperator.Operator.OR);
+        final LogicalOperator<DynamodbNodeVisitor> or = new LogicalOperator<>(List.of(WHITELISTED_PREDICATE),
+                LogicalOperator.Operator.OR);
         final QueryPredicate<DynamodbNodeVisitor> result = new DynamodbQuerySelectionFilter().filter(or,
                 List.of(WHITELISTED_NAME));
         assertThat(result, equalTo(WHITELISTED_PREDICATE));
@@ -77,7 +78,8 @@ class DynamodbQuerySelectionFilterTest {
     void testFilterOrWithNotOnlyWhitelisted() throws PlanDoesNotFitException {
         final LogicalOperator<DynamodbNodeVisitor> or = new LogicalOperator<>(
                 List.of(WHITELISTED_PREDICATE, NON_WHITELISTED_PREDICATE), LogicalOperator.Operator.OR);
-        final DynamodbQuerySelectionFilterException exception = assertThrows(DynamodbQuerySelectionFilterException.class,
+        final DynamodbQuerySelectionFilterException exception = assertThrows(
+                DynamodbQuerySelectionFilterException.class,
                 () -> new DynamodbQuerySelectionFilter().filter(or, List.of(WHITELISTED_NAME)));
         assertThat(exception.getMessage(), equalTo(
                 "The key predicates of this plan could not be extracted without potentially loosing results of this query. Please simplify the query or use a different DynamoDB operation."));
@@ -85,8 +87,8 @@ class DynamodbQuerySelectionFilterTest {
 
     @Test
     void testFilterNoPredicate() throws PlanDoesNotFitException {
-        final QueryPredicate<DynamodbNodeVisitor> result = new DynamodbQuerySelectionFilter().filter(new NoPredicate<>(),
-                List.of(WHITELISTED_NAME));
+        final QueryPredicate<DynamodbNodeVisitor> result = new DynamodbQuerySelectionFilter()
+                .filter(new NoPredicate<>(), List.of(WHITELISTED_NAME));
         assertThat(result, equalTo(new NoPredicate<>()));
     }
 }
