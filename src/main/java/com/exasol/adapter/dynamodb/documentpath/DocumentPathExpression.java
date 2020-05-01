@@ -27,7 +27,12 @@ public class DocumentPathExpression implements Serializable {
         return EMPTY_PATH;
     }
 
-    List<PathSegment> getPath() {
+    /**
+     * Gives the list with the path segments.
+     * 
+     * @return list with path segments
+     */
+    public List<PathSegment> getSegments() {
         return this.path;
     }
 

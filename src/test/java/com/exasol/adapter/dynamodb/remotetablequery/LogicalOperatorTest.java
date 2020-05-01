@@ -8,10 +8,10 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
-class BinaryLogicalOperatorTest {
+class LogicalOperatorTest {
     private static final NoPredicate<Object> NO_PREDICATE = new NoPredicate<>();
-    private static final BinaryLogicalOperator.Operator OPERATOR = BinaryLogicalOperator.Operator.AND;
-    private static final BinaryLogicalOperator<Object> TEST_PREDICATE = new BinaryLogicalOperator<>(
+    private static final LogicalOperator.Operator OPERATOR = LogicalOperator.Operator.AND;
+    private static final LogicalOperator<Object> TEST_PREDICATE = new LogicalOperator<>(
             List.of(NO_PREDICATE), OPERATOR);
 
     @Test

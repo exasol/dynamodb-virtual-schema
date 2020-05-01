@@ -39,6 +39,11 @@ class DynamodbTableMetadataTest {
     }
 
     @Test
+    void tesGetAllKeys() {
+        assertThat(TABLE_METADATA.getAllKeys(), containsInAnyOrder(GLOBAL_INDEX, LOCAL_INDEX, PRIMARY_KEY));
+    }
+
+    @Test
     void testSerialization() throws IOException, ClassNotFoundException {
         final String serialized = StringSerializer.serializeToString(TABLE_METADATA);
         final DynamodbTableMetadata result = (DynamodbTableMetadata) StringSerializer.deserializeFromString(serialized);

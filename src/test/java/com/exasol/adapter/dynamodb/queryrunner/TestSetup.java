@@ -4,11 +4,14 @@ import java.io.IOException;
 import java.util.List;
 
 import com.exasol.adapter.dynamodb.documentnode.dynamodb.DynamodbNodeVisitor;
+import com.exasol.adapter.dynamodb.documentnode.dynamodb.DynamodbString;
 import com.exasol.adapter.dynamodb.documentpath.DocumentPathExpression;
 import com.exasol.adapter.dynamodb.mapping.AbstractColumnMappingDefinition;
 import com.exasol.adapter.dynamodb.mapping.SchemaMappingDefinitionToSchemaMetadataConverter;
 import com.exasol.adapter.dynamodb.mapping.TableMappingDefinition;
 import com.exasol.adapter.dynamodb.mapping.ToJsonColumnMappingDefinition;
+import com.exasol.adapter.dynamodb.remotetablequery.ColumnLiteralComparisonPredicate;
+import com.exasol.adapter.dynamodb.remotetablequery.ComparisonPredicate;
 import com.exasol.adapter.dynamodb.remotetablequery.NoPredicate;
 import com.exasol.adapter.dynamodb.remotetablequery.RemoteTableQuery;
 import com.exasol.adapter.metadata.ColumnMetadata;
@@ -41,5 +44,15 @@ class TestSetup {
     SqlStatement getSelectWithWhereClause(final SqlNode sqlNode) {
         return SqlStatementSelect.builder().fromClause(new SqlTable(TABLE_NAME, null))
                 .selectList(SqlSelectList.createSelectStarSelectList()).whereClause(sqlNode).build();
+    }
+
+    public static ColumnLiteralComparisonPredicate<DynamodbNodeVisitor> getCompareForColumn(
+            final String propertyName) {
+        final DocumentPathExpression sourcePath = new DocumentPathExpression.Builder().addObjectLookup(propertyName)
+                .build();
+        final ToJsonColumnMappingDefinition column = new ToJsonColumnMappingDefinition(
+                new AbstractColumnMappingDefinition.ConstructorParameters("columnName", sourcePath, null));
+        return new ColumnLiteralComparisonPredicate<>(ComparisonPredicate.Operator.EQUAL, column,
+                new DynamodbString(""));
     }
 }

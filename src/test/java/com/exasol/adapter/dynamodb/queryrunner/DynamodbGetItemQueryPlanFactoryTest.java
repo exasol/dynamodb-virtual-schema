@@ -48,12 +48,12 @@ public class DynamodbGetItemQueryPlanFactoryTest {
     @Test
     void testSimplePrimaryKeyWithSecondNonKeySelection() throws IOException, PlanDoesNotFitException {
         final String filter = "test";
-        final QueryPredicate<DynamodbNodeVisitor> selection = new BinaryLogicalOperator<>(List.of(
+        final QueryPredicate<DynamodbNodeVisitor> selection = new LogicalOperator<>(List.of(
                 new ColumnLiteralComparisonPredicate<>(ComparisonPredicate.Operator.EQUAL, COLUMN1_MAPPING,
                         new DynamodbString(filter)),
                 new ColumnLiteralComparisonPredicate<>(ComparisonPredicate.Operator.EQUAL, COLUMN2_MAPPING,
                         new DynamodbString("test2"))),
-                BinaryLogicalOperator.Operator.AND);
+                LogicalOperator.Operator.AND);
         final RemoteTableQuery<DynamodbNodeVisitor> documentQuery = new RemoteTableQuery<>(TABLE_MAPPING,
                 TABLE_MAPPING.getColumns(), selection);
 
@@ -71,12 +71,12 @@ public class DynamodbGetItemQueryPlanFactoryTest {
     void testCompoundPrimaryKey() throws IOException, PlanDoesNotFitException {
         final String filter1 = "test";
         final String filter2 = "test2";
-        final QueryPredicate<DynamodbNodeVisitor> selection = new BinaryLogicalOperator<>(List.of(
+        final QueryPredicate<DynamodbNodeVisitor> selection = new LogicalOperator<>(List.of(
                 new ColumnLiteralComparisonPredicate<>(ComparisonPredicate.Operator.EQUAL, COLUMN1_MAPPING,
                         new DynamodbString(filter1)),
                 new ColumnLiteralComparisonPredicate<>(ComparisonPredicate.Operator.EQUAL, COLUMN2_MAPPING,
                         new DynamodbString(filter2))),
-                BinaryLogicalOperator.Operator.AND);
+                LogicalOperator.Operator.AND);
         final RemoteTableQuery<DynamodbNodeVisitor> documentQuery = new RemoteTableQuery<>(TABLE_MAPPING,
                 TABLE_MAPPING.getColumns(), selection);
 
@@ -110,8 +110,8 @@ public class DynamodbGetItemQueryPlanFactoryTest {
     void testSelectionWithOr() throws IOException, PlanDoesNotFitException {
         final String filter1 = "test";
         final String filter2 = "test2";
-        final QueryPredicate<DynamodbNodeVisitor> selection = new BinaryLogicalOperator<>(
-                List.of(new NoPredicate<>(), new NoPredicate<>()), BinaryLogicalOperator.Operator.OR);
+        final QueryPredicate<DynamodbNodeVisitor> selection = new LogicalOperator<>(
+                List.of(new NoPredicate<>(), new NoPredicate<>()), LogicalOperator.Operator.OR);
         final RemoteTableQuery<DynamodbNodeVisitor> documentQuery = new RemoteTableQuery<>(TABLE_MAPPING,
                 TABLE_MAPPING.getColumns(), selection);
 

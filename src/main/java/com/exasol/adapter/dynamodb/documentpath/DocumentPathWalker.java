@@ -40,7 +40,7 @@ public class DocumentPathWalker<VisitorType> {
             return List.of(thisNode);
         }
         final Function<DocumentNode<VisitorType>, List<? extends DocumentNode<VisitorType>>> stepper = getStepperFor(
-                this.pathExpression.getPath().get(position));
+                this.pathExpression.getSegments().get(position));
         return runTraverseStepper(stepper, thisNode, position);
     }
 

@@ -24,21 +24,15 @@ public class DynamodbGetItemQueryPlanFactory {
      * @throws PlanDoesNotFitException if this query can't be executed using a {@link DynamodbGetItemQueryPlan}
      */
     public DynamodbGetItemQueryPlan buildGetItemPlanIfPossible(
-            final RemoteTableQuery<DynamodbNodeVisitor> documentQuery, final DynamodbTableMetadata tableMetadata)
-            throws PlanDoesNotFitException {
+            final RemoteTableQuery<DynamodbNodeVisitor> documentQuery, final DynamodbTableMetadata tableMetadata) {
         final Visitor visitor = new Visitor(tableMetadata);
-        try {
-            documentQuery.getSelection().accept(visitor);
-        } catch (final PlanDoesNotFitExceptionWrapper wrapper) {
-            throw wrapper.getWrappedException();
-        }
+        documentQuery.getSelection().accept(visitor);
         final Map<String, AttributeValue> key = visitor.getPrimaryKey();
         checkIfKeyIsComplete(key, tableMetadata);
         return new DynamodbGetItemQueryPlan(documentQuery.getFromTable().getRemoteName(), key);
     }
 
-    private void checkIfKeyIsComplete(final Map<String, AttributeValue> key, final DynamodbTableMetadata tableMetadata)
-            throws PlanDoesNotFitException {
+    private void checkIfKeyIsComplete(final Map<String, AttributeValue> key, final DynamodbTableMetadata tableMetadata) {
         if (key.size() < 1) {
             throw new PlanDoesNotFitException(
                     "Not a GetItem request as the partition key was not specified in the where clause.");
@@ -79,8 +73,8 @@ public class DynamodbGetItemQueryPlanFactory {
                     if (this.primaryKey.get(key).equals(value)) {
                         return; // Duplicate condition, skip this key.
                     } else {
-                        throw new PlanDoesNotFitExceptionWrapper(new PlanDoesNotFitException(
-                                "This is not a getItem request as the same key is restricted in the where clause twice."));
+                        throw new PlanDoesNotFitException(
+                                "This is not a getItem request as the same key is restricted in the where clause twice.");
                     }
                 }
                 this.primaryKey.put(key, value);
@@ -88,16 +82,15 @@ public class DynamodbGetItemQueryPlanFactory {
         }
 
         @Override
-        public void visit(final BinaryLogicalOperator<DynamodbNodeVisitor> binaryLogicalOperator) {
-            switch (binaryLogicalOperator.getOperator()) {
+        public void visit(final LogicalOperator<DynamodbNodeVisitor> logicalOperator) {
+            switch (logicalOperator.getOperator()) {
             case AND:
-                for (final QueryPredicate<DynamodbNodeVisitor> andedPredicate : binaryLogicalOperator.getOperands()) {
+                for (final QueryPredicate<DynamodbNodeVisitor> andedPredicate : logicalOperator.getOperands()) {
                     andedPredicate.accept(this);
                 }
                 break;
             case OR:
-                throw new PlanDoesNotFitExceptionWrapper(
-                        new PlanDoesNotFitException("OR operators are not supported for GetItem requests."));
+                throw new PlanDoesNotFitException("OR operators are not supported for GetItem requests.");
             default:
                 break;
             }

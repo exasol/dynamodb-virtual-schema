@@ -65,4 +65,17 @@ public class DynamodbTableMetadata implements Serializable {
         union.addAll(this.globalIndexes);
         return union;
     }
+
+    /**
+     * Gives a list containing the primary key and all local and global indexes.
+     * 
+     * @return list of all keys
+     */
+    public List<DynamodbKey> getAllKeys() {
+        final ArrayList<DynamodbKey> union = new ArrayList<>(this.localIndexes.size() + this.globalIndexes.size());
+        union.addAll(this.localIndexes);
+        union.addAll(this.globalIndexes);
+        union.add(getPrimaryKey());
+        return union;
+    }
 }

@@ -32,8 +32,8 @@ public class DocumentPathExpressionTest {
                 .build();
         assertAll(//
                 () -> assertThat(pathExpression.size(), equalTo(2)),
-                () -> assertThat(pathExpression.getPath().get(0), equalTo(pathSegment1)), //
-                () -> assertThat(pathExpression.getPath().get(1), equalTo(pathSegment2))//
+                () -> assertThat(pathExpression.getSegments().get(0), equalTo(pathSegment1)), //
+                () -> assertThat(pathExpression.getSegments().get(1), equalTo(pathSegment2))//
         );
     }
 
@@ -42,7 +42,7 @@ public class DocumentPathExpressionTest {
         final DocumentPathExpression pathExpression = new DocumentPathExpression.Builder()//
                 .addObjectLookup("key")//
                 .build();
-        final ObjectLookupPathSegment objectLookup = (ObjectLookupPathSegment) pathExpression.getPath().get(0);
+        final ObjectLookupPathSegment objectLookup = (ObjectLookupPathSegment) pathExpression.getSegments().get(0);
         assertThat(objectLookup.getLookupKey(), equalTo("key"));
     }
 
@@ -50,7 +50,7 @@ public class DocumentPathExpressionTest {
     void testAddArrayLookup() {
         final DocumentPathExpression pathExpression = new DocumentPathExpression.Builder()//
                 .addArrayLookup(0).build();
-        final ArrayLookupPathSegment objectLookup = (ArrayLookupPathSegment) pathExpression.getPath().get(0);
+        final ArrayLookupPathSegment objectLookup = (ArrayLookupPathSegment) pathExpression.getSegments().get(0);
         assertThat(objectLookup.getLookupIndex(), equalTo(0));
     }
 
@@ -64,7 +64,7 @@ public class DocumentPathExpressionTest {
                 .build().getSubPath(0, 1);
         assertAll(//
                 () -> assertThat(pathExpression.size(), equalTo(1)),
-                () -> assertThat(pathExpression.getPath().get(0), equalTo(pathSegment1))//
+                () -> assertThat(pathExpression.getSegments().get(0), equalTo(pathSegment1))//
         );
     }
 

@@ -7,7 +7,7 @@ package com.exasol.adapter.dynamodb.remotetablequery;
 public interface QueryPredicateVisitor<DocumentVisitorType> {
     public void visit(ColumnLiteralComparisonPredicate<DocumentVisitorType> columnLiteralComparisonPredicate);
 
-    public void visit(BinaryLogicalOperator<DocumentVisitorType> binaryLogicalOperator);
+    public void visit(LogicalOperator<DocumentVisitorType> logicalOperator);
 
     public void visit(NoPredicate<DocumentVisitorType> noPredicate);
 }

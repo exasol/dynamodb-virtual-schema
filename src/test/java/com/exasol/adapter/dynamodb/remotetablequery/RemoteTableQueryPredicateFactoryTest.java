@@ -50,25 +50,25 @@ class QueryPredicateFactoryTest {
 
     @Test
     void testBuildAndPredicate() {
-        final BinaryLogicalOperator<Object> binaryLogicalOperator = (BinaryLogicalOperator<Object>) FACTORY
+        final LogicalOperator<Object> logicalOperator = (LogicalOperator<Object>) FACTORY
                 .buildPredicateFor(new SqlPredicateAnd(List.of(validColumnLiteralEqualityPredicate)));
         assertAll(//
-                () -> assertThat(binaryLogicalOperator.getOperands().size(), equalTo(1)),
-                () -> assertThat(binaryLogicalOperator.getOperands().get(0),
+                () -> assertThat(logicalOperator.getOperands().size(), equalTo(1)),
+                () -> assertThat(logicalOperator.getOperands().get(0),
                         instanceOf(ColumnLiteralComparisonPredicate.class)),
-                () -> assertThat(binaryLogicalOperator.getOperator(), equalTo(BinaryLogicalOperator.Operator.AND))//
+                () -> assertThat(logicalOperator.getOperator(), equalTo(LogicalOperator.Operator.AND))//
         );
     }
 
     @Test
     void testBuildOrPredicate() {
-        final BinaryLogicalOperator<Object> binaryLogicalOperator = (BinaryLogicalOperator<Object>) FACTORY
+        final LogicalOperator<Object> logicalOperator = (LogicalOperator<Object>) FACTORY
                 .buildPredicateFor(new SqlPredicateOr(List.of(validColumnLiteralEqualityPredicate)));
         assertAll(//
-                () -> assertThat(binaryLogicalOperator.getOperands().size(), equalTo(1)),
-                () -> assertThat(binaryLogicalOperator.getOperands().get(0),
+                () -> assertThat(logicalOperator.getOperands().size(), equalTo(1)),
+                () -> assertThat(logicalOperator.getOperands().get(0),
                         instanceOf(ColumnLiteralComparisonPredicate.class)),
-                () -> assertThat(binaryLogicalOperator.getOperator(), equalTo(BinaryLogicalOperator.Operator.OR))//
+                () -> assertThat(logicalOperator.getOperator(), equalTo(LogicalOperator.Operator.OR))//
         );
     }
 

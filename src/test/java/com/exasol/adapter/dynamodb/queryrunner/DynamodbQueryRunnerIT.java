@@ -121,4 +121,10 @@ class DynamodbQueryRunnerIT {
         final DynamodbString isbnResult = (DynamodbString) first.get("isbn");
         assertThat(isbnResult.getValue(), equalTo(isbn));
     }
+
+    @Test
+    void testQueryRequest(){
+        final DynamodbQueryQueryPlan query = new DynamodbQueryQueryPlan(tableMapping.getRemoteName());
+        query.run(new DynamodbConnectionFactory().getLowLevelConnection(dynamodbTestInterface.getDynamoUrl(), dynamodbTestInterface.getDynamoUser(), dynamodbTestInterface.getDynamoPass()));
+    }
 }
