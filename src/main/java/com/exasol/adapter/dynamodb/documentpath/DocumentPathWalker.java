@@ -29,7 +29,7 @@ public class DocumentPathWalker<VisitorType> {
      * Walks the path defined in constructor through the given document.
      * 
      * @param rootNode document to walk through
-     * @return document'S attribute described in {@link DocumentPathExpression}.
+     * @return document's attribute described in {@link DocumentPathExpression}.
      * @throws DocumentPathWalkerException if defined path does not exist in the given document
      */
     public DocumentNode<VisitorType> walkThroughDocument(final DocumentNode<VisitorType> rootNode) {

@@ -1,25 +1,35 @@
 package com.exasol.adapter.dynamodb.documentpath;
 
+import java.util.Iterator;
+
 import com.exasol.adapter.dynamodb.documentnode.DocumentNode;
 
 /**
- * This factory creates a fitting {@link DocumentPathIterator} for a given path and document.
+ * This factory creates a fitting {@link Iterator<PathIterationStateProvider>} for a given path and document.
  */
 @java.lang.SuppressWarnings("squid:S119") // VisitorType does not fit naming conventions.
-public class DocumentPathIteratorFactory<VisitorType> {
+public class DocumentPathIteratorFactory<VisitorType> implements Iterable<PathIterationStateProvider> {
+
+    private final DocumentPathExpression path;
+    private final DocumentNode<VisitorType> document;
 
     /**
-     * Creates a fitting {@link DocumentPathIterator} for a given path and document.
+     * Creates an instance of {@link DocumentPathIteratorFactory}.
      * 
-     * @param path     path expression
+     * @param path     path expression to iterate
      * @param document document
-     * @return fitting {@link DocumentPathIterator}
      */
-    public DocumentPathIterator buildFor(final DocumentPathExpression path, final DocumentNode<VisitorType> document) {
-        if (path.indexOfFirstArrayAllSegment() == -1) {
+    public DocumentPathIteratorFactory(final DocumentPathExpression path, final DocumentNode<VisitorType> document) {
+        this.path = path;
+        this.document = document;
+    }
+
+    @Override
+    public Iterator<PathIterationStateProvider> iterator() {
+        if (this.path.indexOfFirstArrayAllSegment() == -1) {
             return new StaticDocumentPathIterator();
         } else {
-            return new LoopDocumentPathIterator<>(path, document);
+            return new LoopDocumentPathIterator<>(this.path, this.document);
         }
     }
 }

@@ -1,18 +1,26 @@
 package com.exasol.adapter.dynamodb.documentpath;
 
+import java.util.Iterator;
+import java.util.NoSuchElementException;
+
 /**
  * This is an iterator that does exactly one iterations. It is used if no iteration needs to be done.
  */
-public class StaticDocumentPathIterator implements DocumentPathIterator {
-    private boolean wasCalled = false;
+public class StaticDocumentPathIterator implements Iterator<PathIterationStateProvider>, PathIterationStateProvider {
+    private boolean called = false;
 
     @Override
-    public boolean next() {
-        if (!this.wasCalled) {
-            this.wasCalled = true;
-            return true;
+    public boolean hasNext() {
+        return !this.called;
+    }
+
+    @Override
+    public PathIterationStateProvider next() {
+        if (hasNext()) {
+            this.called = true;
+            return this;
         } else {
-            return false;
+            throw new NoSuchElementException("The are no more combinations to iterate.");
         }
     }
 

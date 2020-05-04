@@ -1,5 +1,8 @@
 package com.exasol.adapter.dynamodb.documentpath;
 
+import java.util.Iterator;
+import java.util.NoSuchElementException;
+
 import com.exasol.adapter.dynamodb.documentnode.DocumentArray;
 import com.exasol.adapter.dynamodb.documentnode.DocumentNode;
 
@@ -11,13 +14,13 @@ import com.exasol.adapter.dynamodb.documentnode.DocumentNode;
  * delegates the remaining path to another instance ({@link #nestedIterator}).
  */
 @java.lang.SuppressWarnings("squid:S119") // VisitorType does not fit naming conventions.
-public class LoopDocumentPathIterator<VisitorType> implements DocumentPathIterator {
+public class LoopDocumentPathIterator<VisitorType> implements Iterator<PathIterationStateProvider> {
+    protected final DocumentPathExpression pathOfThisIterator;
     private final int arraySize;
-    private final DocumentPathExpression pathOfThisIterator;
     private final DocumentPathExpression pathOfNextIterator;
-    private final DocumentNode<VisitorType> document;
+    private final DocumentArray<VisitorType> arrayToIterate;
     private int currentIndex = -1;
-    private DocumentPathIterator nestedIterator;
+    private Iterator<PathIterationStateProvider> nestedIterator;
 
     /**
      * Creates an instance of {@link LoopDocumentPathIterator}.
@@ -26,14 +29,29 @@ public class LoopDocumentPathIterator<VisitorType> implements DocumentPathIterat
      * @param document document used for reading the array sizes
      */
     public LoopDocumentPathIterator(final DocumentPathExpression path, final DocumentNode<VisitorType> document) {
-        this.document = document;
         final int indexOfFirstArrayAllSegment = path.indexOfFirstArrayAllSegment();
         this.pathOfThisIterator = path.getSubPath(0, indexOfFirstArrayAllSegment + 1);
         this.pathOfNextIterator = path.getSubPath(indexOfFirstArrayAllSegment + 1, path.size());
         final DocumentPathExpression pathToThisArray = path.getSubPath(0, indexOfFirstArrayAllSegment);
-        final DocumentArray<VisitorType> arrayToIterate = (DocumentArray<VisitorType>) new LinearDocumentPathWalker<VisitorType>(
-                pathToThisArray).walkThroughDocument(document);
-        this.arraySize = arrayToIterate.size();
+        this.arrayToIterate = (DocumentArray<VisitorType>) new LinearDocumentPathWalker<VisitorType>(pathToThisArray)
+                .walkThroughDocument(document);
+        this.arraySize = this.arrayToIterate.size();
+    }
+
+    @Override
+    public boolean hasNext() {
+        int index = this.currentIndex;
+        Iterator<PathIterationStateProvider> nextNestedIterator = this.nestedIterator;
+        while (true) {
+            if (nextNestedIterator != null && nextNestedIterator.hasNext()) {
+                return true;
+            } else if (index + 1 < this.arraySize) {
+                index++;
+                nextNestedIterator = loadNestedIterator(index);
+            } else {
+                return false;
+            }
+        }
     }
 
     /**
@@ -44,40 +62,23 @@ public class LoopDocumentPathIterator<VisitorType> implements DocumentPathIterat
      * 
      * @return {@code true} if could move to next; {@code false} if there was no remaining combination to iterate.
      */
-    public boolean next() {
+    public PathIterationStateProvider next() {
         while (true) {
-            if (this.nestedIterator != null && this.nestedIterator.next()) {
-                return true;
-            } else if (hasSelfNext()) {
-                loadNestedIterator();
+            if (this.nestedIterator != null && this.nestedIterator.hasNext()) {
+                return new LoopDocumentPathIteratorState(this.pathOfThisIterator, this.currentIndex,
+                        this.nestedIterator.next());
+            } else if (this.currentIndex + 1 < this.arraySize) {// load next nested iterator
+                this.currentIndex++;
+                this.nestedIterator = loadNestedIterator(this.currentIndex);
             } else {
-                return false;
+                throw new NoSuchElementException("The are no more combinations to iterate.");
             }
         }
     }
 
-    private void loadNestedIterator() {
-        this.currentIndex++;
-        final DocumentNode<VisitorType> subDocument = new DocumentPathWalker<VisitorType>(this.pathOfThisIterator, this)
-                .walkThroughDocument(this.document);
-        this.nestedIterator = new DocumentPathIteratorFactory<VisitorType>().buildFor(this.pathOfNextIterator,
-                subDocument);
+    private Iterator<PathIterationStateProvider> loadNestedIterator(final int index) {
+        final DocumentNode<VisitorType> subDocument = this.arrayToIterate.getValue(index);
+        return new DocumentPathIteratorFactory<VisitorType>(this.pathOfNextIterator, subDocument).iterator();
     }
 
-    private boolean hasSelfNext() {
-        return this.currentIndex + 1 < this.arraySize;
-    }
-
-    @Override
-    public int getIndexFor(final DocumentPathExpression pathToRequestedArrayAll) {
-        if (pathToRequestedArrayAll.equals(this.pathOfThisIterator)) {// This request is for our array
-            return this.currentIndex;
-        } else if (this.nestedIterator != null && pathToRequestedArrayAll.startsWith(this.pathOfThisIterator)) {
-            final DocumentPathExpression remainingPathToRequestedArrayAll = pathToRequestedArrayAll
-                    .getSubPath(this.pathOfThisIterator.size(), pathToRequestedArrayAll.size());
-            return this.nestedIterator.getIndexFor(remainingPathToRequestedArrayAll);
-        } else {
-            throw new IllegalStateException("The requested path does not match the path that this iterator unwinds.");
-        }
-    }
 }

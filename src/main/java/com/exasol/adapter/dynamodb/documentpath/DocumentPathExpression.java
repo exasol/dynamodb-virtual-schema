@@ -92,8 +92,7 @@ public class DocumentPathExpression implements Serializable {
     }
 
     /**
-     * Checks if this path expression starts with an other path expression. If the path expressions are equal
-     * {@code true} is returned.
+     * Checks if this path expression starts with an other path expression.
      * 
      * @param other sub path expression
      * @return {@code true} if this path starts with the other path
