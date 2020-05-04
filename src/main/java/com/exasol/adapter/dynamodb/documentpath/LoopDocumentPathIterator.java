@@ -47,7 +47,7 @@ public class LoopDocumentPathIterator<VisitorType> implements Iterator<PathItera
                 return true;
             } else if (index + 1 < this.arraySize) {
                 index++;
-                nextNestedIterator = loadNestedIterator(index);
+                nextNestedIterator = getNestedIteratorAtIndex(index);
             } else {
                 return false;
             }
@@ -65,20 +65,49 @@ public class LoopDocumentPathIterator<VisitorType> implements Iterator<PathItera
     public PathIterationStateProvider next() {
         while (true) {
             if (this.nestedIterator != null && this.nestedIterator.hasNext()) {
-                return new LoopDocumentPathIteratorState(this.pathOfThisIterator, this.currentIndex,
-                        this.nestedIterator.next());
+                return new IteratorState(this.pathOfThisIterator, this.currentIndex, this.nestedIterator.next());
             } else if (this.currentIndex + 1 < this.arraySize) {// load next nested iterator
                 this.currentIndex++;
-                this.nestedIterator = loadNestedIterator(this.currentIndex);
+                this.nestedIterator = getNestedIteratorAtIndex(this.currentIndex);
             } else {
                 throw new NoSuchElementException("The are no more combinations to iterate.");
             }
         }
     }
 
-    private Iterator<PathIterationStateProvider> loadNestedIterator(final int index) {
+    private Iterator<PathIterationStateProvider> getNestedIteratorAtIndex(final int index) {
         final DocumentNode<VisitorType> subDocument = this.arrayToIterate.getValue(index);
         return new DocumentPathIteratorFactory<VisitorType>(this.pathOfNextIterator, subDocument).iterator();
     }
 
+    /**
+     * This class represents the current iteration state of a {@link LoopDocumentPathIterator}.
+     */
+    private static class IteratorState implements PathIterationStateProvider {
+        private final DocumentPathExpression pathOfThisIterator;
+        private final int currentIndex;
+        private final PathIterationStateProvider nextState;
+
+        private IteratorState(final DocumentPathExpression pathOfThisIterator, final int currentIndex,
+                final PathIterationStateProvider nextState) {
+            this.pathOfThisIterator = pathOfThisIterator;
+            this.currentIndex = currentIndex;
+            this.nextState = nextState;
+        }
+
+        @Override
+        public int getIndexFor(final DocumentPathExpression pathToRequestedArrayAll) {
+            if (pathToRequestedArrayAll.equals(this.pathOfThisIterator)) {
+                // This request is for our array
+                return this.currentIndex;
+            } else if (this.nextState != null && pathToRequestedArrayAll.startsWith(this.pathOfThisIterator)) {
+                final DocumentPathExpression remainingPathToRequestedArrayAll = pathToRequestedArrayAll
+                        .getSubPath(this.pathOfThisIterator.size(), pathToRequestedArrayAll.size());
+                return this.nextState.getIndexFor(remainingPathToRequestedArrayAll);
+            } else {
+                throw new IllegalStateException(
+                        "The requested path does not match the path that this iterator unwinds.");
+            }
+        }
+    }
 }
