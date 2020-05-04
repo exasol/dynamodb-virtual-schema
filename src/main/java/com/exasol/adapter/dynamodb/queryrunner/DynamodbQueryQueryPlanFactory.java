@@ -1,7 +1,7 @@
 package com.exasol.adapter.dynamodb.queryrunner;
 
 import com.exasol.adapter.dynamodb.documentnode.dynamodb.DynamodbNodeVisitor;
-import com.exasol.adapter.dynamodb.dynamodbmetadata.DynamodbKey;
+import com.exasol.adapter.dynamodb.dynamodbmetadata.DynamodbIndex;
 import com.exasol.adapter.dynamodb.dynamodbmetadata.DynamodbTableMetadata;
 import com.exasol.adapter.dynamodb.remotetablequery.RemoteTableQuery;
 
@@ -19,13 +19,14 @@ public class DynamodbQueryQueryPlanFactory {
      */
     public DynamodbQueryQueryPlan buildQueryPlanIfPossible(final RemoteTableQuery<DynamodbNodeVisitor> documentQuery,
             final DynamodbTableMetadata tableMetadata) {
-        final DynamodbKey mostSelectiveKey = new DynamodbQueryKeyFinder()
-                .findMostSelectiveKey(documentQuery.getSelection(), tableMetadata.getAllKeys());
-        if (mostSelectiveKey == null) {
+        final DynamodbIndex mostRestrictedIndex = new DynamodbQueryIndexSelector()
+                .findMostRestrictedIndex(documentQuery.getSelection(), tableMetadata.getAllIndexes());
+        if (mostRestrictedIndex == null) {
             throw new PlanDoesNotFitException("Could not find a suitable key for a DynamoDB Query operation. "
                     + "Non of the keys did a equality selection with the partition key. "
                     + "Your can either add such a selection to your query or use a SCAN request.");
         }
+        // TODO continue implementation
         return null;
     }
 

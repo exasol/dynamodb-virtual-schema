@@ -38,7 +38,7 @@ public class DynamodbGetItemQueryPlanFactory {
             throw new PlanDoesNotFitException(
                     "Not a GetItem request as the partition key was not specified in the where clause.");
         }
-        if (tableMetadata.getPrimaryKey().hasSortKey() && key.size() != 2) {
+        if (tableMetadata.getPrimaryIndex().hasSortKey() && key.size() != 2) {
             throw new PlanDoesNotFitException(
                     "Not a GetItem request as the sort key was not specified in the where clause.");
         }
@@ -63,8 +63,8 @@ public class DynamodbGetItemQueryPlanFactory {
             }
             final AttributeValue attributeValue = new DynamodbNodeToAttributeValueConverter()
                     .convertToAttributeValue(columnLiteralComparisonPredicate.getLiteral());
-            tryToAddKey(this.tableMetadata.getPrimaryKey().getPartitionKey(), columnPath, attributeValue);
-            tryToAddKey(this.tableMetadata.getPrimaryKey().getSortKey(), columnPath, attributeValue);
+            tryToAddKey(this.tableMetadata.getPrimaryIndex().getPartitionKey(), columnPath, attributeValue);
+            tryToAddKey(this.tableMetadata.getPrimaryIndex().getSortKey(), columnPath, attributeValue);
         }
 
         private void tryToAddKey(final String key, final DocumentPathExpression columnPath,

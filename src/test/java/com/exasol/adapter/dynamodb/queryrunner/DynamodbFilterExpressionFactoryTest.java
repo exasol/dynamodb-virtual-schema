@@ -63,7 +63,7 @@ class DynamodbFilterExpressionFactoryTest {
                 List.of(comparison1, comparison2, comparison3), LogicalOperator.Operator.AND);
         final DynamodbValueListBuilder valueListBuilder = new DynamodbValueListBuilder();
         final String result = new DynamodbFilterExpressionFactory().buildFilterExpression(and, valueListBuilder);
-        assertThat(result, equalTo("key = :0 and  (key = :1 and key = :2)"));
+        assertThat(result, equalTo("key = :0 and (key = :1 and key = :2)"));
         assertThat(valueListBuilder.getValueMap().get(":0").getS(), equalTo(literal1));
         assertThat(valueListBuilder.getValueMap().get(":1").getS(), equalTo(literal2));
         assertThat(valueListBuilder.getValueMap().get(":2").getS(), equalTo(literal3));

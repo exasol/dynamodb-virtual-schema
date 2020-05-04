@@ -59,8 +59,9 @@ public class ColumnLiteralComparisonPredicate<DocumentVisitorType> extends Compa
         }
         final ColumnLiteralComparisonPredicate<?> that = (ColumnLiteralComparisonPredicate<?>) other;
 
-        if (!this.literal.equals(that.literal))
+        if (!this.literal.equals(that.literal)) {
             return false;
+        }
         return this.column.equals(that.column);
     }
 
