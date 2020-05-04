@@ -11,11 +11,11 @@ import java.util.List;
 public class DocumentPathExpression implements Serializable {
     private static final DocumentPathExpression EMPTY_PATH = new DocumentPathExpression(Collections.emptyList());
     private static final long serialVersionUID = -5010657725802907603L;
-    private final ArrayList<PathSegment> path;
+    private final ArrayList<PathSegment> segments;
 
-    private DocumentPathExpression(final List<PathSegment> path) {
-        this.path = new ArrayList<>(path.size());
-        this.path.addAll(path);
+    private DocumentPathExpression(final List<PathSegment> segments) {
+        this.segments = new ArrayList<>(segments.size());
+        this.segments.addAll(segments);
     }
 
     /**
@@ -33,7 +33,7 @@ public class DocumentPathExpression implements Serializable {
      * @return list with path segments
      */
     public List<PathSegment> getSegments() {
-        return this.path;
+        return this.segments;
     }
 
     /**
@@ -44,7 +44,7 @@ public class DocumentPathExpression implements Serializable {
      * @return {@link DocumentPathExpression} instance
      */
     public DocumentPathExpression getSubPath(final int startIndex, final int endIndex) {
-        return new DocumentPathExpression(Collections.unmodifiableList(this.path.subList(startIndex, endIndex)));
+        return new DocumentPathExpression(Collections.unmodifiableList(this.segments.subList(startIndex, endIndex)));
     }
 
     /**
@@ -53,7 +53,7 @@ public class DocumentPathExpression implements Serializable {
      * @return size
      */
     public int size() {
-        return this.path.size();
+        return this.segments.size();
     }
 
     @Override
@@ -67,12 +67,12 @@ public class DocumentPathExpression implements Serializable {
 
         final DocumentPathExpression that = (DocumentPathExpression) other;
 
-        return this.path.equals(that.path);
+        return this.segments.equals(that.segments);
     }
 
     @Override
     public int hashCode() {
-        return this.path.hashCode();
+        return this.segments.hashCode();
     }
 
     @Override
@@ -84,7 +84,7 @@ public class DocumentPathExpression implements Serializable {
      * Builder for {@link DocumentPathExpression}.
      */
     public static class Builder {
-        private final List<PathSegment> path = new ArrayList<>();
+        private final List<PathSegment> segments = new ArrayList<>();
 
         /**
          * Creates an instance of {@link Builder} with an empty path.
@@ -99,7 +99,7 @@ public class DocumentPathExpression implements Serializable {
          * @param copy {@link Builder} to copy
          */
         public Builder(final Builder copy) {
-            this.path.addAll(copy.path);
+            this.segments.addAll(copy.segments);
         }
 
         /**
@@ -109,7 +109,7 @@ public class DocumentPathExpression implements Serializable {
          * @return {@code this} instance for fluent programming
          */
         public Builder addPathSegment(final PathSegment segment) {
-            this.path.add(segment);
+            this.segments.add(segment);
             return this;
         }
 
@@ -148,7 +148,7 @@ public class DocumentPathExpression implements Serializable {
          * @return a new instance of {@link DocumentPathExpression}
          */
         public DocumentPathExpression build() {
-            return new DocumentPathExpression(Collections.unmodifiableList(this.path));
+            return new DocumentPathExpression(Collections.unmodifiableList(this.segments));
         }
     }
 }
