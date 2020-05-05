@@ -1,6 +1,8 @@
 package com.exasol.adapter.dynamodb.documentpath;
 
 import java.util.Iterator;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 import com.exasol.adapter.dynamodb.documentnode.DocumentNode;
 
@@ -31,5 +33,14 @@ public class DocumentPathIteratorFactory<VisitorType> implements Iterable<PathIt
         } else {
             return new LoopDocumentPathIterator<>(this.path, this.document);
         }
+    }
+
+    /**
+     * Gives a stream of iteration states.
+     * 
+     * @return stream of {@link PathIterationStateProvider}
+     */
+    public Stream<PathIterationStateProvider> stream() {
+        return StreamSupport.stream(spliterator(), false);
     }
 }

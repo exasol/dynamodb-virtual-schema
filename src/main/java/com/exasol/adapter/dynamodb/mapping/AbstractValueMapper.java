@@ -1,8 +1,9 @@
 package com.exasol.adapter.dynamodb.mapping;
 
 import com.exasol.adapter.dynamodb.documentnode.DocumentNode;
+import com.exasol.adapter.dynamodb.documentpath.DocumentPathWalker;
 import com.exasol.adapter.dynamodb.documentpath.DocumentPathWalkerException;
-import com.exasol.adapter.dynamodb.documentpath.LinearDocumentPathWalker;
+import com.exasol.adapter.dynamodb.documentpath.PathIterationStateProvider;
 import com.exasol.sql.expression.ValueExpression;
 
 /**
@@ -25,7 +26,8 @@ public abstract class AbstractValueMapper<DocumentVisitorType> {
     /**
      * Extracts {@link #column}s values from the given document.
      *
-     * @param document to extract the value from
+     * @param document               to extract the value from
+     * @param arrayAllIterationState array all iteration state used for extracting the correct values for nested lists
      * @return {@link ValueExpression}
      * @throws DocumentPathWalkerException if specified property was not found and
      *                                     {@link AbstractColumnMappingDefinition.LookupFailBehaviour} is set to
@@ -34,10 +36,11 @@ public abstract class AbstractValueMapper<DocumentVisitorType> {
      *                                     {@link AbstractColumnMappingDefinition.LookupFailBehaviour} is set to
      *                                     {@code EXCEPTION }
      */
-    public ValueExpression mapRow(final DocumentNode<DocumentVisitorType> document) {
+    public ValueExpression mapRow(final DocumentNode<DocumentVisitorType> document,
+            final PathIterationStateProvider arrayAllIterationState) {
         try {
-            final LinearDocumentPathWalker<DocumentVisitorType> walker = new LinearDocumentPathWalker<>(
-                    this.column.getPathToSourceProperty());
+            final DocumentPathWalker<DocumentVisitorType> walker = new DocumentPathWalker<>(
+                    this.column.getPathToSourceProperty(), arrayAllIterationState);
             final DocumentNode<DocumentVisitorType> dynamodbProperty = walker.walkThroughDocument(document);
             return mapValue(dynamodbProperty);
         } catch (final DocumentPathWalkerException | LookupValueMapperException exception) {
