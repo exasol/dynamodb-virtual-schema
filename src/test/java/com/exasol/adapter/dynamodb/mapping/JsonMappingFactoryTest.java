@@ -77,6 +77,23 @@ public class JsonMappingFactoryTest {
     }
 
     @Test
+    void testToSingleColumnTableMapping() throws IOException, AdapterException {
+        final SchemaMappingDefinition schemaMapping = getMappingDefinitionForFile(
+                MappingTestFiles.SINGLE_COLUMN_TO_TABLE_MAPPING_FILE);
+        final List<TableMappingDefinition> tables = schemaMapping.getTableMappings();
+        final TableMappingDefinition nestedTable = tables.stream().filter(table -> !table.isRootTable()).findAny()
+                .get();
+        final ToStringColumnMappingDefinition column = (ToStringColumnMappingDefinition) nestedTable.getColumns()
+                .get(0);
+        assertAll(//
+                () -> assertThat(tables.size(), equalTo(2)),
+                () -> assertThat(nestedTable.getExasolName(), equalTo("BOOKS_TOPICS")),
+                () -> assertThat(column.getExasolColumnName(), equalTo("TOPIC_NAME")),
+                () -> assertThat(column.getPathToSourceProperty().toString(), equalTo("/topics[*]"))//
+        );
+    }
+
+    @Test
     void testException() throws IOException {
         final File invalidFile = this.mappingTestFiles.generateInvalidFile(MappingTestFiles.BASIC_MAPPING_FILE,
                 base -> {

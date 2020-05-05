@@ -9,7 +9,7 @@
         "toTableMapping": {
           "mapping": {
             "toStringMapping": {
-              "destName": "topicName"
+              "destName": "TOPIC_NAME"
             }
           }
         }

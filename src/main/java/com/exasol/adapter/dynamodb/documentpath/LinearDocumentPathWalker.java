@@ -19,7 +19,7 @@ public class LinearDocumentPathWalker<VisitorType> {
      */
     public LinearDocumentPathWalker(final DocumentPathExpression pathExpression) {
         checkPathIsLinear(pathExpression);
-        this.documentPathWalker = new DocumentPathWalker<>(pathExpression);
+        this.documentPathWalker = new DocumentPathWalker<>(pathExpression, new StaticDocumentPathIterator());
     }
 
     /**
@@ -31,7 +31,7 @@ public class LinearDocumentPathWalker<VisitorType> {
      * @throws DocumentPathWalkerException if defined path does not exist in the given document
      */
     public DocumentNode<VisitorType> walkThroughDocument(final DocumentNode<VisitorType> rootNode) {
-        return this.documentPathWalker.walkThroughDocument(rootNode).get(0);
+        return this.documentPathWalker.walkThroughDocument(rootNode);
     }
 
     private void checkPathIsLinear(final DocumentPathExpression pathExpression) {

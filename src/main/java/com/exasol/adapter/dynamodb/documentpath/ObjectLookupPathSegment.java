@@ -35,12 +35,10 @@ public class ObjectLookupPathSegment implements PathSegment {
         if (this == other) {
             return true;
         }
-        if (other == null || getClass() != other.getClass()) {
+        if (!(other instanceof ObjectLookupPathSegment)) {
             return false;
         }
-
         final ObjectLookupPathSegment that = (ObjectLookupPathSegment) other;
-
         return this.lookupKey.equals(that.lookupKey);
     }
 

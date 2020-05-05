@@ -24,4 +24,11 @@ public interface DocumentArray<VisitorType> extends DocumentNode<VisitorType> {
      * @return Document node wrapping the value.
      */
     public DocumentNode<VisitorType> getValue(int index);
+
+    /**
+     * Gives the size of the wrapped array.
+     * 
+     * @return size of the wrapped array
+     */
+    public int size();
 }
