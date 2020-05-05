@@ -9,7 +9,7 @@ class PredicateTestVisitor implements QueryPredicateVisitor<Object> {
     }
 
     @Override
-    public void visit(final BinaryLogicalOperator<Object> binaryLogicalOperator) {
+    public void visit(final LogicalOperator<Object> logicalOperator) {
         this.visited = Visited.BINARY_LOGICAL_OPERATOR;
     }
 

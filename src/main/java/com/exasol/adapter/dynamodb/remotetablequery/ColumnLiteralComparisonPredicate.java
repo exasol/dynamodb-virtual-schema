@@ -8,6 +8,7 @@ import com.exasol.adapter.dynamodb.mapping.AbstractColumnMappingDefinition;
  */
 @java.lang.SuppressWarnings("squid:S119") // DocumentVisitorType does not fit naming conventions.
 public class ColumnLiteralComparisonPredicate<DocumentVisitorType> extends ComparisonPredicate<DocumentVisitorType> {
+    private static final long serialVersionUID = -5861703862819874391L;
     private final DocumentValue<DocumentVisitorType> literal;
     private final AbstractColumnMappingDefinition column;
 
@@ -46,5 +47,27 @@ public class ColumnLiteralComparisonPredicate<DocumentVisitorType> extends Compa
     @Override
     public void accept(final QueryPredicateVisitor<DocumentVisitorType> visitor) {
         visitor.visit(this);
+    }
+
+    @Override
+    public boolean equals(final Object other) {
+        if (this == other) {
+            return true;
+        }
+        if (other == null || getClass() != other.getClass()) {
+            return false;
+        }
+        final ColumnLiteralComparisonPredicate<?> that = (ColumnLiteralComparisonPredicate<?>) other;
+
+        if (!this.literal.equals(that.literal)) {
+            return false;
+        }
+        return this.column.equals(that.column);
+    }
+
+    @Override
+    public int hashCode() {
+        final int literalHash = this.literal.hashCode();
+        return 31 * literalHash + this.column.hashCode();
     }
 }

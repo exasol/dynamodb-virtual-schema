@@ -136,7 +136,7 @@ public abstract class VoidSqlNodeVisitor implements SqlNodeVisitor<Void> {
     }
 
     @Override
-    public Void visit(final SqlPredicateAnd sqlPredicateAnd) throws AdapterException {
+    public Void visit(final SqlPredicateAnd sqlPredicateAnd) {
         visitUnimplemented();
         return null;
     }

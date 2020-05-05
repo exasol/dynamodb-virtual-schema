@@ -35,7 +35,7 @@ public class LinearDocumentPathWalker<VisitorType> {
     }
 
     private void checkPathIsLinear(final DocumentPathExpression pathExpression) {
-        for (final PathSegment pathSegment : pathExpression.getPath()) {
+        for (final PathSegment pathSegment : pathExpression.getSegments()) {
             if (pathSegment instanceof ArrayAllPathSegment) {
                 throw new DocumentPathWalkerException(
                         "The given path is not a linear path. "

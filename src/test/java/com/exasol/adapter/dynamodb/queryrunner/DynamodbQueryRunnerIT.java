@@ -4,9 +4,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 
 import java.io.IOException;
-import java.sql.SQLException;
 import java.util.List;
-import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.AfterAll;
@@ -31,7 +29,6 @@ import com.exasol.adapter.dynamodb.remotetablequery.ColumnLiteralComparisonPredi
 import com.exasol.adapter.dynamodb.remotetablequery.ComparisonPredicate;
 import com.exasol.adapter.dynamodb.remotetablequery.NoPredicate;
 import com.exasol.adapter.dynamodb.remotetablequery.RemoteTableQuery;
-import com.exasol.bucketfs.BucketAccessException;
 import com.exasol.dynamodb.DynamodbConnectionFactory;
 
 @Tag("integration")
@@ -49,8 +46,7 @@ class DynamodbQueryRunnerIT {
     private static TableMappingDefinition tableMapping;
 
     @BeforeAll
-    static void beforeAll() throws DynamodbTestInterface.NoNetworkFoundException, SQLException, InterruptedException,
-            BucketAccessException, TimeoutException, IOException, AdapterException {
+    static void beforeAll() throws DynamodbTestInterface.NoNetworkFoundException, IOException, AdapterException {
         tableMapping = new JsonMappingFactory(MappingTestFiles.BASIC_MAPPING_FILE).getSchemaMapping().getTableMappings()
                 .get(0);
         dynamodbTestInterface = new DynamodbTestInterface(LOCAL_DYNAMO, NETWORK);
@@ -105,7 +101,7 @@ class DynamodbQueryRunnerIT {
     }
 
     @Test
-    void testGetItemRequest() throws IOException {
+    void testGetItemRequest() {
         final String isbn = "123567";
         final DynamodbQueryRunner runner = getRunner();
         final AbstractColumnMappingDefinition isbnColumn = tableMapping.getColumns().stream()

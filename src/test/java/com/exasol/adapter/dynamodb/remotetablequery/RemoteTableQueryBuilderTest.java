@@ -11,7 +11,6 @@ import org.junit.jupiter.api.Test;
 
 import com.exasol.adapter.AdapterException;
 import com.exasol.adapter.dynamodb.documentnode.DocumentValue;
-import com.exasol.adapter.dynamodb.literalconverter.NotLiteralException;
 import com.exasol.adapter.dynamodb.literalconverter.SqlLiteralToDocumentValueConverter;
 import com.exasol.adapter.dynamodb.mapping.AbstractColumnMappingDefinition;
 import com.exasol.adapter.dynamodb.mapping.HardCodedMappingFactory;
@@ -33,7 +32,7 @@ public class RemoteTableQueryBuilderTest {
         final SqlStatementSelect statement = SqlStatementSelect.builder()
                 .fromClause(new SqlTable(tableMetadata.getName(), tableMetadata))
                 .selectList(SqlSelectList.createSelectStarSelectList()).build();
-        final RemoteTableQuery<Object> resultTable = new RemoteTableQueryFactory<Object>(
+        final RemoteTableQuery<Object> resultTable = new RemoteTableQueryFactory<>(
                 new SqlLiteralToDocumentValueConverterStub()).build(statement, schemaMetadata);
         final List<String> actualDestinationNames = resultTable.getSelectList().stream()
                 .map(AbstractColumnMappingDefinition::getExasolColumnName).collect(Collectors.toList());
@@ -42,19 +41,19 @@ public class RemoteTableQueryBuilderTest {
         assertThat(actualDestinationNames, containsInAnyOrder(expectedDestinationNames));
     }
 
-    private class SqlLiteralToDocumentValueConverterStub implements SqlLiteralToDocumentValueConverter<Object> {
-
-        @Override
-        public DocumentValue<Object> convert(final SqlNode exasolLiteralNode) throws NotLiteralException {
-            return new DocumentValueStub();
-        }
-    }
-
-    private class DocumentValueStub implements DocumentValue<Object> {
+    private static class DocumentValueStub implements DocumentValue<Object> {
 
         @Override
         public void accept(final Object visitor) {
 
+        }
+    }
+
+    private class SqlLiteralToDocumentValueConverterStub implements SqlLiteralToDocumentValueConverter<Object> {
+
+        @Override
+        public DocumentValue<Object> convert(final SqlNode exasolLiteralNode) {
+            return new DocumentValueStub();
         }
     }
 }

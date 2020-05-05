@@ -13,7 +13,6 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import com.exasol.adapter.dynamodb.documentnode.DocumentValue;
-import com.exasol.adapter.dynamodb.literalconverter.NotLiteralException;
 import com.exasol.adapter.dynamodb.literalconverter.SqlLiteralToDocumentValueConverter;
 import com.exasol.adapter.dynamodb.mapping.AbstractColumnMappingDefinition;
 import com.exasol.adapter.dynamodb.mapping.SchemaMappingDefinitionToSchemaMetadataConverter;
@@ -26,13 +25,8 @@ class QueryPredicateFactoryTest {
             new AbstractColumnMappingDefinition.ConstructorParameters("name", null, null));
     private static final DocumentValue<Object> LITERAL = (DocumentValue<Object>) visitor -> {
     };
-    private static final SqlLiteralToDocumentValueConverter<Object> LITERAL_FACTORY = new SqlLiteralToDocumentValueConverter<Object>() {
-        @Override
-        public DocumentValue<Object> convert(final SqlNode exasolLiteralNode) throws NotLiteralException {
-            return LITERAL;
-        }
-    };
-    private static final QueryPredicateFactory<Object> FACTORY = new QueryPredicateFactory<Object>(LITERAL_FACTORY);
+    private static final SqlLiteralToDocumentValueConverter<Object> LITERAL_FACTORY = exasolLiteralNode -> LITERAL;
+    private static final QueryPredicateFactory<Object> FACTORY = new QueryPredicateFactory<>(LITERAL_FACTORY);
     private static ColumnMetadata columnMetadata;
     private static SqlNode validColumnLiteralEqualityPredicate;
 
@@ -50,25 +44,25 @@ class QueryPredicateFactoryTest {
 
     @Test
     void testBuildAndPredicate() {
-        final BinaryLogicalOperator<Object> binaryLogicalOperator = (BinaryLogicalOperator<Object>) FACTORY
+        final LogicalOperator<Object> logicalOperator = (LogicalOperator<Object>) FACTORY
                 .buildPredicateFor(new SqlPredicateAnd(List.of(validColumnLiteralEqualityPredicate)));
         assertAll(//
-                () -> assertThat(binaryLogicalOperator.getOperands().size(), equalTo(1)),
-                () -> assertThat(binaryLogicalOperator.getOperands().get(0),
+                () -> assertThat(logicalOperator.getOperands().size(), equalTo(1)),
+                () -> assertThat(logicalOperator.getOperands().get(0),
                         instanceOf(ColumnLiteralComparisonPredicate.class)),
-                () -> assertThat(binaryLogicalOperator.getOperator(), equalTo(BinaryLogicalOperator.Operator.AND))//
+                () -> assertThat(logicalOperator.getOperator(), equalTo(LogicalOperator.Operator.AND))//
         );
     }
 
     @Test
     void testBuildOrPredicate() {
-        final BinaryLogicalOperator<Object> binaryLogicalOperator = (BinaryLogicalOperator<Object>) FACTORY
+        final LogicalOperator<Object> logicalOperator = (LogicalOperator<Object>) FACTORY
                 .buildPredicateFor(new SqlPredicateOr(List.of(validColumnLiteralEqualityPredicate)));
         assertAll(//
-                () -> assertThat(binaryLogicalOperator.getOperands().size(), equalTo(1)),
-                () -> assertThat(binaryLogicalOperator.getOperands().get(0),
+                () -> assertThat(logicalOperator.getOperands().size(), equalTo(1)),
+                () -> assertThat(logicalOperator.getOperands().get(0),
                         instanceOf(ColumnLiteralComparisonPredicate.class)),
-                () -> assertThat(binaryLogicalOperator.getOperator(), equalTo(BinaryLogicalOperator.Operator.OR))//
+                () -> assertThat(logicalOperator.getOperator(), equalTo(LogicalOperator.Operator.OR))//
         );
     }
 

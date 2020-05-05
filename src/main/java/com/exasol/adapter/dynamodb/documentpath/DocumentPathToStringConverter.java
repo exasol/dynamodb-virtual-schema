@@ -7,7 +7,7 @@ import java.util.List;
  */
 public class DocumentPathToStringConverter {
     public String convertToString(final DocumentPathExpression pathExpression) {
-        final List<PathSegment> path = pathExpression.getPath();
+        final List<PathSegment> path = pathExpression.getSegments();
         if (path.isEmpty()) {
             return "/";
         } else {

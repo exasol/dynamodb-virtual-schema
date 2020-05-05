@@ -90,16 +90,16 @@ public class QueryPredicateFactory<DocumentVisitorType> {
         }
 
         @Override
-        public Void visit(final SqlPredicateAnd sqlPredicateAnd) throws AdapterException {
-            this.predicate = new BinaryLogicalOperator<>(convertPredicates(sqlPredicateAnd.getAndedPredicates()),
-                    BinaryLogicalOperator.Operator.AND);
+        public Void visit(final SqlPredicateAnd sqlPredicateAnd) {
+            this.predicate = new LogicalOperator<>(convertPredicates(sqlPredicateAnd.getAndedPredicates()),
+                    LogicalOperator.Operator.AND);
             return null;
         }
 
         @Override
         public Void visit(final SqlPredicateOr sqlPredicateOr) {
-            this.predicate = new BinaryLogicalOperator<>(convertPredicates(sqlPredicateOr.getOrPredicates()),
-                    BinaryLogicalOperator.Operator.OR);
+            this.predicate = new LogicalOperator<>(convertPredicates(sqlPredicateOr.getOrPredicates()),
+                    LogicalOperator.Operator.OR);
             return null;
         }
 

@@ -41,7 +41,7 @@ public class DocumentPathWalker<VisitorType> {
             return thisNode;
         }
         final BiFunction<DocumentNode<VisitorType>, DocumentPathExpression, DocumentNode<VisitorType>> stepper = getStepperFor(
-                this.pathExpression.getPath().get(position));
+                this.pathExpression.getSegments().get(position));
         return runTraverseStepper(stepper, thisNode, position);
     }
 

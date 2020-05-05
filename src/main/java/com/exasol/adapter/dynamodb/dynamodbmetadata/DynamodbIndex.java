@@ -4,20 +4,20 @@ import java.io.Serializable;
 import java.util.Optional;
 
 /**
- * This class represents a DynamoDB key. It can either be a primary key or a secondary index.
+ * This class represents a DynamoDB index. This can either be the default index of a table or a secondary index.
  */
-public class DynamodbKey implements Serializable {
+public class DynamodbIndex implements Serializable {
     private static final long serialVersionUID = 4048033058983909214L;
     private final String partitionKey;
     private final String sortKey;
 
     /**
-     * Creates an instance of {@link DynamodbKey}.
+     * Creates an instance of {@link DynamodbIndex}.
      * 
      * @param partitionKey partition key of this key
      * @param sortKey      sort key of this key
      */
-    public DynamodbKey(final String partitionKey, final Optional<String> sortKey) {
+    public DynamodbIndex(final String partitionKey, final Optional<String> sortKey) {
         this.partitionKey = partitionKey;
         this.sortKey = sortKey.orElse(null);
     }

@@ -26,11 +26,7 @@ public class DynamodbGetItemQueryPlan implements DynamodbQueryPlan {
     @Override
     public Stream<Map<String, AttributeValue>> run(final AmazonDynamoDB client) {
         final Map<String, AttributeValue> item = client.getItem(this.getItemRequest).getItem();
-        if (item == null) {
-            return Stream.empty();
-        } else {
-            return Stream.of(item);
-        }
+        return Stream.ofNullable(item);
     }
 
     GetItemRequest getGetItemRequest() {

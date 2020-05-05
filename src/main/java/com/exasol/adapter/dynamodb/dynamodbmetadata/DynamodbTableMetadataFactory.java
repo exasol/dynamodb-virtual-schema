@@ -26,16 +26,16 @@ public class DynamodbTableMetadataFactory {
      */
     public DynamodbTableMetadata buildMetadataForTable(final AmazonDynamoDB connection, final String tableName) {
         final TableDescription tableDescription = connection.describeTable(tableName).getTable();
-        final DynamodbKey primaryKey = extractKey(tableDescription.getKeySchema());
-        final List<DynamodbKey> localIndexes = extractLocalSecondaryIndex(tableDescription);
-        final List<DynamodbKey> globalIndexes = extractGlobalSecondaryIndex(tableDescription);
+        final DynamodbIndex primaryKey = extractKey(tableDescription.getKeySchema());
+        final List<DynamodbIndex> localIndexes = extractLocalSecondaryIndex(tableDescription);
+        final List<DynamodbIndex> globalIndexes = extractGlobalSecondaryIndex(tableDescription);
         return new DynamodbTableMetadata(primaryKey, localIndexes, globalIndexes);
     }
 
-    private DynamodbKey extractKey(final List<KeySchemaElement> keySchema) {
+    private DynamodbIndex extractKey(final List<KeySchemaElement> keySchema) {
         final String partitionKey = extractPartitionKey(keySchema);
         final Optional<String> sortKey = extractSortKey(keySchema);
-        return new DynamodbKey(partitionKey, sortKey);
+        return new DynamodbIndex(partitionKey, sortKey);
     }
 
     private String extractPartitionKey(final List<KeySchemaElement> keySchema) {
@@ -57,7 +57,7 @@ public class DynamodbTableMetadataFactory {
         return Optional.empty();
     }
 
-    private List<DynamodbKey> extractLocalSecondaryIndex(final TableDescription tableDescription) {
+    private List<DynamodbIndex> extractLocalSecondaryIndex(final TableDescription tableDescription) {
         final List<LocalSecondaryIndexDescription> localSecondaryIndexes = tableDescription.getLocalSecondaryIndexes();
         if (localSecondaryIndexes != null) {
             return localSecondaryIndexes.stream().map(index -> extractKey(index.getKeySchema()))
@@ -67,7 +67,7 @@ public class DynamodbTableMetadataFactory {
         }
     }
 
-    private List<DynamodbKey> extractGlobalSecondaryIndex(final TableDescription tableDescription) {
+    private List<DynamodbIndex> extractGlobalSecondaryIndex(final TableDescription tableDescription) {
         final List<GlobalSecondaryIndexDescription> globalSecondaryIndexes = tableDescription
                 .getGlobalSecondaryIndexes();
         if (globalSecondaryIndexes != null) {
