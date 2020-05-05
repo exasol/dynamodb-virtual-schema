@@ -56,12 +56,10 @@ public class DocumentPathExpression implements Serializable {
         if (this == other) {
             return true;
         }
-        if (other == null || getClass() != other.getClass()) {
+        if (!(other instanceof DocumentPathExpression)) {
             return false;
         }
-
         final DocumentPathExpression that = (DocumentPathExpression) other;
-
         return this.path.equals(that.path);
     }
 

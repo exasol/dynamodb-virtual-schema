@@ -4,7 +4,7 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 
 /**
- * This is an iterator that does exactly one iterations. It is used if no iteration needs to be done.
+ * This is an iterator that does exactly one iteration. It is used if no iteration needs to be done.
  */
 public class StaticDocumentPathIterator implements Iterator<PathIterationStateProvider>, PathIterationStateProvider {
     private boolean called = false;

@@ -133,8 +133,6 @@ public class DocumentPathWalker<VisitorType> {
             };
         }
 
-        @SuppressWarnings("java:S1452") // Use of wildcard is ok in this case as loss of type information is
-        // acceptable.
         public BiFunction<DocumentNode<VisitorType>, DocumentPathExpression, DocumentNode<VisitorType>> getStepper() {
             return this.stepper;
         }

@@ -13,7 +13,7 @@ public class ArrayAllPathSegment implements PathSegment {
 
     @Override
     public boolean equals(final Object other) {
-        return other != null && getClass() == other.getClass();
+        return other instanceof ArrayAllPathSegment;
     }
 
     @Override

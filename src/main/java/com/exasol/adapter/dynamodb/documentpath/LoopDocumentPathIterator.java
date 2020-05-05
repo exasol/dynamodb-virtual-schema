@@ -57,8 +57,8 @@ public class LoopDocumentPathIterator<VisitorType> implements Iterator<PathItera
     /**
      * Moves iterator to the next combination.
      *
-     * If the the nestedIterator still has combinations these are taken first. Otherwise a new nested iterator is build
-     * for the sub document of the next index of this iterator.
+     * If the the {@link #nestedIterator} still has combinations these are taken first. Otherwise a new nested iterator
+     * is build for the sub document of the next index of this iterator.
      * 
      * @return {@code true} if could move to next; {@code false} if there was no remaining combination to iterate.
      */

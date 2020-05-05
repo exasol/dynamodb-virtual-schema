@@ -35,7 +35,7 @@ public class ArrayLookupPathSegment implements PathSegment {
         if (this == other) {
             return true;
         }
-        if (other == null || getClass() != other.getClass()) {
+        if (!(other instanceof ArrayLookupPathSegment)) {
             return false;
         }
         final ArrayLookupPathSegment that = (ArrayLookupPathSegment) other;
