@@ -61,12 +61,10 @@ public class DocumentPathExpression implements Serializable {
         if (this == other) {
             return true;
         }
-        if (other == null || getClass() != other.getClass()) {
+        if (!(other instanceof DocumentPathExpression)) {
             return false;
         }
-
         final DocumentPathExpression that = (DocumentPathExpression) other;
-
         return this.segments.equals(that.segments);
     }
 
@@ -78,6 +76,36 @@ public class DocumentPathExpression implements Serializable {
     @Override
     public String toString() {
         return new DocumentPathToStringConverter().convertToString(this);
+    }
+
+    /**
+     * Gives the index of the first {@link ArrayAllPathSegment}.
+     *
+     * @return index of the first {@link ArrayAllPathSegment}; {@code -1} if not found.
+     */
+    int indexOfFirstArrayAllSegment() {
+        int index = 0;
+        for (final PathSegment pathSegment : this.segments) {
+            if (pathSegment instanceof ArrayAllPathSegment) {
+                return index;
+            }
+            index++;
+        }
+        return -1;
+    }
+
+    /**
+     * Checks if this path expression starts with an other path expression.
+     * 
+     * @param other sub path expression
+     * @return {@code true} if this path starts with the other path
+     */
+    public boolean startsWith(final DocumentPathExpression other) {
+        if (other.size() > this.size()) {
+            return false;
+        }
+        final DocumentPathExpression thisSubpathWithLengthOfOther = this.getSubPath(0, other.size());
+        return thisSubpathWithLengthOfOther.equals(other);
     }
 
     /**

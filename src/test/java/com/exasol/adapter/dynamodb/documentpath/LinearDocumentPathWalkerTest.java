@@ -9,17 +9,19 @@ import java.util.Map;
 import org.junit.jupiter.api.Test;
 
 import com.exasol.adapter.dynamodb.documentnode.DocumentNode;
+import com.exasol.adapter.dynamodb.documentnode.MockObjectNode;
+import com.exasol.adapter.dynamodb.documentnode.MockValueNode;
 
 public class LinearDocumentPathWalkerTest {
 
-    private static final MockValueNode NESTED_VALUE = new MockValueNode();
+    private static final MockValueNode NESTED_VALUE = new MockValueNode("value");
     private static final MockObjectNode TEST_OBJECT_NODE = new MockObjectNode(Map.of("key", NESTED_VALUE));
 
     @Test
     void testWalk() throws DocumentPathWalkerException {
         final DocumentPathExpression pathExpression = new DocumentPathExpression.Builder().addObjectLookup("key")
                 .build();
-        final DocumentNode<MockVisitor> result = new LinearDocumentPathWalker<MockVisitor>(pathExpression)
+        final DocumentNode<Object> result = new LinearDocumentPathWalker<Object>(pathExpression)
                 .walkThroughDocument(TEST_OBJECT_NODE);
         assertThat(result, equalTo(NESTED_VALUE));
     }
@@ -28,7 +30,7 @@ public class LinearDocumentPathWalkerTest {
     void testNonLinearPath() {
         final DocumentPathExpression pathExpression = new DocumentPathExpression.Builder().addArrayAll().build();
         final DocumentPathWalkerException exception = assertThrows(DocumentPathWalkerException.class,
-                () -> new LinearDocumentPathWalker<MockVisitor>(pathExpression));
+                () -> new LinearDocumentPathWalker<Object>(pathExpression));
         assertThat(exception.getMessage(), equalTo(
                 "The given path is not a linear path. You can either remove the ArrayAllSegments from path or use a DocumentPathWalker."));
     }

@@ -35,6 +35,11 @@ public class DynamodbList implements DocumentArray<DynamodbNodeVisitor> {
     }
 
     @Override
+    public int size() {
+        return this.value.size();
+    }
+
+    @Override
     public void accept(final DynamodbNodeVisitor visitor) {
         visitor.visit(this);
     }

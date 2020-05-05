@@ -29,12 +29,13 @@ public class JsonMappingFactory implements MappingDefinitionFactory {
     private static final String FIELDS_KEY = "fields";
     private static final String TO_STRING_MAPPING_KEY = "toStringMapping";
     private static final String TO_JSON_MAPPING_KEY = "toJsonMapping";
+    private static final String TO_TABLE_MAPPING_KEY = "toTableMapping";
 
     private final List<TableMappingDefinition> tables = new ArrayList<>();
 
     /**
      * Creates an instance of {@link JsonMappingFactory}.
-     * 
+     *
      * @param definitionsPath path to the definition. Can either be a {@code .json} file or an directory. If it points
      *                        to a directory, all {@code .json} files are loaded.
      * @throws IOException            if could not open file
@@ -113,6 +114,9 @@ public class JsonMappingFactory implements MappingDefinitionFactory {
             columnMappingFactory.addToJsonColumn(definition.getJsonObject(TO_JSON_MAPPING_KEY), sourcePath,
                     tableBuilder, propertyName);
             break;
+        case TO_TABLE_MAPPING_KEY:
+            addNestedTable(definition.getJsonObject(TO_TABLE_MAPPING_KEY), tableBuilder, sourcePath, propertyName);
+            break;
         case FIELDS_KEY:
             visitChildren(definition.getJsonObject(FIELDS_KEY), sourcePath, tableBuilder);
             break;
@@ -121,6 +125,29 @@ public class JsonMappingFactory implements MappingDefinitionFactory {
         default:
             throw new UnsupportedOperationException("This mapping type is not supported in the current version.");
         }
+    }
+
+    private void addNestedTable(final JsonObject definition, final TableMappingDefinition.Builder parentTableBuilder,
+            final DocumentPathExpression.Builder sourcePath, final String propertyName) throws MappingException {
+        final DocumentPathExpression.Builder tablesSourcePath = new DocumentPathExpression.Builder(sourcePath)
+                .addArrayAll();
+        final String tableName = getNestedTableName(definition, parentTableBuilder, propertyName);
+        final TableMappingDefinition.Builder nestedTableBuilder = TableMappingDefinition.nestedTableBuilder(tableName,
+                parentTableBuilder.build().getRemoteName(), tablesSourcePath.build());
+        visitMapping(definition.getJsonObject(MAPPING_KEY), tablesSourcePath, nestedTableBuilder, null, false);
+        this.tables.add(nestedTableBuilder.build());
+    }
+
+    private String getNestedTableName(final JsonObject definition,
+            final TableMappingDefinition.Builder parentTableBuilder, final String propertyName) {
+        return definition.getString(DEST_TABLE_NAME_KEY,
+                getNestedTableNameDefaultName(parentTableBuilder, propertyName));
+    }
+
+    private String getNestedTableNameDefaultName(final TableMappingDefinition.Builder parentTableBuilder,
+            final String propertyName) {
+        final String parentTableName = parentTableBuilder.build().getExasolName();
+        return parentTableName + "_" + propertyName.toUpperCase();
     }
 
     private String getMappingType(final JsonObject definition) throws MappingException {
@@ -157,7 +184,7 @@ public class JsonMappingFactory implements MappingDefinitionFactory {
 
         /**
          * Creates an instance of {@link SchemaMappingException}.
-         * 
+         *
          * @param causingMappingDefinitionFileName mapping definition file that contains the mistake
          * @param mappingException                 causing {@link MappingException}
          */
@@ -169,7 +196,7 @@ public class JsonMappingFactory implements MappingDefinitionFactory {
 
         /**
          * Gives the file name of the mapping definition that caused this exception.
-         * 
+         *
          * @return file name
          */
         public String getCausingMappingDefinitionFileName() {
@@ -184,7 +211,7 @@ public class JsonMappingFactory implements MappingDefinitionFactory {
     public static class MappingException extends AdapterException {
         /**
          * Creates an instance of {@link MappingException}.
-         * 
+         *
          * @param message Exception message
          */
         public MappingException(final String message) {
