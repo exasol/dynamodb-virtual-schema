@@ -16,13 +16,20 @@
     "name": "bad book 2",
     "author": {
       "name": "Jakob Braun"
-    }
+    },
+    "topics": [
+      "Fantasy"
+    ]
   },
   {
     "isbn": "1235673",
     "name": "boring book",
     "author": {
       "name": "Jakob Braun"
-    }
+    },
+    "topics": [
+      "Birds",
+      "Nature"
+    ]
   }
 ]
