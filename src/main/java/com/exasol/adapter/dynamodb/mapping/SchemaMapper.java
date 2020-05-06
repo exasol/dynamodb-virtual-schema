@@ -20,7 +20,7 @@ public class SchemaMapper<DocumentVisitorType> {
     private final ValueMapperFactory<DocumentVisitorType> valueMapperFactory;
 
     /**
-     * Creates a new {@link SchemaMapper} for a query described in queryResultTableSchema
+     * Creates a new {@link SchemaMapper} for the given query.
      *
      * @param query              query used as plan for the schema mapping
      * @param valueMapperFactory factory for value mapper corresponding to {@link DocumentVisitorType}
