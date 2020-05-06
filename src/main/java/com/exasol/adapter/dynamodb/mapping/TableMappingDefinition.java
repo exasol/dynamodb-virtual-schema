@@ -81,6 +81,15 @@ public class TableMappingDefinition implements Serializable {
     }
 
     /**
+     * Gives the path to the nested table.
+     * 
+     * @return path to nested table. Empty path expression if this is a root table.
+     */
+    public DocumentPathExpression getPathToNestedTable() {
+        return pathToNestedTable;
+    }
+
+    /**
      * Get the columns of this table
      * 
      * @return List of {@link AbstractColumnMappingDefinition}s

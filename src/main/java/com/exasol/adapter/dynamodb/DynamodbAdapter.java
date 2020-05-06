@@ -128,11 +128,11 @@ public class DynamodbAdapter implements VirtualSchemaAdapter {
             final RemoteTableQuery<DynamodbNodeVisitor> remoteTableQuery) throws ExaConnectionAccessException {
         final DynamodbQueryRunner dynamodbQueryRunner = new DynamodbQueryRunner(
                 getConnectionInformation(exaMetadata, request));
-        final RowMapper<DynamodbNodeVisitor> rowMapper = new RowMapper<>(remoteTableQuery,
+        final SchemaMapper<DynamodbNodeVisitor> schemaMapper = new SchemaMapper<>(remoteTableQuery,
                 new DynamodbValueMapperFactory());
         final List<List<ValueExpression>> resultRows = new ArrayList<>();
         dynamodbQueryRunner.runQuery(remoteTableQuery)
-                .forEach(dynamodbRow -> resultRows.add(rowMapper.mapRow(dynamodbRow)));
+                .forEach(dynamodbRow -> schemaMapper.mapRow(dynamodbRow).forEach(resultRows::add));
         return new ValueExpressionsToSqlSelectFromValuesConverter().convert(remoteTableQuery, resultRows);
     }
 
