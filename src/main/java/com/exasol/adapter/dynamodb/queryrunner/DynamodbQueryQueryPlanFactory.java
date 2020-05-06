@@ -26,17 +26,30 @@ public class DynamodbQueryQueryPlanFactory {
             final DynamodbTableMetadata tableMetadata) {
         final AbstractDynamodbIndex mostRestrictedIndex = new DynamodbQueryIndexSelector()
                 .findMostRestrictedIndex(documentQuery.getSelection(), tableMetadata.getAllIndexes());
+        abortIfNoFittingIndexWasFound(mostRestrictedIndex);
+        final QueryRequest queryRequest = new QueryRequest(documentQuery.getFromTable().getRemoteName());
+        setIndexToQuery(mostRestrictedIndex, queryRequest);
+        addKeyCondition(documentQuery, mostRestrictedIndex, queryRequest);
+        return new DynamodbQueryQueryPlan(queryRequest);
+    }
+
+    private void abortIfNoFittingIndexWasFound(final AbstractDynamodbIndex mostRestrictedIndex) {
         if (mostRestrictedIndex == null) {
             throw new PlanDoesNotFitException("Could not find a suitable key for a DynamoDB Query operation. "
                     + "Non of the keys did a equality selection with the partition key. "
                     + "Your can either add such a selection to your query or use a SCAN request.");
         }
-        final QueryRequest queryRequest = new QueryRequest(documentQuery.getFromTable().getRemoteName());
+    }
+
+    private void setIndexToQuery(final AbstractDynamodbIndex mostRestrictedIndex, final QueryRequest queryRequest) {
         if (mostRestrictedIndex instanceof DynamodbSecondaryIndex) {
             final DynamodbSecondaryIndex secondaryIndex = (DynamodbSecondaryIndex) mostRestrictedIndex;
             queryRequest.setIndexName(secondaryIndex.getIndexName());
         }
+    }
 
+    private void addKeyCondition(final RemoteTableQuery<DynamodbNodeVisitor> documentQuery,
+            final AbstractDynamodbIndex mostRestrictedIndex, final QueryRequest queryRequest) {
         final QueryPredicate<DynamodbNodeVisitor> selectionOnIndex = new DynamodbQuerySelectionFilter()
                 .filter(documentQuery.getSelection(), getIndexPropertyNameWhitelist(mostRestrictedIndex));
         final DynamodbValueListBuilder valueListBuilder = new DynamodbValueListBuilder();
@@ -44,7 +57,6 @@ public class DynamodbQueryQueryPlanFactory {
                 .buildFilterExpression(selectionOnIndex, valueListBuilder);
         queryRequest.setKeyConditionExpression(keyConditionExpression);
         queryRequest.setExpressionAttributeValues(valueListBuilder.getValueMap());
-        return new DynamodbQueryQueryPlan(queryRequest);
     }
 
     private List<String> getIndexPropertyNameWhitelist(final AbstractDynamodbIndex index) {
