@@ -20,7 +20,10 @@
       "name": "Jakob Braun"
     },
     "publisher": "jb books",
-    "price": 10
+    "price": 10,
+    "topics": [
+      "Fantasy"
+    ]
   },
   {
     "isbn": "1235673",
@@ -29,6 +32,10 @@
       "name": "Jakob Braun"
     },
     "publisher": "no name",
-    "price": 21
+    "price": 21,
+    "topics": [
+      "Birds",
+      "Nature"
+    ]
   }
 ]

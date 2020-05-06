@@ -13,6 +13,7 @@ import com.exasol.adapter.dynamodb.documentnode.DocumentObject;
 import com.exasol.adapter.dynamodb.documentnode.DocumentValue;
 import com.exasol.adapter.dynamodb.documentpath.DocumentPathExpression;
 import com.exasol.adapter.dynamodb.documentpath.DocumentPathWalkerException;
+import com.exasol.adapter.dynamodb.documentpath.StaticDocumentPathIterator;
 import com.exasol.sql.expression.ValueExpression;
 
 public class AbstractValueMapperTest {
@@ -24,7 +25,7 @@ public class AbstractValueMapperTest {
 
         final ValueMapperStub valueMapperStub = new ValueMapperStub(columnMappingDefinition);
         final StubDocumentObject testObject = new StubDocumentObject();
-        valueMapperStub.mapRow(testObject);
+        valueMapperStub.mapRow(testObject, new StaticDocumentPathIterator());
         assertThat(valueMapperStub.remoteValue, equalTo(StubDocumentObject.MAP.get("isbn")));
     }
 
@@ -35,7 +36,7 @@ public class AbstractValueMapperTest {
         final MockColumnMappingDefinition columnMappingDefinition = new MockColumnMappingDefinition("d", sourcePath,
                 AbstractColumnMappingDefinition.LookupFailBehaviour.DEFAULT_VALUE);
         final ValueExpression valueExpression = new ValueMapperStub(columnMappingDefinition)
-                .mapRow(new StubDocumentObject());
+                .mapRow(new StubDocumentObject(), new StaticDocumentPathIterator());
         assertThat(valueExpression.toString(), equalTo("default"));
     }
 
@@ -45,8 +46,8 @@ public class AbstractValueMapperTest {
                 .addObjectLookup("nonExistingColumn").build();
         final MockColumnMappingDefinition columnMappingDefinition = new MockColumnMappingDefinition("d", sourcePath,
                 AbstractColumnMappingDefinition.LookupFailBehaviour.EXCEPTION);
-        assertThrows(DocumentPathWalkerException.class,
-                () -> new ValueMapperStub(columnMappingDefinition).mapRow(new StubDocumentObject()));
+        assertThrows(DocumentPathWalkerException.class, () -> new ValueMapperStub(columnMappingDefinition)
+                .mapRow(new StubDocumentObject(), new StaticDocumentPathIterator()));
     }
 
     @Test
@@ -56,7 +57,8 @@ public class AbstractValueMapperTest {
                 new DocumentPathExpression.Builder().build(),
                 AbstractColumnMappingDefinition.LookupFailBehaviour.EXCEPTION);
         final ValueMapperException exception = assertThrows(ValueMapperException.class,
-                () -> new ExceptionMockValueMapper(mappingDefinition).mapRow(new StubDocumentObject()));
+                () -> new ExceptionMockValueMapper(mappingDefinition).mapRow(new StubDocumentObject(),
+                        new StaticDocumentPathIterator()));
         assertThat(exception.getCausingColumn().getExasolColumnName(), equalTo(columnName));
     }
 
