@@ -21,7 +21,7 @@ class DynamodbQueryPlanner {
             final DynamodbTableMetadata tableMetadata) {
         final String tableName = documentQuery.getFromTable().getRemoteName();
         try {
-            return new DynamodbGetItemQueryPlanFactory().buildGetItemPlanIfPossible(documentQuery, tableMetadata);
+            return new DynamodbQueryQueryPlanFactory().buildQueryPlanIfPossible(documentQuery, tableMetadata);
         } catch (final PlanDoesNotFitException exception) {
             return new DynamodbScanQueryPlan(tableName);
         }

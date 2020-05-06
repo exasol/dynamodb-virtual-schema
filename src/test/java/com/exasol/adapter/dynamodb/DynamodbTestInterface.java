@@ -96,6 +96,11 @@ public class DynamodbTestInterface {
         throw new NoNetworkFoundException();
     }
 
+    public com.amazonaws.services.dynamodbv2.AmazonDynamoDB getDynamodbLowLevelConnection() {
+        return new DynamodbConnectionFactory().getLowLevelConnection(this.getDynamoUrl(), this.getDynamoUser(),
+                this.getDynamoPass());
+    }
+
     /**
      * Puts an item to a given table.
      */

@@ -26,16 +26,17 @@ public class DynamodbTableMetadataFactory {
      */
     public DynamodbTableMetadata buildMetadataForTable(final AmazonDynamoDB connection, final String tableName) {
         final TableDescription tableDescription = connection.describeTable(tableName).getTable();
-        final DynamodbIndex primaryKey = extractKey(tableDescription.getKeySchema());
-        final List<DynamodbIndex> localIndexes = extractLocalSecondaryIndex(tableDescription);
-        final List<DynamodbIndex> globalIndexes = extractGlobalSecondaryIndex(tableDescription);
+        final List<KeySchemaElement> keySchema = tableDescription.getKeySchema();
+        final DynamodbPrimaryIndex primaryKey = new DynamodbPrimaryIndex(extractPartitionKey(keySchema),
+                extractSortKey(keySchema));
+        final List<DynamodbSecondaryIndex> localIndexes = extractLocalSecondaryIndex(tableDescription);
+        final List<DynamodbSecondaryIndex> globalIndexes = extractGlobalSecondaryIndex(tableDescription);
         return new DynamodbTableMetadata(primaryKey, localIndexes, globalIndexes);
     }
 
-    private DynamodbIndex extractKey(final List<KeySchemaElement> keySchema) {
-        final String partitionKey = extractPartitionKey(keySchema);
-        final Optional<String> sortKey = extractSortKey(keySchema);
-        return new DynamodbIndex(partitionKey, sortKey);
+    private DynamodbSecondaryIndex extractSecondaryIndex(final List<KeySchemaElement> keySchema,
+            final String indexName) {
+        return new DynamodbSecondaryIndex(extractPartitionKey(keySchema), extractSortKey(keySchema), indexName);
     }
 
     private String extractPartitionKey(final List<KeySchemaElement> keySchema) {
@@ -57,21 +58,23 @@ public class DynamodbTableMetadataFactory {
         return Optional.empty();
     }
 
-    private List<DynamodbIndex> extractLocalSecondaryIndex(final TableDescription tableDescription) {
+    private List<DynamodbSecondaryIndex> extractLocalSecondaryIndex(final TableDescription tableDescription) {
         final List<LocalSecondaryIndexDescription> localSecondaryIndexes = tableDescription.getLocalSecondaryIndexes();
         if (localSecondaryIndexes != null) {
-            return localSecondaryIndexes.stream().map(index -> extractKey(index.getKeySchema()))
+            return localSecondaryIndexes.stream()
+                    .map(index -> extractSecondaryIndex(index.getKeySchema(), index.getIndexName()))
                     .collect(Collectors.toList());
         } else {
             return Collections.emptyList();
         }
     }
 
-    private List<DynamodbIndex> extractGlobalSecondaryIndex(final TableDescription tableDescription) {
+    private List<DynamodbSecondaryIndex> extractGlobalSecondaryIndex(final TableDescription tableDescription) {
         final List<GlobalSecondaryIndexDescription> globalSecondaryIndexes = tableDescription
                 .getGlobalSecondaryIndexes();
         if (globalSecondaryIndexes != null) {
-            return globalSecondaryIndexes.stream().map(index -> extractKey(index.getKeySchema()))
+            return globalSecondaryIndexes.stream()
+                    .map(index -> extractSecondaryIndex(index.getKeySchema(), index.getIndexName()))
                     .collect(Collectors.toList());
         } else {
             return Collections.emptyList();

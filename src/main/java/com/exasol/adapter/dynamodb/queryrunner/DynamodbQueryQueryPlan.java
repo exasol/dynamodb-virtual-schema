@@ -22,6 +22,10 @@ public class DynamodbQueryQueryPlan implements DynamodbQueryPlan {
         this.queryRequest = queryRequest;
     }
 
+    QueryRequest getQueryRequest() {
+        return this.queryRequest;
+    }
+
     @Override
     public Stream<Map<String, AttributeValue>> run(final AmazonDynamoDB client) {
         return client.query(this.queryRequest).getItems().stream();

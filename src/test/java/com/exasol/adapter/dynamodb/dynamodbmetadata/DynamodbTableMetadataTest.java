@@ -12,9 +12,9 @@ import org.junit.jupiter.api.Test;
 import com.exasol.utils.StringSerializer;
 
 class DynamodbTableMetadataTest {
-    private static final DynamodbIndex PRIMARY_KEY = new DynamodbIndex(null, Optional.empty());
-    private static final DynamodbIndex GLOBAL_INDEX = new DynamodbIndex(null, Optional.empty());
-    private static final DynamodbIndex LOCAL_INDEX = new DynamodbIndex(null, Optional.empty());
+    private static final DynamodbPrimaryIndex PRIMARY_KEY = new DynamodbPrimaryIndex(null, Optional.empty());
+    private static final DynamodbSecondaryIndex GLOBAL_INDEX = new DynamodbSecondaryIndex(null, Optional.empty(), "");
+    private static final DynamodbSecondaryIndex LOCAL_INDEX = new DynamodbSecondaryIndex(null, Optional.empty(), "");
     private static final DynamodbTableMetadata TABLE_METADATA = new DynamodbTableMetadata(PRIMARY_KEY,
             List.of(LOCAL_INDEX), List.of(GLOBAL_INDEX));
 
