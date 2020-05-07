@@ -14,7 +14,7 @@ class JsonColumnMappingFactory {
     private static final String DEST_NAME_KEY = "destName";
     private static final String REQUIRED_KEY = "required";
     private static final ToStringColumnMappingDefinition.OverflowBehaviour DEFAULT_TO_STRING_OVERFLOW = ToStringColumnMappingDefinition.OverflowBehaviour.TRUNCATE;
-    private static final AbstractColumnMappingDefinition.LookupFailBehaviour DEFAULT_LOOKUP_BEHAVIOUR = AbstractColumnMappingDefinition.LookupFailBehaviour.DEFAULT_VALUE;
+    private static final LookupFailBehaviour DEFAULT_LOOKUP_BEHAVIOUR = LookupFailBehaviour.DEFAULT_VALUE;
 
     void addStringColumnIfPossible(final JsonObject definition, final DocumentPathExpression.Builder sourcePath,
             final TableMappingDefinition.Builder tableBuilder, final String dynamodbPropertyName,
@@ -48,15 +48,14 @@ class JsonColumnMappingFactory {
     private AbstractColumnMappingDefinition.ConstructorParameters readColumnProperties(final JsonObject definition,
             final DocumentPathExpression sourcePath, final String dynamodbPropertyName) {
         final String exasolColumnName = readExasolColumnName(definition, dynamodbPropertyName);
-        final AbstractColumnMappingDefinition.LookupFailBehaviour lookupFailBehaviour = readLookupFailBehaviour(
-                definition);
+        final LookupFailBehaviour lookupFailBehaviour = readLookupFailBehaviour(definition);
         return new AbstractColumnMappingDefinition.ConstructorParameters(exasolColumnName, sourcePath,
                 lookupFailBehaviour);
     }
 
-    private AbstractColumnMappingDefinition.LookupFailBehaviour readLookupFailBehaviour(final JsonObject definition) {
+    private LookupFailBehaviour readLookupFailBehaviour(final JsonObject definition) {
         if (definition.containsKey(REQUIRED_KEY) && definition.getBoolean(REQUIRED_KEY)) {
-            return AbstractColumnMappingDefinition.LookupFailBehaviour.EXCEPTION;
+            return LookupFailBehaviour.EXCEPTION;
         } else {
             return DEFAULT_LOOKUP_BEHAVIOUR;
         }
@@ -75,8 +74,7 @@ class JsonColumnMappingFactory {
             final TableMappingDefinition.Builder tableBuilder, final String dynamodbPropertyName) {
         final String exasolColumnName = readExasolColumnName(definition, dynamodbPropertyName);
         final AbstractColumnMappingDefinition.ConstructorParameters columnParameters = new AbstractColumnMappingDefinition.ConstructorParameters(
-                exasolColumnName, sourcePath.build(),
-                AbstractColumnMappingDefinition.LookupFailBehaviour.DEFAULT_VALUE);
+                exasolColumnName, sourcePath.build(), LookupFailBehaviour.DEFAULT_VALUE);
         tableBuilder.withColumnMappingDefinition(new ToJsonColumnMappingDefinition(columnParameters));
     }
 }

@@ -15,7 +15,7 @@ public abstract class ToJsonValueMapper<DocumentVisitorType> extends AbstractVal
      * 
      * @param column {@link ToJsonColumnMappingDefinition}
      */
-    public ToJsonValueMapper(final AbstractColumnMappingDefinition column) {
+    public ToJsonValueMapper(final ColumnMappingDefinition column) {
         super(column);
     }
 

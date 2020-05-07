@@ -104,7 +104,7 @@ class DynamodbQueryRunnerIT {
     void testGetItemRequest() {
         final String isbn = "123567";
         final DynamodbQueryRunner runner = getRunner();
-        final AbstractColumnMappingDefinition isbnColumn = tableMapping.getColumns().stream()
+        final ColumnMappingDefinition isbnColumn = tableMapping.getColumns().stream()
                 .filter(column -> column.getExasolColumnName().equals("ISBN")).findAny().get();
         final ColumnLiteralComparisonPredicate<DynamodbNodeVisitor> selection = new ColumnLiteralComparisonPredicate<>(
                 ComparisonPredicate.Operator.EQUAL, isbnColumn, new DynamodbString(isbn));

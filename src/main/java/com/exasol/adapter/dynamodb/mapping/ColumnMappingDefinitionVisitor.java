@@ -1,7 +1,7 @@
 package com.exasol.adapter.dynamodb.mapping;
 
 /**
- * Visitor for {@link AbstractColumnMappingDefinition}.
+ * Visitor for {@link ColumnMappingDefinition}.
  */
 public interface ColumnMappingDefinitionVisitor {
     /**

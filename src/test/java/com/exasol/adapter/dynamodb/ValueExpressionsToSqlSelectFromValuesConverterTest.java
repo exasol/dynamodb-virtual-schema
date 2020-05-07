@@ -9,10 +9,7 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 
 import com.exasol.adapter.dynamodb.documentpath.DocumentPathExpression;
-import com.exasol.adapter.dynamodb.mapping.AbstractColumnMappingDefinition;
-import com.exasol.adapter.dynamodb.mapping.SchemaMappingQuery;
-import com.exasol.adapter.dynamodb.mapping.TableMappingDefinition;
-import com.exasol.adapter.dynamodb.mapping.ToJsonColumnMappingDefinition;
+import com.exasol.adapter.dynamodb.mapping.*;
 import com.exasol.sql.expression.StringLiteral;
 import com.exasol.sql.expression.ValueExpression;
 
@@ -25,11 +22,10 @@ public class ValueExpressionsToSqlSelectFromValuesConverterTest {
             }
 
             @Override
-            public List<AbstractColumnMappingDefinition> getSelectList() {
-                return List
-                        .of(new ToJsonColumnMappingDefinition(new AbstractColumnMappingDefinition.ConstructorParameters(
-                                "json", new DocumentPathExpression.Builder().build(),
-                                AbstractColumnMappingDefinition.LookupFailBehaviour.DEFAULT_VALUE)));
+            public List<ColumnMappingDefinition> getSelectList() {
+                return List.of(new ToJsonColumnMappingDefinition(
+                        new AbstractColumnMappingDefinition.ConstructorParameters("json",
+                                new DocumentPathExpression.Builder().build(), LookupFailBehaviour.DEFAULT_VALUE)));
             }
         };
     }

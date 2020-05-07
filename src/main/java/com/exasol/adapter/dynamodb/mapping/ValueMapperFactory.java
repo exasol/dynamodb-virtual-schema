@@ -11,6 +11,5 @@ public interface ValueMapperFactory<DocumentVisitorType> {
      * @param column ColumnMappingDefinition for which to build the ValueMapper
      * @return built ValueMapper
      */
-    public AbstractValueMapper<DocumentVisitorType> getValueMapperForColumn(
-            final AbstractColumnMappingDefinition column);
+    public AbstractValueMapper<DocumentVisitorType> getValueMapperForColumn(final ColumnMappingDefinition column);
 }

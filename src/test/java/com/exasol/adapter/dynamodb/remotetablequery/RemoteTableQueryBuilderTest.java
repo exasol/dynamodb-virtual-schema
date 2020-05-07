@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Test;
 import com.exasol.adapter.AdapterException;
 import com.exasol.adapter.dynamodb.documentnode.DocumentValue;
 import com.exasol.adapter.dynamodb.literalconverter.SqlLiteralToDocumentValueConverter;
-import com.exasol.adapter.dynamodb.mapping.AbstractColumnMappingDefinition;
+import com.exasol.adapter.dynamodb.mapping.ColumnMappingDefinition;
 import com.exasol.adapter.dynamodb.mapping.HardCodedMappingFactory;
 import com.exasol.adapter.dynamodb.mapping.SchemaMappingDefinitionToSchemaMetadataConverter;
 import com.exasol.adapter.metadata.ColumnMetadata;
@@ -35,7 +35,7 @@ public class RemoteTableQueryBuilderTest {
         final RemoteTableQuery<Object> resultTable = new RemoteTableQueryFactory<>(
                 new SqlLiteralToDocumentValueConverterStub()).build(statement, schemaMetadata);
         final List<String> actualDestinationNames = resultTable.getSelectList().stream()
-                .map(AbstractColumnMappingDefinition::getExasolColumnName).collect(Collectors.toList());
+                .map(ColumnMappingDefinition::getExasolColumnName).collect(Collectors.toList());
         final String[] expectedDestinationNames = tableMetadata.getColumns().stream().map(ColumnMetadata::getName)
                 .toArray(String[]::new);
         assertThat(actualDestinationNames, containsInAnyOrder(expectedDestinationNames));

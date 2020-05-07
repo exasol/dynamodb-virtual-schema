@@ -23,10 +23,9 @@ public class SchemaMappingDefinitionToSchemaMetadataConverterTest {
 
     public SchemaMappingDefinition getSchemaMapping() {
         final TableMappingDefinition table = TableMappingDefinition.rootTableBuilder(DEST_TABLE_NAME, SRC_TABLE_NAME)
-                .withColumnMappingDefinition(
-                        new ToJsonColumnMappingDefinition(new AbstractColumnMappingDefinition.ConstructorParameters(
-                                COLUMN_NAME, new DocumentPathExpression.Builder().build(),
-                                AbstractColumnMappingDefinition.LookupFailBehaviour.DEFAULT_VALUE)))
+                .withColumnMappingDefinition(new ToJsonColumnMappingDefinition(
+                        new AbstractColumnMappingDefinition.ConstructorParameters(COLUMN_NAME,
+                                new DocumentPathExpression.Builder().build(), LookupFailBehaviour.DEFAULT_VALUE)))
                 .build();
         return new SchemaMappingDefinition(List.of(table));
     }
@@ -53,7 +52,7 @@ public class SchemaMappingDefinitionToSchemaMetadataConverterTest {
         final SchemaMetadata schemaMetadata = new SchemaMappingDefinitionToSchemaMetadataConverter()
                 .convert(schemaMapping);
         final ColumnMetadata firstColumnMetadata = schemaMetadata.getTables().get(0).getColumns().get(0);
-        final AbstractColumnMappingDefinition columnMappingDefinition = new SchemaMappingDefinitionToSchemaMetadataConverter()
+        final ColumnMappingDefinition columnMappingDefinition = new SchemaMappingDefinitionToSchemaMetadataConverter()
                 .convertBackColumn(firstColumnMetadata);
         assertThat(columnMappingDefinition.getExasolColumnName(), equalTo(COLUMN_NAME));
     }
