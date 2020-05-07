@@ -1,8 +1,7 @@
 package com.exasol.adapter.dynamodb.mapping;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsInAnyOrder;
-import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -103,12 +102,9 @@ public class JsonMappingFactoryTest {
                     return base;
                 });
 
-        final JsonMappingFactory.SchemaMappingException exception = assertThrows(
-                JsonMappingFactory.SchemaMappingException.class, () -> getMappingDefinitionForFile(invalidFile));
-        assertAll(() -> assertThat(exception.getCausingMappingDefinitionFileName(), equalTo(invalidFile.getName())),
-                () -> assertThat(exception.getMessage(),
-                        equalTo("Error in schema mapping " + invalidFile.getName() + ":")),
-                () -> assertThat(exception.getCause().getMessage(), equalTo(
-                        "ToStringMapping is not allowed at root level. You probably want to replace it with a \"fields\" definition.")));
+        final ExasolDocumentMappingLanguageException exception = assertThrows(
+                ExasolDocumentMappingLanguageException.class, () -> getMappingDefinitionForFile(invalidFile));
+        assertThat(exception.getMessage(), startsWith(
+                "ToStringMapping is not allowed at root level. You probably want to replace it with a \"fields\" definition. In mapping definition file"));
     }
 }
