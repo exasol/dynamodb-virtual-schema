@@ -67,6 +67,7 @@ class JsonMappingValidator {
             final ValidationException firstException = causingExceptions.get(0);
             makeValidationExceptionMoreReadable(firstException, fileName);
         }
+        makeUnknownKeyTypeExceptionMoreReadable(exception, fileName);
         makeUnknownMappingTypeExceptionMoreReadable(exception, fileName);
         makeWrongSchemaExceptionMoreReadable(exception, fileName);
         makeNoMappingExceptionMoreReadable(exception, fileName);
@@ -82,6 +83,14 @@ class JsonMappingValidator {
                 throwExceptionWithMappingName(fileName, exception.getMessage()
                         + ", use one of the following mapping definitions: " + possibleProperties);
             }
+        }
+    }
+
+    private void makeUnknownKeyTypeExceptionMoreReadable(final ValidationException exception, final String fileName) {
+        if (exception.getPointerToViolation().endsWith("/key")
+                && exception.getMessage().endsWith("is not a valid enum value")) {
+            throwExceptionWithMappingName(fileName,
+                    exception.getPointerToViolation() + ": Please set key property to 'local' or 'global'.");
         }
     }
 
