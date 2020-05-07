@@ -30,7 +30,7 @@ public class DynamodbTableMetadata implements Serializable {
     /**
      * Gives the index defined by the primary key of this DynamoDB table.
      * 
-     * @return primary key description.
+     * @return primary index description.
      */
     public DynamodbPrimaryIndex getPrimaryIndex() {
         return this.primaryIndex;
@@ -70,7 +70,7 @@ public class DynamodbTableMetadata implements Serializable {
     /**
      * Gives a list containing the primary index and all local and global indexes.
      * 
-     * @return list of all keys
+     * @return list of all indexes
      */
     public List<AbstractDynamodbIndex> getAllIndexes() {
         final ArrayList<AbstractDynamodbIndex> union = new ArrayList<>(

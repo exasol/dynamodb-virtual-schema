@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.Optional;
 
 /**
- * This class represents a DynamoDB index. This can either be the primary index of a table or a secondary index.
+ * This class is the abstract base for a DynamoDB indexes.
  */
 public abstract class AbstractDynamodbIndex implements Serializable {
     private static final long serialVersionUID = 4048033058983909214L;
@@ -14,8 +14,8 @@ public abstract class AbstractDynamodbIndex implements Serializable {
     /**
      * Creates an instance of {@link AbstractDynamodbIndex}.
      * 
-     * @param partitionKey partition key of this key
-     * @param sortKey      sort key of this key
+     * @param partitionKey partition key of this index
+     * @param sortKey      sort key of this index
      */
     public AbstractDynamodbIndex(final String partitionKey, final Optional<String> sortKey) {
         this.partitionKey = partitionKey;
@@ -23,7 +23,7 @@ public abstract class AbstractDynamodbIndex implements Serializable {
     }
 
     /**
-     * Gives the partition key of this key.
+     * Gives the partition key of this index.
      * 
      * @return partition key
      */
@@ -32,7 +32,7 @@ public abstract class AbstractDynamodbIndex implements Serializable {
     }
 
     /**
-     * Gives the sort key of this key.
+     * Gives the sort key of this index.
      * 
      * @return sort key. {@code null} if no sort key is present.
      */
