@@ -9,8 +9,8 @@ import javax.json.JsonObject;
 import com.exasol.adapter.dynamodb.documentpath.DocumentPathExpression;
 
 /**
- * This class builds {@link TableMappingDefinition}s from exasol document mapping language definitions. If the
- * definition contains nested lists that are mapped using a {@code ToTableMapping} the nested table is built using a
+ * This class builds {@link TableMappingDefinition}s from Exasol document mapping language definitions. If the
+ * definition contains nested lists that are mapped using a {@code ToTableMapping}, then the nested table is built using a
  * recursive call to {@link NestedTableMappingFactory}.
  */
 public abstract class AbstractTableMappingFactory {

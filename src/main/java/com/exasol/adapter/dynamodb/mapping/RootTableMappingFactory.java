@@ -5,7 +5,7 @@ import javax.json.JsonObject;
 import com.exasol.adapter.dynamodb.documentpath.DocumentPathExpression;
 
 /**
- * This class builds {@link TableMappingDefinition}s from exasol document mapping language definitions. In contrast to
+ * This class builds {@link TableMappingDefinition}s from Exasol document mapping language definitions. In contrast to
  * {@link NestedTableMappingFactory} this class handles the whole definition object.
  */
 public class RootTableMappingFactory extends AbstractTableMappingFactory {

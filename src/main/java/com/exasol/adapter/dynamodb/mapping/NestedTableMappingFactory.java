@@ -5,8 +5,8 @@ import javax.json.JsonObject;
 import com.exasol.adapter.dynamodb.documentpath.DocumentPathExpression;
 
 /**
- * This class builds {@link TableMappingDefinition}s from exasol document mapping language definitions for nested lists.
- * It is called from {@link AbstractTableMappingFactory} when a {@code ToTableMapping} was found.
+ * This class builds {@link TableMappingDefinition}s from Exasol document mapping language definitions for nested lists.
+ * It is called from {@link AbstractTableMappingFactory} when a {@code ToTableMapping} is found.
  */
 class NestedTableMappingFactory extends AbstractTableMappingFactory {
     private final TableMappingDefinition parentTable;
