@@ -10,8 +10,8 @@ import com.exasol.adapter.dynamodb.documentpath.DocumentPathExpression;
 
 /**
  * This class builds {@link TableMappingDefinition}s from Exasol document mapping language definitions. If the
- * definition contains nested lists that are mapped using a {@code ToTableMapping}, then the nested table is built using a
- * recursive call to {@link NestedTableMappingFactory}.
+ * definition contains nested lists that are mapped using a {@code ToTableMapping}, then the nested table is built using
+ * a recursive call to {@link NestedTableMappingFactory}.
  */
 public abstract class AbstractTableMappingFactory {
     protected static final String MAPPING_KEY = "mapping";
@@ -24,7 +24,14 @@ public abstract class AbstractTableMappingFactory {
      * Building tables for nested lists is delayed using this queue as they need the completely built table that maps
      * the object they are nested in.
      */
-    private final List<NestedTableReader> nestedTableReaderQueue = new ArrayList<>();
+    private final List<NestedTableReader> nestedTableReaderQueue;
+
+    /**
+     * Creates an instance of {@link AbstractTableMappingFactory}
+     */
+    protected AbstractTableMappingFactory() {
+        this.nestedTableReaderQueue = new ArrayList<>();
+    }
 
     /**
      * Reads a table definition from an exasol document mapping language definition. If nested lists are mapped using a
@@ -34,6 +41,7 @@ public abstract class AbstractTableMappingFactory {
      * @throws ExasolDocumentMappingLanguageException if schema mapping definition is invalid
      */
     public final List<TableMappingDefinition> readMappingDefinition(final JsonObject definition) {
+        this.nestedTableReaderQueue.clear();
         final List<TableMappingDefinition> tables = new ArrayList<>();
         final TableMappingDefinition rootTable = readTable(definition);
         tables.add(rootTable);
@@ -98,7 +106,8 @@ public abstract class AbstractTableMappingFactory {
         }
     }
 
-    protected static interface NestedTableReader {
+    @FunctionalInterface
+    private static interface NestedTableReader {
         List<TableMappingDefinition> readNestedTable(TableMappingDefinition parentTable);
     }
 }

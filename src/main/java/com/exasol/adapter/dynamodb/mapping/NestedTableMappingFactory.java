@@ -16,7 +16,8 @@ class NestedTableMappingFactory extends AbstractTableMappingFactory {
     /**
      * Creates an instance of {@link NestedTableMappingFactory}.
      * 
-     * @param parentTable                 the table mapping the object that list mapped by this table is nested in
+     * @param parentTable                 the parent table that maps the object in that the nested list (that this table
+     *                                    maps) is nested in
      * @param containingListsPropertyName the property name of the nested list that this table maps
      * @param sourcePath                  the path to the nested list that this table maps
      */

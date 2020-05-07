@@ -29,6 +29,7 @@ public class JsonMappingFactory implements MappingDefinitionFactory {
      * @param definitionsPath path to the definition. Can either be a {@code .json} file or an directory. If it points
      *                        to a directory, all {@code .json} files are loaded.
      * @throws IOException                            if could not open file
+     * @throws AdapterException                       if schema mapping no mapping files were found
      * @throws ExasolDocumentMappingLanguageException if schema mapping invalid
      */
     public JsonMappingFactory(final File definitionsPath) throws IOException, AdapterException {
