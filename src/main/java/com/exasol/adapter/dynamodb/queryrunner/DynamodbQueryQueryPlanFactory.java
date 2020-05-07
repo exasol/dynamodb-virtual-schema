@@ -4,7 +4,7 @@ import java.util.List;
 
 import com.amazonaws.services.dynamodbv2.model.QueryRequest;
 import com.exasol.adapter.dynamodb.documentnode.dynamodb.DynamodbNodeVisitor;
-import com.exasol.adapter.dynamodb.dynamodbmetadata.AbstractDynamodbIndex;
+import com.exasol.adapter.dynamodb.dynamodbmetadata.DynamodbIndex;
 import com.exasol.adapter.dynamodb.dynamodbmetadata.DynamodbSecondaryIndex;
 import com.exasol.adapter.dynamodb.dynamodbmetadata.DynamodbTableMetadata;
 import com.exasol.adapter.dynamodb.remotetablequery.QueryPredicate;
@@ -24,7 +24,7 @@ public class DynamodbQueryQueryPlanFactory {
      */
     public DynamodbQueryQueryPlan buildQueryPlanIfPossible(final RemoteTableQuery<DynamodbNodeVisitor> documentQuery,
             final DynamodbTableMetadata tableMetadata) {
-        final AbstractDynamodbIndex mostRestrictedIndex = new DynamodbQueryIndexSelector()
+        final DynamodbIndex mostRestrictedIndex = new DynamodbQueryIndexSelector()
                 .findMostRestrictedIndex(documentQuery.getSelection(), tableMetadata.getAllIndexes());
         abortIfNoFittingIndexWasFound(mostRestrictedIndex);
         final QueryRequest queryRequest = new QueryRequest(documentQuery.getFromTable().getRemoteName());
@@ -33,7 +33,7 @@ public class DynamodbQueryQueryPlanFactory {
         return new DynamodbQueryQueryPlan(queryRequest);
     }
 
-    private void abortIfNoFittingIndexWasFound(final AbstractDynamodbIndex mostRestrictedIndex) {
+    private void abortIfNoFittingIndexWasFound(final DynamodbIndex mostRestrictedIndex) {
         if (mostRestrictedIndex == null) {
             throw new PlanDoesNotFitException("Could not find a suitable key for a DynamoDB Query operation. "
                     + "Non of the keys did a equality selection with the partition key. "
@@ -41,7 +41,7 @@ public class DynamodbQueryQueryPlanFactory {
         }
     }
 
-    private void setIndexToQuery(final AbstractDynamodbIndex mostRestrictedIndex, final QueryRequest queryRequest) {
+    private void setIndexToQuery(final DynamodbIndex mostRestrictedIndex, final QueryRequest queryRequest) {
         if (mostRestrictedIndex instanceof DynamodbSecondaryIndex) {
             final DynamodbSecondaryIndex secondaryIndex = (DynamodbSecondaryIndex) mostRestrictedIndex;
             queryRequest.setIndexName(secondaryIndex.getIndexName());
@@ -49,7 +49,7 @@ public class DynamodbQueryQueryPlanFactory {
     }
 
     private void addKeyCondition(final RemoteTableQuery<DynamodbNodeVisitor> documentQuery,
-            final AbstractDynamodbIndex mostRestrictedIndex, final QueryRequest queryRequest) {
+            final DynamodbIndex mostRestrictedIndex, final QueryRequest queryRequest) {
         final QueryPredicate<DynamodbNodeVisitor> selectionOnIndex = new DynamodbQuerySelectionFilter()
                 .filter(documentQuery.getSelection(), getIndexPropertyNameWhitelist(mostRestrictedIndex));
         final DynamodbValueListBuilder valueListBuilder = new DynamodbValueListBuilder();
@@ -59,7 +59,7 @@ public class DynamodbQueryQueryPlanFactory {
         queryRequest.setExpressionAttributeValues(valueListBuilder.getValueMap());
     }
 
-    private List<String> getIndexPropertyNameWhitelist(final AbstractDynamodbIndex index) {
+    private List<String> getIndexPropertyNameWhitelist(final DynamodbIndex index) {
         if (index.hasSortKey()) {
             return List.of(index.getPartitionKey(), index.getSortKey());
         } else {

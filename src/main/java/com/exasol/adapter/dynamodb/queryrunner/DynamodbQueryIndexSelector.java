@@ -4,11 +4,11 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.exasol.adapter.dynamodb.documentnode.dynamodb.DynamodbNodeVisitor;
-import com.exasol.adapter.dynamodb.dynamodbmetadata.AbstractDynamodbIndex;
+import com.exasol.adapter.dynamodb.dynamodbmetadata.DynamodbIndex;
 import com.exasol.adapter.dynamodb.remotetablequery.QueryPredicate;
 
 /**
- * This class picks the {@link AbstractDynamodbIndex} that's keys are most restricted in a given query..
+ * This class picks the {@link DynamodbIndex} that's keys are most restricted in a given query..
  */
 public class DynamodbQueryIndexSelector {
 
@@ -24,19 +24,19 @@ public class DynamodbQueryIndexSelector {
      * @param availableIndexes list of possible DynamoDB indexes
      * @return most restricted index or null if non did match the criteria
      */
-    public AbstractDynamodbIndex findMostRestrictedIndex(final QueryPredicate<DynamodbNodeVisitor> selection,
-            final List<AbstractDynamodbIndex> availableIndexes) {
-        final List<AbstractDynamodbIndex> suitableKeys = extractSuitableIndexes(selection, availableIndexes);
+    public DynamodbIndex findMostRestrictedIndex(final QueryPredicate<DynamodbNodeVisitor> selection,
+            final List<DynamodbIndex> availableIndexes) {
+        final List<DynamodbIndex> suitableKeys = extractSuitableIndexes(selection, availableIndexes);
         return findMostRestrictedIndexBySortKey(selection, suitableKeys);
     }
 
-    private List<AbstractDynamodbIndex> extractSuitableIndexes(final QueryPredicate<DynamodbNodeVisitor> selection,
-            final List<AbstractDynamodbIndex> availableKeys) {
+    private List<DynamodbIndex> extractSuitableIndexes(final QueryPredicate<DynamodbNodeVisitor> selection,
+            final List<DynamodbIndex> availableKeys) {
         return availableKeys.stream().filter(key -> isIndexesPrimaryKeyRestrictedInEqualitySelection(key, selection))
                 .collect(Collectors.toList());
     }
 
-    private boolean isIndexesPrimaryKeyRestrictedInEqualitySelection(final AbstractDynamodbIndex index,
+    private boolean isIndexesPrimaryKeyRestrictedInEqualitySelection(final DynamodbIndex index,
             final QueryPredicate<DynamodbNodeVisitor> selection) {
         try {
             final QueryPredicate<DynamodbNodeVisitor> partitionKeySelection = new DynamodbQuerySelectionFilter()
@@ -48,11 +48,11 @@ public class DynamodbQueryIndexSelector {
         }
     }
 
-    private AbstractDynamodbIndex findMostRestrictedIndexBySortKey(final QueryPredicate<DynamodbNodeVisitor> selection,
-            final List<AbstractDynamodbIndex> suitableKeys) {
+    private DynamodbIndex findMostRestrictedIndexBySortKey(final QueryPredicate<DynamodbNodeVisitor> selection,
+            final List<DynamodbIndex> suitableKeys) {
         int bestKeysRating = -1;
-        AbstractDynamodbIndex bestKey = null;
-        for (final AbstractDynamodbIndex index : suitableKeys) {
+        DynamodbIndex bestKey = null;
+        for (final DynamodbIndex index : suitableKeys) {
             try {
                 final int keysRating = rateSortKeySelectivity(selection, index);
                 if (keysRating > bestKeysRating) {
@@ -66,8 +66,7 @@ public class DynamodbQueryIndexSelector {
         return bestKey;
     }
 
-    private int rateSortKeySelectivity(final QueryPredicate<DynamodbNodeVisitor> selection,
-            final AbstractDynamodbIndex index) {
+    private int rateSortKeySelectivity(final QueryPredicate<DynamodbNodeVisitor> selection, final DynamodbIndex index) {
         if (!index.hasSortKey()) {
             return DynamodbQuerySelectionRater.RATING_NO_SELECTIVITY; // as this index has no sort key it does not have
                                                                       // any selectivity

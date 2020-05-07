@@ -102,7 +102,7 @@ class DynamodbTableMetadataFactoryTestIT {
         dynamodbTestInterface.createTable(request);
         final DynamodbTableMetadata dynamodbTableMetadata = new DynamodbTableMetadataFactory()
                 .buildMetadataForTable(getDynamodbConnection(), TABLE_NAME);
-        final AbstractDynamodbIndex index = dynamodbTableMetadata.getLocalIndexes().get(0);
+        final DynamodbIndex index = dynamodbTableMetadata.getLocalIndexes().get(0);
         assertAll(//
                 () -> assertThat(index.getPartitionKey(), equalTo(partitionKey)), //
                 () -> assertThat(index.getSortKey(), equalTo(indexKey)), //
@@ -132,7 +132,7 @@ class DynamodbTableMetadataFactoryTestIT {
         dynamodbTestInterface.createTable(request);
         final DynamodbTableMetadata dynamodbTableMetadata = new DynamodbTableMetadataFactory()
                 .buildMetadataForTable(getDynamodbConnection(), TABLE_NAME);
-        final AbstractDynamodbIndex index = dynamodbTableMetadata.getGlobalIndexes().get(0);
+        final DynamodbIndex index = dynamodbTableMetadata.getGlobalIndexes().get(0);
         assertAll(//
                 () -> assertThat(index.getPartitionKey(), equalTo(indexKey1)), //
                 () -> assertThat(index.getSortKey(), equalTo(indexKey2)), //

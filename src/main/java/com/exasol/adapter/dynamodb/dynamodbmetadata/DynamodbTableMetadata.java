@@ -72,9 +72,8 @@ public class DynamodbTableMetadata implements Serializable {
      * 
      * @return list of all indexes
      */
-    public List<AbstractDynamodbIndex> getAllIndexes() {
-        final ArrayList<AbstractDynamodbIndex> union = new ArrayList<>(
-                this.localIndexes.size() + this.globalIndexes.size());
+    public List<DynamodbIndex> getAllIndexes() {
+        final ArrayList<DynamodbIndex> union = new ArrayList<>(this.localIndexes.size() + this.globalIndexes.size());
         union.addAll(this.localIndexes);
         union.addAll(this.globalIndexes);
         union.add(getPrimaryIndex());

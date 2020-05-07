@@ -1,19 +1,18 @@
 package com.exasol.adapter.dynamodb.dynamodbmetadata;
 
-import java.io.Serializable;
 import java.util.Optional;
 
 /**
  * This class is the abstract base for a DynamoDB indexes.
  */
-public abstract class AbstractDynamodbIndex implements Serializable {
-    private static final long serialVersionUID = 4048033058983909214L;
+abstract class AbstractDynamodbIndex implements DynamodbIndex {
+
     private final String partitionKey;
     private final String sortKey;
 
     /**
-     * Creates an instance of {@link AbstractDynamodbIndex}.
-     * 
+     * Creates an instance of {@link DynamodbIndex}.
+     *
      * @param partitionKey partition key of this index
      * @param sortKey      sort key of this index
      */
@@ -22,29 +21,17 @@ public abstract class AbstractDynamodbIndex implements Serializable {
         this.sortKey = sortKey.orElse(null);
     }
 
-    /**
-     * Gives the partition key of this index.
-     * 
-     * @return partition key
-     */
+    @Override
     public String getPartitionKey() {
         return this.partitionKey;
     }
 
-    /**
-     * Gives the sort key of this index.
-     * 
-     * @return sort key. {@code null} if no sort key is present.
-     */
+    @Override
     public String getSortKey() {
         return this.sortKey;
     }
 
-    /**
-     * Tests if sort key is present.
-     * 
-     * @return {@code true} if sort key is present.
-     */
+    @Override
     public boolean hasSortKey() {
         return this.sortKey != null;
     }
