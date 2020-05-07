@@ -53,6 +53,9 @@
             },
             "required": {
               "$ref": "#/definitions/required"
+            },
+            "key": {
+              "$ref": "#/definitions/key"
             }
           },
           "additionalProperties": false
@@ -113,6 +116,11 @@
       "type": "boolean",
       "default": false,
       "description": "If this property is set to true, queries will abort if the given mapping can't be found a single document. Else, the query will continue and set this cell to a default value. By default this is property is set to false."
+    },
+    "key": {
+      "type": "string",
+      "enum": ["local", "global"],
+      "description": "Setting this property marks a column as key.\n\n Key columns are used as foreign keys from ToTableMappings for nested lists. \n\nA key can either be local or global. A global key must be unique over all rows of the table. A local key must only be unique in the scope of the nested list."
     }
   },
   "type": "object",
