@@ -92,7 +92,7 @@ public abstract class AbstractTableMappingFactory {
         } else if (keys.size() == 1) {
             return keys.iterator().next();
         } else {
-            throw new ExasolDocumentMappingLanguageException("Please, define only one mapping for one property.");
+            throw new ExasolDocumentMappingLanguageException("Please define only one mapping for one property.");
         }
     }
 
