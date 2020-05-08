@@ -30,6 +30,6 @@ public abstract class ComparisonPredicate<DocumentVisitorType> implements QueryP
      * Possible comparision operators.
      */
     public enum Operator {
-        EQUAL, LESS, LESS_EQUAL
+        EQUAL, LESS, LESS_EQUAL, GREATER, GREATER_EQUAL
     }
 }

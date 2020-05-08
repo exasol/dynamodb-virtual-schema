@@ -40,6 +40,8 @@ public class DynamodbQuerySelectionRater {
                 break;
             case LESS:
             case LESS_EQUAL:
+            case GREATER_EQUAL:
+            case GREATER:
                 this.rating = RATING_RANGE;
                 break;
             default:

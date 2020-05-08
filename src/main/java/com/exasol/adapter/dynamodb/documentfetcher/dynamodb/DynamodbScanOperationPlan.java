@@ -22,6 +22,10 @@ class DynamodbScanOperationPlan implements DynamodbOperationPlan {
         this.scanRequest = new ScanRequest().withTableName(tableName);
     }
 
+    ScanRequest getScanRequest() {
+        return this.scanRequest;
+    }
+
     @Override
     public Stream<Map<String, AttributeValue>> run(final AmazonDynamoDB client) {
         return client.scan(this.scanRequest).getItems().stream();

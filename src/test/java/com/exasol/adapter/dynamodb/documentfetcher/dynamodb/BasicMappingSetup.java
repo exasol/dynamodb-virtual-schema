@@ -1,20 +1,19 @@
 package com.exasol.adapter.dynamodb.documentfetcher.dynamodb;
 
 import java.io.IOException;
+import java.util.List;
 
 import org.jetbrains.annotations.NotNull;
 
 import com.exasol.adapter.AdapterException;
 import com.exasol.adapter.dynamodb.documentnode.dynamodb.DynamodbNodeVisitor;
+import com.exasol.adapter.dynamodb.documentnode.dynamodb.DynamodbNumber;
 import com.exasol.adapter.dynamodb.documentnode.dynamodb.DynamodbString;
 import com.exasol.adapter.dynamodb.mapping.AbstractColumnMappingDefinition;
 import com.exasol.adapter.dynamodb.mapping.JsonMappingFactory;
 import com.exasol.adapter.dynamodb.mapping.MappingTestFiles;
 import com.exasol.adapter.dynamodb.mapping.TableMappingDefinition;
-import com.exasol.adapter.dynamodb.remotetablequery.ColumnLiteralComparisonPredicate;
-import com.exasol.adapter.dynamodb.remotetablequery.ComparisonPredicate;
-import com.exasol.adapter.dynamodb.remotetablequery.NoPredicate;
-import com.exasol.adapter.dynamodb.remotetablequery.RemoteTableQuery;
+import com.exasol.adapter.dynamodb.remotetablequery.*;
 
 public class BasicMappingSetup {
 
@@ -23,11 +22,17 @@ public class BasicMappingSetup {
     public final static String INDEX_PARTITION_KEY = "publisher";
     public final static String INDEX_SORT_KEY = "price";
 
-    public TableMappingDefinition tableMapping;
+    public final TableMappingDefinition tableMapping;
+    private final AbstractColumnMappingDefinition publisherColumn;
+    private final AbstractColumnMappingDefinition priceColumn;
 
     public BasicMappingSetup() throws IOException, AdapterException {
         this.tableMapping = new JsonMappingFactory(MappingTestFiles.BASIC_MAPPING_FILE).getSchemaMapping()
                 .getTableMappings().get(0);
+        this.publisherColumn = this.tableMapping.getColumns().stream()
+                .filter(column -> column.getExasolColumnName().equals("PUBLISHER")).findAny().get();
+        this.priceColumn = this.tableMapping.getColumns().stream()
+                .filter(column -> column.getExasolColumnName().equals("PRICE")).findAny().get();
     }
 
     @NotNull
@@ -57,10 +62,38 @@ public class BasicMappingSetup {
      * @return query
      */
     public RemoteTableQuery<DynamodbNodeVisitor> getQueryForPublisher(final String publisher) {
-        final AbstractColumnMappingDefinition publisherColumn = this.tableMapping.getColumns().stream()
-                .filter(column -> column.getExasolColumnName().equals("PUBLISHER")).findAny().get();
         final ColumnLiteralComparisonPredicate<DynamodbNodeVisitor> selection = new ColumnLiteralComparisonPredicate<>(
-                ComparisonPredicate.Operator.EQUAL, publisherColumn, new DynamodbString(publisher));
+                ComparisonPredicate.Operator.EQUAL, this.publisherColumn, new DynamodbString(publisher));
+        return new RemoteTableQuery<>(this.tableMapping, this.tableMapping.getColumns(), selection);
+    }
+
+    /**
+     * Creates a query representing: {@code SELECT * FROM BOOKS WHERE price > :price}
+     *
+     * @param price to filter
+     * @return query
+     */
+    public RemoteTableQuery<DynamodbNodeVisitor> getQueryForMinPrice(final float price) {
+        final QueryPredicate<DynamodbNodeVisitor> selection = new ColumnLiteralComparisonPredicate<>(
+                ComparisonPredicate.Operator.GREATER, this.priceColumn, new DynamodbNumber(String.valueOf(price)));
+        return new RemoteTableQuery<>(this.tableMapping, this.tableMapping.getColumns(), selection);
+    }
+
+    /**
+     * Creates a query representing: {@code SELECT * FROM BOOKS WHERE price > :price AND publisher = :publisher}
+     *
+     * @param price     to selection
+     * @param publisher for selection
+     * @return query
+     */
+    public RemoteTableQuery<DynamodbNodeVisitor> getQueryForMinPriceAndPublisher(final double price,
+            final String publisher) {
+        final QueryPredicate<DynamodbNodeVisitor> selection = new LogicalOperator<>(List.of(
+                new ColumnLiteralComparisonPredicate<>(ComparisonPredicate.Operator.GREATER, this.priceColumn,
+                        new DynamodbNumber(String.valueOf(price))),
+                new ColumnLiteralComparisonPredicate<>(ComparisonPredicate.Operator.EQUAL, this.publisherColumn,
+                        new DynamodbString(String.valueOf(publisher)))),
+                LogicalOperator.Operator.AND);
         return new RemoteTableQuery<>(this.tableMapping, this.tableMapping.getColumns(), selection);
     }
 }

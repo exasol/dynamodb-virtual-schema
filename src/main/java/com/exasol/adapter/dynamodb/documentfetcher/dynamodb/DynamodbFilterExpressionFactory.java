@@ -55,8 +55,12 @@ public class DynamodbFilterExpressionFactory {
             case EQUAL:
                 return "=";
             case LESS:
-                return ">";
+                return "<";
             case LESS_EQUAL:
+                return "<=";
+            case GREATER:
+                return ">";
+            case GREATER_EQUAL:
                 return ">=";
             default:
                 throw new UnsupportedOperationException("This operator has no equivalent in DynamoDB.");

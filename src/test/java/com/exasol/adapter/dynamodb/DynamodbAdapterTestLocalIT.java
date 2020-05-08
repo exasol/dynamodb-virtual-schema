@@ -209,8 +209,32 @@ public class DynamodbAdapterTestLocalIT {
     }
 
     @Test
-    void testRangeSelectionWithSortKey() throws SQLException, IOException {
+    void testGreaterSelectionWithSortKey() throws SQLException, IOException {
         createBasicMappingVirtualSchema();
+        createTableBooksTableWithPublisherPriceKey();
+        final ResultSet actualResultSet = exasolTestInterface.getStatement().executeQuery(
+                "SELECT ISBN FROM " + TEST_SCHEMA + ".\"BOOKS\" WHERE PUBLISHER = 'jb books' AND PRICE > 10;");
+        final List<String> isbns = new ArrayList<>();
+        while (actualResultSet.next()) {
+            isbns.add(actualResultSet.getString("ISBN"));
+        }
+        assertThat(isbns, containsInAnyOrder("123567"));
+    }
+
+    @Test
+    void testLessSelectionWithSortKey() throws SQLException, IOException {
+        createBasicMappingVirtualSchema();
+        createTableBooksTableWithPublisherPriceKey();
+        final ResultSet actualResultSet = exasolTestInterface.getStatement().executeQuery(
+                "SELECT ISBN FROM " + TEST_SCHEMA + ".\"BOOKS\" WHERE PUBLISHER = 'jb books' AND PRICE < 11;");
+        final List<String> isbns = new ArrayList<>();
+        while (actualResultSet.next()) {
+            isbns.add(actualResultSet.getString("ISBN"));
+        }
+        assertThat(isbns, containsInAnyOrder("123254545"));
+    }
+
+    private void createTableBooksTableWithPublisherPriceKey() throws IOException {
         final CreateTableRequest request = new CreateTableRequest().withTableName(DYNAMO_BOOKS_TABLE)
                 .withKeySchema(new KeySchemaElement("publisher", KeyType.HASH),
                         new KeySchemaElement("price", KeyType.RANGE))
@@ -219,13 +243,6 @@ public class DynamodbAdapterTestLocalIT {
                 .withProvisionedThroughput(new ProvisionedThroughput(1L, 1L));
         dynamodbTestInterface.createTable(request);
         dynamodbTestInterface.importData(DYNAMO_BOOKS_TABLE, TestDocuments.BOOKS);
-        final ResultSet actualResultSet = exasolTestInterface.getStatement().executeQuery(
-                "SELECT ISBN FROM " + TEST_SCHEMA + ".\"BOOKS\" WHERE PUBLISHER = 'jb books' AND PRICE > 10;");
-        final List<String> isbns = new ArrayList<>();
-        while (actualResultSet.next()) {
-            isbns.add(actualResultSet.getString("ISBN"));
-        }
-        assertThat(isbns, containsInAnyOrder("123567"));
     }
 
     @Test

@@ -38,7 +38,7 @@ class DynamodbFilterExpressionFactoryTest {
                 ComparisonPredicate.Operator.LESS);
         final DynamodbValueListBuilder valueListBuilder = new DynamodbValueListBuilder();
         final String result = new DynamodbFilterExpressionFactory().buildFilterExpression(predicate, valueListBuilder);
-        assertThat(result, equalTo("key > :0"));
+        assertThat(result, equalTo("key < :0"));
         assertThat(valueListBuilder.getValueMap().get(":0").getS(), equalTo(literal));
     }
 
@@ -47,6 +47,28 @@ class DynamodbFilterExpressionFactoryTest {
         final String literal = "test";
         final ColumnLiteralComparisonPredicate<DynamodbNodeVisitor> predicate = getComparison(literal,
                 ComparisonPredicate.Operator.LESS_EQUAL);
+        final DynamodbValueListBuilder valueListBuilder = new DynamodbValueListBuilder();
+        final String result = new DynamodbFilterExpressionFactory().buildFilterExpression(predicate, valueListBuilder);
+        assertThat(result, equalTo("key <= :0"));
+        assertThat(valueListBuilder.getValueMap().get(":0").getS(), equalTo(literal));
+    }
+
+    @Test
+    void testGreaterComparison() {
+        final String literal = "test";
+        final ColumnLiteralComparisonPredicate<DynamodbNodeVisitor> predicate = getComparison(literal,
+                ComparisonPredicate.Operator.GREATER);
+        final DynamodbValueListBuilder valueListBuilder = new DynamodbValueListBuilder();
+        final String result = new DynamodbFilterExpressionFactory().buildFilterExpression(predicate, valueListBuilder);
+        assertThat(result, equalTo("key > :0"));
+        assertThat(valueListBuilder.getValueMap().get(":0").getS(), equalTo(literal));
+    }
+
+    @Test
+    void testGreaterEqualComparison() {
+        final String literal = "test";
+        final ColumnLiteralComparisonPredicate<DynamodbNodeVisitor> predicate = getComparison(literal,
+                ComparisonPredicate.Operator.GREATER_EQUAL);
         final DynamodbValueListBuilder valueListBuilder = new DynamodbValueListBuilder();
         final String result = new DynamodbFilterExpressionFactory().buildFilterExpression(predicate, valueListBuilder);
         assertThat(result, equalTo("key >= :0"));
