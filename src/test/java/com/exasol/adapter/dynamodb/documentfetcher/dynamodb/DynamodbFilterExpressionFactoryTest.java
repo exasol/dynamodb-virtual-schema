@@ -21,13 +21,35 @@ import com.exasol.adapter.dynamodb.remotetablequery.NoPredicate;
 class DynamodbFilterExpressionFactoryTest {
 
     @Test
-    void testComparison() {
+    void testEqualityComparison() {
         final String literal = "test";
         final ColumnLiteralComparisonPredicate<DynamodbNodeVisitor> predicate = getComparison(literal,
                 ComparisonPredicate.Operator.EQUAL);
         final DynamodbValueListBuilder valueListBuilder = new DynamodbValueListBuilder();
         final String result = new DynamodbFilterExpressionFactory().buildFilterExpression(predicate, valueListBuilder);
         assertThat(result, equalTo("key = :0"));
+        assertThat(valueListBuilder.getValueMap().get(":0").getS(), equalTo(literal));
+    }
+
+    @Test
+    void testLessComparison() {
+        final String literal = "test";
+        final ColumnLiteralComparisonPredicate<DynamodbNodeVisitor> predicate = getComparison(literal,
+                ComparisonPredicate.Operator.LESS);
+        final DynamodbValueListBuilder valueListBuilder = new DynamodbValueListBuilder();
+        final String result = new DynamodbFilterExpressionFactory().buildFilterExpression(predicate, valueListBuilder);
+        assertThat(result, equalTo("key > :0"));
+        assertThat(valueListBuilder.getValueMap().get(":0").getS(), equalTo(literal));
+    }
+
+    @Test
+    void testLessEqualComparison() {
+        final String literal = "test";
+        final ColumnLiteralComparisonPredicate<DynamodbNodeVisitor> predicate = getComparison(literal,
+                ComparisonPredicate.Operator.LESS_EQUAL);
+        final DynamodbValueListBuilder valueListBuilder = new DynamodbValueListBuilder();
+        final String result = new DynamodbFilterExpressionFactory().buildFilterExpression(predicate, valueListBuilder);
+        assertThat(result, equalTo("key >= :0"));
         assertThat(valueListBuilder.getValueMap().get(":0").getS(), equalTo(literal));
     }
 
