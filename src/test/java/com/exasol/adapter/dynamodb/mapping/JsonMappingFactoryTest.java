@@ -48,7 +48,7 @@ public class JsonMappingFactoryTest {
         assertAll(() -> assertThat(tables.size(), equalTo(1)), //
                 () -> assertThat(table.getExasolName(), equalTo("BOOKS")),
                 () -> assertThat(table.getRemoteName(), equalTo("MY_BOOKS")),
-                () -> assertThat(columnNames, containsInAnyOrder("ISBN", "NAME", "AUTHOR_NAME")),
+                () -> assertThat(columnNames, containsInAnyOrder("ISBN", "NAME", "AUTHOR_NAME", "PUBLISHER")),
                 () -> assertThat(isbnColumn.getExasolStringSize(), equalTo(20)),
                 () -> assertThat(isbnColumn.getOverflowBehaviour(),
                         equalTo(ToStringColumnMappingDefinition.OverflowBehaviour.EXCEPTION)),

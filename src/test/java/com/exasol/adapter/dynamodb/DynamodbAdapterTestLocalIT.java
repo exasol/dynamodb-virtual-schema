@@ -82,8 +82,8 @@ public class DynamodbAdapterTestLocalIT {
     public void testSchemaDefinition() throws SQLException {
         createBasicMappingVirtualSchema();
         final Map<String, String> rowNames = exasolTestInterface.describeTable(TEST_SCHEMA, "BOOKS");
-        assertThat(rowNames, equalTo(
-                Map.of("ISBN", "VARCHAR(20) UTF8", "NAME", "VARCHAR(100) UTF8", "AUTHOR_NAME", "VARCHAR(20) UTF8")));
+        assertThat(rowNames, equalTo(Map.of("ISBN", "VARCHAR(20) UTF8", "NAME", "VARCHAR(100) UTF8", "AUTHOR_NAME",
+                "VARCHAR(20) UTF8", "PUBLISHER", "VARCHAR(100) UTF8")));
     }
 
     /**
@@ -172,14 +172,14 @@ public class DynamodbAdapterTestLocalIT {
 
     @Test
     void testSelectNestedTableSchema() throws SQLException, IOException {
-        setupNestedTableVirtualSchema();
+        createNestedTableVirtualSchema();
         final Map<String, String> rowNames = exasolTestInterface.describeTable(TEST_SCHEMA, "BOOKS_TOPICS");
         assertThat(rowNames, equalTo(Map.of("TOPIC_NAME", "VARCHAR(254) UTF8")));
     }
 
     @Test
     void testSelectNestedTableResult() throws SQLException, IOException {
-        setupNestedTableVirtualSchema();
+        createNestedTableVirtualSchema();
         final ResultSet actualResultSet = exasolTestInterface.getStatement()
                 .executeQuery("SELECT TOPIC_NAME FROM " + TEST_SCHEMA + ".\"BOOKS_TOPICS\";");
         final List<String> topics = new ArrayList<>();
@@ -189,7 +189,22 @@ public class DynamodbAdapterTestLocalIT {
         assertThat(topics, containsInAnyOrder("Exasol", "DynamoDB", "Virtual Schema", "Fantasy", "Birds", "Nature"));
     }
 
-    private void setupNestedTableVirtualSchema() throws SQLException, IOException {
+    @Test
+    void testSelection() throws SQLException, IOException {
+        final String selectedIsbn = "123567";
+        createBasicMappingVirtualSchema();
+        dynamodbTestInterface.createTable(DYNAMO_TABLE_NAME, TestDocuments.BOOKS_ISBN_PROPERTY);
+        dynamodbTestInterface.importData(DYNAMO_TABLE_NAME, TestDocuments.BOOKS);
+        final ResultSet actualResultSet = exasolTestInterface.getStatement()
+                .executeQuery("SELECT ISBN FROM " + TEST_SCHEMA + ".\"BOOKS\" WHERE ISBN = '" + selectedIsbn + "';");
+        final List<String> isbns = new ArrayList<>();
+        while (actualResultSet.next()) {
+            isbns.add(actualResultSet.getString("ISBN"));
+        }
+        assertThat(isbns, containsInAnyOrder(selectedIsbn));
+    }
+
+    private void createNestedTableVirtualSchema() throws SQLException, IOException {
         exasolTestInterface.createDynamodbVirtualSchema(TEST_SCHEMA, DYNAMODB_CONNECTION,
                 "/bfsdefault/default/mappings/" + MappingTestFiles.SINGLE_COLUMN_TO_TABLE_MAPPING_FILE_NAME);
         dynamodbTestInterface.createTable(DYNAMO_TABLE_NAME, TestDocuments.BOOKS_ISBN_PROPERTY);

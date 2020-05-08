@@ -9,7 +9,7 @@ import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 /**
  * This interface represents a DynamoDB operation for fetching data.
  */
-interface DynamodbQueryPlan {
+interface DynamodbOperationPlan {
     /**
      * Executes the planed operation.
      * 

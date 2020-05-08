@@ -9,7 +9,9 @@
       "Exasol",
       "DynamoDB",
       "Virtual Schema"
-    ]
+    ],
+    "publisher": "jb books",
+    "price": 15
   },
   {
     "isbn": "123254545",
@@ -17,6 +19,8 @@
     "author": {
       "name": "Jakob Braun"
     },
+    "publisher": "jb books",
+    "price": 10,
     "topics": [
       "Fantasy"
     ]
@@ -27,6 +31,8 @@
     "author": {
       "name": "Jakob Braun"
     },
+    "publisher": "no name",
+    "price": 21,
     "topics": [
       "Birds",
       "Nature"

@@ -20,6 +20,13 @@
           "overflow": "TRUNCATE"
         }
       },
+      "publisher": {
+        "toStringMapping": {
+          "maxLength": 100,
+          "description": "The name is mapped to a string with max length of 100",
+          "overflow": "TRUNCATE"
+        }
+      },
       "author": {
         "fields": {
           "name": {

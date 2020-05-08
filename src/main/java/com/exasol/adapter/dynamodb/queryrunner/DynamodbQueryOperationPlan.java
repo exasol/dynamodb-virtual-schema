@@ -10,16 +10,20 @@ import com.amazonaws.services.dynamodbv2.model.QueryRequest;
 /**
  * This class represents a DynamoDB {@code SCAN} operation.
  */
-public class DynamodbQueryQueryPlan implements DynamodbQueryPlan {
+public class DynamodbQueryOperationPlan implements DynamodbOperationPlan {
     private final QueryRequest queryRequest;
 
     /**
-     * Creates an instance of {@link DynamodbQueryQueryPlan}.
+     * Creates an instance of {@link DynamodbQueryOperationPlan}.
      *
      * @param queryRequest DynamoDB query request
      */
-    DynamodbQueryQueryPlan(final QueryRequest queryRequest) {
+    DynamodbQueryOperationPlan(final QueryRequest queryRequest) {
         this.queryRequest = queryRequest;
+    }
+
+    QueryRequest getQueryRequest() {
+        return this.queryRequest;
     }
 
     @Override

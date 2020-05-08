@@ -9,9 +9,9 @@ import java.util.List;
  */
 public class DynamodbTableMetadata implements Serializable {
     private static final long serialVersionUID = 7898591572006230212L;
-    private final DynamodbIndex primaryIndex;
-    private final List<DynamodbIndex> localIndexes;
-    private final List<DynamodbIndex> globalIndexes;
+    private final DynamodbPrimaryIndex primaryIndex;
+    private final List<DynamodbSecondaryIndex> localIndexes;
+    private final List<DynamodbSecondaryIndex> globalIndexes;
 
     /**
      * Creates an instance of {@link DynamodbTableMetadata}.
@@ -20,8 +20,8 @@ public class DynamodbTableMetadata implements Serializable {
      * @param localIndexes  list of the local secondary indexes
      * @param globalIndexes list of the global secondary indexes
      */
-    public DynamodbTableMetadata(final DynamodbIndex primaryIndex, final List<DynamodbIndex> localIndexes,
-            final List<DynamodbIndex> globalIndexes) {
+    public DynamodbTableMetadata(final DynamodbPrimaryIndex primaryIndex,
+            final List<DynamodbSecondaryIndex> localIndexes, final List<DynamodbSecondaryIndex> globalIndexes) {
         this.primaryIndex = primaryIndex;
         this.localIndexes = localIndexes;
         this.globalIndexes = globalIndexes;
@@ -30,9 +30,9 @@ public class DynamodbTableMetadata implements Serializable {
     /**
      * Gives the index defined by the primary key of this DynamoDB table.
      * 
-     * @return primary key description.
+     * @return primary index description.
      */
-    public DynamodbIndex getPrimaryIndex() {
+    public DynamodbPrimaryIndex getPrimaryIndex() {
         return this.primaryIndex;
     }
 
@@ -41,7 +41,7 @@ public class DynamodbTableMetadata implements Serializable {
      * 
      * @return list of index descriptions
      */
-    public List<DynamodbIndex> getLocalIndexes() {
+    public List<DynamodbSecondaryIndex> getLocalIndexes() {
         return this.localIndexes;
     }
 
@@ -50,7 +50,7 @@ public class DynamodbTableMetadata implements Serializable {
      *
      * @return list of index descriptions
      */
-    public List<DynamodbIndex> getGlobalIndexes() {
+    public List<DynamodbSecondaryIndex> getGlobalIndexes() {
         return this.globalIndexes;
     }
 
@@ -59,8 +59,9 @@ public class DynamodbTableMetadata implements Serializable {
      *
      * @return list of index descriptions
      */
-    public List<DynamodbIndex> getSecondaryIndexes() {
-        final ArrayList<DynamodbIndex> union = new ArrayList<>(this.localIndexes.size() + this.globalIndexes.size());
+    public List<DynamodbSecondaryIndex> getSecondaryIndexes() {
+        final ArrayList<DynamodbSecondaryIndex> union = new ArrayList<>(
+                this.localIndexes.size() + this.globalIndexes.size());
         union.addAll(this.localIndexes);
         union.addAll(this.globalIndexes);
         return union;
@@ -69,7 +70,7 @@ public class DynamodbTableMetadata implements Serializable {
     /**
      * Gives a list containing the primary index and all local and global indexes.
      * 
-     * @return list of all keys
+     * @return list of all indexes
      */
     public List<DynamodbIndex> getAllIndexes() {
         final ArrayList<DynamodbIndex> union = new ArrayList<>(this.localIndexes.size() + this.globalIndexes.size());

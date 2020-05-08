@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test;
 
 import com.exasol.adapter.dynamodb.documentnode.dynamodb.DynamodbNodeVisitor;
 import com.exasol.adapter.dynamodb.dynamodbmetadata.DynamodbIndex;
+import com.exasol.adapter.dynamodb.dynamodbmetadata.DynamodbPrimaryIndex;
 import com.exasol.adapter.dynamodb.remotetablequery.ColumnLiteralComparisonPredicate;
 import com.exasol.adapter.dynamodb.remotetablequery.LogicalOperator;
 import com.exasol.adapter.dynamodb.remotetablequery.NoPredicate;
@@ -22,8 +23,9 @@ class DynamodbQueryIndexSelectorTest {
     private static final ColumnLiteralComparisonPredicate<DynamodbNodeVisitor> SORT_KEY_COMPARISON = TestSetup
             .getCompareForColumn(SORT_KEY_NAME);
 
-    private static final DynamodbIndex KEY_WITH_NO_SORT_KEY = new DynamodbIndex(PARTITION_KEY, Optional.empty());
-    private static final DynamodbIndex KEY_WITH_SORT_KEY = new DynamodbIndex(PARTITION_KEY, Optional.of(SORT_KEY_NAME));
+    private static final DynamodbIndex KEY_WITH_NO_SORT_KEY = new DynamodbPrimaryIndex(PARTITION_KEY, Optional.empty());
+    private static final DynamodbIndex KEY_WITH_SORT_KEY = new DynamodbPrimaryIndex(PARTITION_KEY,
+            Optional.of(SORT_KEY_NAME));
     final List<DynamodbIndex> KEYS = List.of(KEY_WITH_NO_SORT_KEY, KEY_WITH_SORT_KEY);
 
     @Test
