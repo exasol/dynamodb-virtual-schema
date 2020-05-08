@@ -2,6 +2,7 @@ package com.exasol.adapter.dynamodb.dynamodbmetadata;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.instanceOf;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 import org.junit.jupiter.api.*;
@@ -56,7 +57,8 @@ class DynamodbTableMetadataFactoryTestIT {
                 .buildMetadataForTable(getDynamodbConnection(), TABLE_NAME);
         assertAll(//
                 () -> assertThat(dynamodbTableMetadata.getPrimaryIndex().getPartitionKey(), equalTo(keyName)),
-                () -> assertThat(dynamodbTableMetadata.getPrimaryIndex().hasSortKey(), equalTo(false))//
+                () -> assertThat(dynamodbTableMetadata.getPrimaryIndex().hasSortKey(), equalTo(false)), //
+                () -> assertThat(dynamodbTableMetadata.getPrimaryIndex(), instanceOf(DynamodbPrimaryIndex.class))//
         );
     }
 
@@ -75,7 +77,8 @@ class DynamodbTableMetadataFactoryTestIT {
                 .buildMetadataForTable(getDynamodbConnection(), TABLE_NAME);
         assertAll(//
                 () -> assertThat(dynamodbTableMetadata.getPrimaryIndex().getPartitionKey(), equalTo(partitionKey)),
-                () -> assertThat(dynamodbTableMetadata.getPrimaryIndex().getSortKey(), equalTo(sortKey))//
+                () -> assertThat(dynamodbTableMetadata.getPrimaryIndex().getSortKey(), equalTo(sortKey)), //
+                () -> assertThat(dynamodbTableMetadata.getPrimaryIndex(), instanceOf(DynamodbPrimaryIndex.class))//
         );
     }
 
@@ -84,6 +87,7 @@ class DynamodbTableMetadataFactoryTestIT {
         final String partitionKey = "partition_key";
         final String sortKey = "sort_key";
         final String indexKey = "index_key";
+        final String indexName = "indexName";
         final CreateTableRequest request = new CreateTableRequest().withTableName(TABLE_NAME)
                 .withKeySchema(new KeySchemaElement(partitionKey, KeyType.HASH),
                         new KeySchemaElement(sortKey, KeyType.RANGE))
@@ -94,15 +98,15 @@ class DynamodbTableMetadataFactoryTestIT {
                 .withLocalSecondaryIndexes(new LocalSecondaryIndex()
                         .withKeySchema(new KeySchemaElement(partitionKey, KeyType.HASH),
                                 new KeySchemaElement(indexKey, KeyType.RANGE))
-                        .withIndexName("myIndex").withProjection(new Projection().withProjectionType("KEYS_ONLY")));
+                        .withIndexName(indexName).withProjection(new Projection().withProjectionType("KEYS_ONLY")));
         dynamodbTestInterface.createTable(request);
         final DynamodbTableMetadata dynamodbTableMetadata = new DynamodbTableMetadataFactory()
                 .buildMetadataForTable(getDynamodbConnection(), TABLE_NAME);
         final DynamodbIndex index = dynamodbTableMetadata.getLocalIndexes().get(0);
         assertAll(//
                 () -> assertThat(index.getPartitionKey(), equalTo(partitionKey)), //
-                () -> assertThat(index.getSortKey(), equalTo(indexKey))//
-        );
+                () -> assertThat(index.getSortKey(), equalTo(indexKey)), //
+                () -> assertThat(((DynamodbSecondaryIndex) index).getIndexName(), equalTo(indexName)));
     }
 
     @Test
@@ -111,6 +115,7 @@ class DynamodbTableMetadataFactoryTestIT {
         final String sortKey = "sort_key";
         final String indexKey1 = "index_key1";
         final String indexKey2 = "index_key2";
+        final String indexName = "indexName";
         final CreateTableRequest request = new CreateTableRequest().withTableName(TABLE_NAME)
                 .withKeySchema(new KeySchemaElement(partitionKey, KeyType.HASH),
                         new KeySchemaElement(sortKey, KeyType.RANGE))
@@ -122,7 +127,7 @@ class DynamodbTableMetadataFactoryTestIT {
                 .withGlobalSecondaryIndexes(new GlobalSecondaryIndex()
                         .withKeySchema(new KeySchemaElement(indexKey1, KeyType.HASH),
                                 new KeySchemaElement(indexKey2, KeyType.RANGE))
-                        .withIndexName("myIndex").withProjection(new Projection().withProjectionType("KEYS_ONLY"))
+                        .withIndexName(indexName).withProjection(new Projection().withProjectionType("KEYS_ONLY"))
                         .withProvisionedThroughput(new ProvisionedThroughput(1L, 1L)));
         dynamodbTestInterface.createTable(request);
         final DynamodbTableMetadata dynamodbTableMetadata = new DynamodbTableMetadataFactory()
@@ -130,7 +135,7 @@ class DynamodbTableMetadataFactoryTestIT {
         final DynamodbIndex index = dynamodbTableMetadata.getGlobalIndexes().get(0);
         assertAll(//
                 () -> assertThat(index.getPartitionKey(), equalTo(indexKey1)), //
-                () -> assertThat(index.getSortKey(), equalTo(indexKey2))//
-        );
+                () -> assertThat(index.getSortKey(), equalTo(indexKey2)), //
+                () -> assertThat(((DynamodbSecondaryIndex) index).getIndexName(), equalTo(indexName)));
     }
 }

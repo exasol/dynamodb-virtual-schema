@@ -10,15 +10,15 @@ import com.amazonaws.services.dynamodbv2.model.ScanRequest;
 /**
  * This class represents a DynamoDB {@code SCAN} operation.
  */
-class DynamodbScanQueryPlan implements DynamodbQueryPlan {
+class DynamodbScanOperationPlan implements DynamodbOperationPlan {
     private final ScanRequest scanRequest;
 
     /**
-     * Creates an instance of {@link DynamodbScanQueryPlan}.
+     * Creates an instance of {@link DynamodbScanOperationPlan}.
      * 
      * @param tableName table to scan
      */
-    protected DynamodbScanQueryPlan(final String tableName) {
+    protected DynamodbScanOperationPlan(final String tableName) {
         this.scanRequest = new ScanRequest().withTableName(tableName);
     }
 

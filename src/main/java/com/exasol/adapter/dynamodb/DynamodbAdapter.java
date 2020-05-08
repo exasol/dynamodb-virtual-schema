@@ -20,7 +20,7 @@ import com.exasol.adapter.dynamodb.documentnode.dynamodb.DynamodbNodeVisitor;
 import com.exasol.adapter.dynamodb.literalconverter.dynamodb.SqlLiteralToDynamodbValueConverter;
 import com.exasol.adapter.dynamodb.mapping.*;
 import com.exasol.adapter.dynamodb.mapping.dynamodb.DynamodbValueMapperFactory;
-import com.exasol.adapter.dynamodb.queryrunner.DynamodbQueryRunner;
+import com.exasol.adapter.dynamodb.queryrunner.DynamodbOperationRunner;
 import com.exasol.adapter.dynamodb.remotetablequery.RemoteTableQuery;
 import com.exasol.adapter.dynamodb.remotetablequery.RemoteTableQueryFactory;
 import com.exasol.adapter.metadata.SchemaMetadata;
@@ -126,12 +126,12 @@ public class DynamodbAdapter implements VirtualSchemaAdapter {
 
     private String runQuery(final ExaMetadata exaMetadata, final PushDownRequest request,
             final RemoteTableQuery<DynamodbNodeVisitor> remoteTableQuery) throws ExaConnectionAccessException {
-        final DynamodbQueryRunner dynamodbQueryRunner = new DynamodbQueryRunner(
+        final DynamodbOperationRunner dynamodbOperationRunner = new DynamodbOperationRunner(
                 getConnectionInformation(exaMetadata, request));
         final SchemaMapper<DynamodbNodeVisitor> schemaMapper = new SchemaMapper<>(remoteTableQuery,
                 new DynamodbValueMapperFactory());
         final List<List<ValueExpression>> resultRows = new ArrayList<>();
-        dynamodbQueryRunner.runQuery(remoteTableQuery)
+        dynamodbOperationRunner.runQuery(remoteTableQuery)
                 .forEach(dynamodbRow -> schemaMapper.mapRow(dynamodbRow).forEach(resultRows::add));
         return new ValueExpressionsToSqlSelectFromValuesConverter().convert(remoteTableQuery, resultRows);
     }

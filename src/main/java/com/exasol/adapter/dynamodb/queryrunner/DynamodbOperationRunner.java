@@ -15,15 +15,15 @@ import com.exasol.dynamodb.DynamodbConnectionFactory;
 /**
  * This class runs a DynamoDB query to fetch the data requested in a {@link RemoteTableQuery}.
  */
-public class DynamodbQueryRunner {
+public class DynamodbOperationRunner {
     private final ExaConnectionInformation connectionSettings;
 
     /**
-     * Creates an instance of {@link DynamodbQueryRunner}.
+     * Creates an instance of {@link DynamodbOperationRunner}.
      *
      * @param connectionSettings connection information for the connection to DynamoDB
      */
-    public DynamodbQueryRunner(final ExaConnectionInformation connectionSettings) {
+    public DynamodbOperationRunner(final ExaConnectionInformation connectionSettings) {
         this.connectionSettings = connectionSettings;
     }
 
@@ -38,7 +38,8 @@ public class DynamodbQueryRunner {
         final AmazonDynamoDB client = getConnection();
         final DynamodbTableMetadata tableMetadata = new DynamodbTableMetadataFactory().buildMetadataForTable(client,
                 remoteTableQuery.getFromTable().getRemoteName());
-        final DynamodbQueryPlan queryPlan = new DynamodbQueryPlanner().planQuery(remoteTableQuery, tableMetadata);
+        final DynamodbOperationPlan queryPlan = new DynamodbOperationFactory().planQuery(remoteTableQuery,
+                tableMetadata);
         return queryPlan.run(client).map(DynamodbMap::new);
     }
 

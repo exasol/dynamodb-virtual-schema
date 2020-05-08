@@ -1,51 +1,30 @@
 package com.exasol.adapter.dynamodb.dynamodbmetadata;
 
 import java.io.Serializable;
-import java.util.Optional;
 
 /**
- * This class represents a DynamoDB index. This can either be the default index of a table or a secondary index.
+ * This interface gives access to the keys of a DynamoDB index.
  */
-public class DynamodbIndex implements Serializable {
-    private static final long serialVersionUID = 4048033058983909214L;
-    private final String partitionKey;
-    private final String sortKey;
+public interface DynamodbIndex extends Serializable {
 
     /**
-     * Creates an instance of {@link DynamodbIndex}.
-     * 
-     * @param partitionKey partition key of this key
-     * @param sortKey      sort key of this key
-     */
-    public DynamodbIndex(final String partitionKey, final Optional<String> sortKey) {
-        this.partitionKey = partitionKey;
-        this.sortKey = sortKey.orElse(null);
-    }
-
-    /**
-     * Gives the partition key of this key.
-     * 
+     * Gives the partition key of this index.
+     *
      * @return partition key
      */
-    public String getPartitionKey() {
-        return this.partitionKey;
-    }
+    public String getPartitionKey();
 
     /**
-     * Gives the sort key of this key.
-     * 
+     * Gives the sort key of this index.
+     *
      * @return sort key. {@code null} if no sort key is present.
      */
-    public String getSortKey() {
-        return this.sortKey;
-    }
+    public String getSortKey();
 
     /**
      * Tests if sort key is present.
-     * 
+     *
      * @return {@code true} if sort key is present.
      */
-    public boolean hasSortKey() {
-        return this.sortKey != null;
-    }
+    public boolean hasSortKey();
 }

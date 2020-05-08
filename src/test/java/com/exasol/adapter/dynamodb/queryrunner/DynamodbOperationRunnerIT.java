@@ -1,5 +1,6 @@
 package com.exasol.adapter.dynamodb.queryrunner;
 
+import static com.exasol.adapter.dynamodb.queryrunner.BasicMappingSetup.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 
@@ -17,6 +18,7 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
+import com.amazonaws.services.dynamodbv2.model.*;
 import com.exasol.ExaConnectionInformation;
 import com.exasol.adapter.AdapterException;
 import com.exasol.adapter.dynamodb.DynamodbTestInterface;
@@ -24,34 +26,45 @@ import com.exasol.adapter.dynamodb.documentnode.DocumentNode;
 import com.exasol.adapter.dynamodb.documentnode.DocumentObject;
 import com.exasol.adapter.dynamodb.documentnode.dynamodb.DynamodbNodeVisitor;
 import com.exasol.adapter.dynamodb.documentnode.dynamodb.DynamodbString;
-import com.exasol.adapter.dynamodb.mapping.*;
-import com.exasol.adapter.dynamodb.remotetablequery.ColumnLiteralComparisonPredicate;
-import com.exasol.adapter.dynamodb.remotetablequery.ComparisonPredicate;
-import com.exasol.adapter.dynamodb.remotetablequery.NoPredicate;
+import com.exasol.adapter.dynamodb.mapping.TestDocuments;
 import com.exasol.adapter.dynamodb.remotetablequery.RemoteTableQuery;
 import com.exasol.dynamodb.DynamodbConnectionFactory;
 
 @Tag("integration")
 @Tag("quick")
 @Testcontainers
-class DynamodbQueryRunnerIT {
+class DynamodbOperationRunnerIT {
     private static final Network NETWORK = Network.newNetwork();
     @Container
     public static final GenericContainer LOCAL_DYNAMO = new GenericContainer<>("amazon/dynamodb-local")
             .withNetwork(NETWORK).withExposedPorts(8000).withNetworkAliases("dynamo")
             .withCommand("-jar DynamoDBLocal.jar -sharedDb -dbPath .");
-    private static final String KEY_NAME = "isbn";
     private static DynamodbTestInterface dynamodbTestInterface;
-
-    private static TableMappingDefinition tableMapping;
+    private static BasicMappingSetup basicMappingSetup;
 
     @BeforeAll
     static void beforeAll() throws DynamodbTestInterface.NoNetworkFoundException, IOException, AdapterException {
-        tableMapping = new JsonMappingFactory(MappingTestFiles.BASIC_MAPPING_FILE).getSchemaMapping().getTableMappings()
-                .get(0);
         dynamodbTestInterface = new DynamodbTestInterface(LOCAL_DYNAMO, NETWORK);
-        dynamodbTestInterface.createTable(tableMapping.getRemoteName(), KEY_NAME);
-        dynamodbTestInterface.importData(tableMapping.getRemoteName(), TestDocuments.BOOKS);
+        basicMappingSetup = new BasicMappingSetup();
+        setupTestDatabase();
+    }
+
+    private static void setupTestDatabase() throws IOException, AdapterException {
+        final CreateTableRequest request = new CreateTableRequest()
+                .withTableName(basicMappingSetup.tableMapping.getRemoteName())
+                .withKeySchema(new KeySchemaElement(PRIMARY_KEY_NAME, KeyType.HASH))
+                .withAttributeDefinitions(new AttributeDefinition(PRIMARY_KEY_NAME, ScalarAttributeType.S),
+                        new AttributeDefinition(INDEX_PARTITION_KEY, ScalarAttributeType.S),
+                        new AttributeDefinition(INDEX_SORT_KEY, ScalarAttributeType.N))
+                .withProvisionedThroughput(new ProvisionedThroughput(1L, 1L))//
+                .withGlobalSecondaryIndexes(new GlobalSecondaryIndex()
+                        .withKeySchema(new KeySchemaElement(INDEX_PARTITION_KEY, KeyType.HASH),
+                                new KeySchemaElement(INDEX_SORT_KEY, KeyType.RANGE))
+                        .withIndexName(INDEX_NAME)
+                        .withProjection(new Projection().withProjectionType(ProjectionType.ALL))
+                        .withProvisionedThroughput(new ProvisionedThroughput(1L, 1L)));
+        dynamodbTestInterface.createTable(request);
+        dynamodbTestInterface.importData(basicMappingSetup.tableMapping.getRemoteName(), TestDocuments.BOOKS);
     }
 
     @AfterAll
@@ -64,8 +77,8 @@ class DynamodbQueryRunnerIT {
                 dynamodbTestInterface.getDynamoUser(), dynamodbTestInterface.getDynamoPass());
     }
 
-    private DynamodbQueryRunner getRunner() {
-        return new DynamodbQueryRunner(new ExaConnectionInformation() {
+    private DynamodbOperationRunner getRunner() {
+        return new DynamodbOperationRunner(new ExaConnectionInformation() {
             @Override
             public ConnectionType getType() {
                 return null;
@@ -90,9 +103,8 @@ class DynamodbQueryRunnerIT {
 
     @Test
     void testSelectAll() {
-        final RemoteTableQuery<DynamodbNodeVisitor> remoteTableQuery = new RemoteTableQuery<>(tableMapping,
-                tableMapping.getColumns(), new NoPredicate<>());
-        final DynamodbQueryRunner runner = getRunner();
+        final RemoteTableQuery<DynamodbNodeVisitor> remoteTableQuery = basicMappingSetup.getSelectAllQuery();
+        final DynamodbOperationRunner runner = getRunner();
         final List<DocumentNode<DynamodbNodeVisitor>> result = runner.runQuery(remoteTableQuery)
                 .collect(Collectors.toList());
         assertThat(result.size(), equalTo(3));
@@ -101,20 +113,28 @@ class DynamodbQueryRunnerIT {
     }
 
     @Test
-    void testGetItemRequest() {
+    void testRequestSingleItem() {
         final String isbn = "123567";
-        final DynamodbQueryRunner runner = getRunner();
-        final ColumnMappingDefinition isbnColumn = tableMapping.getColumns().stream()
-                .filter(column -> column.getExasolColumnName().equals("ISBN")).findAny().get();
-        final ColumnLiteralComparisonPredicate<DynamodbNodeVisitor> selection = new ColumnLiteralComparisonPredicate<>(
-                ComparisonPredicate.Operator.EQUAL, isbnColumn, new DynamodbString(isbn));
-        final RemoteTableQuery<DynamodbNodeVisitor> documentQuery = new RemoteTableQuery<>(tableMapping,
-                tableMapping.getColumns(), selection);
+        final DynamodbOperationRunner runner = getRunner();
+        final RemoteTableQuery<DynamodbNodeVisitor> documentQuery = basicMappingSetup.getQueryForIsbn(isbn);
         final List<DocumentNode<DynamodbNodeVisitor>> result = runner.runQuery(documentQuery)
                 .collect(Collectors.toList());
         assertThat(result.size(), equalTo(1));
         final DocumentObject<DynamodbNodeVisitor> first = (DocumentObject<DynamodbNodeVisitor>) result.get(0);
         final DynamodbString isbnResult = (DynamodbString) first.get("isbn");
         assertThat(isbnResult.getValue(), equalTo(isbn));
+    }
+
+    @Test
+    void testSecondaryIndexQuery() {
+        final String publisher = "jb books";
+        final DynamodbOperationRunner runner = getRunner();
+        final RemoteTableQuery<DynamodbNodeVisitor> documentQuery = basicMappingSetup.getQueryForPublisher(publisher);
+        final List<DocumentNode<DynamodbNodeVisitor>> result = runner.runQuery(documentQuery)
+                .collect(Collectors.toList());
+        assertThat(result.size(), equalTo(2));
+        final DocumentObject<DynamodbNodeVisitor> first = (DocumentObject<DynamodbNodeVisitor>) result.get(0);
+        final DynamodbString isbnResult = (DynamodbString) first.get("publisher");
+        assertThat(isbnResult.getValue(), equalTo(publisher));
     }
 }
