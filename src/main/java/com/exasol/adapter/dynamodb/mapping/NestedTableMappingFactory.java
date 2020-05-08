@@ -1,5 +1,7 @@
 package com.exasol.adapter.dynamodb.mapping;
 
+import java.util.List;
+
 import javax.json.JsonObject;
 
 import com.exasol.adapter.dynamodb.documentpath.DocumentPathExpression;
@@ -9,9 +11,9 @@ import com.exasol.adapter.dynamodb.documentpath.DocumentPathExpression;
  * It is called from {@link AbstractTableMappingFactory} when a {@code ToTableMapping} is found.
  */
 class NestedTableMappingFactory extends AbstractTableMappingFactory {
+    final DocumentPathExpression.Builder tablesSourcePath;
     private final TableMappingDefinition parentTable;
     private final String containingListsPropertyName;
-    private final DocumentPathExpression.Builder sourcePath;
 
     /**
      * Creates an instance of {@link NestedTableMappingFactory}.
@@ -25,19 +27,26 @@ class NestedTableMappingFactory extends AbstractTableMappingFactory {
             final DocumentPathExpression.Builder sourcePath) {
         this.parentTable = parentTable;
         this.containingListsPropertyName = containingListsPropertyName;
-        this.sourcePath = sourcePath;
+        this.tablesSourcePath = new DocumentPathExpression.Builder(sourcePath).addArrayAll();
     }
 
     @Override
-    protected TableMappingDefinition readTable(final JsonObject definition) {
-        final DocumentPathExpression.Builder tablesSourcePath = new DocumentPathExpression.Builder(this.sourcePath)
-                .addArrayAll();
+    protected TableMappingDefinition createTable(final JsonObject definition,
+            final List<ColumnMappingDefinition> columns) {
         final String tableName = getNestedTableName(definition, this.parentTable.getExasolName(),
                 this.containingListsPropertyName);
-        final TableMappingDefinition.Builder nestedTableBuilder = TableMappingDefinition.nestedTableBuilder(tableName,
-                this.parentTable.getRemoteName(), tablesSourcePath.build());
-        visitMapping(definition.getJsonObject(MAPPING_KEY), tablesSourcePath, nestedTableBuilder, null, false);
-        return nestedTableBuilder.build();
+        return new TableMappingDefinition(tableName, this.parentTable.getRemoteName(), columns,
+                getPathToTable().build());
+    }
+
+    @Override
+    protected DocumentPathExpression.Builder getPathToTable() {
+        return this.tablesSourcePath;
+    }
+
+    @Override
+    protected boolean isNestedTable() {
+        return true;
     }
 
     private String getNestedTableName(final JsonObject definition, final String parentTableExasolName,

@@ -18,9 +18,10 @@ public class TableMappingDefinition implements Serializable {
     private final String remoteName;
     private final transient List<ColumnMappingDefinition> columns; // The columns are serialized separately in
                                                                    // {@link ColumnMetadata}.
+
     private final DocumentPathExpression pathToNestedTable;
 
-    private TableMappingDefinition(final String exasolName, final String remoteName,
+    TableMappingDefinition(final String exasolName, final String remoteName,
             final List<ColumnMappingDefinition> columns, final DocumentPathExpression pathToNestedTable) {
         this.exasolName = exasolName;
         this.remoteName = remoteName;

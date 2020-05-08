@@ -10,7 +10,8 @@
           "maxLength": 20,
           "description": "The isbn is mapped to a string with max length of 20",
           "overflow": "ABORT",
-          "required": true
+          "required": true,
+          "key": "global"
         }
       },
       "name": {

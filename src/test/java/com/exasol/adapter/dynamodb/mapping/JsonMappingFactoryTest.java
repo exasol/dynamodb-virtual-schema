@@ -91,7 +91,7 @@ public class JsonMappingFactoryTest {
     }
 
     @Test
-    void testException() throws IOException {
+    void testToStringMappingAtRootLevelException() throws IOException {
         final File invalidFile = this.mappingTestFiles.generateInvalidFile(MappingTestFiles.BASIC_MAPPING_FILE,
                 base -> {
                     final JSONObject newMappings = new JSONObject();
@@ -104,5 +104,19 @@ public class JsonMappingFactoryTest {
                 ExasolDocumentMappingLanguageException.class, () -> getMappingDefinitionForFile(invalidFile));
         assertThat(exception.getMessage(), startsWith(
                 "ToStringMapping is not allowed at root level. You probably want to replace it with a \"fields\" definition. In mapping definition file"));
+    }
+
+    @Test
+    void testDifferentKeysException() throws IOException {
+        final File invalidFile = this.mappingTestFiles.generateInvalidFile(MappingTestFiles.BASIC_MAPPING_FILE,
+                base -> {
+                    base.getJSONObject("mapping").getJSONObject("fields").getJSONObject("name")
+                            .getJSONObject("toStringMapping").put("key", "local");
+                    return base;
+                });
+        final ExasolDocumentMappingLanguageException exception = assertThrows(
+                ExasolDocumentMappingLanguageException.class, () -> getMappingDefinitionForFile(invalidFile));
+        assertThat(exception.getMessage(), startsWith(
+                "/name: This table already has a key of different type (global/local).  Please either define all keys of the table local or global."));
     }
 }

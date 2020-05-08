@@ -4,7 +4,16 @@ import com.exasol.adapter.dynamodb.documentpath.DocumentPathExpression;
 import com.exasol.sql.expression.rendering.ValueExpressionRenderer;
 import com.exasol.sql.rendering.StringRendererConfig;
 
+/**
+ * This abstract class is the common basis for the {@link ColumnMappingDefinition}s.
+ * <p>
+ * Objects of this class get serialized into the column adapter notes. They are created using a
+ * {@link MappingDefinitionFactory}. Storing the Mapping definition is necessary as mapping definition files in BucketFS
+ * could be changed, but the mapping must not be changed until a {@code REFRESH} statement is called.
+ * </p>
+ */
 public abstract class AbstractColumnMappingDefinition implements ColumnMappingDefinition {
+    private static final long serialVersionUID = -4115453664059509479L;
     private final String exasolColumnName;
     private final DocumentPathExpression pathToSourceProperty;
     private final LookupFailBehaviour lookupFailBehaviour;
@@ -20,10 +29,12 @@ public abstract class AbstractColumnMappingDefinition implements ColumnMappingDe
         this.lookupFailBehaviour = parameters.lookupFailBehaviour;
     }
 
+    @Override
     public String getExasolColumnName() {
         return this.exasolColumnName;
     }
 
+    @Override
     public String getExasolDefaultValueLiteral() {
         final StringRendererConfig stringRendererConfig = StringRendererConfig.createDefault();
         final ValueExpressionRenderer renderer = new ValueExpressionRenderer(stringRendererConfig);
@@ -31,10 +42,12 @@ public abstract class AbstractColumnMappingDefinition implements ColumnMappingDe
         return renderer.render();
     }
 
+    @Override
     public LookupFailBehaviour getLookupFailBehaviour() {
         return this.lookupFailBehaviour;
     }
 
+    @Override
     public DocumentPathExpression getPathToSourceProperty() {
         return this.pathToSourceProperty;
     }
@@ -48,7 +61,7 @@ public abstract class AbstractColumnMappingDefinition implements ColumnMappingDe
         private final LookupFailBehaviour lookupFailBehaviour;
 
         /**
-         * Creates a parameter object for {@link AbstractColumnMappingDefinition(ConstructorParameters)}
+         * Creates a parameter object for {@link AbstractColumnMappingDefinition(ConstructorParameters )}.
          *
          * @param exasolColumnName     name of the Exasol column
          * @param pathToSourceProperty {@link DocumentPathExpression} representing the path to the source DynamoDB

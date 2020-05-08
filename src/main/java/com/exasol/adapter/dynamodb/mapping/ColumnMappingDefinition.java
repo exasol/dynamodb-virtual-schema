@@ -7,13 +7,8 @@ import com.exasol.adapter.metadata.DataType;
 import com.exasol.sql.expression.ValueExpression;
 
 /**
- * Definition of a column mapping from DynamoDB table to Exasol Virtual Schema.
- * <p>
- * Each instance of this class represents one column in the Exasol table. Objects of this class get serialized into the
- * column adapter notes. They are created using a {@link MappingDefinitionFactory}. Storing the Mapping definition is
- * necessary as mapping definition files in BucketFS could be changed, but the mapping must not be changed until a
- * {@code REFRESH} statement is called.
- * </p>
+ * Definition of a column mapping from DynamoDB table to Exasol Virtual Schema. Each instance of this class represents
+ * one column in the Exasol table.
  */
 public interface ColumnMappingDefinition extends Serializable {
 
