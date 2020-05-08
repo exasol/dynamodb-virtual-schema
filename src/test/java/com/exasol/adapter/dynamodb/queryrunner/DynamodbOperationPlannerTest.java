@@ -21,7 +21,7 @@ import com.exasol.adapter.dynamodb.dynamodbmetadata.DynamodbSecondaryIndex;
 import com.exasol.adapter.dynamodb.dynamodbmetadata.DynamodbTableMetadata;
 import com.exasol.adapter.dynamodb.remotetablequery.RemoteTableQuery;
 
-class DynamodbQueryPlannerTest {
+class DynamodbOperationPlannerTest {
     private static final Network NETWORK = Network.newNetwork();
     private static final DynamodbTableMetadata tableMetadata = new DynamodbTableMetadata(
             new DynamodbPrimaryIndex(BasicMappingSetup.PRIMARY_KEY_NAME, Optional.empty()), List.of(),
@@ -47,7 +47,7 @@ class DynamodbQueryPlannerTest {
     void testSecondaryIndexQuery() {
         final String publisher = "jb books";
         final RemoteTableQuery<DynamodbNodeVisitor> documentQuery = basicMappingSetup.getQueryForPublisher(publisher);
-        final DynamodbQueryQueryPlan dynamodbQueryPlan = (DynamodbQueryQueryPlan) new DynamodbQueryPlanner()
+        final DynamodbQueryOperationPlan dynamodbQueryPlan = (DynamodbQueryOperationPlan) new DynamodbOperationPlanner()
                 .planQuery(documentQuery, tableMetadata);
         assertAll(//
                 () -> assertThat(dynamodbQueryPlan.getQueryRequest().getTableName(),

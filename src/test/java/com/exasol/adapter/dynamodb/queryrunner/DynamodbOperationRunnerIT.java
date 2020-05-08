@@ -33,7 +33,7 @@ import com.exasol.dynamodb.DynamodbConnectionFactory;
 @Tag("integration")
 @Tag("quick")
 @Testcontainers
-class DynamodbQueryRunnerIT {
+class DynamodbOperationRunnerIT {
     private static final Network NETWORK = Network.newNetwork();
     @Container
     public static final GenericContainer LOCAL_DYNAMO = new GenericContainer<>("amazon/dynamodb-local")
@@ -77,8 +77,8 @@ class DynamodbQueryRunnerIT {
                 dynamodbTestInterface.getDynamoUser(), dynamodbTestInterface.getDynamoPass());
     }
 
-    private DynamodbQueryRunner getRunner() {
-        return new DynamodbQueryRunner(new ExaConnectionInformation() {
+    private DynamodbOperationRunner getRunner() {
+        return new DynamodbOperationRunner(new ExaConnectionInformation() {
             @Override
             public ConnectionType getType() {
                 return null;
@@ -104,7 +104,7 @@ class DynamodbQueryRunnerIT {
     @Test
     void testSelectAll() {
         final RemoteTableQuery<DynamodbNodeVisitor> remoteTableQuery = basicMappingSetup.getSelectAllQuery();
-        final DynamodbQueryRunner runner = getRunner();
+        final DynamodbOperationRunner runner = getRunner();
         final List<DocumentNode<DynamodbNodeVisitor>> result = runner.runQuery(remoteTableQuery)
                 .collect(Collectors.toList());
         assertThat(result.size(), equalTo(3));
@@ -115,7 +115,7 @@ class DynamodbQueryRunnerIT {
     @Test
     void testRequestSingleItem() {
         final String isbn = "123567";
-        final DynamodbQueryRunner runner = getRunner();
+        final DynamodbOperationRunner runner = getRunner();
         final RemoteTableQuery<DynamodbNodeVisitor> documentQuery = basicMappingSetup.getQueryForIsbn(isbn);
         final List<DocumentNode<DynamodbNodeVisitor>> result = runner.runQuery(documentQuery)
                 .collect(Collectors.toList());
@@ -128,7 +128,7 @@ class DynamodbQueryRunnerIT {
     @Test
     void testSecondaryIndexQuery() {
         final String publisher = "jb books";
-        final DynamodbQueryRunner runner = getRunner();
+        final DynamodbOperationRunner runner = getRunner();
         final RemoteTableQuery<DynamodbNodeVisitor> documentQuery = basicMappingSetup.getQueryForPublisher(publisher);
         final List<DocumentNode<DynamodbNodeVisitor>> result = runner.runQuery(documentQuery)
                 .collect(Collectors.toList());

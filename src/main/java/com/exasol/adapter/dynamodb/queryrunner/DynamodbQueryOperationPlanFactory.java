@@ -11,26 +11,26 @@ import com.exasol.adapter.dynamodb.remotetablequery.QueryPredicate;
 import com.exasol.adapter.dynamodb.remotetablequery.RemoteTableQuery;
 
 /**
- * This class builds a {@link DynamodbQueryQueryPlan} if possible.
+ * This class builds a {@link DynamodbQueryOperationPlan} if possible.
  */
-public class DynamodbQueryQueryPlanFactory {
+public class DynamodbQueryOperationPlanFactory {
 
     /**
-     * Builds a {@link DynamodbQueryQueryPlan} if possible for the given query.
+     * Builds a {@link DynamodbQueryOperationPlan} if possible for the given query.
      * 
      * @param documentQuery document query to build the plan for
      * @param tableMetadata DynamoDB table metadata used for checking the primary key
      * @return the generated plan
      */
-    public DynamodbQueryQueryPlan buildQueryPlanIfPossible(final RemoteTableQuery<DynamodbNodeVisitor> documentQuery,
-            final DynamodbTableMetadata tableMetadata) {
+    public DynamodbQueryOperationPlan buildQueryPlanIfPossible(
+            final RemoteTableQuery<DynamodbNodeVisitor> documentQuery, final DynamodbTableMetadata tableMetadata) {
         final DynamodbIndex mostRestrictedIndex = new DynamodbQueryIndexSelector()
                 .findMostRestrictedIndex(documentQuery.getSelection(), tableMetadata.getAllIndexes());
         abortIfNoFittingIndexWasFound(mostRestrictedIndex);
         final QueryRequest queryRequest = new QueryRequest(documentQuery.getFromTable().getRemoteName());
         setIndexToQuery(mostRestrictedIndex, queryRequest);
         addKeyCondition(documentQuery, mostRestrictedIndex, queryRequest);
-        return new DynamodbQueryQueryPlan(queryRequest);
+        return new DynamodbQueryOperationPlan(queryRequest);
     }
 
     private void abortIfNoFittingIndexWasFound(final DynamodbIndex mostRestrictedIndex) {
