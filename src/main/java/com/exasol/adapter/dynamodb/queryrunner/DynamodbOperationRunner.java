@@ -38,7 +38,7 @@ public class DynamodbOperationRunner {
         final AmazonDynamoDB client = getConnection();
         final DynamodbTableMetadata tableMetadata = new DynamodbTableMetadataFactory().buildMetadataForTable(client,
                 remoteTableQuery.getFromTable().getRemoteName());
-        final DynamodbOperationPlan queryPlan = new DynamodbOperationPlanner().planQuery(remoteTableQuery,
+        final DynamodbOperationPlan queryPlan = new DynamodbOperationFactory().planQuery(remoteTableQuery,
                 tableMetadata);
         return queryPlan.run(client).map(DynamodbMap::new);
     }
