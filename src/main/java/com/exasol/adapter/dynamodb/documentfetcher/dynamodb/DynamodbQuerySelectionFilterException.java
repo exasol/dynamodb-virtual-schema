@@ -1,4 +1,4 @@
-package com.exasol.adapter.dynamodb.queryrunner;
+package com.exasol.adapter.dynamodb.documentfetcher.dynamodb;
 
 /**
  * This exception is thrown by {@link DynamodbQuerySelectionFilter} if the whitelisted columns can't be extracted

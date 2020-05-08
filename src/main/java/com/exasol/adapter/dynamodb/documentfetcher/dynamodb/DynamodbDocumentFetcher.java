@@ -1,9 +1,10 @@
-package com.exasol.adapter.dynamodb.queryrunner;
+package com.exasol.adapter.dynamodb.documentfetcher.dynamodb;
 
 import java.util.stream.Stream;
 
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.exasol.ExaConnectionInformation;
+import com.exasol.adapter.dynamodb.documentfetcher.DocumentFetcher;
 import com.exasol.adapter.dynamodb.documentnode.DocumentNode;
 import com.exasol.adapter.dynamodb.documentnode.dynamodb.DynamodbMap;
 import com.exasol.adapter.dynamodb.documentnode.dynamodb.DynamodbNodeVisitor;
@@ -15,15 +16,15 @@ import com.exasol.dynamodb.DynamodbConnectionFactory;
 /**
  * This class runs a DynamoDB query to fetch the data requested in a {@link RemoteTableQuery}.
  */
-public class DynamodbOperationRunner {
+public class DynamodbDocumentFetcher implements DocumentFetcher {
     private final ExaConnectionInformation connectionSettings;
 
     /**
-     * Creates an instance of {@link DynamodbOperationRunner}.
+     * Creates an instance of {@link DynamodbDocumentFetcher}.
      *
      * @param connectionSettings connection information for the connection to DynamoDB
      */
-    public DynamodbOperationRunner(final ExaConnectionInformation connectionSettings) {
+    public DynamodbDocumentFetcher(final ExaConnectionInformation connectionSettings) {
         this.connectionSettings = connectionSettings;
     }
 
@@ -33,7 +34,8 @@ public class DynamodbOperationRunner {
      * @param remoteTableQuery the query to run
      * @return stream of results
      */
-    public Stream<DocumentNode<DynamodbNodeVisitor>> runQuery(
+    @Override
+    public Stream<DocumentNode<DynamodbNodeVisitor>> fetchDocumentData(
             final RemoteTableQuery<DynamodbNodeVisitor> remoteTableQuery) {
         final AmazonDynamoDB client = getConnection();
         final DynamodbTableMetadata tableMetadata = new DynamodbTableMetadataFactory().buildMetadataForTable(client,

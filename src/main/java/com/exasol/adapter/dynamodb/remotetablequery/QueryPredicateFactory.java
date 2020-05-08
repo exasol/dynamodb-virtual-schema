@@ -59,6 +59,18 @@ public class QueryPredicateFactory<DocumentVisitorType> {
             return null;
         }
 
+        @Override
+        public Void visit(final SqlPredicateLess sqlPredicateLess) {
+            buildComparison(sqlPredicateLess, ComparisonPredicate.Operator.LESS);
+            return null;
+        }
+
+        @Override
+        public Void visit(final SqlPredicateLessEqual sqlPredicateLessEqual) {
+            buildComparison(sqlPredicateLessEqual, ComparisonPredicate.Operator.LESS_EQUAL);
+            return null;
+        }
+
         void buildComparison(final AbstractSqlBinaryEquality sqlEquality, final ComparisonPredicate.Operator operator) {
             final SqlNode left = sqlEquality.getLeft();
             final SqlNode right = sqlEquality.getRight();

@@ -27,6 +27,12 @@
           "overflow": "TRUNCATE"
         }
       },
+      "price": {
+        "toStringMapping": {
+          "maxLength": 10,
+          "overflow": "ABORT"
+        }
+      },
       "author": {
         "fields": {
           "name": {
