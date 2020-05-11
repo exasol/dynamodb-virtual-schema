@@ -5,35 +5,36 @@ class SchemaMappingDefinition{
 
 class TableMappingDefinition {
 exasolName
-isRootTable
+remoteName
+pathInRemoteTable
 }
 
+interface ColumnMappingDefinition{
+getExasolColumnName()
+getExasolDataType()
+getExasolDefaultValue()
+isExasolColumnNullable()
+getLookupFailBehaviour()
+getPathToSourceProperty()
+}
+
+
 abstract class AbstractColumnMappingDefinition {
-exasolName
-pathToSourceProperty: DynamodbResultWalker
-lookupFailBehaviour
-{abstract} getExasolDataType()
-{abstract} getExasolDefaultValue()
-{abstract} isExasolColumnNullable()
+...
 }
 
 class ToStringColumnMappingDefinition {
-exasolStringSize
-overflowBehaviour
-getExasolDataType()
-getExasolDefaultValue()
-isExasolColumnNullable()
+...
 }
 
 class ToJsonColumnMappingDefinition {
-getExasolDataType()
-getExasolDefaultValue()
-isExasolColumnNullable()
+...
 }
 
 
-SchemaMappingDefinition "1" *-- "*" TableMappingDefinition: tables
-TableMappingDefinition "1" *-- "*" AbstractColumnMappingDefinition: columns
+SchemaMappingDefinition "1" *- "*" TableMappingDefinition: tables
+TableMappingDefinition "1" *- "*" ColumnMappingDefinition: columns
+ColumnMappingDefinition <|-- AbstractColumnMappingDefinition
 AbstractColumnMappingDefinition <|-- ToStringColumnMappingDefinition
 AbstractColumnMappingDefinition <|-- ToJsonColumnMappingDefinition
 @enduml 
