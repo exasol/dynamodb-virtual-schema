@@ -15,7 +15,7 @@ public class ToStringColumnMappingDefinition extends AbstractColumnMappingDefini
     /**
      * Creates an instance of {@link ToStringColumnMappingDefinition}.
      * 
-     * @param parameters        Parameter object for {{@link AbstractColumnMappingDefinition}}
+     * @param parameters        Parameter object for {{@link ColumnMappingDefinition}}
      * @param exasolStringSize  Length of the Exasol VARCHAR
      * @param overflowBehaviour Behaviour if extracted string exceeds {@link #exasolStringSize}
      */

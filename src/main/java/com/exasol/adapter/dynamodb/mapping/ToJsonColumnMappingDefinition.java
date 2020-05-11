@@ -13,7 +13,7 @@ public class ToJsonColumnMappingDefinition extends AbstractColumnMappingDefiniti
     /**
      * Creates an instance of {@link ToJsonColumnMappingDefinition}.
      * 
-     * @param parameters Parameter object for {@link AbstractColumnMappingDefinition}
+     * @param parameters Parameter object for {@link ColumnMappingDefinition}
      */
     public ToJsonColumnMappingDefinition(final ConstructorParameters parameters) {
         super(parameters);

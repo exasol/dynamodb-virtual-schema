@@ -13,6 +13,7 @@ import com.exasol.adapter.dynamodb.documentnode.dynamodb.DynamodbNumber;
 import com.exasol.adapter.dynamodb.documentnode.dynamodb.DynamodbString;
 import com.exasol.adapter.dynamodb.documentpath.DocumentPathExpression;
 import com.exasol.adapter.dynamodb.mapping.AbstractColumnMappingDefinition;
+import com.exasol.adapter.dynamodb.mapping.LookupFailBehaviour;
 import com.exasol.adapter.dynamodb.mapping.ToStringColumnMappingDefinition;
 
 public class DynamodbToStringValueMapperTest {
@@ -24,7 +25,7 @@ public class DynamodbToStringValueMapperTest {
     private static final DocumentPathExpression TEST_SOURCE_COLUMN_PATH = new DocumentPathExpression.Builder()
             .addObjectLookup(TEST_SOURCE_COLUMN).build();
     private static final AbstractColumnMappingDefinition.ConstructorParameters COLUMN_PARAMETERS = new AbstractColumnMappingDefinition.ConstructorParameters(
-            DEST_COLUMN, TEST_SOURCE_COLUMN_PATH, AbstractColumnMappingDefinition.LookupFailBehaviour.DEFAULT_VALUE);
+            DEST_COLUMN, TEST_SOURCE_COLUMN_PATH, LookupFailBehaviour.DEFAULT_VALUE);
 
     @Test
     void testConvertStringRow() {

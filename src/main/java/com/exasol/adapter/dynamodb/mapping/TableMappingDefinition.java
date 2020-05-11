@@ -13,23 +13,24 @@ import com.exasol.adapter.dynamodb.documentpath.DocumentPathExpression;
  * from a nested list or object. See {@link #isRootTable()} for details.
  */
 public class TableMappingDefinition implements Serializable {
-    private static final long serialVersionUID = 3568807256753213582L;
+    private static final long serialVersionUID = -3340645367432789767L;
     private final String exasolName;
     private final String remoteName;
-    private final transient List<AbstractColumnMappingDefinition> columns; // The columns are serialized separately in
-                                                                           // {@link ColumnMetadata}.
+
+    private final transient List<ColumnMappingDefinition> columns; // The columns are serialized separately in
+                                                                   // {@link ColumnMetadata}.
+
     private final DocumentPathExpression pathInRemoteTable;
 
-    private TableMappingDefinition(final String exasolName, final String remoteName,
-            final List<AbstractColumnMappingDefinition> columns, final DocumentPathExpression pathInRemoteTable) {
+    TableMappingDefinition(final String exasolName, final String remoteName,
+            final List<ColumnMappingDefinition> columns, final DocumentPathExpression pathInRemoteTable) {
         this.exasolName = exasolName;
         this.remoteName = remoteName;
         this.pathInRemoteTable = pathInRemoteTable;
         this.columns = columns;
     }
 
-    TableMappingDefinition(final TableMappingDefinition deserialized,
-            final List<AbstractColumnMappingDefinition> columns) {
+    TableMappingDefinition(final TableMappingDefinition deserialized, final List<ColumnMappingDefinition> columns) {
         this.exasolName = deserialized.exasolName;
         this.remoteName = deserialized.remoteName;
         this.pathInRemoteTable = deserialized.pathInRemoteTable;
@@ -85,6 +86,7 @@ public class TableMappingDefinition implements Serializable {
      * 
      * @return path to nested list. Empty path expression if this tables maps a root document.
      */
+
     public DocumentPathExpression getPathInRemoteTable() {
         return this.pathInRemoteTable;
     }
@@ -92,9 +94,9 @@ public class TableMappingDefinition implements Serializable {
     /**
      * Get the columns of this table
      * 
-     * @return List of {@link AbstractColumnMappingDefinition}s
+     * @return List of {@link ColumnMappingDefinition}s
      */
-    public List<AbstractColumnMappingDefinition> getColumns() {
+    public List<ColumnMappingDefinition> getColumns() {
         return this.columns;
     }
 
@@ -114,7 +116,7 @@ public class TableMappingDefinition implements Serializable {
     public static class Builder {
         private final String exasolName;
         private final String remoteName;
-        private final List<AbstractColumnMappingDefinition> columns = new ArrayList<>();
+        private final List<ColumnMappingDefinition> columns = new ArrayList<>();
         private final DocumentPathExpression pathToNestedTable;
 
         private Builder(final String exasolName, final String remoteName,
@@ -125,12 +127,12 @@ public class TableMappingDefinition implements Serializable {
         }
 
         /**
-         * Adds a {@link AbstractColumnMappingDefinition}
+         * Adds a {@link ColumnMappingDefinition}
          * 
          * @param columnMappingDefinition Column MappingDefinition to add
          * @return self for fluent programming interface
          */
-        public Builder withColumnMappingDefinition(final AbstractColumnMappingDefinition columnMappingDefinition) {
+        public Builder withColumnMappingDefinition(final ColumnMappingDefinition columnMappingDefinition) {
             this.columns.add(columnMappingDefinition);
             return this;
         }

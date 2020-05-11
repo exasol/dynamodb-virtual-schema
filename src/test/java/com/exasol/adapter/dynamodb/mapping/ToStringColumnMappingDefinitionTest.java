@@ -17,8 +17,7 @@ public class ToStringColumnMappingDefinitionTest {
         final int stringLength = 10;
         final ToStringColumnMappingDefinition toStringColumnMappingDefinition = new ToStringColumnMappingDefinition(
                 new AbstractColumnMappingDefinition.ConstructorParameters(DEST_COLUMN,
-                        new DocumentPathExpression.Builder().build(),
-                        AbstractColumnMappingDefinition.LookupFailBehaviour.DEFAULT_VALUE),
+                        new DocumentPathExpression.Builder().build(), LookupFailBehaviour.DEFAULT_VALUE),
                 stringLength, ToStringColumnMappingDefinition.OverflowBehaviour.TRUNCATE);
         assertAll(
                 () -> assertThat(toStringColumnMappingDefinition.getExasolDataType().getExaDataType(),

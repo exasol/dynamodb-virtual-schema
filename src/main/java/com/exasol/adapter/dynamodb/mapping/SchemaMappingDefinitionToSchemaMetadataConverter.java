@@ -13,7 +13,7 @@ import com.exasol.utils.StringSerializer;
 
 /**
  * This class converts a {@link SchemaMappingDefinition} into a {@link SchemaMetadata}. The
- * {@link AbstractColumnMappingDefinition}s are serialized into {@link ColumnMetadata#getAdapterNotes()}. Using
+ * {@link ColumnMappingDefinition}s are serialized into {@link ColumnMetadata#getAdapterNotes()}. Using
  * {@link #convertBackColumn(ColumnMetadata)} it can get deserialized again.
  */
 public class SchemaMappingDefinitionToSchemaMetadataConverter {
@@ -23,7 +23,7 @@ public class SchemaMappingDefinitionToSchemaMetadataConverter {
      *
      * @param schemaMappingDefinition the {@link SchemaMappingDefinition} to be converted
      * @return {@link SchemaMetadata}
-     * @throws IOException if {@link AbstractColumnMappingDefinition} could not get serialized
+     * @throws IOException if {@link ColumnMappingDefinition} could not get serialized
      */
     public SchemaMetadata convert(final SchemaMappingDefinition schemaMappingDefinition) throws IOException {
         final List<TableMetadata> tableMetadata = new ArrayList<>();
@@ -44,7 +44,7 @@ public class SchemaMappingDefinitionToSchemaMetadataConverter {
 
     private TableMetadata convertTable(final TableMappingDefinition tableMappingDefinition) throws IOException {
         final List<ColumnMetadata> columnDefinitions = new ArrayList<>();
-        for (final AbstractColumnMappingDefinition column : tableMappingDefinition.getColumns()) {
+        for (final ColumnMappingDefinition column : tableMappingDefinition.getColumns()) {
             columnDefinitions.add(convertColumn(column));
         }
         final String adapterNotes = "";// Due to a bug in exasol core adapter notes are not stored for tables
@@ -52,14 +52,13 @@ public class SchemaMappingDefinitionToSchemaMetadataConverter {
     }
 
     /**
-     * Creates a {@link ColumnMetadata} for a given {@link AbstractColumnMappingDefinition}.
+     * Creates a {@link ColumnMetadata} for a given {@link ColumnMappingDefinition}.
      * 
      * @param columnMappingDefinition to convert
      * @return {@link ColumnMetadata}
      * @throws IOException if serialization fails
      */
-    public ColumnMetadata convertColumn(final AbstractColumnMappingDefinition columnMappingDefinition)
-            throws IOException {
+    public ColumnMetadata convertColumn(final ColumnMappingDefinition columnMappingDefinition) throws IOException {
         final String serialized = StringSerializer.serializeToString(columnMappingDefinition);
         return ColumnMetadata.builder()//
                 .name(columnMappingDefinition.getExasolColumnName())//
@@ -94,7 +93,7 @@ public class SchemaMappingDefinitionToSchemaMetadataConverter {
          * As the columns are transient in TableMappingDefinition, they must be deserialized from the ColumnMetadata and
          * added separately.
          */
-        final List<AbstractColumnMappingDefinition> columns = new ArrayList<>(tableMetadata.getColumns().size());
+        final List<ColumnMappingDefinition> columns = new ArrayList<>(tableMetadata.getColumns().size());
         for (final ColumnMetadata columnMetadata : tableMetadata.getColumns()) {
             columns.add(convertBackColumn(columnMetadata));
         }
@@ -113,16 +112,16 @@ public class SchemaMappingDefinitionToSchemaMetadataConverter {
     }
 
     /**
-     * Deserializes a {@link AbstractColumnMappingDefinition} from {@link ColumnMetadata}.
+     * Deserializes a {@link ColumnMappingDefinition} from {@link ColumnMetadata}.
      *
      * @param columnMetadata {@link ColumnMetadata} to deserialized from
      * @return ColumnMappingDefinition
      * @throws IllegalStateException if deserialization fails
      */
-    public AbstractColumnMappingDefinition convertBackColumn(final ColumnMetadata columnMetadata) {
+    public ColumnMappingDefinition convertBackColumn(final ColumnMetadata columnMetadata) {
         try {
             final String serialized = columnMetadata.getAdapterNotes();
-            return (AbstractColumnMappingDefinition) StringSerializer.deserializeFromString(serialized);
+            return (ColumnMappingDefinition) StringSerializer.deserializeFromString(serialized);
         } catch (final IOException | ClassNotFoundException exception) {
             throw new IllegalStateException("Failed to deserialize ColumnMappingDefinition.", exception);
         }

@@ -11,6 +11,7 @@ import com.exasol.adapter.dynamodb.documentnode.dynamodb.DynamodbMap;
 import com.exasol.adapter.dynamodb.documentpath.DocumentPathExpression;
 import com.exasol.adapter.dynamodb.documentpath.StaticDocumentPathIterator;
 import com.exasol.adapter.dynamodb.mapping.AbstractColumnMappingDefinition;
+import com.exasol.adapter.dynamodb.mapping.LookupFailBehaviour;
 import com.exasol.adapter.dynamodb.mapping.ToJsonColumnMappingDefinition;
 import com.exasol.dynamodb.attributevalue.AttributeValueQuickCreator;
 import com.exasol.sql.expression.ValueExpression;
@@ -22,8 +23,7 @@ public class DynamodbToJsonValueMapperTest {
     void testConvertRowBasic() {
         final ToJsonColumnMappingDefinition toStringColumnMappingDefinition = new ToJsonColumnMappingDefinition(
                 new AbstractColumnMappingDefinition.ConstructorParameters(DEST_COLUMN,
-                        new DocumentPathExpression.Builder().build(),
-                        AbstractColumnMappingDefinition.LookupFailBehaviour.EXCEPTION));
+                        new DocumentPathExpression.Builder().build(), LookupFailBehaviour.EXCEPTION));
         final DynamodbMap testData = new DynamodbMap(Map.of("key", AttributeValueQuickCreator.forString("value")));
         final ValueExpression exasolCellValue = new DynamodbToJsonValueMapper(toStringColumnMappingDefinition)
                 .mapRow(testData, new StaticDocumentPathIterator());

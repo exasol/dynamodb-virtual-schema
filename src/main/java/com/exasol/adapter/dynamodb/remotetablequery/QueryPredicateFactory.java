@@ -7,7 +7,7 @@ import com.exasol.adapter.AdapterException;
 import com.exasol.adapter.dynamodb.documentnode.DocumentValue;
 import com.exasol.adapter.dynamodb.literalconverter.NotLiteralException;
 import com.exasol.adapter.dynamodb.literalconverter.SqlLiteralToDocumentValueConverter;
-import com.exasol.adapter.dynamodb.mapping.AbstractColumnMappingDefinition;
+import com.exasol.adapter.dynamodb.mapping.ColumnMappingDefinition;
 import com.exasol.adapter.dynamodb.mapping.SchemaMappingDefinitionToSchemaMetadataConverter;
 import com.exasol.adapter.sql.*;
 
@@ -78,7 +78,7 @@ public class QueryPredicateFactory<DocumentVisitorType> {
         void buildColumnLiteralComparision(final SqlColumn column, final SqlNode literal,
                 final ComparisonPredicate.Operator operator) {
             try {
-                final AbstractColumnMappingDefinition columnMapping = new SchemaMappingDefinitionToSchemaMetadataConverter()
+                final ColumnMappingDefinition columnMapping = new SchemaMappingDefinitionToSchemaMetadataConverter()
                         .convertBackColumn(column.getMetadata());
                 final DocumentValue<DocumentVisitorType> literalValue = QueryPredicateFactory.this.literalConverter
                         .convert(literal);

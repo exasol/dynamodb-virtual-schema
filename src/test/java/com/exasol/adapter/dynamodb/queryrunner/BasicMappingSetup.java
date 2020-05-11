@@ -7,7 +7,7 @@ import org.jetbrains.annotations.NotNull;
 import com.exasol.adapter.AdapterException;
 import com.exasol.adapter.dynamodb.documentnode.dynamodb.DynamodbNodeVisitor;
 import com.exasol.adapter.dynamodb.documentnode.dynamodb.DynamodbString;
-import com.exasol.adapter.dynamodb.mapping.AbstractColumnMappingDefinition;
+import com.exasol.adapter.dynamodb.mapping.ColumnMappingDefinition;
 import com.exasol.adapter.dynamodb.mapping.JsonMappingFactory;
 import com.exasol.adapter.dynamodb.mapping.MappingTestFiles;
 import com.exasol.adapter.dynamodb.mapping.TableMappingDefinition;
@@ -42,7 +42,7 @@ public class BasicMappingSetup {
      * @return query
      */
     public RemoteTableQuery<DynamodbNodeVisitor> getQueryForIsbn(final String isbn) {
-        final AbstractColumnMappingDefinition isbnColumn = this.tableMapping.getColumns().stream()
+        final ColumnMappingDefinition isbnColumn = this.tableMapping.getColumns().stream()
                 .filter(column -> column.getExasolColumnName().equals("ISBN")).findAny().get();
         final ColumnLiteralComparisonPredicate<DynamodbNodeVisitor> selection = new ColumnLiteralComparisonPredicate<>(
                 ComparisonPredicate.Operator.EQUAL, isbnColumn, new DynamodbString(isbn));
@@ -57,7 +57,7 @@ public class BasicMappingSetup {
      * @return query
      */
     public RemoteTableQuery<DynamodbNodeVisitor> getQueryForPublisher(final String publisher) {
-        final AbstractColumnMappingDefinition publisherColumn = this.tableMapping.getColumns().stream()
+        final ColumnMappingDefinition publisherColumn = this.tableMapping.getColumns().stream()
                 .filter(column -> column.getExasolColumnName().equals("PUBLISHER")).findAny().get();
         final ColumnLiteralComparisonPredicate<DynamodbNodeVisitor> selection = new ColumnLiteralComparisonPredicate<>(
                 ComparisonPredicate.Operator.EQUAL, publisherColumn, new DynamodbString(publisher));

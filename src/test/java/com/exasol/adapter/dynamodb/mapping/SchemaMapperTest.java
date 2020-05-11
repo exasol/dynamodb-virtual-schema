@@ -28,7 +28,7 @@ public class SchemaMapperTest {
     public void testMapRow() {
         final ToJsonColumnMappingDefinition columnMapping = new ToJsonColumnMappingDefinition(
                 new AbstractColumnMappingDefinition.ConstructorParameters("test", DocumentPathExpression.empty(),
-                        AbstractColumnMappingDefinition.LookupFailBehaviour.EXCEPTION));
+                        LookupFailBehaviour.EXCEPTION));
 
         final TableMappingDefinition tableMapping = TableMappingDefinition.rootTableBuilder("table", "table")
                 .withColumnMappingDefinition(columnMapping).build();
@@ -51,7 +51,7 @@ public class SchemaMapperTest {
                 .addObjectLookup(nestedListKey).addArrayAll().build();
         final ToJsonColumnMappingDefinition columnMapping = new ToJsonColumnMappingDefinition(
                 new AbstractColumnMappingDefinition.ConstructorParameters("test", pathToNestedTable,
-                        AbstractColumnMappingDefinition.LookupFailBehaviour.EXCEPTION));
+                        LookupFailBehaviour.EXCEPTION));
         final TableMappingDefinition tableMapping = TableMappingDefinition
                 .nestedTableBuilder("table", "table", pathToNestedTable).withColumnMappingDefinition(columnMapping)
                 .build();
@@ -71,14 +71,14 @@ public class SchemaMapperTest {
     private static class MockValueMapperFactory implements ValueMapperFactory<Object> {
 
         @Override
-        public AbstractValueMapper<Object> getValueMapperForColumn(final AbstractColumnMappingDefinition column) {
+        public AbstractValueMapper<Object> getValueMapperForColumn(final ColumnMappingDefinition column) {
             return new MockValueMapper(column);
         }
     }
 
     private static class MockValueMapper extends AbstractValueMapper<Object> {
 
-        public MockValueMapper(final AbstractColumnMappingDefinition column) {
+        public MockValueMapper(final ColumnMappingDefinition column) {
             super(column);
         }
 

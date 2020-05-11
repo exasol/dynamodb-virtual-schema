@@ -38,8 +38,8 @@ public class JsonMappingFactoryTest {
         final SchemaMappingDefinition schemaMapping = getMappingDefinitionForFile(MappingTestFiles.BASIC_MAPPING_FILE);
         final List<TableMappingDefinition> tables = schemaMapping.getTableMappings();
         final TableMappingDefinition table = tables.get(0);
-        final List<AbstractColumnMappingDefinition> columns = table.getColumns();
-        final List<String> columnNames = columns.stream().map(AbstractColumnMappingDefinition::getExasolColumnName)
+        final List<ColumnMappingDefinition> columns = table.getColumns();
+        final List<String> columnNames = columns.stream().map(ColumnMappingDefinition::getExasolColumnName)
                 .collect(Collectors.toList());
         final ToStringColumnMappingDefinition isbnColumn = (ToStringColumnMappingDefinition) columns.stream()
                 .filter(column -> column.getExasolColumnName().equals("ISBN")).findAny().get();
@@ -52,10 +52,8 @@ public class JsonMappingFactoryTest {
                 () -> assertThat(isbnColumn.getExasolStringSize(), equalTo(20)),
                 () -> assertThat(isbnColumn.getOverflowBehaviour(),
                         equalTo(ToStringColumnMappingDefinition.OverflowBehaviour.EXCEPTION)),
-                () -> assertThat(isbnColumn.getLookupFailBehaviour(),
-                        equalTo(AbstractColumnMappingDefinition.LookupFailBehaviour.EXCEPTION)),
-                () -> assertThat(nameColumn.getLookupFailBehaviour(),
-                        equalTo(AbstractColumnMappingDefinition.LookupFailBehaviour.DEFAULT_VALUE)),
+                () -> assertThat(isbnColumn.getLookupFailBehaviour(), equalTo(LookupFailBehaviour.EXCEPTION)),
+                () -> assertThat(nameColumn.getLookupFailBehaviour(), equalTo(LookupFailBehaviour.DEFAULT_VALUE)),
                 () -> assertThat(nameColumn.getExasolStringSize(), equalTo(100)),
                 () -> assertThat(nameColumn.getOverflowBehaviour(),
                         equalTo(ToStringColumnMappingDefinition.OverflowBehaviour.TRUNCATE)));
@@ -67,8 +65,8 @@ public class JsonMappingFactoryTest {
                 MappingTestFiles.TO_JSON_MAPPING_FILE);
         final List<TableMappingDefinition> tables = schemaMapping.getTableMappings();
         final TableMappingDefinition table = tables.get(0);
-        final List<AbstractColumnMappingDefinition> columns = table.getColumns();
-        final List<String> columnNames = columns.stream().map(AbstractColumnMappingDefinition::getExasolColumnName)
+        final List<ColumnMappingDefinition> columns = table.getColumns();
+        final List<String> columnNames = columns.stream().map(ColumnMappingDefinition::getExasolColumnName)
                 .collect(Collectors.toList());
         assertAll(() -> assertThat(tables.size(), equalTo(1)), //
                 () -> assertThat(table.getExasolName(), equalTo("BOOKS")),
@@ -93,7 +91,7 @@ public class JsonMappingFactoryTest {
     }
 
     @Test
-    void testException() throws IOException {
+    void testToStringMappingAtRootLevelException() throws IOException {
         final File invalidFile = this.mappingTestFiles.generateInvalidFile(MappingTestFiles.BASIC_MAPPING_FILE,
                 base -> {
                     final JSONObject newMappings = new JSONObject();
@@ -106,5 +104,19 @@ public class JsonMappingFactoryTest {
                 ExasolDocumentMappingLanguageException.class, () -> getMappingDefinitionForFile(invalidFile));
         assertThat(exception.getMessage(), startsWith(
                 "ToStringMapping is not allowed at root level. You probably want to replace it with a \"fields\" definition. In mapping definition file"));
+    }
+
+    @Test
+    void testDifferentKeysException() throws IOException {
+        final File invalidFile = this.mappingTestFiles.generateInvalidFile(MappingTestFiles.BASIC_MAPPING_FILE,
+                base -> {
+                    base.getJSONObject("mapping").getJSONObject("fields").getJSONObject("name")
+                            .getJSONObject("toStringMapping").put("key", "local");
+                    return base;
+                });
+        final ExasolDocumentMappingLanguageException exception = assertThrows(
+                ExasolDocumentMappingLanguageException.class, () -> getMappingDefinitionForFile(invalidFile));
+        assertThat(exception.getMessage(), startsWith(
+                "/name: This table already has a key of different type (global/local). Please either define all keys of the table local or global."));
     }
 }

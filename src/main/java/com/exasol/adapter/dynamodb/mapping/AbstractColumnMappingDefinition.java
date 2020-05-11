@@ -1,31 +1,26 @@
 package com.exasol.adapter.dynamodb.mapping;
 
-import java.io.Serializable;
-
 import com.exasol.adapter.dynamodb.documentpath.DocumentPathExpression;
-import com.exasol.adapter.metadata.DataType;
-import com.exasol.sql.expression.ValueExpression;
 import com.exasol.sql.expression.rendering.ValueExpressionRenderer;
 import com.exasol.sql.rendering.StringRendererConfig;
 
 /**
- * Definition of a column mapping from DynamoDB table to Exasol Virtual Schema.
+ * This abstract class is the common basis for the {@link ColumnMappingDefinition}s.
  * <p>
- * Each instance of this class represents one column in the Exasol table. Objects of this class get serialized into the
- * column adapter notes. They are created using a {@link MappingDefinitionFactory}. Storing the Mapping definition is
- * necessary as mapping definition files in BucketFS could be changed, but the mapping must not be changed until a
- * {@code REFRESH} statement is called.
+ * Objects of this class get serialized into the column adapter notes. They are created using a
+ * {@link MappingDefinitionFactory}. Storing the mapping definition is necessary as mapping definition files in BucketFS
+ * could be changed, but the mapping must not be changed until a {@code REFRESH} statement is called.
  * </p>
  */
-public abstract class AbstractColumnMappingDefinition implements Serializable {
-    private static final long serialVersionUID = 48342992735371252L;
+public abstract class AbstractColumnMappingDefinition implements ColumnMappingDefinition {
+    private static final long serialVersionUID = -4115453664059509479L;
     private final String exasolColumnName;
     private final DocumentPathExpression pathToSourceProperty;
     private final LookupFailBehaviour lookupFailBehaviour;
 
     /**
-     * Creates an instance of {@link AbstractColumnMappingDefinition}.
-     * 
+     * Creates an instance of {@link ColumnMappingDefinition}.
+     *
      * @param parameters parameter object
      */
     AbstractColumnMappingDefinition(final ConstructorParameters parameters) {
@@ -34,34 +29,12 @@ public abstract class AbstractColumnMappingDefinition implements Serializable {
         this.lookupFailBehaviour = parameters.lookupFailBehaviour;
     }
 
-    /**
-     * Get the name of the column in the Exasol table.
-     *
-     * @return name of the column
-     */
+    @Override
     public String getExasolColumnName() {
         return this.exasolColumnName;
     }
 
-    /**
-     * Get the Exasol data type.
-     *
-     * @return Exasol data type
-     */
-    public abstract DataType getExasolDataType();
-
-    /**
-     * Get the default value of this column.
-     *
-     * @return {@link ValueExpression} holding default value
-     */
-    public abstract ValueExpression getExasolDefaultValue();
-
-    /**
-     * Get the string representation of the exasol column default value literal.
-     * 
-     * @return default value string
-     */
+    @Override
     public String getExasolDefaultValueLiteral() {
         final StringRendererConfig stringRendererConfig = StringRendererConfig.createDefault();
         final ValueExpressionRenderer renderer = new ValueExpressionRenderer(stringRendererConfig);
@@ -69,46 +42,18 @@ public abstract class AbstractColumnMappingDefinition implements Serializable {
         return renderer.render();
     }
 
-    /**
-     * Describes if Exasol column is nullable.
-     *
-     * @return {@code <true>} if Exasol column is nullable
-     */
-    public abstract boolean isExasolColumnNullable();
-
-    /**
-     * Get the {@link LookupFailBehaviour}
-     *
-     * @return {@link LookupFailBehaviour}
-     */
+    @Override
     public LookupFailBehaviour getLookupFailBehaviour() {
         return this.lookupFailBehaviour;
     }
 
+    @Override
     public DocumentPathExpression getPathToSourceProperty() {
         return this.pathToSourceProperty;
     }
 
-    public abstract void accept(ColumnMappingDefinitionVisitor visitor);
-
     /**
-     * This enum describes behaviour of the mapping definition when the requested property is not set in a given
-     * DynamoDB row.
-     */
-    public enum LookupFailBehaviour {
-        /**
-         * Break the execution of the query .
-         */
-        EXCEPTION,
-        /**
-         * The column specific default value is returned.
-         */
-        DEFAULT_VALUE
-    }
-
-    /**
-     * Parameter object for
-     * {@link AbstractColumnMappingDefinition#AbstractColumnMappingDefinition(ConstructorParameters)}
+     * Parameter object for {@link AbstractColumnMappingDefinition(ConstructorParameters)}
      */
     public static class ConstructorParameters {
         private final String exasolColumnName;
@@ -116,8 +61,7 @@ public abstract class AbstractColumnMappingDefinition implements Serializable {
         private final LookupFailBehaviour lookupFailBehaviour;
 
         /**
-         * Creates a parameter object for
-         * {@link AbstractColumnMappingDefinition#AbstractColumnMappingDefinition(ConstructorParameters)}
+         * Creates a parameter object for {@link AbstractColumnMappingDefinition(ConstructorParameters)}.
          *
          * @param exasolColumnName     name of the Exasol column
          * @param pathToSourceProperty {@link DocumentPathExpression} representing the path to the source DynamoDB
