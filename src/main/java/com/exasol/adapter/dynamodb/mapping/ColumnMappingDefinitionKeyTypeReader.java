@@ -3,7 +3,7 @@ package com.exasol.adapter.dynamodb.mapping;
 import javax.json.JsonObject;
 
 /**
- * This class reads the {@code key} property of a exasol document mapping language column mapping definition.
+ * This class reads the {@code key} property of an Exasol document mapping language column mapping definition.
  */
 public class ColumnMappingDefinitionKeyTypeReader {
     private static final String KEY_KEY = "key";
@@ -13,7 +13,7 @@ public class ColumnMappingDefinitionKeyTypeReader {
     /**
      * Reads the {@link KeyType} of a column mapping definition.
      *
-     * @param definition the exasol document mapping language definition of the column
+     * @param definition the Exasol document mapping language definition of the column
      */
     public KeyType readKeyType(final JsonObject definition) {
         switch (definition.getString(KEY_KEY, "")) {

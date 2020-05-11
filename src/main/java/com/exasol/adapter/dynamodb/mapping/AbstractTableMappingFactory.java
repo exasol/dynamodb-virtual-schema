@@ -110,7 +110,7 @@ public abstract class AbstractTableMappingFactory {
                 if (this.keyType != columnsKeyType
                         && this.keyType != ColumnMappingDefinitionKeyTypeReader.KeyType.NO_KEY) {
                     throw new ExasolDocumentMappingLanguageException(sourcePath.build().toString()
-                            + ": This table already has a key of different type (global/local).  "
+                            + ": This table already has a key of different type (global/local). "
                             + "Please either define all keys of the table local or global.");
                 }
                 this.keyType = columnsKeyType;

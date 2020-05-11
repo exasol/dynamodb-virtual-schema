@@ -34,7 +34,7 @@ public interface ColumnMappingDefinition extends Serializable {
     public ValueExpression getExasolDefaultValue();
 
     /**
-     * Get the string representation of the exasol column default value literal.
+     * Get the string representation of the Exasol column default value literal.
      * 
      * @return default value string
      */

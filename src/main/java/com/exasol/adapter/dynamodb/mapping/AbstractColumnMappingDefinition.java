@@ -8,7 +8,7 @@ import com.exasol.sql.rendering.StringRendererConfig;
  * This abstract class is the common basis for the {@link ColumnMappingDefinition}s.
  * <p>
  * Objects of this class get serialized into the column adapter notes. They are created using a
- * {@link MappingDefinitionFactory}. Storing the Mapping definition is necessary as mapping definition files in BucketFS
+ * {@link MappingDefinitionFactory}. Storing the mapping definition is necessary as mapping definition files in BucketFS
  * could be changed, but the mapping must not be changed until a {@code REFRESH} statement is called.
  * </p>
  */
@@ -61,7 +61,7 @@ public abstract class AbstractColumnMappingDefinition implements ColumnMappingDe
         private final LookupFailBehaviour lookupFailBehaviour;
 
         /**
-         * Creates a parameter object for {@link AbstractColumnMappingDefinition(ConstructorParameters )}.
+         * Creates a parameter object for {@link AbstractColumnMappingDefinition(ConstructorParameters)}.
          *
          * @param exasolColumnName     name of the Exasol column
          * @param pathToSourceProperty {@link DocumentPathExpression} representing the path to the source DynamoDB

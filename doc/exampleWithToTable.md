@@ -68,7 +68,7 @@ To achieve this we create the following mapping definition:
 }
 ```
 
-The Virtual Schema adapter automatically adds an foreign key to the table. In the example it adds
- the column `BOOKS_ISBN` to the `BOOKS_TOPICS` table. It did pick the `ISBN` column, as we marked 
- it as key column.
+The Virtual Schema adapter automatically adds a foreign key to the table. In the example above, it adds
+ the column `BOOKS_ISBN` to the `BOOKS_TOPICS` table. It did pick the `ISBN` column, because we marked 
+ it as a key column.
  
