@@ -1,0 +1,24 @@
+@startuml
+
+class DocumentPathExpression{
+
+}
+
+interface PathSegment{
+accept(PathSegmentVisitor)
+}
+
+class ObjectLookupPathSegment{
+lookupKey
+}
+
+class ArrayLookupPathSegment{
+lookupIndex
+}
+
+
+DocumentPathExpression *- PathSegment: segments
+PathSegment <|-- ObjectLookupPathSegment
+PathSegment <|-- ArrayLookupPathSegment
+PathSegment <|-- ArrayAllPathSegment
+@enduml
