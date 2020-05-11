@@ -9,8 +9,7 @@ import com.exasol.adapter.dynamodb.mapping.*;
 public class DynamodbValueMapperFactory implements ValueMapperFactory<DynamodbNodeVisitor> {
 
     @Override
-    public AbstractValueMapper<DynamodbNodeVisitor> getValueMapperForColumn(
-            final AbstractColumnMappingDefinition column) {
+    public AbstractValueMapper<DynamodbNodeVisitor> getValueMapperForColumn(final ColumnMappingDefinition column) {
         final ColumnVisitor visitor = new ColumnVisitor();
         column.accept(visitor);
         return visitor.getValueMapper();

@@ -15,13 +15,14 @@ import org.junit.jupiter.api.Test;
 import com.exasol.adapter.dynamodb.documentnode.DocumentValue;
 import com.exasol.adapter.dynamodb.literalconverter.SqlLiteralToDocumentValueConverter;
 import com.exasol.adapter.dynamodb.mapping.AbstractColumnMappingDefinition;
+import com.exasol.adapter.dynamodb.mapping.ColumnMappingDefinition;
 import com.exasol.adapter.dynamodb.mapping.SchemaMappingDefinitionToSchemaMetadataConverter;
 import com.exasol.adapter.dynamodb.mapping.ToJsonColumnMappingDefinition;
 import com.exasol.adapter.metadata.ColumnMetadata;
 import com.exasol.adapter.sql.*;
 
 class QueryPredicateFactoryTest {
-    private static final AbstractColumnMappingDefinition COLUMN_MAPPING = new ToJsonColumnMappingDefinition(
+    private static final ColumnMappingDefinition COLUMN_MAPPING = new ToJsonColumnMappingDefinition(
             new AbstractColumnMappingDefinition.ConstructorParameters("name", null, null));
     private static final DocumentValue<Object> LITERAL = (DocumentValue<Object>) visitor -> {
     };

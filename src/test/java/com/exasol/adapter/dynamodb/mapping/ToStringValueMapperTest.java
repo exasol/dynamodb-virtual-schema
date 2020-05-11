@@ -14,8 +14,7 @@ public class ToStringValueMapperTest {
 
     private static final String TEST_STRING = "test";
     private static final AbstractColumnMappingDefinition.ConstructorParameters COLUMN_PARAMETERS = new AbstractColumnMappingDefinition.ConstructorParameters(
-            "", new DocumentPathExpression.Builder().build(),
-            AbstractColumnMappingDefinition.LookupFailBehaviour.DEFAULT_VALUE);
+            "", new DocumentPathExpression.Builder().build(), LookupFailBehaviour.DEFAULT_VALUE);
 
     @Test
     void testConvertStringRowBasic() {

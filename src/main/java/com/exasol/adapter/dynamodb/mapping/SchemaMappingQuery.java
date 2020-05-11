@@ -19,5 +19,5 @@ public interface SchemaMappingQuery {
      *
      * @return select list columns
      */
-    public List<AbstractColumnMappingDefinition> getSelectList();
+    public List<ColumnMappingDefinition> getSelectList();
 }

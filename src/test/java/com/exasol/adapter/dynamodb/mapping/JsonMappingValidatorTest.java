@@ -119,6 +119,15 @@ public class JsonMappingValidatorTest {
     }
 
     @Test
+    void testInvalidKeyValue() throws IOException {
+        testInvalid(MappingTestFiles.BASIC_MAPPING_FILE, base -> {
+            base.getJSONObject("mapping").getJSONObject("fields").getJSONObject("name").getJSONObject("toStringMapping")
+                    .put("key", "");
+            return base;
+        }, "#/mapping/fields/name/toStringMapping/key: Please set key property to 'local' or 'global'.");
+    }
+
+    @Test
     void testInvalidNoMapping() throws IOException {
         testInvalid(MappingTestFiles.BASIC_MAPPING_FILE, base -> {
             base.remove("mapping");

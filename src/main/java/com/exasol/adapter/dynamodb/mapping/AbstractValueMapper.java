@@ -11,7 +11,7 @@ import com.exasol.sql.expression.ValueExpression;
  */
 @java.lang.SuppressWarnings("squid:S119") // DocumentVisitorType does not fit naming conventions.
 public abstract class AbstractValueMapper<DocumentVisitorType> {
-    private final AbstractColumnMappingDefinition column;
+    private final ColumnMappingDefinition column;
 
     /**
      * Creates an instance of {@link AbstractValueMapper} for extracting a value specified parameter column from a
@@ -19,7 +19,7 @@ public abstract class AbstractValueMapper<DocumentVisitorType> {
      * 
      * @param column ColumnMappingDefinition defining the mapping
      */
-    AbstractValueMapper(final AbstractColumnMappingDefinition column) {
+    AbstractValueMapper(final ColumnMappingDefinition column) {
         this.column = column;
     }
 
@@ -29,12 +29,10 @@ public abstract class AbstractValueMapper<DocumentVisitorType> {
      * @param document               to extract the value from
      * @param arrayAllIterationState array all iteration state used for extracting the correct values for nested lists
      * @return {@link ValueExpression}
-     * @throws DocumentPathWalkerException if specified property was not found and
-     *                                     {@link AbstractColumnMappingDefinition.LookupFailBehaviour} is set to
+     * @throws DocumentPathWalkerException if specified property was not found and {@link LookupFailBehaviour} is set to
      *                                     {@code EXCEPTION }
-     * @throws ValueMapperException        if specified property can't be mapped and
-     *                                     {@link AbstractColumnMappingDefinition.LookupFailBehaviour} is set to
-     *                                     {@code EXCEPTION }
+     * @throws ValueMapperException        if specified property can't be mapped and {@link LookupFailBehaviour} is set
+     *                                     to {@code EXCEPTION }
      */
     public ValueExpression mapRow(final DocumentNode<DocumentVisitorType> document,
             final PathIterationStateProvider arrayAllIterationState) {
@@ -44,8 +42,7 @@ public abstract class AbstractValueMapper<DocumentVisitorType> {
             final DocumentNode<DocumentVisitorType> dynamodbProperty = walker.walkThroughDocument(document);
             return mapValue(dynamodbProperty);
         } catch (final DocumentPathWalkerException | LookupValueMapperException exception) {
-            if (this.column
-                    .getLookupFailBehaviour() == AbstractColumnMappingDefinition.LookupFailBehaviour.DEFAULT_VALUE) {
+            if (this.column.getLookupFailBehaviour() == LookupFailBehaviour.DEFAULT_VALUE) {
                 return this.column.getExasolDefaultValue();
             } else {
                 throw exception;
