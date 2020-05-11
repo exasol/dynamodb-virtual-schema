@@ -6,7 +6,7 @@ import java.util.List;
 
 import com.exasol.adapter.AdapterException;
 import com.exasol.adapter.dynamodb.literalconverter.SqlLiteralToDocumentValueConverter;
-import com.exasol.adapter.dynamodb.mapping.AbstractColumnMappingDefinition;
+import com.exasol.adapter.dynamodb.mapping.ColumnMappingDefinition;
 import com.exasol.adapter.dynamodb.mapping.SchemaMappingDefinitionToSchemaMetadataConverter;
 import com.exasol.adapter.dynamodb.mapping.TableMappingDefinition;
 import com.exasol.adapter.metadata.ColumnMetadata;
@@ -46,7 +46,7 @@ public class RemoteTableQueryFactory<DocumentVisitorType> {
     }
 
     private static class Visitor extends VoidSqlNodeVisitor {
-        private final List<AbstractColumnMappingDefinition> resultColumns = new ArrayList<>();
+        private final List<ColumnMappingDefinition> resultColumns = new ArrayList<>();
         private String tableName;
         private TableMetadata tableMetadata;
         private SqlNode whereClause;
@@ -75,7 +75,7 @@ public class RemoteTableQueryFactory<DocumentVisitorType> {
 
         private void selectAllColumns() {
             for (final ColumnMetadata columnMetadata : this.tableMetadata.getColumns()) {
-                final AbstractColumnMappingDefinition columnMappingDefinition = new SchemaMappingDefinitionToSchemaMetadataConverter()
+                final ColumnMappingDefinition columnMappingDefinition = new SchemaMappingDefinitionToSchemaMetadataConverter()
                         .convertBackColumn(columnMetadata);
                 this.resultColumns.add(columnMappingDefinition);
             }

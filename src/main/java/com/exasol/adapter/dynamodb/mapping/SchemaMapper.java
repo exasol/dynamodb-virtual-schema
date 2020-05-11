@@ -48,7 +48,7 @@ public class SchemaMapper<DocumentVisitorType> {
     private List<ValueExpression> mapColumns(final DocumentNode<DocumentVisitorType> document,
             final PathIterationStateProvider arrayAllIterationState) {
         final List<ValueExpression> resultValues = new ArrayList<>(this.query.getSelectList().size());
-        for (final AbstractColumnMappingDefinition resultColumn : this.query.getSelectList()) {
+        for (final ColumnMappingDefinition resultColumn : this.query.getSelectList()) {
             final AbstractValueMapper<DocumentVisitorType> valueMapper = this.valueMapperFactory
                     .getValueMapperForColumn(resultColumn);
             final ValueExpression result = valueMapper.mapRow(document, arrayAllIterationState);

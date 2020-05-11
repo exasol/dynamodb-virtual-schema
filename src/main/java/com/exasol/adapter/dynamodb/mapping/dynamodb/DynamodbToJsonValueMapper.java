@@ -4,7 +4,7 @@ import javax.json.JsonValue;
 
 import com.exasol.adapter.dynamodb.documentnode.DocumentNode;
 import com.exasol.adapter.dynamodb.documentnode.dynamodb.DynamodbNodeVisitor;
-import com.exasol.adapter.dynamodb.mapping.AbstractColumnMappingDefinition;
+import com.exasol.adapter.dynamodb.mapping.ColumnMappingDefinition;
 import com.exasol.adapter.dynamodb.mapping.ToJsonColumnMappingDefinition;
 import com.exasol.adapter.dynamodb.mapping.ToJsonValueMapper;
 import com.exasol.dynamodb.DynamodbValueToJsonConverter;
@@ -19,7 +19,7 @@ public class DynamodbToJsonValueMapper extends ToJsonValueMapper<DynamodbNodeVis
      *
      * @param column {@link ToJsonColumnMappingDefinition}
      */
-    public DynamodbToJsonValueMapper(final AbstractColumnMappingDefinition column) {
+    public DynamodbToJsonValueMapper(final ColumnMappingDefinition column) {
         super(column);
     }
 

@@ -2,7 +2,7 @@ package com.exasol.adapter.dynamodb.remotetablequery;
 
 import java.util.List;
 
-import com.exasol.adapter.dynamodb.mapping.AbstractColumnMappingDefinition;
+import com.exasol.adapter.dynamodb.mapping.ColumnMappingDefinition;
 import com.exasol.adapter.dynamodb.mapping.SchemaMappingQuery;
 import com.exasol.adapter.dynamodb.mapping.TableMappingDefinition;
 
@@ -13,7 +13,7 @@ import com.exasol.adapter.dynamodb.mapping.TableMappingDefinition;
 public class RemoteTableQuery<DocumentVisitorType> implements SchemaMappingQuery {
 
     private final TableMappingDefinition fromTable;
-    private final List<AbstractColumnMappingDefinition> selectList;
+    private final List<ColumnMappingDefinition> selectList;
     private final QueryPredicate<DocumentVisitorType> selection;
 
     /**
@@ -23,8 +23,7 @@ public class RemoteTableQuery<DocumentVisitorType> implements SchemaMappingQuery
      * @param selectList in correct order
      * @param selection  where clause
      */
-    public RemoteTableQuery(final TableMappingDefinition fromTable,
-            final List<AbstractColumnMappingDefinition> selectList,
+    public RemoteTableQuery(final TableMappingDefinition fromTable, final List<ColumnMappingDefinition> selectList,
             final QueryPredicate<DocumentVisitorType> selection) {
         this.fromTable = fromTable;
         this.selectList = selectList;
@@ -42,7 +41,7 @@ public class RemoteTableQuery<DocumentVisitorType> implements SchemaMappingQuery
      * @return select list columns
      */
     @Override
-    public List<AbstractColumnMappingDefinition> getSelectList() {
+    public List<ColumnMappingDefinition> getSelectList() {
         return this.selectList;
     }
 

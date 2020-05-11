@@ -13,6 +13,14 @@
             }
           }
         }
+      },
+      "isbn": {
+        "toStringMapping": {
+          "maxLength": 20,
+          "overflow": "ABORT",
+          "required": true,
+          "key": "global"
+        }
       }
     }
   }

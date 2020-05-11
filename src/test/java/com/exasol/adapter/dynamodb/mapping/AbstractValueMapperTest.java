@@ -21,7 +21,7 @@ public class AbstractValueMapperTest {
     void testLookup() {
         final DocumentPathExpression sourcePath = new DocumentPathExpression.Builder().addObjectLookup("isbn").build();
         final MockColumnMappingDefinition columnMappingDefinition = new MockColumnMappingDefinition("d", sourcePath,
-                AbstractColumnMappingDefinition.LookupFailBehaviour.EXCEPTION);
+                LookupFailBehaviour.EXCEPTION);
 
         final ValueMapperStub valueMapperStub = new ValueMapperStub(columnMappingDefinition);
         final StubDocumentObject testObject = new StubDocumentObject();
@@ -34,7 +34,7 @@ public class AbstractValueMapperTest {
         final DocumentPathExpression sourcePath = new DocumentPathExpression.Builder()
                 .addObjectLookup("nonExistingColumn").build();
         final MockColumnMappingDefinition columnMappingDefinition = new MockColumnMappingDefinition("d", sourcePath,
-                AbstractColumnMappingDefinition.LookupFailBehaviour.DEFAULT_VALUE);
+                LookupFailBehaviour.DEFAULT_VALUE);
         final ValueExpression valueExpression = new ValueMapperStub(columnMappingDefinition)
                 .mapRow(new StubDocumentObject(), new StaticDocumentPathIterator());
         assertThat(valueExpression.toString(), equalTo("default"));
@@ -45,7 +45,7 @@ public class AbstractValueMapperTest {
         final DocumentPathExpression sourcePath = new DocumentPathExpression.Builder()
                 .addObjectLookup("nonExistingColumn").build();
         final MockColumnMappingDefinition columnMappingDefinition = new MockColumnMappingDefinition("d", sourcePath,
-                AbstractColumnMappingDefinition.LookupFailBehaviour.EXCEPTION);
+                LookupFailBehaviour.EXCEPTION);
         assertThrows(DocumentPathWalkerException.class, () -> new ValueMapperStub(columnMappingDefinition)
                 .mapRow(new StubDocumentObject(), new StaticDocumentPathIterator()));
     }
@@ -54,8 +54,7 @@ public class AbstractValueMapperTest {
     public void testColumnMappingException() {
         final String columnName = "name";
         final MockColumnMappingDefinition mappingDefinition = new MockColumnMappingDefinition(columnName,
-                new DocumentPathExpression.Builder().build(),
-                AbstractColumnMappingDefinition.LookupFailBehaviour.EXCEPTION);
+                new DocumentPathExpression.Builder().build(), LookupFailBehaviour.EXCEPTION);
         final ValueMapperException exception = assertThrows(ValueMapperException.class,
                 () -> new ExceptionMockValueMapper(mappingDefinition).mapRow(new StubDocumentObject(),
                         new StaticDocumentPathIterator()));
@@ -101,7 +100,7 @@ public class AbstractValueMapperTest {
     private static class ValueMapperStub extends AbstractValueMapper<DummyVisitor> {
         private DocumentNode<DummyVisitor> remoteValue;
 
-        public ValueMapperStub(final AbstractColumnMappingDefinition column) {
+        public ValueMapperStub(final ColumnMappingDefinition column) {
             super(column);
         }
 
@@ -113,9 +112,9 @@ public class AbstractValueMapperTest {
     }
 
     private static class ExceptionMockValueMapper extends AbstractValueMapper<DummyVisitor> {
-        private final AbstractColumnMappingDefinition column;
+        private final ColumnMappingDefinition column;
 
-        public ExceptionMockValueMapper(final AbstractColumnMappingDefinition column) {
+        public ExceptionMockValueMapper(final ColumnMappingDefinition column) {
             super(column);
             this.column = column;
         }
