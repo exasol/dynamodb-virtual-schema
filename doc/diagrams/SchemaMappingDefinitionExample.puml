@@ -1,4 +1,9 @@
 @startuml
+
+object ":SchemaMappingDefinition" as schema{
+
+}
+
 object "books :TableMappingDefinition" as books{
 exasolName: "BOOKS"
 remoteName: "books"
@@ -9,4 +14,7 @@ exasolName: "BOOKS_TOPICS"
 remoteName: "books"
 pathInRemoteTable: /topics
 }
+
+schema --> books
+schema --> tableTopics
 @enduml
