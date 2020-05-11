@@ -1,8 +1,6 @@
 package com.exasol.adapter.dynamodb.mapping;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import javax.json.JsonObject;
 
@@ -59,14 +57,14 @@ public abstract class AbstractTableMappingFactory {
          * Building tables for nested lists is delayed using this queue as they need the completely built table that
          * maps the object they are nested in.
          */
-        private final List<NestedTableReader> nestedTableReaderQueue;
+        private final Queue<NestedTableReader> nestedTableReaderQueue;
         private final List<ColumnMappingDefinition> nonKeyColumns;
         private final List<ColumnMappingDefinition> keyColumns;
         private boolean hasNestedTable;
         private ColumnMappingDefinitionKeyTypeReader.KeyType keyType;
 
         public SchemaMappingDefinitionLanguageVisitor() {
-            this.nestedTableReaderQueue = new ArrayList<>();
+            this.nestedTableReaderQueue = new LinkedList<>();
             this.hasNestedTable = false;
             this.nonKeyColumns = new ArrayList<>();
             this.keyColumns = new ArrayList<>();
@@ -153,11 +151,11 @@ public abstract class AbstractTableMappingFactory {
             return union;
         }
 
-        public List<NestedTableReader> getNestedTableReaderQueue() {
+        public Queue<NestedTableReader> getNestedTableReaderQueue() {
             return this.nestedTableReaderQueue;
         }
 
-        public boolean isHasNestedTable() {
+        public boolean hasNestedTable() {
             return this.hasNestedTable;
         }
     }

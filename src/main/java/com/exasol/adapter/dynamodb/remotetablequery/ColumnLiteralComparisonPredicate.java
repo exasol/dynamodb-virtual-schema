@@ -8,7 +8,7 @@ import com.exasol.adapter.dynamodb.mapping.ColumnMappingDefinition;
  */
 @java.lang.SuppressWarnings("squid:S119") // DocumentVisitorType does not fit naming conventions.
 public class ColumnLiteralComparisonPredicate<DocumentVisitorType> extends ComparisonPredicate<DocumentVisitorType> {
-    private static final long serialVersionUID = -5861703862819874391L;
+    private static final long serialVersionUID = 4471077828317147591L;
     private final DocumentValue<DocumentVisitorType> literal;
     private final ColumnMappingDefinition column;
 

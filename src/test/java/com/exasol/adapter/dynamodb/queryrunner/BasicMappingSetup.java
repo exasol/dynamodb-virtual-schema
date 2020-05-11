@@ -2,12 +2,15 @@ package com.exasol.adapter.dynamodb.queryrunner;
 
 import java.io.IOException;
 
-import com.exasol.adapter.dynamodb.mapping.*;
 import org.jetbrains.annotations.NotNull;
 
 import com.exasol.adapter.AdapterException;
 import com.exasol.adapter.dynamodb.documentnode.dynamodb.DynamodbNodeVisitor;
 import com.exasol.adapter.dynamodb.documentnode.dynamodb.DynamodbString;
+import com.exasol.adapter.dynamodb.mapping.ColumnMappingDefinition;
+import com.exasol.adapter.dynamodb.mapping.JsonMappingFactory;
+import com.exasol.adapter.dynamodb.mapping.MappingTestFiles;
+import com.exasol.adapter.dynamodb.mapping.TableMappingDefinition;
 import com.exasol.adapter.dynamodb.remotetablequery.ColumnLiteralComparisonPredicate;
 import com.exasol.adapter.dynamodb.remotetablequery.ComparisonPredicate;
 import com.exasol.adapter.dynamodb.remotetablequery.NoPredicate;
