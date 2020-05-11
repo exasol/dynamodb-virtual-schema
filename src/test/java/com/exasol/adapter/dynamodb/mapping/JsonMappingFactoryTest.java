@@ -117,6 +117,6 @@ public class JsonMappingFactoryTest {
         final ExasolDocumentMappingLanguageException exception = assertThrows(
                 ExasolDocumentMappingLanguageException.class, () -> getMappingDefinitionForFile(invalidFile));
         assertThat(exception.getMessage(), startsWith(
-                "/name: This table already has a key of different type (global/local).  Please either define all keys of the table local or global."));
+                "/name: This table already has a key of different type (global/local). Please either define all keys of the table local or global."));
     }
 }
