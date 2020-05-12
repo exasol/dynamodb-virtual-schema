@@ -20,7 +20,7 @@ import com.exasol.adapter.AdapterException;
  * schema mapping definitions can be found at {@code /doc/gettingStartedWithSchemaMappingLanguage.md}.
  * </p>
  */
-public class JsonSchemaMappingReader implements SchemaMappingReader { // TODO rename to reader
+public class JsonSchemaMappingReader implements SchemaMappingReader {
     private final List<TableMapping> tables = new ArrayList<>();
 
     /**

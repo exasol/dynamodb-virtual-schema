@@ -10,7 +10,6 @@ import org.junit.jupiter.api.Test;
 import com.exasol.adapter.dynamodb.documentnode.dynamodb.DynamodbMap;
 import com.exasol.adapter.dynamodb.documentpath.DocumentPathExpression;
 import com.exasol.adapter.dynamodb.documentpath.StaticDocumentPathIterator;
-import com.exasol.adapter.dynamodb.mapping.AbstractPropertyToColumnMapping;
 import com.exasol.adapter.dynamodb.mapping.LookupFailBehaviour;
 import com.exasol.adapter.dynamodb.mapping.ToJsonPropertyToColumnMapping;
 import com.exasol.dynamodb.attributevalue.AttributeValueQuickCreator;
@@ -22,8 +21,7 @@ public class DynamodbToJsonValueMapperTest {
     @Test
     void testConvertRowBasic() {
         final ToJsonPropertyToColumnMapping toStringColumnMappingDefinition = new ToJsonPropertyToColumnMapping(
-                new AbstractPropertyToColumnMapping.ConstructorParameters(DEST_COLUMN,
-                        new DocumentPathExpression.Builder().build(), LookupFailBehaviour.EXCEPTION));
+                DEST_COLUMN, DocumentPathExpression.empty(), LookupFailBehaviour.EXCEPTION);
         final DynamodbMap testData = new DynamodbMap(Map.of("key", AttributeValueQuickCreator.forString("value")));
         final ValueExpression exasolCellValue = new DynamodbToJsonValueMapper(toStringColumnMappingDefinition)
                 .mapRow(testData, new StaticDocumentPathIterator());

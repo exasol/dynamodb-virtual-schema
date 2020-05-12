@@ -1,5 +1,6 @@
 package com.exasol.adapter.dynamodb.mapping;
 
+import com.exasol.adapter.dynamodb.documentpath.DocumentPathExpression;
 import com.exasol.adapter.metadata.DataType;
 import com.exasol.sql.expression.StringLiteral;
 import com.exasol.sql.expression.ValueExpression;
@@ -12,11 +13,14 @@ public class ToJsonPropertyToColumnMapping extends AbstractPropertyToColumnMappi
 
     /**
      * Creates an instance of {@link ToJsonPropertyToColumnMapping}.
-     * 
-     * @param parameters Parameter object for {@link ColumnMapping}
+     *
+     * @param exasolColumnName     Name of the Exasol column
+     * @param pathToSourceProperty {@link DocumentPathExpression} path to the property to extract
+     * @param lookupFailBehaviour  {@link LookupFailBehaviour} behaviour for the case, that the defined path does not
      */
-    public ToJsonPropertyToColumnMapping(final ConstructorParameters parameters) {
-        super(parameters);
+    public ToJsonPropertyToColumnMapping(final String exasolColumnName,
+            final DocumentPathExpression pathToSourceProperty, final LookupFailBehaviour lookupFailBehaviour) {
+        super(exasolColumnName, pathToSourceProperty, lookupFailBehaviour);
     }
 
     @Override
@@ -41,7 +45,7 @@ public class ToJsonPropertyToColumnMapping extends AbstractPropertyToColumnMappi
 
     @Override
     public ColumnMapping copyWithNewExasolName(final String newExasolName) {
-        return new ToJsonPropertyToColumnMapping(
-                new ConstructorParameters(newExasolName, getPathToSourceProperty(), getLookupFailBehaviour()));
+        return new ToJsonPropertyToColumnMapping(newExasolName, this.getPathToSourceProperty(),
+                this.getLookupFailBehaviour());
     }
 }

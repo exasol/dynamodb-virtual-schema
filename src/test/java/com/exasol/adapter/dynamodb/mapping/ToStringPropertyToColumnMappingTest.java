@@ -16,9 +16,8 @@ public class ToStringPropertyToColumnMappingTest {
     void testDestinationDataType() {
         final int stringLength = 10;
         final ToStringPropertyToColumnMapping toStringColumnMappingDefinition = new ToStringPropertyToColumnMapping(
-                new AbstractPropertyToColumnMapping.ConstructorParameters(DEST_COLUMN,
-                        new DocumentPathExpression.Builder().build(), LookupFailBehaviour.DEFAULT_VALUE),
-                stringLength, ToStringPropertyToColumnMapping.OverflowBehaviour.TRUNCATE);
+                DEST_COLUMN, DocumentPathExpression.empty(), LookupFailBehaviour.DEFAULT_VALUE, stringLength,
+                ToStringPropertyToColumnMapping.OverflowBehaviour.TRUNCATE);
         assertAll(
                 () -> assertThat(toStringColumnMappingDefinition.getExasolDataType().getExaDataType(),
                         equalTo(DataType.ExaDataType.VARCHAR)),
@@ -27,19 +26,15 @@ public class ToStringPropertyToColumnMappingTest {
 
     @Test
     void testGetDestinationDefaultValue() {
-        final AbstractPropertyToColumnMapping.ConstructorParameters columnParameters = new AbstractPropertyToColumnMapping.ConstructorParameters(
-                null, null, null);
         final ToStringPropertyToColumnMapping toStringColumnMappingDefinition = new ToStringPropertyToColumnMapping(
-                columnParameters, 0, null);
+                null, null, null, 0, null);
         assertThat(toStringColumnMappingDefinition.getExasolDefaultValue().toString(), equalTo(""));
     }
 
     @Test
     void testIsDestinationNullable() {
-        final AbstractPropertyToColumnMapping.ConstructorParameters columnParameters = new AbstractPropertyToColumnMapping.ConstructorParameters(
-                null, null, null);
         final ToStringPropertyToColumnMapping toStringColumnMappingDefinition = new ToStringPropertyToColumnMapping(
-                columnParameters, 0, null);
+                null, null, null, 0, null);
         assertThat(toStringColumnMappingDefinition.isExasolColumnNullable(), equalTo(true));
     }
 }

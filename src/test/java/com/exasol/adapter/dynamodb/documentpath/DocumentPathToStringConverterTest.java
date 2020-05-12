@@ -9,7 +9,7 @@ public class DocumentPathToStringConverterTest {
 
     @Test
     void testStringifyEmpty() {
-        final DocumentPathExpression pathExpression = new DocumentPathExpression.Builder().build();
+        final DocumentPathExpression pathExpression = DocumentPathExpression.empty();
         final String result = new DocumentPathToStringConverter().convertToString(pathExpression);
         assertThat(result, equalTo("/"));
     }

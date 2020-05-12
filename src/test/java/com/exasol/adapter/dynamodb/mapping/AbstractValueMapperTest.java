@@ -54,7 +54,7 @@ public class AbstractValueMapperTest {
     public void testColumnMappingException() {
         final String columnName = "name";
         final MockPropertyToColumnMapping mappingDefinition = new MockPropertyToColumnMapping(columnName,
-                new DocumentPathExpression.Builder().build(), LookupFailBehaviour.EXCEPTION);
+                DocumentPathExpression.empty(), LookupFailBehaviour.EXCEPTION);
         final ValueMapperException exception = assertThrows(ValueMapperException.class,
                 () -> new ExceptionMockValueMapper(mappingDefinition).mapRow(new StubDocumentObject(),
                         new StaticDocumentPathIterator()));
@@ -100,7 +100,7 @@ public class AbstractValueMapperTest {
     private static class ValueMapperStub extends AbstractValueMapper<DummyVisitor> {
         private DocumentNode<DummyVisitor> remoteValue;
 
-        public ValueMapperStub(final AbstractPropertyToColumnMapping column) {
+        public ValueMapperStub(final PropertyToColumnMapping column) {
             super(column);
         }
 
@@ -114,7 +114,7 @@ public class AbstractValueMapperTest {
     private static class ExceptionMockValueMapper extends AbstractValueMapper<DummyVisitor> {
         private final ColumnMapping column;
 
-        public ExceptionMockValueMapper(final AbstractPropertyToColumnMapping column) {
+        public ExceptionMockValueMapper(final PropertyToColumnMapping column) {
             super(column);
             this.column = column;
         }

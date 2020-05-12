@@ -13,13 +13,12 @@ import com.exasol.sql.expression.ValueExpression;
 public class ToStringValueMapperTest {
 
     private static final String TEST_STRING = "test";
-    private static final AbstractPropertyToColumnMapping.ConstructorParameters COLUMN_PARAMETERS = new AbstractPropertyToColumnMapping.ConstructorParameters(
-            "", new DocumentPathExpression.Builder().build(), LookupFailBehaviour.DEFAULT_VALUE);
 
     @Test
     void testConvertStringRowBasic() {
-        final ToStringPropertyToColumnMapping toStringColumnMappingDefinition = new ToStringPropertyToColumnMapping(
-                COLUMN_PARAMETERS, TEST_STRING.length(), ToStringPropertyToColumnMapping.OverflowBehaviour.EXCEPTION);
+        final ToStringPropertyToColumnMapping toStringColumnMappingDefinition = new ToStringPropertyToColumnMapping("",
+                DocumentPathExpression.empty(), LookupFailBehaviour.DEFAULT_VALUE, TEST_STRING.length(),
+                ToStringPropertyToColumnMapping.OverflowBehaviour.EXCEPTION);
         final ValueExpression exasolCellValue = new ToStringValueMapperStub(toStringColumnMappingDefinition)
                 .mapValue(null);
         assertThat(exasolCellValue.toString(), equalTo(TEST_STRING));
@@ -27,8 +26,8 @@ public class ToStringValueMapperTest {
 
     @Test
     void testConvertRowOverflowTruncate() {
-        final ToStringPropertyToColumnMapping toStringColumnMappingDefinition = new ToStringPropertyToColumnMapping(
-                COLUMN_PARAMETERS, TEST_STRING.length() - 1,
+        final ToStringPropertyToColumnMapping toStringColumnMappingDefinition = new ToStringPropertyToColumnMapping("",
+                DocumentPathExpression.empty(), LookupFailBehaviour.DEFAULT_VALUE, TEST_STRING.length() - 1,
                 ToStringPropertyToColumnMapping.OverflowBehaviour.TRUNCATE);
         final ValueExpression exasolCellValue = new ToStringValueMapperStub(toStringColumnMappingDefinition)
                 .mapValue(null);
@@ -38,8 +37,8 @@ public class ToStringValueMapperTest {
 
     @Test
     void testConvertRowOverflowException() {
-        final ToStringPropertyToColumnMapping toStringColumnMappingDefinition = new ToStringPropertyToColumnMapping(
-                COLUMN_PARAMETERS, TEST_STRING.length() - 1,
+        final ToStringPropertyToColumnMapping toStringColumnMappingDefinition = new ToStringPropertyToColumnMapping("",
+                DocumentPathExpression.empty(), LookupFailBehaviour.DEFAULT_VALUE, TEST_STRING.length() - 1,
                 ToStringPropertyToColumnMapping.OverflowBehaviour.EXCEPTION);
         assertThrows(ToStringValueMapper.OverflowException.class,
                 () -> new ToStringValueMapperStub(toStringColumnMappingDefinition).mapValue(null));

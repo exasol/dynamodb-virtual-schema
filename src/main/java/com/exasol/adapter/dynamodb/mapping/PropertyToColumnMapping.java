@@ -8,18 +8,18 @@ import com.exasol.adapter.dynamodb.documentpath.DocumentPathExpression;
 public interface PropertyToColumnMapping extends ColumnMapping {
 
     /**
-     * Get the {@link LookupFailBehaviour}.
+     * Gives the path to the property to extract.
+     *
+     * @return path to the property to extract
+     */
+    public DocumentPathExpression getPathToSourceProperty();
+
+    /**
+     * Gives the {@link LookupFailBehaviour} used in case that the path does not exist in the document.
      *
      * @return {@link LookupFailBehaviour}
      */
     public LookupFailBehaviour getLookupFailBehaviour();
-
-    /**
-     * Gives the path to the property in the remote document that is mapped by this definition.
-     *
-     * @return path to property
-     */
-    public DocumentPathExpression getPathToSourceProperty();
 
     public void accept(PropertyToColumnMappingVisitor visitor);
 

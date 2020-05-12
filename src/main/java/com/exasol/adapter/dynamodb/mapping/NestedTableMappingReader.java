@@ -29,7 +29,7 @@ class NestedTableMappingReader extends AbstractTableMappingReader {
      * @param parentKeyColumns            list of parent's key columns. This must always be a global key. If the parent
      *                                    has a local key, the foreign key must be added to make it global
      */
-    public NestedTableMappingReader(final JsonObject definition, final TableMapping parentTable,
+    NestedTableMappingReader(final JsonObject definition, final TableMapping parentTable,
             final String containingListsPropertyName, final DocumentPathExpression.Builder sourcePath,
             final List<ColumnMapping> parentKeyColumns) {
         this.parentTable = parentTable;
@@ -41,6 +41,7 @@ class NestedTableMappingReader extends AbstractTableMappingReader {
 
     @Override
     protected TableMapping createTable(final List<ColumnMapping> columns) {
+        // TODO add foreign key columns
         return new TableMapping(this.tableName, this.parentTable.getRemoteName(), columns, getPathToTable().build());
     }
 

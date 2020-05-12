@@ -1,41 +1,19 @@
 @startuml
-class SchemaMappingDefinition{
+!include mappingDefinitionInterface.puml
+
+class SchemaMapping{
 
 }
 
-class TableMappingDefinition {
+class TableMapping {
 exasolName
 remoteName
 pathInRemoteTable
 }
 
-interface ColumnMappingDefinition{
-getExasolColumnName()
-getExasolDataType()
-getExasolDefaultValue()
-isExasolColumnNullable()
-getLookupFailBehaviour()
-getPathToSourceProperty()
-}
 
+SchemaMapping "1" *- "*" TableMapping: tables
+TableMapping "1" *- "*" ColumnMapping: columns
 
-abstract class AbstractColumnMappingDefinition {
-...
-}
-
-class ToStringColumnMappingDefinition {
-...
-}
-
-class ToJsonColumnMappingDefinition {
-...
-}
-
-
-SchemaMappingDefinition "1" *- "*" TableMappingDefinition: tables
-TableMappingDefinition "1" *- "*" ColumnMappingDefinition: columns
-ColumnMappingDefinition <|-- AbstractColumnMappingDefinition
-AbstractColumnMappingDefinition <|-- ToStringColumnMappingDefinition
-AbstractColumnMappingDefinition <|-- ToJsonColumnMappingDefinition
 @enduml 
 

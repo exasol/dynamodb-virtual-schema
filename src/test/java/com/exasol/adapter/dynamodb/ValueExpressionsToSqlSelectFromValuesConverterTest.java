@@ -23,9 +23,8 @@ public class ValueExpressionsToSqlSelectFromValuesConverterTest {
 
             @Override
             public List<ColumnMapping> getSelectList() {
-                return List.of(new ToJsonPropertyToColumnMapping(
-                        new AbstractPropertyToColumnMapping.ConstructorParameters("json",
-                                new DocumentPathExpression.Builder().build(), LookupFailBehaviour.DEFAULT_VALUE)));
+                return List.of(new ToJsonPropertyToColumnMapping("json", DocumentPathExpression.empty(),
+                        LookupFailBehaviour.DEFAULT_VALUE));
             }
         };
     }

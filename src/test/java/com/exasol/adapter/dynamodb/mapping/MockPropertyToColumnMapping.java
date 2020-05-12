@@ -6,9 +6,11 @@ import com.exasol.sql.expression.StringLiteral;
 import com.exasol.sql.expression.ValueExpression;
 
 public class MockPropertyToColumnMapping extends AbstractPropertyToColumnMapping {
+    private static final long serialVersionUID = -4381185567913054550L;
+
     public MockPropertyToColumnMapping(final String destinationName, final DocumentPathExpression sourcePath,
             final LookupFailBehaviour lookupFailBehaviour) {
-        super(new ConstructorParameters(destinationName, sourcePath, lookupFailBehaviour));
+        super(destinationName, sourcePath, lookupFailBehaviour);
     }
 
     @Override

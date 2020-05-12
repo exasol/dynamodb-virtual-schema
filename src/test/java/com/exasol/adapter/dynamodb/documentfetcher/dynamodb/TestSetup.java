@@ -6,7 +6,10 @@ import java.util.List;
 import com.exasol.adapter.dynamodb.documentnode.dynamodb.DynamodbNodeVisitor;
 import com.exasol.adapter.dynamodb.documentnode.dynamodb.DynamodbString;
 import com.exasol.adapter.dynamodb.documentpath.DocumentPathExpression;
-import com.exasol.adapter.dynamodb.mapping.*;
+import com.exasol.adapter.dynamodb.mapping.ColumnMapping;
+import com.exasol.adapter.dynamodb.mapping.SchemaMappingToSchemaMetadataConverter;
+import com.exasol.adapter.dynamodb.mapping.TableMapping;
+import com.exasol.adapter.dynamodb.mapping.ToJsonPropertyToColumnMapping;
 import com.exasol.adapter.dynamodb.remotetablequery.ColumnLiteralComparisonPredicate;
 import com.exasol.adapter.dynamodb.remotetablequery.ComparisonPredicate;
 import com.exasol.adapter.dynamodb.remotetablequery.NoPredicate;
@@ -32,15 +35,13 @@ class TestSetup {
 
     static ColumnMapping columnForAttribute(final String attributeName) {
         final DocumentPathExpression path = new DocumentPathExpression.Builder().addObjectLookup(attributeName).build();
-        return new ToJsonPropertyToColumnMapping(
-                new AbstractPropertyToColumnMapping.ConstructorParameters(attributeName, path, null));
+        return new ToJsonPropertyToColumnMapping(attributeName, path, null);
     }
 
     public static ColumnLiteralComparisonPredicate<DynamodbNodeVisitor> getCompareForColumn(final String propertyName) {
         final DocumentPathExpression sourcePath = new DocumentPathExpression.Builder().addObjectLookup(propertyName)
                 .build();
-        final ToJsonPropertyToColumnMapping column = new ToJsonPropertyToColumnMapping(
-                new AbstractPropertyToColumnMapping.ConstructorParameters("columnName", sourcePath, null));
+        final ToJsonPropertyToColumnMapping column = new ToJsonPropertyToColumnMapping("columnName", sourcePath, null);
         return new ColumnLiteralComparisonPredicate<>(ComparisonPredicate.Operator.EQUAL, column,
                 new DynamodbString(""));
     }

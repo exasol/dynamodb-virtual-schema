@@ -31,9 +31,10 @@ class JsonColumnMappingReader {
         final int maxLength = definition.getInt(MAX_LENGTH_KEY, DEFAULT_MAX_LENGTH);
         final ToStringPropertyToColumnMapping.OverflowBehaviour overflowBehaviour = readStringOverflowBehaviour(
                 definition);
-        final AbstractPropertyToColumnMapping.ConstructorParameters columnParameters = readColumnProperties(definition,
-                sourcePath.build(), dynamodbPropertyName);
-        return new ToStringPropertyToColumnMapping(columnParameters, maxLength, overflowBehaviour);
+        final String exasolColumnName = readExasolColumnName(definition, dynamodbPropertyName);
+        final LookupFailBehaviour lookupFailBehaviour = readLookupFailBehaviour(definition);
+        return new ToStringPropertyToColumnMapping(exasolColumnName, sourcePath.build(), lookupFailBehaviour, maxLength,
+                overflowBehaviour);
     }
 
     private ToStringPropertyToColumnMapping.OverflowBehaviour readStringOverflowBehaviour(final JsonObject definition) {
@@ -42,14 +43,6 @@ class JsonColumnMappingReader {
         } else {
             return DEFAULT_TO_STRING_OVERFLOW;
         }
-    }
-
-    private AbstractPropertyToColumnMapping.ConstructorParameters readColumnProperties(final JsonObject definition,
-            final DocumentPathExpression sourcePath, final String dynamodbPropertyName) {
-        final String exasolColumnName = readExasolColumnName(definition, dynamodbPropertyName);
-        final LookupFailBehaviour lookupFailBehaviour = readLookupFailBehaviour(definition);
-        return new AbstractPropertyToColumnMapping.ConstructorParameters(exasolColumnName, sourcePath,
-                lookupFailBehaviour);
     }
 
     private LookupFailBehaviour readLookupFailBehaviour(final JsonObject definition) {
@@ -71,8 +64,8 @@ class JsonColumnMappingReader {
 
     ToJsonPropertyToColumnMapping readToJsonColumn(final JsonObject definition,
             final DocumentPathExpression.Builder sourcePath, final String dynamodbPropertyName) {
-        final AbstractPropertyToColumnMapping.ConstructorParameters columnParameters = readColumnProperties(definition,
-                sourcePath.build(), dynamodbPropertyName);
-        return new ToJsonPropertyToColumnMapping(columnParameters);
+        final String exasolColumnName = readExasolColumnName(definition, dynamodbPropertyName);
+        final LookupFailBehaviour lookupFailBehaviour = readLookupFailBehaviour(definition);
+        return new ToJsonPropertyToColumnMapping(exasolColumnName, sourcePath.build(), lookupFailBehaviour);
     }
 }

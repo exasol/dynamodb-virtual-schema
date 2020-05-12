@@ -23,9 +23,8 @@ public class SchemaMappingToSchemaMetadataConverterTest {
 
     public SchemaMapping getSchemaMapping() {
         final TableMapping table = TableMapping.rootTableBuilder(DEST_TABLE_NAME, SRC_TABLE_NAME)
-                .withColumnMappingDefinition(new ToJsonPropertyToColumnMapping(
-                        new AbstractPropertyToColumnMapping.ConstructorParameters(COLUMN_NAME,
-                                new DocumentPathExpression.Builder().build(), LookupFailBehaviour.DEFAULT_VALUE)))
+                .withColumnMappingDefinition(new ToJsonPropertyToColumnMapping(COLUMN_NAME,
+                        DocumentPathExpression.empty(), LookupFailBehaviour.DEFAULT_VALUE))
                 .build();
         return new SchemaMapping(List.of(table));
     }

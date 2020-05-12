@@ -26,9 +26,8 @@ public class SchemaMapperTest {
 
     @Test
     public void testMapRow() {
-        final ToJsonPropertyToColumnMapping columnMapping = new ToJsonPropertyToColumnMapping(
-                new AbstractPropertyToColumnMapping.ConstructorParameters("test", DocumentPathExpression.empty(),
-                        LookupFailBehaviour.EXCEPTION));
+        final ToJsonPropertyToColumnMapping columnMapping = new ToJsonPropertyToColumnMapping("test",
+                DocumentPathExpression.empty(), LookupFailBehaviour.EXCEPTION);
 
         final TableMapping tableMapping = TableMapping.rootTableBuilder("table", "table")
                 .withColumnMappingDefinition(columnMapping).build();
@@ -49,9 +48,8 @@ public class SchemaMapperTest {
         final String nestedListKey = "topics";
         final DocumentPathExpression pathToNestedTable = new DocumentPathExpression.Builder()
                 .addObjectLookup(nestedListKey).addArrayAll().build();
-        final ToJsonPropertyToColumnMapping columnMapping = new ToJsonPropertyToColumnMapping(
-                new AbstractPropertyToColumnMapping.ConstructorParameters("test", pathToNestedTable,
-                        LookupFailBehaviour.EXCEPTION));
+        final ToJsonPropertyToColumnMapping columnMapping = new ToJsonPropertyToColumnMapping("test", pathToNestedTable,
+                LookupFailBehaviour.EXCEPTION);
         final TableMapping tableMapping = TableMapping.nestedTableBuilder("table", "table", pathToNestedTable)
                 .withColumnMappingDefinition(columnMapping).build();
         final RemoteTableQuery<Object> remoteTableQuery = new RemoteTableQuery<>(tableMapping, List.of(columnMapping),
@@ -71,13 +69,13 @@ public class SchemaMapperTest {
 
         @Override
         public ValueExtractor<Object> getValueMapperForColumn(final PropertyToColumnMapping column) {
-            return new MockValueMapper((AbstractPropertyToColumnMapping) column);
+            return new MockValueMapper(column);
         }
     }
 
     private static class MockValueMapper extends AbstractValueMapper<Object> {
 
-        public MockValueMapper(final AbstractPropertyToColumnMapping column) {
+        public MockValueMapper(final PropertyToColumnMapping column) {
             super(column);
         }
 

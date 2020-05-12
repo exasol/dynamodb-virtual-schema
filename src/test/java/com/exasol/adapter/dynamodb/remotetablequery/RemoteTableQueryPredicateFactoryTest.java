@@ -14,7 +14,6 @@ import org.junit.jupiter.api.Test;
 
 import com.exasol.adapter.dynamodb.documentnode.DocumentValue;
 import com.exasol.adapter.dynamodb.literalconverter.SqlLiteralToDocumentValueConverter;
-import com.exasol.adapter.dynamodb.mapping.AbstractPropertyToColumnMapping;
 import com.exasol.adapter.dynamodb.mapping.ColumnMapping;
 import com.exasol.adapter.dynamodb.mapping.SchemaMappingToSchemaMetadataConverter;
 import com.exasol.adapter.dynamodb.mapping.ToJsonPropertyToColumnMapping;
@@ -22,8 +21,7 @@ import com.exasol.adapter.metadata.ColumnMetadata;
 import com.exasol.adapter.sql.*;
 
 class QueryPredicateFactoryTest {
-    private static final ColumnMapping COLUMN_MAPPING = new ToJsonPropertyToColumnMapping(
-            new AbstractPropertyToColumnMapping.ConstructorParameters("name", null, null));
+    private static final ColumnMapping COLUMN_MAPPING = new ToJsonPropertyToColumnMapping("name", null, null);
     private static final DocumentValue<Object> LITERAL = (DocumentValue<Object>) visitor -> {
     };
     private static final SqlLiteralToDocumentValueConverter<Object> LITERAL_FACTORY = exasolLiteralNode -> LITERAL;

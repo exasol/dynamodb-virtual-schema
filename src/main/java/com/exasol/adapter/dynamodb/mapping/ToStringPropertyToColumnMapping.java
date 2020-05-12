@@ -1,5 +1,6 @@
 package com.exasol.adapter.dynamodb.mapping;
 
+import com.exasol.adapter.dynamodb.documentpath.DocumentPathExpression;
 import com.exasol.adapter.metadata.DataType;
 import com.exasol.sql.expression.StringLiteral;
 import com.exasol.sql.expression.ValueExpression;
@@ -14,14 +15,18 @@ public class ToStringPropertyToColumnMapping extends AbstractPropertyToColumnMap
 
     /**
      * Creates an instance of {@link ToStringPropertyToColumnMapping}.
-     * 
-     * @param parameters        Parameter object for {{@link ColumnMapping}}
-     * @param exasolStringSize  Length of the Exasol VARCHAR
-     * @param overflowBehaviour Behaviour if extracted string exceeds {@link #exasolStringSize}
+     *
+     * @param exasolColumnName     Name of the Exasol column
+     * @param pathToSourceProperty {@link DocumentPathExpression} path to the property to extract
+     * @param lookupFailBehaviour  {@link LookupFailBehaviour} behaviour for the case, that the defined path does not
+     *                             exist
+     * @param exasolStringSize     Length of the Exasol VARCHAR
+     * @param overflowBehaviour    Behaviour if extracted string exceeds {@link #exasolStringSize}
      */
-    public ToStringPropertyToColumnMapping(final ConstructorParameters parameters, final int exasolStringSize,
-            final OverflowBehaviour overflowBehaviour) {
-        super(parameters);
+    public ToStringPropertyToColumnMapping(final String exasolColumnName,
+            final DocumentPathExpression pathToSourceProperty, final LookupFailBehaviour lookupFailBehaviour,
+            final int exasolStringSize, final OverflowBehaviour overflowBehaviour) {
+        super(exasolColumnName, pathToSourceProperty, lookupFailBehaviour);
         this.exasolStringSize = exasolStringSize;
         this.overflowBehaviour = overflowBehaviour;
     }
@@ -66,8 +71,7 @@ public class ToStringPropertyToColumnMapping extends AbstractPropertyToColumnMap
 
     @Override
     public ColumnMapping copyWithNewExasolName(final String newExasolName) {
-        return new ToStringPropertyToColumnMapping(
-                new ConstructorParameters(newExasolName, getPathToSourceProperty(), getLookupFailBehaviour()),
+        return new ToStringPropertyToColumnMapping(newExasolName, getPathToSourceProperty(), getLookupFailBehaviour(),
                 getExasolStringSize(), getOverflowBehaviour());
     }
 

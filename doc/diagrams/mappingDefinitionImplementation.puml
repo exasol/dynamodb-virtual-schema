@@ -1,0 +1,36 @@
+@startuml
+!include mappingDefinitionInterface.puml
+class ToStringPropertyToColumnMapping {
+exasolColumnName
+propertyExtraction
+...
+}
+
+class ToJsonPropertyToColumnMapping {
+exasolColumnName
+propertyExtraction
+...
+}
+
+class IterationIndexColumnMapping{
+exasolColumnName
+accept(ColumnMappingVisitor)
+...
+}
+
+abstract class AbstractColumnMapping{
+exasolColumnName
+}
+
+abstract class AbstractPropertyToColumnMapping{
+propertyExtraction
+}
+
+ColumnMapping <|. AbstractColumnMapping
+AbstractColumnMapping <|-- IterationIndexColumnMapping
+AbstractColumnMapping <|-- AbstractPropertyToColumnMapping
+PropertyToColumnMapping <|. AbstractPropertyToColumnMapping
+AbstractPropertyToColumnMapping <|-- ToStringPropertyToColumnMapping
+AbstractPropertyToColumnMapping <|-- ToJsonPropertyToColumnMapping
+@enduml 
+

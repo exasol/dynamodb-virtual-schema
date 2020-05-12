@@ -42,7 +42,7 @@ public class TableMapping implements Serializable {
      * @return {@link TableMapping.Builder}
      */
     public static Builder rootTableBuilder(final String destName, final String remoteName) {
-        final DocumentPathExpression emptyPath = new DocumentPathExpression.Builder().build();
+        final DocumentPathExpression emptyPath = DocumentPathExpression.empty();
         return new Builder(destName, remoteName, emptyPath);
     }
 

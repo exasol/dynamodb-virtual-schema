@@ -12,12 +12,9 @@ import com.exasol.adapter.dynamodb.mapping.dynamodb.DynamodbValueMapperFactory;
 
 public class DynamodbAbstractValueMapperFactoryTest {
 
-    private static final AbstractPropertyToColumnMapping.ConstructorParameters COLUMN_PARAMETERS = new AbstractPropertyToColumnMapping.ConstructorParameters(
-            "", null, null);
-
     @Test
     void testToStringMapping() {
-        final ToStringPropertyToColumnMapping mappingDefinition = new ToStringPropertyToColumnMapping(COLUMN_PARAMETERS,
+        final ToStringPropertyToColumnMapping mappingDefinition = new ToStringPropertyToColumnMapping("", null, null,
                 10, null);
         final ValueExtractor<DynamodbNodeVisitor> valueExtractor = new DynamodbValueMapperFactory()
                 .getValueMapperForColumn(mappingDefinition);
@@ -26,7 +23,7 @@ public class DynamodbAbstractValueMapperFactoryTest {
 
     @Test
     void testToJsonMapping() {
-        final ToJsonPropertyToColumnMapping mappingDefinition = new ToJsonPropertyToColumnMapping(COLUMN_PARAMETERS);
+        final ToJsonPropertyToColumnMapping mappingDefinition = new ToJsonPropertyToColumnMapping("", null, null);
         final ValueExtractor<DynamodbNodeVisitor> valueExtractor = new DynamodbValueMapperFactory()
                 .getValueMapperForColumn(mappingDefinition);
         assertThat(valueExtractor.getClass(), equalTo(DynamodbToJsonValueMapper.class));
