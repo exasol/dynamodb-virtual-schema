@@ -3,6 +3,7 @@ package com.exasol.adapter.dynamodb;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.collection.IsIterableContainingInAnyOrder.containsInAnyOrder;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.io.IOException;
 import java.sql.ResultSet;
@@ -13,6 +14,7 @@ import java.util.Map;
 import java.util.concurrent.TimeoutException;
 
 import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.Tag;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testcontainers.containers.GenericContainer;
@@ -21,6 +23,7 @@ import org.testcontainers.containers.output.Slf4jLogConsumer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
+import com.amazonaws.services.dynamodbv2.model.*;
 import com.exasol.adapter.dynamodb.mapping.MappingTestFiles;
 import com.exasol.adapter.dynamodb.mapping.TestDocuments;
 import com.exasol.bucketfs.BucketAccessException;
@@ -44,7 +47,7 @@ public class DynamodbAdapterTestLocalIT {
             .withNetwork(NETWORK).withExposedPorts(8888).withLogConsumer(new Slf4jLogConsumer(LOGGER));
     private static final String TEST_SCHEMA = "TEST";
     private static final String DYNAMODB_CONNECTION = "DYNAMODB_CONNECTION";
-    private static final String DYNAMO_TABLE_NAME = "MY_BOOKS";
+    private static final String DYNAMO_BOOKS_TABLE = "MY_BOOKS";
     private static DynamodbTestInterface dynamodbTestInterface;
     private static ExasolTestInterface exasolTestInterface;
 
@@ -59,6 +62,7 @@ public class DynamodbAdapterTestLocalIT {
         exasolTestInterface.uploadDynamodbAdapterJar();
         exasolTestInterface.uploadMapping(MappingTestFiles.BASIC_MAPPING_FILE_NAME);
         exasolTestInterface.uploadMapping(MappingTestFiles.SINGLE_COLUMN_TO_TABLE_MAPPING_FILE_NAME);
+        exasolTestInterface.uploadMapping(MappingTestFiles.DATA_TYPE_TEST_MAPPING_FILE_NAME);
         exasolTestInterface.createAdapterScript();
         LOGGER.info("created adapter script");
         exasolTestInterface.createConnection(DYNAMODB_CONNECTION, dynamodbTestInterface.getDynamoUrl(),
@@ -83,7 +87,7 @@ public class DynamodbAdapterTestLocalIT {
         createBasicMappingVirtualSchema();
         final Map<String, String> rowNames = exasolTestInterface.describeTable(TEST_SCHEMA, "BOOKS");
         assertThat(rowNames, equalTo(Map.of("ISBN", "VARCHAR(20) UTF8", "NAME", "VARCHAR(100) UTF8", "AUTHOR_NAME",
-                "VARCHAR(20) UTF8", "PUBLISHER", "VARCHAR(100) UTF8")));
+                "VARCHAR(20) UTF8", "PUBLISHER", "VARCHAR(100) UTF8", "PRICE", "VARCHAR(10) UTF8")));
     }
 
     /**
@@ -109,7 +113,7 @@ public class DynamodbAdapterTestLocalIT {
     @Test
     void testEmptySelect() throws SQLException {
         createBasicMappingVirtualSchema();
-        dynamodbTestInterface.createTable(DYNAMO_TABLE_NAME, TestDocuments.BOOKS_ISBN_PROPERTY);
+        dynamodbTestInterface.createTable(DYNAMO_BOOKS_TABLE, TestDocuments.BOOKS_ISBN_PROPERTY);
         final List<String> result = selectStringArray().rows;
         assertThat(result.size(), equalTo(0));
     }
@@ -120,9 +124,9 @@ public class DynamodbAdapterTestLocalIT {
     @Test
     void testSingleLineSelect() throws SQLException {
         createBasicMappingVirtualSchema();
-        dynamodbTestInterface.createTable(DYNAMO_TABLE_NAME, TestDocuments.BOOKS_ISBN_PROPERTY);
+        dynamodbTestInterface.createTable(DYNAMO_BOOKS_TABLE, TestDocuments.BOOKS_ISBN_PROPERTY);
         final String Isbn = "12398439493";
-        dynamodbTestInterface.putItem(DYNAMO_TABLE_NAME, Isbn, "test name");
+        dynamodbTestInterface.putItem(DYNAMO_BOOKS_TABLE, Isbn, "test name");
         final SelectStringArrayResult result = selectStringArray();
         assertThat(result.rows, containsInAnyOrder(Isbn));
     }
@@ -133,9 +137,9 @@ public class DynamodbAdapterTestLocalIT {
     @Test
     void testSingleLineSelectWithStringResult() throws SQLException {
         createBasicMappingVirtualSchema();
-        dynamodbTestInterface.createTable(DYNAMO_TABLE_NAME, TestDocuments.BOOKS_ISBN_PROPERTY);
+        dynamodbTestInterface.createTable(DYNAMO_BOOKS_TABLE, TestDocuments.BOOKS_ISBN_PROPERTY);
         final String Isbn = "abc";
-        dynamodbTestInterface.putItem(DYNAMO_TABLE_NAME, Isbn, "test name");
+        dynamodbTestInterface.putItem(DYNAMO_BOOKS_TABLE, Isbn, "test name");
         final SelectStringArrayResult result = selectStringArray();
         assertThat(result.rows, containsInAnyOrder(Isbn));
     }
@@ -146,8 +150,8 @@ public class DynamodbAdapterTestLocalIT {
     @Test
     void testMultiLineSelect() throws IOException, SQLException {
         createBasicMappingVirtualSchema();
-        dynamodbTestInterface.createTable(DYNAMO_TABLE_NAME, TestDocuments.BOOKS_ISBN_PROPERTY);
-        dynamodbTestInterface.importData(DYNAMO_TABLE_NAME, TestDocuments.BOOKS);
+        dynamodbTestInterface.createTable(DYNAMO_BOOKS_TABLE, TestDocuments.BOOKS_ISBN_PROPERTY);
+        dynamodbTestInterface.importData(DYNAMO_BOOKS_TABLE, TestDocuments.BOOKS);
         final List<String> result = selectStringArray().rows;
         assertThat(result, containsInAnyOrder("123567", "123254545", "1235673"));
     }
@@ -158,12 +162,12 @@ public class DynamodbAdapterTestLocalIT {
     @Test
     void testBigScan() throws SQLException {
         createBasicMappingVirtualSchema();
-        dynamodbTestInterface.createTable(DYNAMO_TABLE_NAME, TestDocuments.BOOKS_ISBN_PROPERTY);
+        dynamodbTestInterface.createTable(DYNAMO_BOOKS_TABLE, TestDocuments.BOOKS_ISBN_PROPERTY);
         final int numBooks = 1000;
         final List<String> actualBookNames = new ArrayList<>(numBooks);
         for (int i = 0; i < numBooks; i++) {
             final String booksName = String.valueOf(i);
-            dynamodbTestInterface.putItem(DYNAMO_TABLE_NAME, booksName, "name equal for all books");
+            dynamodbTestInterface.putItem(DYNAMO_BOOKS_TABLE, booksName, "name equal for all books");
             actualBookNames.add(booksName);
         }
         final SelectStringArrayResult result = selectStringArray();
@@ -193,8 +197,8 @@ public class DynamodbAdapterTestLocalIT {
     void testSelection() throws SQLException, IOException {
         final String selectedIsbn = "123567";
         createBasicMappingVirtualSchema();
-        dynamodbTestInterface.createTable(DYNAMO_TABLE_NAME, TestDocuments.BOOKS_ISBN_PROPERTY);
-        dynamodbTestInterface.importData(DYNAMO_TABLE_NAME, TestDocuments.BOOKS);
+        dynamodbTestInterface.createTable(DYNAMO_BOOKS_TABLE, TestDocuments.BOOKS_ISBN_PROPERTY);
+        dynamodbTestInterface.importData(DYNAMO_BOOKS_TABLE, TestDocuments.BOOKS);
         final ResultSet actualResultSet = exasolTestInterface.getStatement()
                 .executeQuery("SELECT ISBN FROM " + TEST_SCHEMA + ".\"BOOKS\" WHERE ISBN = '" + selectedIsbn + "';");
         final List<String> isbns = new ArrayList<>();
@@ -204,16 +208,75 @@ public class DynamodbAdapterTestLocalIT {
         assertThat(isbns, containsInAnyOrder(selectedIsbn));
     }
 
+    @Test
+    void testGreaterSelectionWithSortKey() throws SQLException, IOException {
+        createBasicMappingVirtualSchema();
+        createTableBooksTableWithPublisherPriceKey();
+        final ResultSet actualResultSet = exasolTestInterface.getStatement().executeQuery(
+                "SELECT ISBN FROM " + TEST_SCHEMA + ".\"BOOKS\" WHERE PUBLISHER = 'jb books' AND PRICE > 10;");
+        final List<String> isbns = new ArrayList<>();
+        while (actualResultSet.next()) {
+            isbns.add(actualResultSet.getString("ISBN"));
+        }
+        assertThat(isbns, containsInAnyOrder("123567"));
+    }
+
+    @Test
+    void testLessSelectionWithSortKey() throws SQLException, IOException {
+        createBasicMappingVirtualSchema();
+        createTableBooksTableWithPublisherPriceKey();
+        final ResultSet actualResultSet = exasolTestInterface.getStatement().executeQuery(
+                "SELECT ISBN FROM " + TEST_SCHEMA + ".\"BOOKS\" WHERE PUBLISHER = 'jb books' AND PRICE < 11;");
+        final List<String> isbns = new ArrayList<>();
+        while (actualResultSet.next()) {
+            isbns.add(actualResultSet.getString("ISBN"));
+        }
+        assertThat(isbns, containsInAnyOrder("123254545"));
+    }
+
+    private void createTableBooksTableWithPublisherPriceKey() throws IOException {
+        final CreateTableRequest request = new CreateTableRequest().withTableName(DYNAMO_BOOKS_TABLE)
+                .withKeySchema(new KeySchemaElement("publisher", KeyType.HASH),
+                        new KeySchemaElement("price", KeyType.RANGE))
+                .withAttributeDefinitions(new AttributeDefinition("publisher", ScalarAttributeType.S),
+                        new AttributeDefinition("price", ScalarAttributeType.N))
+                .withProvisionedThroughput(new ProvisionedThroughput(1L, 1L));
+        dynamodbTestInterface.createTable(request);
+        dynamodbTestInterface.importData(DYNAMO_BOOKS_TABLE, TestDocuments.BOOKS);
+    }
+
+    @Test
+    void testDataTypes() throws IOException, SQLException {
+        createDataTypesVirtualSchema();
+        final ResultSet actualResultSet = exasolTestInterface.getStatement().executeQuery("SELECT * FROM " + TEST_SCHEMA
+                + "." + MappingTestFiles.DATA_TYPE_TEST_EXASOL_TABLE_NAME + " WHERE STRINGVALUE = 'test';");
+        actualResultSet.next();
+        assertAll(() -> assertThat(actualResultSet.getString("STRINGVALUE"), equalTo("test")),
+                () -> assertThat(actualResultSet.getString("BOOLVALUE"), equalTo("true")),
+                () -> assertThat(actualResultSet.getString("DOUBLEVALUE"), equalTo("1.2")),
+                () -> assertThat(actualResultSet.getString("INTEGERVALUE"), equalTo("1")),
+                () -> assertThat(actualResultSet.getString("NULLVALUE"), equalTo(null))//
+        );
+    }
+
     private void createNestedTableVirtualSchema() throws SQLException, IOException {
         exasolTestInterface.createDynamodbVirtualSchema(TEST_SCHEMA, DYNAMODB_CONNECTION,
                 "/bfsdefault/default/mappings/" + MappingTestFiles.SINGLE_COLUMN_TO_TABLE_MAPPING_FILE_NAME);
-        dynamodbTestInterface.createTable(DYNAMO_TABLE_NAME, TestDocuments.BOOKS_ISBN_PROPERTY);
-        dynamodbTestInterface.importData(DYNAMO_TABLE_NAME, TestDocuments.BOOKS);
+        dynamodbTestInterface.createTable(DYNAMO_BOOKS_TABLE, TestDocuments.BOOKS_ISBN_PROPERTY);
+        dynamodbTestInterface.importData(DYNAMO_BOOKS_TABLE, TestDocuments.BOOKS);
     }
 
     void createBasicMappingVirtualSchema() throws SQLException {
         exasolTestInterface.createDynamodbVirtualSchema(TEST_SCHEMA, DYNAMODB_CONNECTION,
                 "/bfsdefault/default/mappings/" + MappingTestFiles.BASIC_MAPPING_FILE_NAME);
+    }
+
+    void createDataTypesVirtualSchema() throws SQLException, IOException {
+        exasolTestInterface.createDynamodbVirtualSchema(TEST_SCHEMA, DYNAMODB_CONNECTION,
+                "/bfsdefault/default/mappings/" + MappingTestFiles.DATA_TYPE_TEST_MAPPING_FILE_NAME);
+        dynamodbTestInterface.createTable(MappingTestFiles.DATA_TYPE_TEST_SRC_TABLE_NAME,
+                TestDocuments.DATA_TYPE_TEST_STRING_VALUE);
+        dynamodbTestInterface.importData(MappingTestFiles.DATA_TYPE_TEST_SRC_TABLE_NAME, TestDocuments.DATA_TYPE_TEST);
     }
 
     private static final class SelectStringArrayResult {

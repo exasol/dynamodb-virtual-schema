@@ -1,4 +1,4 @@
-package com.exasol.adapter.dynamodb.queryrunner;
+package com.exasol.adapter.dynamodb.documentfetcher.dynamodb;
 
 import java.util.Collections;
 import java.util.List;
@@ -37,6 +37,12 @@ public class DynamodbQuerySelectionRater {
             switch (columnLiteralComparisonPredicate.getOperator()) {
             case EQUAL:
                 this.rating = RATING_EQUALITY;
+                break;
+            case LESS:
+            case LESS_EQUAL:
+            case GREATER_EQUAL:
+            case GREATER:
+                this.rating = RATING_RANGE;
                 break;
             default:
                 throw new UnsupportedOperationException("This operator was not yet implemented.");

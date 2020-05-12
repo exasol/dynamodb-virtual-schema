@@ -108,4 +108,56 @@ class QueryPredicateFactoryTest {
         assertThat(exception.getMessage(),
                 equalTo("Predicates on two literals are not yet supported in this Virtual Schema version."));
     }
+
+    @Test
+    void testBuildColumnLiteralLessPredicate() {
+        final ColumnLiteralComparisonPredicate<Object> predicate = (ColumnLiteralComparisonPredicate<Object>) FACTORY
+                .buildPredicateFor(
+                        new SqlPredicateLess(new SqlColumn(0, columnMetadata), new SqlLiteralString("test")));
+        assertAll(//
+                () -> assertThat(predicate.getLiteral(), equalTo(LITERAL)),
+                () -> assertThat(predicate.getColumn().getExasolColumnName(),
+                        equalTo(COLUMN_MAPPING.getExasolColumnName())),
+                () -> assertThat(predicate.getOperator(), equalTo(ComparisonPredicate.Operator.LESS))//
+        );
+    }
+
+    @Test
+    void testBuildColumnLiteralLessPredicateWithSwappedParameters() {
+        final ColumnLiteralComparisonPredicate<Object> predicate = (ColumnLiteralComparisonPredicate<Object>) FACTORY
+                .buildPredicateFor(
+                        new SqlPredicateLess(new SqlLiteralString("test"), new SqlColumn(0, columnMetadata)));
+        assertAll(//
+                () -> assertThat(predicate.getLiteral(), equalTo(LITERAL)),
+                () -> assertThat(predicate.getColumn().getExasolColumnName(),
+                        equalTo(COLUMN_MAPPING.getExasolColumnName())),
+                () -> assertThat(predicate.getOperator(), equalTo(ComparisonPredicate.Operator.GREATER))//
+        );
+    }
+
+    @Test
+    void testBuildColumnLiteralLessEqualPredicate() {
+        final ColumnLiteralComparisonPredicate<Object> predicate = (ColumnLiteralComparisonPredicate<Object>) FACTORY
+                .buildPredicateFor(
+                        new SqlPredicateLessEqual(new SqlColumn(0, columnMetadata), new SqlLiteralString("test")));
+        assertAll(//
+                () -> assertThat(predicate.getLiteral(), equalTo(LITERAL)),
+                () -> assertThat(predicate.getColumn().getExasolColumnName(),
+                        equalTo(COLUMN_MAPPING.getExasolColumnName())),
+                () -> assertThat(predicate.getOperator(), equalTo(ComparisonPredicate.Operator.LESS_EQUAL))//
+        );
+    }
+
+    @Test
+    void testBuildColumnLiteralLessEqualPredicateWithSwappedParameters() {
+        final ColumnLiteralComparisonPredicate<Object> predicate = (ColumnLiteralComparisonPredicate<Object>) FACTORY
+                .buildPredicateFor(
+                        new SqlPredicateLessEqual(new SqlLiteralString("test"), new SqlColumn(0, columnMetadata)));
+        assertAll(//
+                () -> assertThat(predicate.getLiteral(), equalTo(LITERAL)),
+                () -> assertThat(predicate.getColumn().getExasolColumnName(),
+                        equalTo(COLUMN_MAPPING.getExasolColumnName())),
+                () -> assertThat(predicate.getOperator(), equalTo(ComparisonPredicate.Operator.GREATER_EQUAL))//
+        );
+    }
 }

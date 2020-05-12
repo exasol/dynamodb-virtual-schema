@@ -59,6 +59,18 @@ public class QueryPredicateFactory<DocumentVisitorType> {
             return null;
         }
 
+        @Override
+        public Void visit(final SqlPredicateLess sqlPredicateLess) {
+            buildComparison(sqlPredicateLess, ComparisonPredicate.Operator.LESS);
+            return null;
+        }
+
+        @Override
+        public Void visit(final SqlPredicateLessEqual sqlPredicateLessEqual) {
+            buildComparison(sqlPredicateLessEqual, ComparisonPredicate.Operator.LESS_EQUAL);
+            return null;
+        }
+
         void buildComparison(final AbstractSqlBinaryEquality sqlEquality, final ComparisonPredicate.Operator operator) {
             final SqlNode left = sqlEquality.getLeft();
             final SqlNode right = sqlEquality.getRight();
@@ -66,12 +78,29 @@ public class QueryPredicateFactory<DocumentVisitorType> {
                 throw new UnsupportedOperationException(
                         "Predicates on two columns are not yet supported in this Virtual Schema version.");
             } else if (right instanceof SqlColumn) {
-                buildColumnLiteralComparision((SqlColumn) right, left, operator);
+                buildColumnLiteralComparision((SqlColumn) right, left, mirrorOperator(operator));
             } else if (left instanceof SqlColumn) {
                 buildColumnLiteralComparision((SqlColumn) left, right, operator);
             } else {
                 throw new UnsupportedOperationException(
                         "Predicates on two literals are not yet supported in this Virtual Schema version.");
+            }
+        }
+
+        private ComparisonPredicate.Operator mirrorOperator(final ComparisonPredicate.Operator operator) {
+            switch (operator) {
+            case LESS:
+                return ComparisonPredicate.Operator.GREATER;
+            case LESS_EQUAL:
+                return ComparisonPredicate.Operator.GREATER_EQUAL;
+            case GREATER:
+                return ComparisonPredicate.Operator.LESS;
+            case GREATER_EQUAL:
+                return ComparisonPredicate.Operator.LESS_EQUAL;
+            case EQUAL:
+                return ComparisonPredicate.Operator.EQUAL;
+            default:
+                throw new UnsupportedOperationException("this operator is not yet implemented");
             }
         }
 
