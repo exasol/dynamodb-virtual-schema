@@ -1,0 +1,29 @@
+{
+  "$schema": "../../main/resources/mappingLanguageSchema.json",
+  "srcTable": "DATA_TYPE_TEST",
+  "destTable": "TEST",
+  "mapping": {
+    "fields": {
+      "stringValue": {
+        "toStringMapping": {
+        }
+      },
+      "boolValue": {
+        "toStringMapping": {
+        }
+      },
+      "doubleValue": {
+        "toStringMapping": {
+        }
+      },
+      "integerValue": {
+        "toStringMapping": {
+        }
+      },
+      "nullValue": {
+        "toStringMapping": {
+        }
+      }
+    }
+  }
+}

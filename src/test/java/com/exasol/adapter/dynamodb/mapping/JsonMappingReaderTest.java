@@ -47,7 +47,7 @@ public class JsonMappingReaderTest {
         assertAll(() -> assertThat(tables.size(), equalTo(1)), //
                 () -> assertThat(table.getExasolName(), equalTo("BOOKS")),
                 () -> assertThat(table.getRemoteName(), equalTo("MY_BOOKS")),
-                () -> assertThat(columnNames, containsInAnyOrder("ISBN", "NAME", "AUTHOR_NAME", "PUBLISHER")),
+                () -> assertThat(columnNames, containsInAnyOrder("ISBN", "NAME", "AUTHOR_NAME", "PUBLISHER", "PRICE")),
                 () -> assertThat(isbnColumn.getExasolStringSize(), equalTo(20)),
                 () -> assertThat(isbnColumn.getOverflowBehaviour(),
                         equalTo(ToStringPropertyToColumnMapping.OverflowBehaviour.EXCEPTION)),

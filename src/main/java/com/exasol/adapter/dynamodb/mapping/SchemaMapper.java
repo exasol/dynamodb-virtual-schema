@@ -39,7 +39,7 @@ public class SchemaMapper<DocumentVisitorType> {
      * @return stream of exasol rows
      */
     public Stream<List<ValueExpression>> mapRow(final DocumentNode<DocumentVisitorType> document) {
-        final DocumentPathExpression pathToNestedTable = this.query.getFromTable().getPathToNestedTable();
+        final DocumentPathExpression pathToNestedTable = this.query.getFromTable().getPathInRemoteTable();
         final DocumentPathIteratorFactory<DocumentVisitorType> arrayAllCombinationIterable = new DocumentPathIteratorFactory<>(
                 pathToNestedTable, document);
         return arrayAllCombinationIterable.stream().map(iterationState -> mapColumns(document, iterationState));

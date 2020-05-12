@@ -1,4 +1,4 @@
-package com.exasol.adapter.dynamodb.queryrunner;
+package com.exasol.adapter.dynamodb.documentfetcher.dynamodb;
 
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 

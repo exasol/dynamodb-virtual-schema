@@ -1,4 +1,4 @@
-package com.exasol.adapter.dynamodb.queryrunner;
+package com.exasol.adapter.dynamodb.documentfetcher.dynamodb;
 
 import java.util.Map;
 import java.util.stream.Stream;
@@ -20,6 +20,10 @@ class DynamodbScanOperationPlan implements DynamodbOperationPlan {
      */
     protected DynamodbScanOperationPlan(final String tableName) {
         this.scanRequest = new ScanRequest().withTableName(tableName);
+    }
+
+    ScanRequest getScanRequest() {
+        return this.scanRequest;
     }
 
     @Override

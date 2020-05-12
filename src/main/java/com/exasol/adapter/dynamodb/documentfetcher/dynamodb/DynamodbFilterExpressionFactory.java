@@ -1,4 +1,4 @@
-package com.exasol.adapter.dynamodb.queryrunner;
+package com.exasol.adapter.dynamodb.documentfetcher.dynamodb;
 
 import java.util.List;
 
@@ -63,6 +63,14 @@ public class DynamodbFilterExpressionFactory {
             switch (operator) {
             case EQUAL:
                 return "=";
+            case LESS:
+                return "<";
+            case LESS_EQUAL:
+                return "<=";
+            case GREATER:
+                return ">";
+            case GREATER_EQUAL:
+                return ">=";
             default:
                 throw new UnsupportedOperationException("This operator has no equivalent in DynamoDB.");
             }

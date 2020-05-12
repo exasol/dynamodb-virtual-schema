@@ -16,11 +16,12 @@ import com.exasol.adapter.VirtualSchemaAdapter;
 import com.exasol.adapter.capabilities.Capabilities;
 import com.exasol.adapter.capabilities.LiteralCapability;
 import com.exasol.adapter.capabilities.PredicateCapability;
+import com.exasol.adapter.dynamodb.documentfetcher.DocumentFetcher;
+import com.exasol.adapter.dynamodb.documentfetcher.dynamodb.DynamodbDocumentFetcher;
 import com.exasol.adapter.dynamodb.documentnode.dynamodb.DynamodbNodeVisitor;
 import com.exasol.adapter.dynamodb.literalconverter.dynamodb.SqlLiteralToDynamodbValueConverter;
 import com.exasol.adapter.dynamodb.mapping.*;
 import com.exasol.adapter.dynamodb.mapping.dynamodb.DynamodbValueMapperFactory;
-import com.exasol.adapter.dynamodb.queryrunner.DynamodbOperationRunner;
 import com.exasol.adapter.dynamodb.remotetablequery.RemoteTableQuery;
 import com.exasol.adapter.dynamodb.remotetablequery.RemoteTableQueryFactory;
 import com.exasol.adapter.metadata.SchemaMetadata;
@@ -34,7 +35,10 @@ import com.exasol.sql.expression.ValueExpression;
  */
 public class DynamodbAdapter implements VirtualSchemaAdapter {
     private static final Capabilities CAPABILITIES = Capabilities.builder().addMain(FILTER_EXPRESSIONS)
-            .addPredicate(PredicateCapability.EQUAL).addLiteral(LiteralCapability.STRING).build();
+            .addPredicate(PredicateCapability.EQUAL, PredicateCapability.LESS, PredicateCapability.LESSEQUAL)
+            .addLiteral(LiteralCapability.STRING, LiteralCapability.NULL, LiteralCapability.BOOL,
+                    LiteralCapability.DOUBLE, LiteralCapability.EXACTNUMERIC)
+            .build();
 
     @Override
     public CreateVirtualSchemaResponse createVirtualSchema(final ExaMetadata exaMetadata,
@@ -126,12 +130,12 @@ public class DynamodbAdapter implements VirtualSchemaAdapter {
 
     private String runQuery(final ExaMetadata exaMetadata, final PushDownRequest request,
             final RemoteTableQuery<DynamodbNodeVisitor> remoteTableQuery) throws ExaConnectionAccessException {
-        final DynamodbOperationRunner dynamodbOperationRunner = new DynamodbOperationRunner(
+        final DocumentFetcher documentFetcher = new DynamodbDocumentFetcher(
                 getConnectionInformation(exaMetadata, request));
         final SchemaMapper<DynamodbNodeVisitor> schemaMapper = new SchemaMapper<>(remoteTableQuery,
                 new DynamodbValueMapperFactory());
         final List<List<ValueExpression>> resultRows = new ArrayList<>();
-        dynamodbOperationRunner.runQuery(remoteTableQuery)
+        documentFetcher.fetchDocumentData(remoteTableQuery)
                 .forEach(dynamodbRow -> schemaMapper.mapRow(dynamodbRow).forEach(resultRows::add));
         return new ValueExpressionsToSqlSelectFromValuesConverter().convert(remoteTableQuery, resultRows);
     }

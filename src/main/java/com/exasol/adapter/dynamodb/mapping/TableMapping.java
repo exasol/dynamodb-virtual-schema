@@ -13,26 +13,25 @@ import com.exasol.adapter.dynamodb.documentpath.DocumentPathExpression;
  * from a nested list or object. See {@link #isRootTable()} for details.
  */
 public class TableMapping implements Serializable {
-    private static final long serialVersionUID = -3340645367432789767L;
+    private static final long serialVersionUID = 4733787702889353750L;
     private final String exasolName;
     private final String remoteName;
     private final transient List<ColumnMapping> columns; // The columns are serialized separately in
                                                          // {@link ColumnMetadata}.
-
-    private final DocumentPathExpression pathToNestedTable;
+    private final DocumentPathExpression pathInRemoteTable;
 
     TableMapping(final String exasolName, final String remoteName, final List<ColumnMapping> columns,
-            final DocumentPathExpression pathToNestedTable) {
+            final DocumentPathExpression pathInRemoteTable) {
         this.exasolName = exasolName;
         this.remoteName = remoteName;
-        this.pathToNestedTable = pathToNestedTable;
+        this.pathInRemoteTable = pathInRemoteTable;
         this.columns = columns;
     }
 
     TableMapping(final TableMapping deserialized, final List<ColumnMapping> columns) {
         this.exasolName = deserialized.exasolName;
         this.remoteName = deserialized.remoteName;
-        this.pathToNestedTable = deserialized.pathToNestedTable;
+        this.pathInRemoteTable = deserialized.pathInRemoteTable;
         this.columns = columns;
     }
 
@@ -53,12 +52,12 @@ public class TableMapping implements Serializable {
      *
      * @param destName          Name of the Exasol table
      * @param remoteName        Name of the remote table
-     * @param pathToNestedTable Path expression within the document to the nested table
+     * @param pathInRemoteTable Path expression within the document to a nested list that is mapped to a table
      * @return Builder for {@link TableMapping}
      */
     public static Builder nestedTableBuilder(final String destName, final String remoteName,
-            final DocumentPathExpression pathToNestedTable) {
-        return new Builder(destName, remoteName, pathToNestedTable);
+            final DocumentPathExpression pathInRemoteTable) {
+        return new Builder(destName, remoteName, pathInRemoteTable);
     }
 
     /**
@@ -80,12 +79,13 @@ public class TableMapping implements Serializable {
     }
 
     /**
-     * Gives the path to the nested table.
+     * Gives the path to the nested table that is mapped by this table.
      * 
-     * @return path to nested table. Empty path expression if this is a root table.
+     * @return path to nested list. Empty path expression if this tables maps a root document.
      */
-    public DocumentPathExpression getPathToNestedTable() {
-        return this.pathToNestedTable;
+
+    public DocumentPathExpression getPathInRemoteTable() {
+        return this.pathInRemoteTable;
     }
 
     /**
@@ -104,7 +104,7 @@ public class TableMapping implements Serializable {
      *         list or map from DynamoDB
      */
     public boolean isRootTable() {
-        return this.pathToNestedTable.size() == 0;
+        return this.pathInRemoteTable.size() == 0;
     }
 
     /**
