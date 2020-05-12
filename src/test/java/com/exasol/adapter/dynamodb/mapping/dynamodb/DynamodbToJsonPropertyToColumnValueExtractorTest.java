@@ -15,7 +15,7 @@ import com.exasol.adapter.dynamodb.mapping.ToJsonPropertyToColumnMapping;
 import com.exasol.dynamodb.attributevalue.AttributeValueQuickCreator;
 import com.exasol.sql.expression.ValueExpression;
 
-public class DynamodbToJsonValueMapperTest {
+public class DynamodbToJsonPropertyToColumnValueExtractorTest {
     private static final String DEST_COLUMN = "destColumn";
 
     @Test
@@ -23,8 +23,8 @@ public class DynamodbToJsonValueMapperTest {
         final ToJsonPropertyToColumnMapping toStringColumnMappingDefinition = new ToJsonPropertyToColumnMapping(
                 DEST_COLUMN, DocumentPathExpression.empty(), LookupFailBehaviour.EXCEPTION);
         final DynamodbMap testData = new DynamodbMap(Map.of("key", AttributeValueQuickCreator.forString("value")));
-        final ValueExpression exasolCellValue = new DynamodbToJsonValueMapper(toStringColumnMappingDefinition)
-                .mapRow(testData, new StaticDocumentPathIterator());
+        final ValueExpression exasolCellValue = new DynamodbToJsonPropertyToColumnValueExtractor(
+                toStringColumnMappingDefinition).extractColumnValue(testData, new StaticDocumentPathIterator());
         assertThat(exasolCellValue.toString(), equalTo("{\"key\":\"value\"}"));
     }
 }

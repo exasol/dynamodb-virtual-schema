@@ -6,15 +6,16 @@ import com.exasol.sql.expression.IntegerLiteral;
 import com.exasol.sql.expression.ValueExpression;
 
 @java.lang.SuppressWarnings("squid:S119") // DocumentVisitorType does not fit naming conventions.
-public class IterationIndexValueExtractor<DocumentVisitorType> implements ValueExtractor<DocumentVisitorType> {
+public class IterationIndexColumnValueExtractor<DocumentVisitorType>
+        implements ColumnValueExtractor<DocumentVisitorType> {
     private final IterationIndexColumnMapping column;
 
-    public IterationIndexValueExtractor(final IterationIndexColumnMapping column) {
+    public IterationIndexColumnValueExtractor(final IterationIndexColumnMapping column) {
         this.column = column;
     }
 
     @Override
-    public ValueExpression mapRow(final DocumentNode<DocumentVisitorType> document,
+    public ValueExpression extractColumnValue(final DocumentNode<DocumentVisitorType> document,
             final PathIterationStateProvider arrayAllIterationState) {
         final int arrayIndex = arrayAllIterationState.getIndexFor(this.column.getTablesPath());
         return IntegerLiteral.of(arrayIndex);

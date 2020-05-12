@@ -21,7 +21,7 @@ import com.exasol.adapter.dynamodb.documentfetcher.dynamodb.DynamodbDocumentFetc
 import com.exasol.adapter.dynamodb.documentnode.dynamodb.DynamodbNodeVisitor;
 import com.exasol.adapter.dynamodb.literalconverter.dynamodb.SqlLiteralToDynamodbValueConverter;
 import com.exasol.adapter.dynamodb.mapping.*;
-import com.exasol.adapter.dynamodb.mapping.dynamodb.DynamodbValueMapperFactory;
+import com.exasol.adapter.dynamodb.mapping.dynamodb.DynamodbPropertyToColumnValueExtractorFactory;
 import com.exasol.adapter.dynamodb.remotetablequery.RemoteTableQuery;
 import com.exasol.adapter.dynamodb.remotetablequery.RemoteTableQueryFactory;
 import com.exasol.adapter.metadata.SchemaMetadata;
@@ -133,7 +133,7 @@ public class DynamodbAdapter implements VirtualSchemaAdapter {
         final DocumentFetcher documentFetcher = new DynamodbDocumentFetcher(
                 getConnectionInformation(exaMetadata, request));
         final SchemaMapper<DynamodbNodeVisitor> schemaMapper = new SchemaMapper<>(remoteTableQuery,
-                new DynamodbValueMapperFactory());
+                new DynamodbPropertyToColumnValueExtractorFactory());
         final List<List<ValueExpression>> resultRows = new ArrayList<>();
         documentFetcher.fetchDocumentData(remoteTableQuery)
                 .forEach(dynamodbRow -> schemaMapper.mapRow(dynamodbRow).forEach(resultRows::add));

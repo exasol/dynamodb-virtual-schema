@@ -5,20 +5,21 @@ import javax.json.JsonValue;
 import com.exasol.adapter.dynamodb.documentnode.DocumentNode;
 import com.exasol.adapter.dynamodb.documentnode.dynamodb.DynamodbNodeVisitor;
 import com.exasol.adapter.dynamodb.mapping.ToJsonPropertyToColumnMapping;
-import com.exasol.adapter.dynamodb.mapping.ToJsonValueMapper;
+import com.exasol.adapter.dynamodb.mapping.ToJsonPropertyToColumnValueExtractor;
 import com.exasol.dynamodb.DynamodbValueToJsonConverter;
 
 /**
- * This class represents {@link ToJsonValueMapper} for DynamoDB values.
+ * This class represents {@link ToJsonPropertyToColumnValueExtractor} for DynamoDB values.
  */
-public class DynamodbToJsonValueMapper extends ToJsonValueMapper<DynamodbNodeVisitor> {
+public class DynamodbToJsonPropertyToColumnValueExtractor
+        extends ToJsonPropertyToColumnValueExtractor<DynamodbNodeVisitor> {
 
     /**
-     * Creates an instance of {@link DynamodbToJsonValueMapper}.
+     * Creates an instance of {@link DynamodbToJsonPropertyToColumnValueExtractor}.
      *
      * @param column {@link ToJsonPropertyToColumnMapping}
      */
-    public DynamodbToJsonValueMapper(final ToJsonPropertyToColumnMapping column) {
+    public DynamodbToJsonPropertyToColumnValueExtractor(final ToJsonPropertyToColumnMapping column) {
         super(column);
     }
 

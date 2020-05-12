@@ -15,7 +15,7 @@ import com.exasol.adapter.dynamodb.documentpath.DocumentPathExpression;
 import com.exasol.adapter.dynamodb.mapping.LookupFailBehaviour;
 import com.exasol.adapter.dynamodb.mapping.ToStringPropertyToColumnMapping;
 
-public class DynamodbToStringValueMapperTest {
+public class DynamodbToStringPropertyToColumnValueExtractorTest {
 
     private static final int TEST_NUMBER = 42;
     private static final String TEST_SOURCE_COLUMN = "myColumn";
@@ -30,14 +30,14 @@ public class DynamodbToStringValueMapperTest {
     @Test
     void testConvertStringRow() {
         final String testString = "test";
-        final String result = new DynamodbToStringValueMapper(TO_STRING_PROPERTY_TO_COLUMN_MAPPING)
+        final String result = new DynamodbToStringPropertyToColumnValueExtractor(TO_STRING_PROPERTY_TO_COLUMN_MAPPING)
                 .mapStringValue(new DynamodbString(testString));
         assertThat(result, equalTo(testString));
     }
 
     @Test
     void testConvertNumberRow() {
-        final String result = new DynamodbToStringValueMapper(TO_STRING_PROPERTY_TO_COLUMN_MAPPING)
+        final String result = new DynamodbToStringPropertyToColumnValueExtractor(TO_STRING_PROPERTY_TO_COLUMN_MAPPING)
                 .mapStringValue(new DynamodbNumber(String.valueOf(TEST_NUMBER)));
         assertThat(result, equalTo(String.valueOf(TEST_NUMBER)));
     }
@@ -45,7 +45,7 @@ public class DynamodbToStringValueMapperTest {
     @Test
     void testConvertUnsupportedDynamodbType() {
         final UnsupportedOperationException exception = assertThrows(UnsupportedOperationException.class,
-                () -> new DynamodbToStringValueMapper(TO_STRING_PROPERTY_TO_COLUMN_MAPPING)
+                () -> new DynamodbToStringPropertyToColumnValueExtractor(TO_STRING_PROPERTY_TO_COLUMN_MAPPING)
                         .mapStringValue(new DynamodbList(Collections.emptyList())));
         assertThat(exception.getMessage(),
                 equalTo("The DynamoDB type List cant't be converted to string. Try using a different mapping."));

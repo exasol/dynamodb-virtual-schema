@@ -8,15 +8,16 @@ import com.exasol.sql.expression.ValueExpression;
  * ValueMapper for {@link ToStringPropertyToColumnMapping}
  */
 @java.lang.SuppressWarnings("squid:S119") // DocumentVisitorType does not fit naming conventions.
-public abstract class ToStringValueMapper<DocumentVisitorType> extends AbstractValueMapper<DocumentVisitorType> {
+public abstract class ToStringPropertyToColumnValueExtractor<DocumentVisitorType>
+        extends AbstractPropertyToColumnValueExtractor<DocumentVisitorType> {
     private final ToStringPropertyToColumnMapping column;
 
     /**
-     * Creates an instance of {@link ToStringValueMapper}.
+     * Creates an instance of {@link ToStringPropertyToColumnValueExtractor}.
      * 
      * @param column {@link ToStringPropertyToColumnMapping}
      */
-    public ToStringValueMapper(final ToStringPropertyToColumnMapping column) {
+    public ToStringPropertyToColumnValueExtractor(final ToStringPropertyToColumnMapping column) {
         super(column);
         this.column = column;
     }
@@ -54,7 +55,7 @@ public abstract class ToStringValueMapper<DocumentVisitorType> extends AbstractV
     /**
      * Exception thrown if the size of the string from DynamoDB is longer than the configured size.
      */
-    public static class OverflowException extends ValueMapperException {
+    public static class OverflowException extends ColumnValueExtractorException {
         public OverflowException(final String message, final ToStringPropertyToColumnMapping column) {
             super(message, column);
         }

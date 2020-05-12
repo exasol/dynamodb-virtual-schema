@@ -16,7 +16,7 @@ import com.exasol.adapter.dynamodb.documentpath.DocumentPathWalkerException;
 import com.exasol.adapter.dynamodb.documentpath.StaticDocumentPathIterator;
 import com.exasol.sql.expression.ValueExpression;
 
-public class AbstractValueMapperTest {
+public class AbstractPropertyToColumnValueExtractorTest {
     @Test
     void testLookup() {
         final DocumentPathExpression sourcePath = new DocumentPathExpression.Builder().addObjectLookup("isbn").build();
@@ -25,18 +25,18 @@ public class AbstractValueMapperTest {
 
         final ValueMapperStub valueMapperStub = new ValueMapperStub(columnMappingDefinition);
         final StubDocumentObject testObject = new StubDocumentObject();
-        valueMapperStub.mapRow(testObject, new StaticDocumentPathIterator());
+        valueMapperStub.extractColumnValue(testObject, new StaticDocumentPathIterator());
         assertThat(valueMapperStub.remoteValue, equalTo(StubDocumentObject.MAP.get("isbn")));
     }
 
     @Test
-    void testNullLookupFailBehaviour() throws ValueMapperException {
+    void testNullLookupFailBehaviour() throws ColumnValueExtractorException {
         final DocumentPathExpression sourcePath = new DocumentPathExpression.Builder()
                 .addObjectLookup("nonExistingColumn").build();
         final MockPropertyToColumnMapping columnMappingDefinition = new MockPropertyToColumnMapping("d", sourcePath,
                 LookupFailBehaviour.DEFAULT_VALUE);
         final ValueExpression valueExpression = new ValueMapperStub(columnMappingDefinition)
-                .mapRow(new StubDocumentObject(), new StaticDocumentPathIterator());
+                .extractColumnValue(new StubDocumentObject(), new StaticDocumentPathIterator());
         assertThat(valueExpression.toString(), equalTo("default"));
     }
 
@@ -47,7 +47,7 @@ public class AbstractValueMapperTest {
         final MockPropertyToColumnMapping columnMappingDefinition = new MockPropertyToColumnMapping("d", sourcePath,
                 LookupFailBehaviour.EXCEPTION);
         assertThrows(DocumentPathWalkerException.class, () -> new ValueMapperStub(columnMappingDefinition)
-                .mapRow(new StubDocumentObject(), new StaticDocumentPathIterator()));
+                .extractColumnValue(new StubDocumentObject(), new StaticDocumentPathIterator()));
     }
 
     @Test
@@ -55,8 +55,8 @@ public class AbstractValueMapperTest {
         final String columnName = "name";
         final MockPropertyToColumnMapping mappingDefinition = new MockPropertyToColumnMapping(columnName,
                 DocumentPathExpression.empty(), LookupFailBehaviour.EXCEPTION);
-        final ValueMapperException exception = assertThrows(ValueMapperException.class,
-                () -> new ExceptionMockValueMapper(mappingDefinition).mapRow(new StubDocumentObject(),
+        final ColumnValueExtractorException exception = assertThrows(ColumnValueExtractorException.class,
+                () -> new ExceptionMockColumnValueMapper(mappingDefinition).extractColumnValue(new StubDocumentObject(),
                         new StaticDocumentPathIterator()));
         assertThat(exception.getCausingColumn().getExasolColumnName(), equalTo(columnName));
     }
@@ -97,7 +97,7 @@ public class AbstractValueMapperTest {
         }
     }
 
-    private static class ValueMapperStub extends AbstractValueMapper<DummyVisitor> {
+    private static class ValueMapperStub extends AbstractPropertyToColumnValueExtractor<DummyVisitor> {
         private DocumentNode<DummyVisitor> remoteValue;
 
         public ValueMapperStub(final PropertyToColumnMapping column) {
@@ -111,17 +111,17 @@ public class AbstractValueMapperTest {
         }
     }
 
-    private static class ExceptionMockValueMapper extends AbstractValueMapper<DummyVisitor> {
+    private static class ExceptionMockColumnValueMapper extends AbstractPropertyToColumnValueExtractor<DummyVisitor> {
         private final ColumnMapping column;
 
-        public ExceptionMockValueMapper(final PropertyToColumnMapping column) {
+        public ExceptionMockColumnValueMapper(final PropertyToColumnMapping column) {
             super(column);
             this.column = column;
         }
 
         @Override
         protected ValueExpression mapValue(final DocumentNode<DummyVisitor> documentValue) {
-            throw new ValueMapperException("mocMessage", this.column);
+            throw new ColumnValueExtractorException("mocMessage", this.column);
         }
     }
 }

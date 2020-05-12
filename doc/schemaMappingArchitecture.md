@@ -5,18 +5,26 @@ The `JsonMappingFactory` reads the schema mapping from a [schema mapping file](h
 
 ![Class diagram](diagrams/mappingDefinition.png)
 
+The following classes implement the `ColumnMapping` and `PropertyToColumnMapping` interfaces:  
+
+![Class diagram](diagrams/mappingDefinitionImplementation.png)
+
 This structure is used:
-* By the `SchemaMappingDefinitionToSchemaMetadataConverter` for generating `SchemaMetadata` that is send to Exasol at `CREATE VIRTUAL SCHEMA` or `REFRESH`. 
+* By the `SchemaMappingToSchemaMetadataConverter` for generating `SchemaMetadata` that is send to Exasol at `CREATE VIRTUAL SCHEMA` or `REFRESH`. 
 * For Mapping the remote attribute values to Exasol values according to this definition.
+* For building the remote query
 
 ## Mapping Remote Attributes
 
-Remote values are mapped to Exasols `ValueExpression`s using a `ValueMapper`:
+The `ColumnValueExtractor` extracts an the value of a column from a document. 
+As the extraction depends on the type of the column, 
+there is an hierarchy of `ColumnValueExtractor` analog to the column hierarchy. 
 
-![Class diagram](diagrams/valueExtractor.png)
+![Class diagram](diagrams/valueExtractors.png)
 
-A `ValueMapper` corresponding to a specific `AbstractColumnMappingDefinition` is built using a `ValueMapperFactory`:
+The `ColumnValueExtractor` are built by a `ColumnValueExtractorFactory`. This factory uses a implementation of `PropertyToColumnValueExtractorFactory` to build the 
+`PropertyToColumnValueExtractorFactory` specific for a remote database.
 
-![Class diagram](diagrams/valueMapperFactory.png)
+![Class diagram](diagrams/valueExtractorFactory.png)
 
 

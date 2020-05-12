@@ -33,7 +33,8 @@ public class SchemaMapperTest {
                 .withColumnMappingDefinition(columnMapping).build();
         final RemoteTableQuery<Object> remoteTableQuery = new RemoteTableQuery<>(tableMapping, List.of(columnMapping),
                 new NoPredicate<>());
-        final SchemaMapper<Object> schemaMapper = new SchemaMapper<>(remoteTableQuery, new MockValueMapperFactory());
+        final SchemaMapper<Object> schemaMapper = new SchemaMapper<>(remoteTableQuery,
+                new MockPropertyToColumnValueExtractorFactory());
         final List<List<ValueExpression>> result = schemaMapper
                 .mapRow(new MockObjectNode(Map.of("testKey", new MockValueNode("testValue"))))
                 .collect(Collectors.toList());
@@ -54,7 +55,8 @@ public class SchemaMapperTest {
                 .withColumnMappingDefinition(columnMapping).build();
         final RemoteTableQuery<Object> remoteTableQuery = new RemoteTableQuery<>(tableMapping, List.of(columnMapping),
                 new NoPredicate<>());
-        final SchemaMapper<Object> schemaMapper = new SchemaMapper<>(remoteTableQuery, new MockValueMapperFactory());
+        final SchemaMapper<Object> schemaMapper = new SchemaMapper<>(remoteTableQuery,
+                new MockPropertyToColumnValueExtractorFactory());
         final List<List<ValueExpression>> result = schemaMapper
                 .mapRow(new MockObjectNode(Map.of(nestedListKey,
                         new MockArrayNode(List.of(new MockValueNode("testValue"), new MockValueNode("testValue"))))))
@@ -65,15 +67,16 @@ public class SchemaMapperTest {
         );
     }
 
-    private static class MockValueMapperFactory implements AbstractValueMapperFactory<Object> {
+    private static class MockPropertyToColumnValueExtractorFactory
+            implements PropertyToColumnValueExtractorFactory<Object> {
 
         @Override
-        public ValueExtractor<Object> getValueMapperForColumn(final PropertyToColumnMapping column) {
+        public ColumnValueExtractor<Object> getValueExtractorForColumn(final PropertyToColumnMapping column) {
             return new MockValueMapper(column);
         }
     }
 
-    private static class MockValueMapper extends AbstractValueMapper<Object> {
+    private static class MockValueMapper extends AbstractPropertyToColumnValueExtractor<Object> {
 
         public MockValueMapper(final PropertyToColumnMapping column) {
             super(column);

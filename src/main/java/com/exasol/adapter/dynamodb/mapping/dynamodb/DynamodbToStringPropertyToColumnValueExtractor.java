@@ -4,18 +4,19 @@ import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.exasol.adapter.dynamodb.documentnode.DocumentNode;
 import com.exasol.adapter.dynamodb.documentnode.dynamodb.*;
 import com.exasol.adapter.dynamodb.mapping.ToStringPropertyToColumnMapping;
-import com.exasol.adapter.dynamodb.mapping.ToStringValueMapper;
+import com.exasol.adapter.dynamodb.mapping.ToStringPropertyToColumnValueExtractor;
 
 /**
- * This class represents {@link ToStringValueMapper} for DynamoDB values.
+ * This class represents {@link ToStringPropertyToColumnValueExtractor} for DynamoDB values.
  */
-public class DynamodbToStringValueMapper extends ToStringValueMapper<DynamodbNodeVisitor> {
+public class DynamodbToStringPropertyToColumnValueExtractor
+        extends ToStringPropertyToColumnValueExtractor<DynamodbNodeVisitor> {
     /**
-     * Creates an instance of {@link DynamodbToStringValueMapper}.
+     * Creates an instance of {@link DynamodbToStringPropertyToColumnValueExtractor}.
      *
      * @param column {@link ToStringPropertyToColumnMapping}
      */
-    public DynamodbToStringValueMapper(final ToStringPropertyToColumnMapping column) {
+    public DynamodbToStringPropertyToColumnValueExtractor(final ToStringPropertyToColumnMapping column) {
         super(column);
     }
 

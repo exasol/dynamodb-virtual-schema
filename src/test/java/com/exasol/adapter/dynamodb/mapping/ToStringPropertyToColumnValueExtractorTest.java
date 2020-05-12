@@ -10,7 +10,7 @@ import com.exasol.adapter.dynamodb.documentnode.DocumentNode;
 import com.exasol.adapter.dynamodb.documentpath.DocumentPathExpression;
 import com.exasol.sql.expression.ValueExpression;
 
-public class ToStringValueMapperTest {
+public class ToStringPropertyToColumnValueExtractorTest {
 
     private static final String TEST_STRING = "test";
 
@@ -40,11 +40,11 @@ public class ToStringValueMapperTest {
         final ToStringPropertyToColumnMapping toStringColumnMappingDefinition = new ToStringPropertyToColumnMapping("",
                 DocumentPathExpression.empty(), LookupFailBehaviour.DEFAULT_VALUE, TEST_STRING.length() - 1,
                 ToStringPropertyToColumnMapping.OverflowBehaviour.EXCEPTION);
-        assertThrows(ToStringValueMapper.OverflowException.class,
+        assertThrows(ToStringPropertyToColumnValueExtractor.OverflowException.class,
                 () -> new ToStringValueMapperStub(toStringColumnMappingDefinition).mapValue(null));
     }
 
-    private static class ToStringValueMapperStub extends ToStringValueMapper<Void> {
+    private static class ToStringValueMapperStub extends ToStringPropertyToColumnValueExtractor<Void> {
         public ToStringValueMapperStub(final ToStringPropertyToColumnMapping column) {
             super(column);
         }

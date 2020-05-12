@@ -76,8 +76,8 @@ public class ToStringPropertyToColumnMapping extends AbstractPropertyToColumnMap
     }
 
     /**
-     * Specifies the behaviour of {@link ToStringValueMapper} if the string from DynamoDB is longer than
-     * {@link #exasolStringSize}.
+     * Specifies the behaviour of {@link ToStringPropertyToColumnValueExtractor} if the string from DynamoDB is longer
+     * than {@link #exasolStringSize}.
      */
     public enum OverflowBehaviour {
         /**
@@ -86,7 +86,7 @@ public class ToStringPropertyToColumnMapping extends AbstractPropertyToColumnMap
         TRUNCATE,
 
         /**
-         * throw an {@link ToStringValueMapper.OverflowException}.
+         * throw an {@link ToStringPropertyToColumnValueExtractor.OverflowException}.
          */
         EXCEPTION
     }

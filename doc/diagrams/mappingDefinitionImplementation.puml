@@ -6,24 +6,25 @@ propertyExtraction
 ...
 }
 
-class ToJsonPropertyToColumnMapping {
-exasolColumnName
-propertyExtraction
-...
+class "..." as other {
 }
 
 class IterationIndexColumnMapping{
-exasolColumnName
-accept(ColumnMappingVisitor)
++accept(ColumnMappingVisitor)
 ...
 }
 
 abstract class AbstractColumnMapping{
-exasolColumnName
+-exasolColumnName
++getExasolColumnName()
 }
 
 abstract class AbstractPropertyToColumnMapping{
-propertyExtraction
+-pathToSourceProperty
+-lookupFailBehaviour
++pathToSourceProperty()
++lookupFailBehaviour()
++accept(ColumnMappingVisitor)
 }
 
 ColumnMapping <|. AbstractColumnMapping
@@ -31,6 +32,6 @@ AbstractColumnMapping <|-- IterationIndexColumnMapping
 AbstractColumnMapping <|-- AbstractPropertyToColumnMapping
 PropertyToColumnMapping <|. AbstractPropertyToColumnMapping
 AbstractPropertyToColumnMapping <|-- ToStringPropertyToColumnMapping
-AbstractPropertyToColumnMapping <|-- ToJsonPropertyToColumnMapping
+AbstractPropertyToColumnMapping <|-- other
 @enduml 
 
