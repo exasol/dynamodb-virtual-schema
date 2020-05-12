@@ -1,4 +1,4 @@
-package com.exasol.adapter.dynamodb.queryrunner;
+package com.exasol.adapter.dynamodb.documentfetcher.dynamodb;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;

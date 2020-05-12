@@ -1,4 +1,4 @@
-package com.exasol.adapter.dynamodb.queryrunner;
+package com.exasol.adapter.dynamodb.documentfetcher.dynamodb;
 
 /**
  * This exception is thrown by a QueryPlanFactory if the plan does not fit for the given query.
