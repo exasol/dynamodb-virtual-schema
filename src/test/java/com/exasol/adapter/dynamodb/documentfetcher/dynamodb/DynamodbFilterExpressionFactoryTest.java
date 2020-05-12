@@ -26,7 +26,7 @@ class DynamodbFilterExpressionFactoryTest {
         final String literal = "test";
         final ColumnLiteralComparisonPredicate<DynamodbNodeVisitor> predicate = getComparison(literal,
                 ComparisonPredicate.Operator.EQUAL);
-        testFilterExpression(predicate, "key = :0", Map.of(":0", literal));
+        assertFilterExpression(predicate, "key = :0", Map.of(":0", literal));
     }
 
     @Test
@@ -34,7 +34,7 @@ class DynamodbFilterExpressionFactoryTest {
         final String literal = "test";
         final ColumnLiteralComparisonPredicate<DynamodbNodeVisitor> predicate = getComparison(literal,
                 ComparisonPredicate.Operator.LESS);
-        testFilterExpression(predicate, "key < :0", Map.of(":0", literal));
+        assertFilterExpression(predicate, "key < :0", Map.of(":0", literal));
     }
 
     @Test
@@ -42,7 +42,7 @@ class DynamodbFilterExpressionFactoryTest {
         final String literal = "test";
         final ColumnLiteralComparisonPredicate<DynamodbNodeVisitor> predicate = getComparison(literal,
                 ComparisonPredicate.Operator.LESS_EQUAL);
-        testFilterExpression(predicate, "key <= :0", Map.of(":0", literal));
+        assertFilterExpression(predicate, "key <= :0", Map.of(":0", literal));
     }
 
     @Test
@@ -50,7 +50,7 @@ class DynamodbFilterExpressionFactoryTest {
         final String literal = "test";
         final ColumnLiteralComparisonPredicate<DynamodbNodeVisitor> predicate = getComparison(literal,
                 ComparisonPredicate.Operator.GREATER);
-        testFilterExpression(predicate, "key > :0", Map.of(":0", literal));
+        assertFilterExpression(predicate, "key > :0", Map.of(":0", literal));
     }
 
     @Test
@@ -58,7 +58,7 @@ class DynamodbFilterExpressionFactoryTest {
         final String literal = "test";
         final ColumnLiteralComparisonPredicate<DynamodbNodeVisitor> predicate = getComparison(literal,
                 ComparisonPredicate.Operator.GREATER_EQUAL);
-        testFilterExpression(predicate, "key >= :0", Map.of(":0", literal));
+        assertFilterExpression(predicate, "key >= :0", Map.of(":0", literal));
     }
 
     @Test
@@ -71,7 +71,7 @@ class DynamodbFilterExpressionFactoryTest {
                 ComparisonPredicate.Operator.EQUAL);
         final LogicalOperator<DynamodbNodeVisitor> and = new LogicalOperator<>(List.of(comparison1, comparison2),
                 LogicalOperator.Operator.AND);
-        testFilterExpression(and, "key = :0 and key = :1", Map.of(":0", literal1, ":1", literal2));
+        assertFilterExpression(and, "key = :0 and key = :1", Map.of(":0", literal1, ":1", literal2));
     }
 
     @Test
@@ -87,13 +87,13 @@ class DynamodbFilterExpressionFactoryTest {
                 ComparisonPredicate.Operator.EQUAL);
         final LogicalOperator<DynamodbNodeVisitor> and = new LogicalOperator<>(
                 List.of(comparison1, comparison2, comparison3), LogicalOperator.Operator.AND);
-        testFilterExpression(and, "key = :0 and (key = :1 and key = :2)",
+        assertFilterExpression(and, "key = :0 and (key = :1 and key = :2)",
                 Map.of(":0", literal1, ":1", literal2, ":2", literal3));
     }
 
     @Test
     void testNoPredicate() {
-        testFilterExpression(new NoPredicate<>(), "", Collections.emptyMap());
+        assertFilterExpression(new NoPredicate<>(), "", Collections.emptyMap());
     }
 
     @NotNull
@@ -105,7 +105,7 @@ class DynamodbFilterExpressionFactoryTest {
         return new ColumnLiteralComparisonPredicate<>(operator, column, new DynamodbString(literal));
     }
 
-    private void testFilterExpression(final QueryPredicate<DynamodbNodeVisitor> predicateToTest,
+    private void assertFilterExpression(final QueryPredicate<DynamodbNodeVisitor> predicateToTest,
             final String expectedExpression, final Map<String, String> expectedValueMap) {
         final DynamodbValueListBuilder valueListBuilder = new DynamodbValueListBuilder();
         final String result = new DynamodbFilterExpressionFactory().buildFilterExpression(predicateToTest,
