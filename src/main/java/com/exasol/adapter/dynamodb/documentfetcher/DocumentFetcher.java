@@ -7,7 +7,7 @@ import com.exasol.adapter.dynamodb.documentnode.dynamodb.DynamodbNodeVisitor;
 import com.exasol.adapter.dynamodb.remotetablequery.RemoteTableQuery;
 
 /**
- * Implementors of this interface fetch document data from a remote database for a given {@link RemoteTableQuery}.
+ * This interface fetches document data from a remote database for a given {@link RemoteTableQuery}.
  */
 public interface DocumentFetcher {
     /**

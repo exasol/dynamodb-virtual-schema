@@ -35,10 +35,10 @@ import com.exasol.sql.expression.ValueExpression;
  */
 public class DynamodbAdapter implements VirtualSchemaAdapter {
     private static final Capabilities CAPABILITIES = Capabilities.builder().addMain(FILTER_EXPRESSIONS)
-            .addPredicate(PredicateCapability.EQUAL).addPredicate(PredicateCapability.LESS)
-            .addPredicate(PredicateCapability.LESSEQUAL).addLiteral(LiteralCapability.STRING)
-            .addLiteral(LiteralCapability.NULL).addLiteral(LiteralCapability.BOOL).addLiteral(LiteralCapability.DOUBLE)
-            .addLiteral(LiteralCapability.EXACTNUMERIC).build();
+            .addPredicate(PredicateCapability.EQUAL, PredicateCapability.LESS, PredicateCapability.LESSEQUAL)
+            .addLiteral(LiteralCapability.STRING, LiteralCapability.NULL, LiteralCapability.BOOL,
+                    LiteralCapability.DOUBLE, LiteralCapability.EXACTNUMERIC)
+            .build();
 
     @Override
     public CreateVirtualSchemaResponse createVirtualSchema(final ExaMetadata exaMetadata,
