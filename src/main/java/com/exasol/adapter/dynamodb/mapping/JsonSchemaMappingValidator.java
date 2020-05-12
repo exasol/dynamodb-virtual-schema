@@ -21,17 +21,17 @@ import org.json.JSONTokener;
  * API.
  * </p>
  */
-class JsonMappingValidator {
+class JsonSchemaMappingValidator {
     private static final String MAPPING_LANGUAGE_SCHEMA = "mappingLanguageSchema.json";
     private final Schema schema;
 
     /**
-     * Creates an instance of {@link JsonMappingValidator}.
+     * Creates an instance of {@link JsonSchemaMappingValidator}.
      * 
      * @throws IOException if reading schema from resources fails.
      */
-    public JsonMappingValidator() throws IOException {
-        final ClassLoader classLoader = JsonMappingValidator.class.getClassLoader();
+    public JsonSchemaMappingValidator() throws IOException {
+        final ClassLoader classLoader = JsonSchemaMappingValidator.class.getClassLoader();
         try (final InputStream inputStream = classLoader.getResourceAsStream(MAPPING_LANGUAGE_SCHEMA)) {
             final JSONObject rawSchema = new JSONObject(new JSONTokener(inputStream));
             this.schema = SchemaLoader.load(rawSchema);

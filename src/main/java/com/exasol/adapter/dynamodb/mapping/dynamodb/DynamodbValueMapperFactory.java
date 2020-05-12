@@ -4,32 +4,32 @@ import com.exasol.adapter.dynamodb.documentnode.dynamodb.DynamodbNodeVisitor;
 import com.exasol.adapter.dynamodb.mapping.*;
 
 /**
- * Factory for DynamoDB {@link AbstractValueMapper}s.
+ * Factory for DynamoDB {@link ValueExtractor}s.
  */
-public class DynamodbValueMapperFactory implements ValueMapperFactory<DynamodbNodeVisitor> {
+public class DynamodbValueMapperFactory implements AbstractValueMapperFactory<DynamodbNodeVisitor> {
 
     @Override
-    public AbstractValueMapper<DynamodbNodeVisitor> getValueMapperForColumn(final ColumnMappingDefinition column) {
-        final ColumnVisitor visitor = new ColumnVisitor();
+    public ValueExtractor<DynamodbNodeVisitor> getValueMapperForColumn(final PropertyToColumnMapping column) {
+        final PropertyToColumnVisitor visitor = new PropertyToColumnVisitor();
         column.accept(visitor);
-        return visitor.getValueMapper();
+        return visitor.getValueExtractor();
     }
 
-    private static class ColumnVisitor implements ColumnMappingDefinitionVisitor {
-        private AbstractValueMapper<DynamodbNodeVisitor> valueMapper;
+    private static class PropertyToColumnVisitor implements PropertyToColumnMappingVisitor {
+        private ValueExtractor<DynamodbNodeVisitor> valueExtractor;
 
         @Override
-        public void visit(final ToStringColumnMappingDefinition columnDefinition) {
-            this.valueMapper = new DynamodbToStringValueMapper(columnDefinition);
+        public void visit(final ToStringPropertyToColumnMapping columnDefinition) {
+            this.valueExtractor = new DynamodbToStringValueMapper(columnDefinition);
         }
 
         @Override
-        public void visit(final ToJsonColumnMappingDefinition columnDefinition) {
-            this.valueMapper = new DynamodbToJsonValueMapper(columnDefinition);
+        public void visit(final ToJsonPropertyToColumnMapping columnDefinition) {
+            this.valueExtractor = new DynamodbToJsonValueMapper(columnDefinition);
         }
 
-        public AbstractValueMapper<DynamodbNodeVisitor> getValueMapper() {
-            return this.valueMapper;
+        public ValueExtractor<DynamodbNodeVisitor> getValueExtractor() {
+            return this.valueExtractor;
         }
     }
 }

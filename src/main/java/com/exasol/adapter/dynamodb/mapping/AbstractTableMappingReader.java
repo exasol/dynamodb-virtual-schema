@@ -7,44 +7,73 @@ import javax.json.JsonObject;
 import com.exasol.adapter.dynamodb.documentpath.DocumentPathExpression;
 
 /**
- * This class builds {@link TableMappingDefinition}s from Exasol document mapping language definitions. If the
- * definition contains nested lists that are mapped using a {@code ToTableMapping}, then the nested table is built using
- * a recursive call to {@link NestedTableMappingFactory}.
+ * This class builds {@link TableMapping}s from Exasol document mapping language definitions. If the definition contains
+ * nested lists that are mapped using a {@code ToTableMapping}, then the nested table is built using a recursive call to
+ * {@link NestedTableMappingReader}.
  */
-public abstract class AbstractTableMappingFactory {
+public abstract class AbstractTableMappingReader {
     protected static final String DEST_TABLE_NAME_KEY = "destTable";
     private static final String MAPPING_KEY = "mapping";
+    final List<TableMapping> tables = new ArrayList<>();
 
-    /**
-     * Reads a table definition from an exasol document mapping language definition. If nested lists are mapped using a
-     * {@code ToTableMapping}, multiple tables are returned.
-     *
-     * @param definition exasol document mapping language definition
-     * @throws ExasolDocumentMappingLanguageException if schema mapping definition is invalid
-     */
-    public final List<TableMappingDefinition> readMappingDefinition(final JsonObject definition) {
-        final List<TableMappingDefinition> tables = new ArrayList<>();
+    protected void readMappingDefinition(final JsonObject definition) {
         final SchemaMappingDefinitionLanguageVisitor visitor = new SchemaMappingDefinitionLanguageVisitor();
         visitor.visitMapping(definition.getJsonObject(MAPPING_KEY), getPathToTable(), null, !isNestedTable());
-
-        final TableMappingDefinition rootTable = createTable(definition, visitor.getAllColumns());
-        tables.add(rootTable);
-        for (final NestedTableReader nestedTableReader : visitor.getNestedTableReaderQueue()) {
-            tables.addAll(nestedTableReader.readNestedTable(rootTable));
+        if (visitor.hasNestedTables()) {
+            readTableWithNestedTable(visitor);
+        } else {
+            this.tables.add(createTable(visitor.getAllColumns()));
         }
-        return tables;
     }
 
-    protected abstract TableMappingDefinition createTable(final JsonObject definition,
-            List<ColumnMappingDefinition> columns);
+    private void readTableWithNestedTable(final SchemaMappingDefinitionLanguageVisitor visitor) {
+        final List<ColumnMapping> globalKey = buildGlobalKey(visitor);
+        final List<ColumnMapping> allColumns = new ArrayList<>();
+        allColumns.addAll(visitor.getNonKeyColumns());
+        allColumns.addAll(globalKey);
+        final TableMapping rootTable = createTable(allColumns);
+        this.tables.add(rootTable);
+        for (final NestedTableReader nestedTableReader : visitor.getNestedTableReaderQueue()) {
+            this.tables.addAll(nestedTableReader.readNestedTable(rootTable, globalKey));
+        }
+    }
+
+    private List<ColumnMapping> buildGlobalKey(final SchemaMappingDefinitionLanguageVisitor visitor) {
+        final List<ColumnMapping> userDefinedKeyColumns = visitor.getKeyColumns();
+        if (userDefinedKeyColumns.isEmpty()) {
+            return generateGlobalKeyColumns();
+        } else {
+            if (visitor.getKeyType().equals(ColumnMappingDefinitionKeyTypeReader.KeyType.LOCAL)) {
+                return makeLocalKeyGlobal(userDefinedKeyColumns);
+            } else {
+                return userDefinedKeyColumns;
+            }
+        }
+    }
+
+    public List<TableMapping> getTables() {
+        return this.tables;
+    }
+
+    protected abstract TableMapping createTable(List<ColumnMapping> columns);
+
+    /**
+     * This method is called if no key columns were defined in the schema mapping definition but key columns are
+     * required (for a nested table).
+     * 
+     * @return list containing the generated key columns
+     */
+    protected abstract List<ColumnMapping> generateGlobalKeyColumns();
 
     protected abstract DocumentPathExpression.Builder getPathToTable();
 
     protected abstract boolean isNestedTable();
 
+    protected abstract List<ColumnMapping> makeLocalKeyGlobal(List<ColumnMapping> keyColumns);
+
     @FunctionalInterface
     private static interface NestedTableReader {
-        List<TableMappingDefinition> readNestedTable(TableMappingDefinition parentTable);
+        List<TableMapping> readNestedTable(TableMapping parentTable, List<ColumnMapping> parentKeyColumns);
     }
 
     private static class SchemaMappingDefinitionLanguageVisitor {
@@ -58,14 +87,12 @@ public abstract class AbstractTableMappingFactory {
          * maps the object they are nested in.
          */
         private final Queue<NestedTableReader> nestedTableReaderQueue;
-        private final List<ColumnMappingDefinition> nonKeyColumns;
-        private final List<ColumnMappingDefinition> keyColumns;
-        private boolean hasNestedTable;
+        private final List<ColumnMapping> nonKeyColumns;
+        private final List<ColumnMapping> keyColumns;
         private ColumnMappingDefinitionKeyTypeReader.KeyType keyType;
 
         public SchemaMappingDefinitionLanguageVisitor() {
             this.nestedTableReaderQueue = new LinkedList<>();
-            this.hasNestedTable = false;
             this.nonKeyColumns = new ArrayList<>();
             this.keyColumns = new ArrayList<>();
             this.keyType = ColumnMappingDefinitionKeyTypeReader.KeyType.NO_KEY;
@@ -73,7 +100,7 @@ public abstract class AbstractTableMappingFactory {
 
         public final void visitMapping(final JsonObject definition, final DocumentPathExpression.Builder sourcePath,
                 final String propertyName, final boolean isRootLevel) {
-            final JsonColumnMappingFactory columnMappingFactory = new JsonColumnMappingFactory();
+            final JsonColumnMappingReader columnMappingFactory = new JsonColumnMappingReader();
             switch (getMappingType(definition, sourcePath)) {
             case TO_STRING_MAPPING_KEY:
                 final JsonObject toStringDefinition = definition.getJsonObject(TO_STRING_MAPPING_KEY);
@@ -98,7 +125,7 @@ public abstract class AbstractTableMappingFactory {
             }
         }
 
-        private void addColumn(final ColumnMappingDefinition column, final JsonObject definition,
+        private void addColumn(final ColumnMapping column, final JsonObject definition,
                 final DocumentPathExpression.Builder sourcePath) {
             final ColumnMappingDefinitionKeyTypeReader.KeyType columnsKeyType = new ColumnMappingDefinitionKeyTypeReader()
                     .readKeyType(definition);
@@ -118,10 +145,8 @@ public abstract class AbstractTableMappingFactory {
 
         private void queueAddingNestedTable(final JsonObject definition,
                 final DocumentPathExpression.Builder sourcePath, final String propertyName) {
-            this.hasNestedTable = true;
-            this.nestedTableReaderQueue
-                    .add(parentTable -> new NestedTableMappingFactory(parentTable, propertyName, sourcePath)
-                            .readMappingDefinition(definition));
+            this.nestedTableReaderQueue.add((parentTable, parentKeyColumns) -> new NestedTableMappingReader(definition,
+                    parentTable, propertyName, sourcePath, parentKeyColumns).getTables());
         }
 
         private String getMappingType(final JsonObject definition, final DocumentPathExpression.Builder sourcePath) {
@@ -144,19 +169,31 @@ public abstract class AbstractTableMappingFactory {
             }
         }
 
-        public List<ColumnMappingDefinition> getAllColumns() {
-            final List<ColumnMappingDefinition> union = new ArrayList<>();
+        public List<ColumnMapping> getAllColumns() {
+            final List<ColumnMapping> union = new ArrayList<>();
             union.addAll(this.keyColumns);
             union.addAll(this.nonKeyColumns);
             return union;
+        }
+
+        public List<ColumnMapping> getKeyColumns() {
+            return this.keyColumns;
+        }
+
+        public List<ColumnMapping> getNonKeyColumns() {
+            return this.nonKeyColumns;
+        }
+
+        public ColumnMappingDefinitionKeyTypeReader.KeyType getKeyType() {
+            return this.keyType;
         }
 
         public Queue<NestedTableReader> getNestedTableReaderQueue() {
             return this.nestedTableReaderQueue;
         }
 
-        public boolean hasNestedTable() {
-            return this.hasNestedTable;
+        public boolean hasNestedTables() {
+            return !this.nestedTableReaderQueue.isEmpty();
         }
     }
 }

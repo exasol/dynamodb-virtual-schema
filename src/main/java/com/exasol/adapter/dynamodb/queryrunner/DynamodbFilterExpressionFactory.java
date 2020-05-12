@@ -6,6 +6,8 @@ import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.exasol.adapter.dynamodb.documentnode.dynamodb.DynamodbNodeToAttributeValueConverter;
 import com.exasol.adapter.dynamodb.documentnode.dynamodb.DynamodbNodeVisitor;
 import com.exasol.adapter.dynamodb.documentpath.DocumentPathExpression;
+import com.exasol.adapter.dynamodb.mapping.ColumnMapping;
+import com.exasol.adapter.dynamodb.mapping.PropertyToColumnMapping;
 import com.exasol.adapter.dynamodb.remotetablequery.*;
 
 /**
@@ -39,15 +41,22 @@ public class DynamodbFilterExpressionFactory {
         @Override
         public void visit(
                 final ColumnLiteralComparisonPredicate<DynamodbNodeVisitor> columnLiteralComparisonPredicate) {
-            final DocumentPathExpression columnsPath = columnLiteralComparisonPredicate.getColumn()
-                    .getPathToSourceProperty();
-            final String columnPathExpression = new DocumentPathToDynamodbExpressionConverter().convert(columnsPath);
-            final AttributeValue attributeValue = new DynamodbNodeToAttributeValueConverter()
-                    .convertToAttributeValue(columnLiteralComparisonPredicate.getLiteral());
-            final String valuePlaceholder = this.valueListBuilder.addValue(attributeValue);
-            this.filterExpression = columnPathExpression + " "
-                    + convertComparisonOperator(columnLiteralComparisonPredicate.getOperator()) + " "
-                    + valuePlaceholder;
+            final ColumnMapping column = columnLiteralComparisonPredicate.getColumn();
+            if (column instanceof PropertyToColumnMapping) {
+                final PropertyToColumnMapping columnMapping = (PropertyToColumnMapping) column;
+                final DocumentPathExpression columnsPath = columnMapping.getPathToSourceProperty();
+                final String columnPathExpression = new DocumentPathToDynamodbExpressionConverter()
+                        .convert(columnsPath);
+                final AttributeValue attributeValue = new DynamodbNodeToAttributeValueConverter()
+                        .convertToAttributeValue(columnLiteralComparisonPredicate.getLiteral());
+                final String valuePlaceholder = this.valueListBuilder.addValue(attributeValue);
+                this.filterExpression = columnPathExpression + " "
+                        + convertComparisonOperator(columnLiteralComparisonPredicate.getOperator()) + " "
+                        + valuePlaceholder;
+            } else {
+                throw new UnsupportedOperationException("This column has no corresponding DynamoDB column. "
+                        + "Hence it can't be part of a filter expression.");
+            }
         }
 
         private String convertComparisonOperator(final ComparisonPredicate.Operator operator) {

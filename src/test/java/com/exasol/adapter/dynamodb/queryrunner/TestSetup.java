@@ -17,32 +17,30 @@ import com.exasol.adapter.sql.*;
 class TestSetup {
     static final String TABLE_NAME = "testTable";
     static final String COLUMN1_NAME = "column1";
-    static final ColumnMappingDefinition COLUMN1_MAPPING = columnForAttribute(COLUMN1_NAME);
+    static final ColumnMapping COLUMN1_MAPPING = columnForAttribute(COLUMN1_NAME);
     static final String COLUMN2_NAME = "column2";
-    static final ColumnMappingDefinition COLUMN2_MAPPING = columnForAttribute(COLUMN2_NAME);
-    static final TableMappingDefinition TABLE_MAPPING = TableMappingDefinition.rootTableBuilder("", TABLE_NAME)
+    static final ColumnMapping COLUMN2_MAPPING = columnForAttribute(COLUMN2_NAME);
+    static final TableMapping TABLE_MAPPING = TableMapping.rootTableBuilder("", TABLE_NAME)
             .withColumnMappingDefinition(COLUMN1_MAPPING).withColumnMappingDefinition(COLUMN2_MAPPING).build();
     static final RemoteTableQuery<DynamodbNodeVisitor> QUERY_RESULT_TABLE_SCHEMA = new RemoteTableQuery<>(TABLE_MAPPING,
             List.of(COLUMN1_MAPPING), new NoPredicate<>());
-    final ColumnMetadata column1Metadata = new SchemaMappingDefinitionToSchemaMetadataConverter()
-            .convertColumn(COLUMN1_MAPPING);
-    final ColumnMetadata column2Metadata = new SchemaMappingDefinitionToSchemaMetadataConverter()
-            .convertColumn(COLUMN2_MAPPING);
+    final ColumnMetadata column1Metadata = new SchemaMappingToSchemaMetadataConverter().convertColumn(COLUMN1_MAPPING);
+    final ColumnMetadata column2Metadata = new SchemaMappingToSchemaMetadataConverter().convertColumn(COLUMN2_MAPPING);
 
     TestSetup() throws IOException {
     }
 
-    static ColumnMappingDefinition columnForAttribute(final String attributeName) {
+    static ColumnMapping columnForAttribute(final String attributeName) {
         final DocumentPathExpression path = new DocumentPathExpression.Builder().addObjectLookup(attributeName).build();
-        return new ToJsonColumnMappingDefinition(
-                new AbstractColumnMappingDefinition.ConstructorParameters(attributeName, path, null));
+        return new ToJsonPropertyToColumnMapping(
+                new AbstractPropertyToColumnMapping.ConstructorParameters(attributeName, path, null));
     }
 
     public static ColumnLiteralComparisonPredicate<DynamodbNodeVisitor> getCompareForColumn(final String propertyName) {
         final DocumentPathExpression sourcePath = new DocumentPathExpression.Builder().addObjectLookup(propertyName)
                 .build();
-        final ToJsonColumnMappingDefinition column = new ToJsonColumnMappingDefinition(
-                new AbstractColumnMappingDefinition.ConstructorParameters("columnName", sourcePath, null));
+        final ToJsonPropertyToColumnMapping column = new ToJsonPropertyToColumnMapping(
+                new AbstractPropertyToColumnMapping.ConstructorParameters("columnName", sourcePath, null));
         return new ColumnLiteralComparisonPredicate<>(ComparisonPredicate.Operator.EQUAL, column,
                 new DynamodbString(""));
     }

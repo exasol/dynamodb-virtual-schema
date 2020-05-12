@@ -6,9 +6,9 @@ import java.util.List;
 
 import com.exasol.adapter.AdapterException;
 import com.exasol.adapter.dynamodb.literalconverter.SqlLiteralToDocumentValueConverter;
-import com.exasol.adapter.dynamodb.mapping.ColumnMappingDefinition;
-import com.exasol.adapter.dynamodb.mapping.SchemaMappingDefinitionToSchemaMetadataConverter;
-import com.exasol.adapter.dynamodb.mapping.TableMappingDefinition;
+import com.exasol.adapter.dynamodb.mapping.ColumnMapping;
+import com.exasol.adapter.dynamodb.mapping.SchemaMappingToSchemaMetadataConverter;
+import com.exasol.adapter.dynamodb.mapping.TableMapping;
 import com.exasol.adapter.metadata.ColumnMetadata;
 import com.exasol.adapter.metadata.SchemaMetadata;
 import com.exasol.adapter.metadata.TableMetadata;
@@ -36,17 +36,15 @@ public class RemoteTableQueryFactory<DocumentVisitorType> {
             final SchemaMetadata schemaMetadata) throws AdapterException {
         final Visitor visitor = new Visitor();
         selectStatement.accept(visitor);
-        final SchemaMappingDefinitionToSchemaMetadataConverter converter = new SchemaMappingDefinitionToSchemaMetadataConverter();
-        final TableMappingDefinition tableMappingDefinition = converter.convertBackTable(visitor.tableMetadata,
-                schemaMetadata);
+        final SchemaMappingToSchemaMetadataConverter converter = new SchemaMappingToSchemaMetadataConverter();
+        final TableMapping tableMapping = converter.convertBackTable(visitor.tableMetadata, schemaMetadata);
         final QueryPredicate<DocumentVisitorType> selection = this.predicateFactory
                 .buildPredicateFor(visitor.getWhereClause());
-        return new RemoteTableQuery<>(tableMappingDefinition, Collections.unmodifiableList(visitor.resultColumns),
-                selection);
+        return new RemoteTableQuery<>(tableMapping, Collections.unmodifiableList(visitor.resultColumns), selection);
     }
 
     private static class Visitor extends VoidSqlNodeVisitor {
-        private final List<ColumnMappingDefinition> resultColumns = new ArrayList<>();
+        private final List<ColumnMapping> resultColumns = new ArrayList<>();
         private String tableName;
         private TableMetadata tableMetadata;
         private SqlNode whereClause;
@@ -75,9 +73,9 @@ public class RemoteTableQueryFactory<DocumentVisitorType> {
 
         private void selectAllColumns() {
             for (final ColumnMetadata columnMetadata : this.tableMetadata.getColumns()) {
-                final ColumnMappingDefinition columnMappingDefinition = new SchemaMappingDefinitionToSchemaMetadataConverter()
+                final ColumnMapping columnMapping = new SchemaMappingToSchemaMetadataConverter()
                         .convertBackColumn(columnMetadata);
-                this.resultColumns.add(columnMappingDefinition);
+                this.resultColumns.add(columnMapping);
             }
         }
 

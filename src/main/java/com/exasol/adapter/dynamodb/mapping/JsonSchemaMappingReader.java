@@ -14,17 +14,17 @@ import javax.json.JsonReader;
 import com.exasol.adapter.AdapterException;
 
 /**
- * This {@link MappingDefinitionFactory} reads a {@link SchemaMappingDefinition} from JSON files.
+ * This class reads a {@link SchemaMapping} from JSON files.
  * <p>
  * The JSON files must follow the schema defined in {@code resources/mappingLanguageSchema.json}. Documentation of
  * schema mapping definitions can be found at {@code /doc/gettingStartedWithSchemaMappingLanguage.md}.
  * </p>
  */
-public class JsonMappingFactory implements MappingDefinitionFactory {
-    private final List<TableMappingDefinition> tables = new ArrayList<>();
+public class JsonSchemaMappingReader implements SchemaMappingReader { // TODO rename to reader
+    private final List<TableMapping> tables = new ArrayList<>();
 
     /**
-     * Creates an instance of {@link JsonMappingFactory}.
+     * Creates an instance of {@link JsonSchemaMappingReader}.
      *
      * @param definitionsPath path to the definition. Can either be a {@code .json} file or an directory. If it points
      *                        to a directory, all {@code .json} files are loaded.
@@ -32,14 +32,14 @@ public class JsonMappingFactory implements MappingDefinitionFactory {
      * @throws AdapterException                       if schema mapping no mapping files were found
      * @throws ExasolDocumentMappingLanguageException if schema mapping invalid
      */
-    public JsonMappingFactory(final File definitionsPath) throws IOException, AdapterException {
+    public JsonSchemaMappingReader(final File definitionsPath) throws IOException, AdapterException {
         this(splitIfDirectory(definitionsPath));
     }
 
-    private JsonMappingFactory(final File[] definitionsPaths) throws IOException {
-        final JsonMappingValidator jsonMappingValidator = new JsonMappingValidator();
+    private JsonSchemaMappingReader(final File[] definitionsPaths) throws IOException {
+        final JsonSchemaMappingValidator jsonSchemaMappingValidator = new JsonSchemaMappingValidator();
         for (final File definitionPath : definitionsPaths) {
-            jsonMappingValidator.validate(definitionPath);
+            jsonSchemaMappingValidator.validate(definitionPath);
             try {
                 parseFile(definitionPath);
             } catch (final ExasolDocumentMappingLanguageException exception) {
@@ -77,12 +77,12 @@ public class JsonMappingFactory implements MappingDefinitionFactory {
         try (final InputStream inputStream = new FileInputStream(definitionPath);
                 final JsonReader reader = Json.createReader(inputStream)) {
             final JsonObject definitionObject = reader.readObject();
-            this.tables.addAll(new RootTableMappingFactory().readMappingDefinition(definitionObject));
+            this.tables.addAll(new RootTableMappingReader(definitionObject).getTables());
         }
     }
 
     @Override
-    public SchemaMappingDefinition getSchemaMapping() {
-        return new SchemaMappingDefinition(this.tables);
+    public SchemaMapping getSchemaMapping() {
+        return new SchemaMapping(this.tables);
     }
 }

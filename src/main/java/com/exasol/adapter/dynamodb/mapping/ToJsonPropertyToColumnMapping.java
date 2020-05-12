@@ -7,15 +7,15 @@ import com.exasol.sql.expression.ValueExpression;
 /**
  * Maps a property of a DynamoDB table and all it's descendants to a JSON string
  */
-public class ToJsonColumnMappingDefinition extends AbstractColumnMappingDefinition {
+public class ToJsonPropertyToColumnMapping extends AbstractPropertyToColumnMapping {
     private static final long serialVersionUID = 7687302490848045236L;
 
     /**
-     * Creates an instance of {@link ToJsonColumnMappingDefinition}.
+     * Creates an instance of {@link ToJsonPropertyToColumnMapping}.
      * 
-     * @param parameters Parameter object for {@link ColumnMappingDefinition}
+     * @param parameters Parameter object for {@link ColumnMapping}
      */
-    public ToJsonColumnMappingDefinition(final ConstructorParameters parameters) {
+    public ToJsonPropertyToColumnMapping(final ConstructorParameters parameters) {
         super(parameters);
     }
 
@@ -35,7 +35,13 @@ public class ToJsonColumnMappingDefinition extends AbstractColumnMappingDefiniti
     }
 
     @Override
-    public void accept(final ColumnMappingDefinitionVisitor visitor) {
+    public void accept(final PropertyToColumnMappingVisitor visitor) {
         visitor.visit(this);
+    }
+
+    @Override
+    public ColumnMapping copyWithNewExasolName(final String newExasolName) {
+        return new ToJsonPropertyToColumnMapping(
+                new ConstructorParameters(newExasolName, getPathToSourceProperty(), getLookupFailBehaviour()));
     }
 }

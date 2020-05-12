@@ -5,25 +5,25 @@ import com.exasol.sql.expression.StringLiteral;
 import com.exasol.sql.expression.ValueExpression;
 
 /**
- * ValueMapper for {@link ToStringColumnMappingDefinition}
+ * ValueMapper for {@link ToStringPropertyToColumnMapping}
  */
 @java.lang.SuppressWarnings("squid:S119") // DocumentVisitorType does not fit naming conventions.
 public abstract class ToStringValueMapper<DocumentVisitorType> extends AbstractValueMapper<DocumentVisitorType> {
-    private final ToStringColumnMappingDefinition column;
+    private final ToStringPropertyToColumnMapping column;
 
     /**
      * Creates an instance of {@link ToStringValueMapper}.
      * 
-     * @param column {@link ToStringColumnMappingDefinition}
+     * @param column {@link ToStringPropertyToColumnMapping}
      */
-    public ToStringValueMapper(final ToStringColumnMappingDefinition column) {
+    public ToStringValueMapper(final ToStringPropertyToColumnMapping column) {
         super(column);
         this.column = column;
     }
 
     @Override
-    protected ValueExpression mapValue(final DocumentNode<DocumentVisitorType> dynamodbProperty) {
-        final String stringValue = mapStringValue(dynamodbProperty);
+    protected ValueExpression mapValue(final DocumentNode<DocumentVisitorType> documentValue) {
+        final String stringValue = mapStringValue(documentValue);
         if (stringValue == null) {
             return this.column.getExasolDefaultValue();
         } else {
@@ -42,7 +42,7 @@ public abstract class ToStringValueMapper<DocumentVisitorType> extends AbstractV
     }
 
     private String handleOverflow(final String tooLongSourceString) {
-        if (this.column.getOverflowBehaviour() == ToStringColumnMappingDefinition.OverflowBehaviour.TRUNCATE) {
+        if (this.column.getOverflowBehaviour() == ToStringPropertyToColumnMapping.OverflowBehaviour.TRUNCATE) {
             return tooLongSourceString.substring(0, this.column.getExasolStringSize());
         } else {
             throw new OverflowException(
@@ -55,7 +55,7 @@ public abstract class ToStringValueMapper<DocumentVisitorType> extends AbstractV
      * Exception thrown if the size of the string from DynamoDB is longer than the configured size.
      */
     public static class OverflowException extends ValueMapperException {
-        public OverflowException(final String message, final ToStringColumnMappingDefinition column) {
+        public OverflowException(final String message, final ToStringPropertyToColumnMapping column) {
             super(message, column);
         }
     }

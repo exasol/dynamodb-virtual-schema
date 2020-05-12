@@ -5,21 +5,21 @@ import com.exasol.sql.expression.StringLiteral;
 import com.exasol.sql.expression.ValueExpression;
 
 /**
- * Extracts a string from the remote table and maps it to an Exasol VARCHAR column.
+ * Tis class defines a mapping that extracts a string from the remote table and maps it to an Exasol VARCHAR column.
  */
-public class ToStringColumnMappingDefinition extends AbstractColumnMappingDefinition {
+public class ToStringPropertyToColumnMapping extends AbstractPropertyToColumnMapping {
     private static final long serialVersionUID = -6772281079326146978L;
     private final int exasolStringSize;
     private final OverflowBehaviour overflowBehaviour;
 
     /**
-     * Creates an instance of {@link ToStringColumnMappingDefinition}.
+     * Creates an instance of {@link ToStringPropertyToColumnMapping}.
      * 
-     * @param parameters        Parameter object for {{@link ColumnMappingDefinition}}
+     * @param parameters        Parameter object for {{@link ColumnMapping}}
      * @param exasolStringSize  Length of the Exasol VARCHAR
      * @param overflowBehaviour Behaviour if extracted string exceeds {@link #exasolStringSize}
      */
-    public ToStringColumnMappingDefinition(final ConstructorParameters parameters, final int exasolStringSize,
+    public ToStringPropertyToColumnMapping(final ConstructorParameters parameters, final int exasolStringSize,
             final OverflowBehaviour overflowBehaviour) {
         super(parameters);
         this.exasolStringSize = exasolStringSize;
@@ -60,8 +60,15 @@ public class ToStringColumnMappingDefinition extends AbstractColumnMappingDefini
     }
 
     @Override
-    public void accept(final ColumnMappingDefinitionVisitor visitor) {
+    public void accept(final PropertyToColumnMappingVisitor visitor) {
         visitor.visit(this);
+    }
+
+    @Override
+    public ColumnMapping copyWithNewExasolName(final String newExasolName) {
+        return new ToStringPropertyToColumnMapping(
+                new ConstructorParameters(newExasolName, getPathToSourceProperty(), getLookupFailBehaviour()),
+                getExasolStringSize(), getOverflowBehaviour());
     }
 
     /**

@@ -17,7 +17,7 @@ import com.exasol.sql.expression.ValueExpression;
 @java.lang.SuppressWarnings("squid:S119") // DocumentVisitorType does not fit naming conventions.
 public class SchemaMapper<DocumentVisitorType> {
     private final SchemaMappingQuery query;
-    private final ValueMapperFactory<DocumentVisitorType> valueMapperFactory;
+    private final ValueExtractorFactory<DocumentVisitorType> valueExtractorFactory;
 
     /**
      * Creates a new {@link SchemaMapper} for the given query.
@@ -26,9 +26,9 @@ public class SchemaMapper<DocumentVisitorType> {
      * @param valueMapperFactory factory for value mapper corresponding to {@link DocumentVisitorType}
      */
     public SchemaMapper(final RemoteTableQuery<DocumentVisitorType> query,
-            final ValueMapperFactory<DocumentVisitorType> valueMapperFactory) {
+            final AbstractValueMapperFactory<DocumentVisitorType> valueMapperFactory) {
         this.query = query;
-        this.valueMapperFactory = valueMapperFactory;
+        this.valueExtractorFactory = new ValueExtractorFactory<>(valueMapperFactory);
     }
 
     /**
@@ -48,10 +48,10 @@ public class SchemaMapper<DocumentVisitorType> {
     private List<ValueExpression> mapColumns(final DocumentNode<DocumentVisitorType> document,
             final PathIterationStateProvider arrayAllIterationState) {
         final List<ValueExpression> resultValues = new ArrayList<>(this.query.getSelectList().size());
-        for (final ColumnMappingDefinition resultColumn : this.query.getSelectList()) {
-            final AbstractValueMapper<DocumentVisitorType> valueMapper = this.valueMapperFactory
-                    .getValueMapperForColumn(resultColumn);
-            final ValueExpression result = valueMapper.mapRow(document, arrayAllIterationState);
+        for (final ColumnMapping resultColumn : this.query.getSelectList()) {
+            final ValueExtractor<DocumentVisitorType> valueExtractor = this.valueExtractorFactory
+                    .getValueExtractorForColumn(resultColumn);
+            final ValueExpression result = valueExtractor.mapRow(document, arrayAllIterationState);
             resultValues.add(result);
         }
         return resultValues;

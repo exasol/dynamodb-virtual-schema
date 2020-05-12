@@ -5,7 +5,7 @@ import com.exasol.sql.expression.StringLiteral;
 import com.exasol.sql.expression.ValueExpression;
 
 /**
- * ValueMapper for {@link ToJsonColumnMappingDefinition}.
+ * ValueMapper for {@link ToJsonPropertyToColumnMapping}.
  */
 @java.lang.SuppressWarnings("squid:S119") // DocumentVisitorType does not fit naming conventions.
 public abstract class ToJsonValueMapper<DocumentVisitorType> extends AbstractValueMapper<DocumentVisitorType> {
@@ -13,15 +13,15 @@ public abstract class ToJsonValueMapper<DocumentVisitorType> extends AbstractVal
     /**
      * Creates an instance of {@link ToJsonValueMapper}.
      * 
-     * @param column {@link ToJsonColumnMappingDefinition}
+     * @param column {@link ToJsonPropertyToColumnMapping}
      */
-    public ToJsonValueMapper(final ColumnMappingDefinition column) {
+    public ToJsonValueMapper(final ToJsonPropertyToColumnMapping column) {
         super(column);
     }
 
     @Override
-    protected ValueExpression mapValue(final DocumentNode<DocumentVisitorType> dynamodbProperty) {
-        return StringLiteral.of(mapJsonValue(dynamodbProperty));
+    protected ValueExpression mapValue(final DocumentNode<DocumentVisitorType> documentValue) {
+        return StringLiteral.of(mapJsonValue(documentValue));
     }
 
     protected abstract String mapJsonValue(final DocumentNode<DocumentVisitorType> dynamodbProperty);

@@ -12,24 +12,24 @@ import com.exasol.adapter.dynamodb.documentpath.DocumentPathExpression;
  * table in the Exasol Virtual Schema. Typically it also represents a DynamoDB table. But it can also represent the data
  * from a nested list or object. See {@link #isRootTable()} for details.
  */
-public class TableMappingDefinition implements Serializable {
+public class TableMapping implements Serializable {
     private static final long serialVersionUID = -3340645367432789767L;
     private final String exasolName;
     private final String remoteName;
-    private final transient List<ColumnMappingDefinition> columns; // The columns are serialized separately in
-                                                                   // {@link ColumnMetadata}.
+    private final transient List<ColumnMapping> columns; // The columns are serialized separately in
+                                                         // {@link ColumnMetadata}.
 
     private final DocumentPathExpression pathToNestedTable;
 
-    TableMappingDefinition(final String exasolName, final String remoteName,
-            final List<ColumnMappingDefinition> columns, final DocumentPathExpression pathToNestedTable) {
+    TableMapping(final String exasolName, final String remoteName, final List<ColumnMapping> columns,
+            final DocumentPathExpression pathToNestedTable) {
         this.exasolName = exasolName;
         this.remoteName = remoteName;
         this.pathToNestedTable = pathToNestedTable;
         this.columns = columns;
     }
 
-    TableMappingDefinition(final TableMappingDefinition deserialized, final List<ColumnMappingDefinition> columns) {
+    TableMapping(final TableMapping deserialized, final List<ColumnMapping> columns) {
         this.exasolName = deserialized.exasolName;
         this.remoteName = deserialized.remoteName;
         this.pathToNestedTable = deserialized.pathToNestedTable;
@@ -37,11 +37,10 @@ public class TableMappingDefinition implements Serializable {
     }
 
     /**
-     * Gives an instance of the Builder for {@link TableMappingDefinition}. This version of the builder is used for root
-     * tables.
+     * Gives an instance of the Builder for {@link TableMapping}. This version of the builder is used for root tables.
      *
      * @param destName Name of the Exasol table
-     * @return {@link TableMappingDefinition.Builder}
+     * @return {@link TableMapping.Builder}
      */
     public static Builder rootTableBuilder(final String destName, final String remoteName) {
         final DocumentPathExpression emptyPath = new DocumentPathExpression.Builder().build();
@@ -49,13 +48,13 @@ public class TableMappingDefinition implements Serializable {
     }
 
     /**
-     * Gives an instance of the Builder for {@link TableMappingDefinition}. This version of the builder is used to
-     * create tables extracted from nested lists.
+     * m Gives an instance of the Builder for {@link TableMapping}. This version of the builder is used to create tables
+     * extracted from nested lists.
      *
      * @param destName          Name of the Exasol table
      * @param remoteName        Name of the remote table
      * @param pathToNestedTable Path expression within the document to the nested table
-     * @return Builder for {@link TableMappingDefinition}
+     * @return Builder for {@link TableMapping}
      */
     public static Builder nestedTableBuilder(final String destName, final String remoteName,
             final DocumentPathExpression pathToNestedTable) {
@@ -92,9 +91,9 @@ public class TableMappingDefinition implements Serializable {
     /**
      * Get the columns of this table
      * 
-     * @return List of {@link ColumnMappingDefinition}s
+     * @return List of {@link ColumnMapping}s
      */
-    public List<ColumnMappingDefinition> getColumns() {
+    public List<ColumnMapping> getColumns() {
         return this.columns;
     }
 
@@ -109,12 +108,12 @@ public class TableMappingDefinition implements Serializable {
     }
 
     /**
-     * Builder for {@link TableMappingDefinition}
+     * Builder for {@link TableMapping}
      */
     public static class Builder {
         private final String exasolName;
         private final String remoteName;
-        private final List<ColumnMappingDefinition> columns = new ArrayList<>();
+        private final List<ColumnMapping> columns = new ArrayList<>();
         private final DocumentPathExpression pathToNestedTable;
 
         private Builder(final String exasolName, final String remoteName,
@@ -125,24 +124,24 @@ public class TableMappingDefinition implements Serializable {
         }
 
         /**
-         * Adds a {@link ColumnMappingDefinition}
+         * Adds a {@link ColumnMapping}
          * 
-         * @param columnMappingDefinition Column MappingDefinition to add
+         * @param columnMapping Column MappingDefinition to add
          * @return self for fluent programming interface
          */
-        public Builder withColumnMappingDefinition(final ColumnMappingDefinition columnMappingDefinition) {
-            this.columns.add(columnMappingDefinition);
+        public Builder withColumnMappingDefinition(final ColumnMapping columnMapping) {
+            this.columns.add(columnMapping);
             return this;
         }
 
         /**
-         * Builds the {@link TableMappingDefinition}
+         * Builds the {@link TableMapping}
          * 
-         * @return {@link TableMappingDefinition}
+         * @return {@link TableMapping}
          */
-        public TableMappingDefinition build() {
-            return new TableMappingDefinition(this.exasolName, this.remoteName,
-                    Collections.unmodifiableList(this.columns), this.pathToNestedTable);
+        public TableMapping build() {
+            return new TableMapping(this.exasolName, this.remoteName, Collections.unmodifiableList(this.columns),
+                    this.pathToNestedTable);
         }
     }
 }

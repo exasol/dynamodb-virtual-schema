@@ -14,14 +14,14 @@ import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class JsonMappingValidatorTest {
-    private static final Logger LOGGER = LoggerFactory.getLogger(JsonMappingValidatorTest.class);
+public class JsonSchemaMappingValidatorTest {
+    private static final Logger LOGGER = LoggerFactory.getLogger(JsonSchemaMappingValidatorTest.class);
     private final MappingTestFiles mappingTestFiles = new MappingTestFiles();
 
     void runValidation(final File file) throws IOException {
-        final JsonMappingValidator jsonMappingValidator = new JsonMappingValidator();
+        final JsonSchemaMappingValidator jsonSchemaMappingValidator = new JsonSchemaMappingValidator();
         try {
-            jsonMappingValidator.validate(file);
+            jsonSchemaMappingValidator.validate(file);
         } catch (final IllegalArgumentException exception) {
             LOGGER.info(exception.getMessage());
             throw exception;

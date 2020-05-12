@@ -20,7 +20,7 @@ public class AbstractValueMapperTest {
     @Test
     void testLookup() {
         final DocumentPathExpression sourcePath = new DocumentPathExpression.Builder().addObjectLookup("isbn").build();
-        final MockColumnMappingDefinition columnMappingDefinition = new MockColumnMappingDefinition("d", sourcePath,
+        final MockPropertyToColumnMapping columnMappingDefinition = new MockPropertyToColumnMapping("d", sourcePath,
                 LookupFailBehaviour.EXCEPTION);
 
         final ValueMapperStub valueMapperStub = new ValueMapperStub(columnMappingDefinition);
@@ -33,7 +33,7 @@ public class AbstractValueMapperTest {
     void testNullLookupFailBehaviour() throws ValueMapperException {
         final DocumentPathExpression sourcePath = new DocumentPathExpression.Builder()
                 .addObjectLookup("nonExistingColumn").build();
-        final MockColumnMappingDefinition columnMappingDefinition = new MockColumnMappingDefinition("d", sourcePath,
+        final MockPropertyToColumnMapping columnMappingDefinition = new MockPropertyToColumnMapping("d", sourcePath,
                 LookupFailBehaviour.DEFAULT_VALUE);
         final ValueExpression valueExpression = new ValueMapperStub(columnMappingDefinition)
                 .mapRow(new StubDocumentObject(), new StaticDocumentPathIterator());
@@ -44,7 +44,7 @@ public class AbstractValueMapperTest {
     void testExceptionLookupFailBehaviour() {
         final DocumentPathExpression sourcePath = new DocumentPathExpression.Builder()
                 .addObjectLookup("nonExistingColumn").build();
-        final MockColumnMappingDefinition columnMappingDefinition = new MockColumnMappingDefinition("d", sourcePath,
+        final MockPropertyToColumnMapping columnMappingDefinition = new MockPropertyToColumnMapping("d", sourcePath,
                 LookupFailBehaviour.EXCEPTION);
         assertThrows(DocumentPathWalkerException.class, () -> new ValueMapperStub(columnMappingDefinition)
                 .mapRow(new StubDocumentObject(), new StaticDocumentPathIterator()));
@@ -53,7 +53,7 @@ public class AbstractValueMapperTest {
     @Test
     public void testColumnMappingException() {
         final String columnName = "name";
-        final MockColumnMappingDefinition mappingDefinition = new MockColumnMappingDefinition(columnName,
+        final MockPropertyToColumnMapping mappingDefinition = new MockPropertyToColumnMapping(columnName,
                 new DocumentPathExpression.Builder().build(), LookupFailBehaviour.EXCEPTION);
         final ValueMapperException exception = assertThrows(ValueMapperException.class,
                 () -> new ExceptionMockValueMapper(mappingDefinition).mapRow(new StubDocumentObject(),
@@ -100,27 +100,27 @@ public class AbstractValueMapperTest {
     private static class ValueMapperStub extends AbstractValueMapper<DummyVisitor> {
         private DocumentNode<DummyVisitor> remoteValue;
 
-        public ValueMapperStub(final ColumnMappingDefinition column) {
+        public ValueMapperStub(final AbstractPropertyToColumnMapping column) {
             super(column);
         }
 
         @Override
-        protected ValueExpression mapValue(final DocumentNode<DummyVisitor> remoteValue) {
-            this.remoteValue = remoteValue;
+        protected ValueExpression mapValue(final DocumentNode<DummyVisitor> documentValue) {
+            this.remoteValue = documentValue;
             return null;
         }
     }
 
     private static class ExceptionMockValueMapper extends AbstractValueMapper<DummyVisitor> {
-        private final ColumnMappingDefinition column;
+        private final ColumnMapping column;
 
-        public ExceptionMockValueMapper(final ColumnMappingDefinition column) {
+        public ExceptionMockValueMapper(final AbstractPropertyToColumnMapping column) {
             super(column);
             this.column = column;
         }
 
         @Override
-        protected ValueExpression mapValue(final DocumentNode<DummyVisitor> dynamodbProperty) {
+        protected ValueExpression mapValue(final DocumentNode<DummyVisitor> documentValue) {
             throw new ValueMapperException("mocMessage", this.column);
         }
     }

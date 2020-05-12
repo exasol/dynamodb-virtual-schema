@@ -5,8 +5,8 @@ import com.exasol.adapter.metadata.DataType;
 import com.exasol.sql.expression.StringLiteral;
 import com.exasol.sql.expression.ValueExpression;
 
-public class MockColumnMappingDefinition extends AbstractColumnMappingDefinition {
-    public MockColumnMappingDefinition(final String destinationName, final DocumentPathExpression sourcePath,
+public class MockPropertyToColumnMapping extends AbstractPropertyToColumnMapping {
+    public MockPropertyToColumnMapping(final String destinationName, final DocumentPathExpression sourcePath,
             final LookupFailBehaviour lookupFailBehaviour) {
         super(new ConstructorParameters(destinationName, sourcePath, lookupFailBehaviour));
     }
@@ -27,7 +27,12 @@ public class MockColumnMappingDefinition extends AbstractColumnMappingDefinition
     }
 
     @Override
-    public void accept(final ColumnMappingDefinitionVisitor visitor) {
+    public void accept(final PropertyToColumnMappingVisitor visitor) {
         throw new UnsupportedOperationException("not implemented");
+    }
+
+    @Override
+    public ColumnMapping copyWithNewExasolName(final String newExasolName) {
+        return new MockPropertyToColumnMapping(newExasolName, getPathToSourceProperty(), getLookupFailBehaviour());
     }
 }

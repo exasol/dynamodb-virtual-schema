@@ -3,7 +3,7 @@ package com.exasol.adapter.dynamodb.mapping.dynamodb;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.exasol.adapter.dynamodb.documentnode.DocumentNode;
 import com.exasol.adapter.dynamodb.documentnode.dynamodb.*;
-import com.exasol.adapter.dynamodb.mapping.ToStringColumnMappingDefinition;
+import com.exasol.adapter.dynamodb.mapping.ToStringPropertyToColumnMapping;
 import com.exasol.adapter.dynamodb.mapping.ToStringValueMapper;
 
 /**
@@ -13,9 +13,9 @@ public class DynamodbToStringValueMapper extends ToStringValueMapper<DynamodbNod
     /**
      * Creates an instance of {@link DynamodbToStringValueMapper}.
      *
-     * @param column {@link ToStringColumnMappingDefinition}
+     * @param column {@link ToStringPropertyToColumnMapping}
      */
-    public DynamodbToStringValueMapper(final ToStringColumnMappingDefinition column) {
+    public DynamodbToStringValueMapper(final ToStringPropertyToColumnMapping column) {
         super(column);
     }
 

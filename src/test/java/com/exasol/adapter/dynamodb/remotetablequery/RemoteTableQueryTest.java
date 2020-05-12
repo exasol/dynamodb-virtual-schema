@@ -9,14 +9,14 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
-import com.exasol.adapter.dynamodb.mapping.MockColumnMappingDefinition;
-import com.exasol.adapter.dynamodb.mapping.TableMappingDefinition;
+import com.exasol.adapter.dynamodb.mapping.MockPropertyToColumnMapping;
+import com.exasol.adapter.dynamodb.mapping.TableMapping;
 
 public class RemoteTableQueryTest {
     @Test
     void testSetAndGetColumns() {
-        final MockColumnMappingDefinition columnDefinition = new MockColumnMappingDefinition("", null, null);
-        final TableMappingDefinition tableDefinition = TableMappingDefinition.rootTableBuilder("", "")
+        final MockPropertyToColumnMapping columnDefinition = new MockPropertyToColumnMapping("", null, null);
+        final TableMapping tableDefinition = TableMapping.rootTableBuilder("", "")
                 .withColumnMappingDefinition(columnDefinition).build();
         final QueryPredicate<Object> selection = new NoPredicate<>();
         final RemoteTableQuery<Object> remoteTableQuery = new RemoteTableQuery<>(tableDefinition,

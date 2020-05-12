@@ -4,18 +4,19 @@ import com.exasol.adapter.dynamodb.documentnode.DocumentNode;
 
 /**
  * Exception that is thrown on lookup error. It is caught in
- * {@link AbstractValueMapper#mapRow(DocumentNode, com.exasol.adapter.dynamodb.documentpath.PathIterationStateProvider)}
- * and handled according to {@link ColumnMappingDefinition#getLookupFailBehaviour()}
+ * {@link ValueExtractor#mapRow(DocumentNode, com.exasol.adapter.dynamodb.documentpath.PathIterationStateProvider)} and
+ * handled according to {@link PropertyToColumnMapping#getLookupFailBehaviour()}
  */
 public class LookupValueMapperException extends ValueMapperException {
+    private static final long serialVersionUID = 6126777174742675113L;
 
     /**
      * Creates an instance of {@link LookupValueMapperException}.
      *
      * @param message Exception message
-     * @param column  {@link ColumnMappingDefinition} that caused exception
+     * @param column  {@link ColumnMapping} that caused exception
      */
-    LookupValueMapperException(final String message, final ColumnMappingDefinition column) {
+    LookupValueMapperException(final String message, final ColumnMapping column) {
         super(message, column);
     }
 }

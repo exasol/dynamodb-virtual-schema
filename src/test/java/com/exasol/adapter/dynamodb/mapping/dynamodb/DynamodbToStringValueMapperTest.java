@@ -12,9 +12,9 @@ import com.exasol.adapter.dynamodb.documentnode.dynamodb.DynamodbList;
 import com.exasol.adapter.dynamodb.documentnode.dynamodb.DynamodbNumber;
 import com.exasol.adapter.dynamodb.documentnode.dynamodb.DynamodbString;
 import com.exasol.adapter.dynamodb.documentpath.DocumentPathExpression;
-import com.exasol.adapter.dynamodb.mapping.AbstractColumnMappingDefinition;
+import com.exasol.adapter.dynamodb.mapping.AbstractPropertyToColumnMapping;
 import com.exasol.adapter.dynamodb.mapping.LookupFailBehaviour;
-import com.exasol.adapter.dynamodb.mapping.ToStringColumnMappingDefinition;
+import com.exasol.adapter.dynamodb.mapping.ToStringPropertyToColumnMapping;
 
 public class DynamodbToStringValueMapperTest {
 
@@ -24,13 +24,13 @@ public class DynamodbToStringValueMapperTest {
 
     private static final DocumentPathExpression TEST_SOURCE_COLUMN_PATH = new DocumentPathExpression.Builder()
             .addObjectLookup(TEST_SOURCE_COLUMN).build();
-    private static final AbstractColumnMappingDefinition.ConstructorParameters COLUMN_PARAMETERS = new AbstractColumnMappingDefinition.ConstructorParameters(
+    private static final AbstractPropertyToColumnMapping.ConstructorParameters COLUMN_PARAMETERS = new AbstractPropertyToColumnMapping.ConstructorParameters(
             DEST_COLUMN, TEST_SOURCE_COLUMN_PATH, LookupFailBehaviour.DEFAULT_VALUE);
 
     @Test
     void testConvertStringRow() {
         final String testString = "test";
-        final ToStringColumnMappingDefinition toStringColumnMappingDefinition = new ToStringColumnMappingDefinition(
+        final ToStringPropertyToColumnMapping toStringColumnMappingDefinition = new ToStringPropertyToColumnMapping(
                 COLUMN_PARAMETERS, 100, null);
         final String result = new DynamodbToStringValueMapper(toStringColumnMappingDefinition)
                 .mapStringValue(new DynamodbString(testString));
@@ -39,7 +39,7 @@ public class DynamodbToStringValueMapperTest {
 
     @Test
     void testConvertNumberRow() {
-        final ToStringColumnMappingDefinition toStringColumnMappingDefinition = new ToStringColumnMappingDefinition(
+        final ToStringPropertyToColumnMapping toStringColumnMappingDefinition = new ToStringPropertyToColumnMapping(
                 COLUMN_PARAMETERS, 100, null);
         final String result = new DynamodbToStringValueMapper(toStringColumnMappingDefinition)
                 .mapStringValue(new DynamodbNumber(String.valueOf(TEST_NUMBER)));
@@ -48,7 +48,7 @@ public class DynamodbToStringValueMapperTest {
 
     @Test
     void testConvertUnsupportedDynamodbType() {
-        final ToStringColumnMappingDefinition toStringColumnMappingDefinition = new ToStringColumnMappingDefinition(
+        final ToStringPropertyToColumnMapping toStringColumnMappingDefinition = new ToStringPropertyToColumnMapping(
                 COLUMN_PARAMETERS, 100, null);
         final UnsupportedOperationException exception = assertThrows(UnsupportedOperationException.class,
                 () -> new DynamodbToStringValueMapper(toStringColumnMappingDefinition)

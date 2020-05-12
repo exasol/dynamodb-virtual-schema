@@ -24,6 +24,9 @@ public class MappingTestFiles {
     public static final String WHOLE_TABLE_TO_TABLE_MAPPING_FILE_NAME = "wholeTableToJsonMapping.json";
     public static final File WHOLE_TABLE_TO_TABLE_MAPPING_FILE = readFile(WHOLE_TABLE_TO_TABLE_MAPPING_FILE_NAME);
 
+    public static final String DOUBLE_NESTED_TO_TABLE_MAPPING_FILE_NAME = "doubleNestedToTableMapping.json";
+    public static final File DOUBLE_NESTED_TO_TABLE_MAPPING_FILE = readFile(DOUBLE_NESTED_TO_TABLE_MAPPING_FILE_NAME);
+
     private final List<File> tempFiles = new ArrayList<>();
 
     private static File readFile(final String fileName) {

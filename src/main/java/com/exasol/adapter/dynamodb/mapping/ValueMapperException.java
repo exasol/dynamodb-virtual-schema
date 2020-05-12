@@ -4,15 +4,15 @@ package com.exasol.adapter.dynamodb.mapping;
  * Exception on failures in column mapping
  */
 public class ValueMapperException extends RuntimeException {
-    private final ColumnMappingDefinition causingColumn;
+    private final ColumnMapping causingColumn;
 
     /**
      * Creates an instance of {@link ValueMapperException}.
      *
      * @param message Exception message
-     * @param column  {@link ColumnMappingDefinition} that caused exception
+     * @param column  {@link ColumnMapping} that caused exception
      */
-    ValueMapperException(final String message, final ColumnMappingDefinition column) {
+    ValueMapperException(final String message, final ColumnMapping column) {
         super(message);
         this.causingColumn = column;
     }
@@ -20,9 +20,9 @@ public class ValueMapperException extends RuntimeException {
     /**
      * Get the column that caused this exception.
      *
-     * @return {@link ColumnMappingDefinition} that caused exception
+     * @return {@link ColumnMapping} that caused exception
      */
-    public ColumnMappingDefinition getCausingColumn() {
+    public ColumnMapping getCausingColumn() {
         return this.causingColumn;
     }
 }

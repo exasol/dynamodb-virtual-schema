@@ -9,16 +9,16 @@ import org.junit.jupiter.api.Test;
 import com.exasol.adapter.dynamodb.documentpath.DocumentPathExpression;
 import com.exasol.adapter.metadata.DataType;
 
-public class ToStringColumnMappingDefinitionTest {
+public class ToStringPropertyToColumnMappingTest {
     private static final String DEST_COLUMN = "destColumn";
 
     @Test
     void testDestinationDataType() {
         final int stringLength = 10;
-        final ToStringColumnMappingDefinition toStringColumnMappingDefinition = new ToStringColumnMappingDefinition(
-                new AbstractColumnMappingDefinition.ConstructorParameters(DEST_COLUMN,
+        final ToStringPropertyToColumnMapping toStringColumnMappingDefinition = new ToStringPropertyToColumnMapping(
+                new AbstractPropertyToColumnMapping.ConstructorParameters(DEST_COLUMN,
                         new DocumentPathExpression.Builder().build(), LookupFailBehaviour.DEFAULT_VALUE),
-                stringLength, ToStringColumnMappingDefinition.OverflowBehaviour.TRUNCATE);
+                stringLength, ToStringPropertyToColumnMapping.OverflowBehaviour.TRUNCATE);
         assertAll(
                 () -> assertThat(toStringColumnMappingDefinition.getExasolDataType().getExaDataType(),
                         equalTo(DataType.ExaDataType.VARCHAR)),
@@ -27,18 +27,18 @@ public class ToStringColumnMappingDefinitionTest {
 
     @Test
     void testGetDestinationDefaultValue() {
-        final AbstractColumnMappingDefinition.ConstructorParameters columnParameters = new AbstractColumnMappingDefinition.ConstructorParameters(
+        final AbstractPropertyToColumnMapping.ConstructorParameters columnParameters = new AbstractPropertyToColumnMapping.ConstructorParameters(
                 null, null, null);
-        final ToStringColumnMappingDefinition toStringColumnMappingDefinition = new ToStringColumnMappingDefinition(
+        final ToStringPropertyToColumnMapping toStringColumnMappingDefinition = new ToStringPropertyToColumnMapping(
                 columnParameters, 0, null);
         assertThat(toStringColumnMappingDefinition.getExasolDefaultValue().toString(), equalTo(""));
     }
 
     @Test
     void testIsDestinationNullable() {
-        final AbstractColumnMappingDefinition.ConstructorParameters columnParameters = new AbstractColumnMappingDefinition.ConstructorParameters(
+        final AbstractPropertyToColumnMapping.ConstructorParameters columnParameters = new AbstractPropertyToColumnMapping.ConstructorParameters(
                 null, null, null);
-        final ToStringColumnMappingDefinition toStringColumnMappingDefinition = new ToStringColumnMappingDefinition(
+        final ToStringPropertyToColumnMapping toStringColumnMappingDefinition = new ToStringPropertyToColumnMapping(
                 columnParameters, 0, null);
         assertThat(toStringColumnMappingDefinition.isExasolColumnNullable(), equalTo(true));
     }

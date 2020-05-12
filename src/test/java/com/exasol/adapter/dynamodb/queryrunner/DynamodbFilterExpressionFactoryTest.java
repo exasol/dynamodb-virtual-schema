@@ -11,8 +11,8 @@ import org.junit.jupiter.api.Test;
 import com.exasol.adapter.dynamodb.documentnode.dynamodb.DynamodbNodeVisitor;
 import com.exasol.adapter.dynamodb.documentnode.dynamodb.DynamodbString;
 import com.exasol.adapter.dynamodb.documentpath.DocumentPathExpression;
-import com.exasol.adapter.dynamodb.mapping.AbstractColumnMappingDefinition;
-import com.exasol.adapter.dynamodb.mapping.ToJsonColumnMappingDefinition;
+import com.exasol.adapter.dynamodb.mapping.AbstractPropertyToColumnMapping;
+import com.exasol.adapter.dynamodb.mapping.ToJsonPropertyToColumnMapping;
 import com.exasol.adapter.dynamodb.remotetablequery.ColumnLiteralComparisonPredicate;
 import com.exasol.adapter.dynamodb.remotetablequery.ComparisonPredicate;
 import com.exasol.adapter.dynamodb.remotetablequery.LogicalOperator;
@@ -80,8 +80,8 @@ class DynamodbFilterExpressionFactoryTest {
     private ColumnLiteralComparisonPredicate<DynamodbNodeVisitor> getComparison(final String literal,
             final ComparisonPredicate.Operator operator) {
         final DocumentPathExpression sourcePath = new DocumentPathExpression.Builder().addObjectLookup("key").build();
-        final ToJsonColumnMappingDefinition column = new ToJsonColumnMappingDefinition(
-                new AbstractColumnMappingDefinition.ConstructorParameters("columnName", sourcePath, null));
+        final ToJsonPropertyToColumnMapping column = new ToJsonPropertyToColumnMapping(
+                new AbstractPropertyToColumnMapping.ConstructorParameters("columnName", sourcePath, null));
         return new ColumnLiteralComparisonPredicate<>(operator, column, new DynamodbString(literal));
     }
 }

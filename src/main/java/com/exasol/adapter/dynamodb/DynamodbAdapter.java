@@ -54,17 +54,17 @@ public class DynamodbAdapter implements VirtualSchemaAdapter {
     }
 
     private SchemaMetadata getSchemaMetadata(final AdapterRequest request) throws IOException, AdapterException {
-        final SchemaMappingDefinition schemaMappingDefinition = getSchemaMappingDefinition(request);
-        return new SchemaMappingDefinitionToSchemaMetadataConverter().convert(schemaMappingDefinition);
+        final SchemaMapping schemaMapping = getSchemaMappingDefinition(request);
+        return new SchemaMappingToSchemaMetadataConverter().convert(schemaMapping);
     }
 
-    private SchemaMappingDefinition getSchemaMappingDefinition(final AdapterRequest request)
+    private SchemaMapping getSchemaMappingDefinition(final AdapterRequest request)
             throws AdapterException, IOException {
         final AdapterProperties adapterProperties = new AdapterProperties(
                 request.getSchemaMetadataInfo().getProperties());
         final DynamodbAdapterProperties dynamodbAdapterProperties = new DynamodbAdapterProperties(adapterProperties);
         final File mappingDefinitionFile = getSchemaMappingFile(dynamodbAdapterProperties);
-        final MappingDefinitionFactory mappingFactory = new JsonMappingFactory(mappingDefinitionFile);
+        final SchemaMappingReader mappingFactory = new JsonSchemaMappingReader(mappingDefinitionFile);
         return mappingFactory.getSchemaMapping();
     }
 

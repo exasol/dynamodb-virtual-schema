@@ -7,33 +7,22 @@ import com.exasol.adapter.dynamodb.documentpath.PathIterationStateProvider;
 import com.exasol.sql.expression.ValueExpression;
 
 /**
- * Abstract class for extracting a value specified in an ColumnMappingDefinition from a DynamoDB row.
+ * This class is the abstract basis for mapping a property of an document to an Exasol column.
  */
 @java.lang.SuppressWarnings("squid:S119") // DocumentVisitorType does not fit naming conventions.
-public abstract class AbstractValueMapper<DocumentVisitorType> {
-    private final ColumnMappingDefinition column;
+public abstract class AbstractValueMapper<DocumentVisitorType> implements ValueExtractor<DocumentVisitorType> {
+    private final PropertyToColumnMapping column;
 
     /**
-     * Creates an instance of {@link AbstractValueMapper} for extracting a value specified parameter column from a
-     * DynamoDB row.
-     * 
-     * @param column ColumnMappingDefinition defining the mapping
+     * Creates an instance of {@link ValueExtractor} for extracting a value specified parameter column from a DynamoDB
+     * row.
+     *
+     * @param column {@link PropertyToColumnMapping} defining the mapping
      */
-    AbstractValueMapper(final ColumnMappingDefinition column) {
+    AbstractValueMapper(final PropertyToColumnMapping column) {
         this.column = column;
     }
 
-    /**
-     * Extracts {@link #column}s values from the given document.
-     *
-     * @param document               to extract the value from
-     * @param arrayAllIterationState array all iteration state used for extracting the correct values for nested lists
-     * @return {@link ValueExpression}
-     * @throws DocumentPathWalkerException if specified property was not found and {@link LookupFailBehaviour} is set to
-     *                                     {@code EXCEPTION }
-     * @throws ValueMapperException        if specified property can't be mapped and {@link LookupFailBehaviour} is set
-     *                                     to {@code EXCEPTION }
-     */
     public ValueExpression mapRow(final DocumentNode<DocumentVisitorType> document,
             final PathIterationStateProvider arrayAllIterationState) {
         try {
@@ -51,11 +40,11 @@ public abstract class AbstractValueMapper<DocumentVisitorType> {
     }
 
     /**
-     * Converts the DynamoDB property into an Exasol {@link ValueExpression}.
+     * Converts a document property into an Exasol {@link ValueExpression}.
      *
-     * @param dynamodbProperty the DynamoDB property to be converted
+     * @param documentValue the document value specified in the columns path expression to be converted
      * @return the conversion result
      * @throws ValueMapperException if the value can't be mapped
      */
-    protected abstract ValueExpression mapValue(DocumentNode<DocumentVisitorType> dynamodbProperty);
+    protected abstract ValueExpression mapValue(DocumentNode<DocumentVisitorType> documentValue);
 }

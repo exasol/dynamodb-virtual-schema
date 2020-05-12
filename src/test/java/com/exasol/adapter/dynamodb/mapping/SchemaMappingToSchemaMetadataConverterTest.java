@@ -16,25 +16,24 @@ import com.exasol.adapter.metadata.ColumnMetadata;
 import com.exasol.adapter.metadata.SchemaMetadata;
 import com.exasol.adapter.metadata.TableMetadata;
 
-public class SchemaMappingDefinitionToSchemaMetadataConverterTest {
+public class SchemaMappingToSchemaMetadataConverterTest {
     private static final String DEST_TABLE_NAME = "TEST";
     private static final String SRC_TABLE_NAME = "srcTable";
     private static final String COLUMN_NAME = "json";
 
-    public SchemaMappingDefinition getSchemaMapping() {
-        final TableMappingDefinition table = TableMappingDefinition.rootTableBuilder(DEST_TABLE_NAME, SRC_TABLE_NAME)
-                .withColumnMappingDefinition(new ToJsonColumnMappingDefinition(
-                        new AbstractColumnMappingDefinition.ConstructorParameters(COLUMN_NAME,
+    public SchemaMapping getSchemaMapping() {
+        final TableMapping table = TableMapping.rootTableBuilder(DEST_TABLE_NAME, SRC_TABLE_NAME)
+                .withColumnMappingDefinition(new ToJsonPropertyToColumnMapping(
+                        new AbstractPropertyToColumnMapping.ConstructorParameters(COLUMN_NAME,
                                 new DocumentPathExpression.Builder().build(), LookupFailBehaviour.DEFAULT_VALUE)))
                 .build();
-        return new SchemaMappingDefinition(List.of(table));
+        return new SchemaMapping(List.of(table));
     }
 
     @Test
     void testConvert() throws IOException {
-        final SchemaMappingDefinition schemaMapping = getSchemaMapping();
-        final SchemaMetadata schemaMetadata = new SchemaMappingDefinitionToSchemaMetadataConverter()
-                .convert(schemaMapping);
+        final SchemaMapping schemaMapping = getSchemaMapping();
+        final SchemaMetadata schemaMetadata = new SchemaMappingToSchemaMetadataConverter().convert(schemaMapping);
         final List<TableMetadata> tables = schemaMetadata.getTables();
         final TableMetadata firstTable = tables.get(0);
         final List<String> columnNames = firstTable.getColumns().stream().map(ColumnMetadata::getName)
@@ -48,28 +47,26 @@ public class SchemaMappingDefinitionToSchemaMetadataConverterTest {
 
     @Test
     void testColumnSerialization() throws IOException {
-        final SchemaMappingDefinition schemaMapping = getSchemaMapping();
-        final SchemaMetadata schemaMetadata = new SchemaMappingDefinitionToSchemaMetadataConverter()
-                .convert(schemaMapping);
+        final SchemaMapping schemaMapping = getSchemaMapping();
+        final SchemaMetadata schemaMetadata = new SchemaMappingToSchemaMetadataConverter().convert(schemaMapping);
         final ColumnMetadata firstColumnMetadata = schemaMetadata.getTables().get(0).getColumns().get(0);
-        final ColumnMappingDefinition columnMappingDefinition = new SchemaMappingDefinitionToSchemaMetadataConverter()
+        final ColumnMapping columnMapping = new SchemaMappingToSchemaMetadataConverter()
                 .convertBackColumn(firstColumnMetadata);
-        assertThat(columnMappingDefinition.getExasolColumnName(), equalTo(COLUMN_NAME));
+        assertThat(columnMapping.getExasolColumnName(), equalTo(COLUMN_NAME));
     }
 
     @Test
     void testTableSerialization() throws IOException {
-        final SchemaMappingDefinition schemaMapping = getSchemaMapping();
-        final SchemaMappingDefinitionToSchemaMetadataConverter converter = new SchemaMappingDefinitionToSchemaMetadataConverter();
+        final SchemaMapping schemaMapping = getSchemaMapping();
+        final SchemaMappingToSchemaMetadataConverter converter = new SchemaMappingToSchemaMetadataConverter();
         final SchemaMetadata schemaMetadata = converter.convert(schemaMapping);
         final TableMetadata firstTableMetadata = schemaMetadata.getTables().get(0);
-        final TableMappingDefinition tableMappingDefinition = converter.convertBackTable(firstTableMetadata,
-                schemaMetadata);
+        final TableMapping tableMapping = converter.convertBackTable(firstTableMetadata, schemaMetadata);
         assertAll(//
-                () -> assertThat(tableMappingDefinition.getExasolName(), equalTo(DEST_TABLE_NAME)), //
-                () -> assertThat(tableMappingDefinition.getRemoteName(), equalTo(SRC_TABLE_NAME)), //
-                () -> assertThat(tableMappingDefinition.getColumns().size(), equalTo(1)), //
-                () -> assertThat(tableMappingDefinition.getColumns().get(0).getExasolColumnName(), equalTo(COLUMN_NAME))//
+                () -> assertThat(tableMapping.getExasolName(), equalTo(DEST_TABLE_NAME)), //
+                () -> assertThat(tableMapping.getRemoteName(), equalTo(SRC_TABLE_NAME)), //
+                () -> assertThat(tableMapping.getColumns().size(), equalTo(1)), //
+                () -> assertThat(tableMapping.getColumns().get(0).getExasolColumnName(), equalTo(COLUMN_NAME))//
         );
     }
 }

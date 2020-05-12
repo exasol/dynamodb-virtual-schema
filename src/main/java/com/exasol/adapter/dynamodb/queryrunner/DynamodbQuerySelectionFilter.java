@@ -5,6 +5,8 @@ import java.util.List;
 
 import com.exasol.adapter.dynamodb.documentnode.dynamodb.DynamodbNodeVisitor;
 import com.exasol.adapter.dynamodb.documentpath.DocumentPathExpression;
+import com.exasol.adapter.dynamodb.mapping.ColumnMapping;
+import com.exasol.adapter.dynamodb.mapping.PropertyToColumnMapping;
 import com.exasol.adapter.dynamodb.remotetablequery.*;
 
 /**
@@ -43,7 +45,9 @@ class DynamodbQuerySelectionFilter {
         @Override
         public void visit(
                 final ColumnLiteralComparisonPredicate<DynamodbNodeVisitor> columnLiteralComparisonPredicate) {
-            if (isColumnOnWhitelist(columnLiteralComparisonPredicate.getColumn().getPathToSourceProperty())) {
+            final ColumnMapping column = columnLiteralComparisonPredicate.getColumn();
+            if (column instanceof PropertyToColumnMapping
+                    && isColumnOnWhitelist(((PropertyToColumnMapping) column).getPathToSourceProperty())) {
                 this.filtered = columnLiteralComparisonPredicate;
             } else {
                 this.filtered = new NoPredicate<>();

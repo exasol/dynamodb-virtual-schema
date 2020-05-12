@@ -13,7 +13,7 @@ This structure is used:
 
 Remote values are mapped to Exasols `ValueExpression`s using a `ValueMapper`:
 
-![Class diagram](diagrams/valueMapper.png)
+![Class diagram](diagrams/valueExtractor.png)
 
 A `ValueMapper` corresponding to a specific `AbstractColumnMappingDefinition` is built using a `ValueMapperFactory`:
 
