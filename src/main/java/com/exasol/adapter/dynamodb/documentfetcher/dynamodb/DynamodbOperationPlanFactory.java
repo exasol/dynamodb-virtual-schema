@@ -9,7 +9,7 @@ import com.exasol.adapter.dynamodb.remotetablequery.RemoteTableQuery;
  * {@code Query} or {@code Scan} operation is performed. The decision depends on the possibility of using a DynamoDB the
  * DynamoDB key or Index for the given query.
  */
-class DynamodbOperationFactory {
+class DynamodbOperationPlanFactory {
     /**
      * Creates a {@link DynamodbOperationPlan} for a given request.
      * 
@@ -19,11 +19,10 @@ class DynamodbOperationFactory {
      */
     public DynamodbOperationPlan planQuery(final RemoteTableQuery<DynamodbNodeVisitor> documentQuery,
             final DynamodbTableMetadata tableMetadata) {
-        final String tableName = documentQuery.getFromTable().getRemoteName();
         try {
-            return new DynamodbQueryOperationPlanFactory().buildQueryPlanIfPossible(documentQuery, tableMetadata);
+            return new DynamodbQueryOperationPlan(documentQuery, tableMetadata);
         } catch (final PlanDoesNotFitException exception) {
-            return new DynamodbScanOperationPlan(tableName);
+            return new DynamodbScanOperationPlan(documentQuery);
         }
     }
 }

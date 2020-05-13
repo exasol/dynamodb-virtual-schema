@@ -134,7 +134,32 @@ class DynamodbDocumentFetcherIT {
                 .collect(Collectors.toList());
         assertThat(result.size(), equalTo(2));
         final DocumentObject<DynamodbNodeVisitor> first = (DocumentObject<DynamodbNodeVisitor>) result.get(0);
-        final DynamodbString isbnResult = (DynamodbString) first.get("publisher");
-        assertThat(isbnResult.getValue(), equalTo(publisher));
+        final DynamodbString resultsPublisher = (DynamodbString) first.get("publisher");
+        assertThat(resultsPublisher.getValue(), equalTo(publisher));
+    }
+
+    // TODO reactivate when implemented
+    /*
+     * @Test void testKeyAndNonKeyQuery() { final String publisher = "jb books"; final String name = "bad book 1"; final
+     * DynamodbDocumentFetcher runner = getRunner(); final RemoteTableQuery<DynamodbNodeVisitor> documentQuery =
+     * basicMappingSetup.getQueryForNameAndPublisher(name, publisher); final List<DocumentNode<DynamodbNodeVisitor>>
+     * result = runner.fetchDocumentData(documentQuery) .collect(Collectors.toList()); assertThat(result.size(),
+     * equalTo(1)); final DocumentObject<DynamodbNodeVisitor> first = (DocumentObject<DynamodbNodeVisitor>)
+     * result.get(0); final DynamodbString resultsPublisher = (DynamodbString) first.get("publisher"); final
+     * DynamodbString resultsName = (DynamodbString) first.get("name"); assertAll(// () ->
+     * assertThat(resultsPublisher.getValue(), equalTo(publisher)), () -> assertThat(resultsName.getValue(),
+     * equalTo(name))// ); }
+     */
+
+    @Test
+    void testRangeQuery() {
+        final DynamodbDocumentFetcher runner = getRunner();
+        final RemoteTableQuery<DynamodbNodeVisitor> documentQuery = basicMappingSetup.getQueryForMinPrice(16);
+        final List<DocumentNode<DynamodbNodeVisitor>> result = runner.fetchDocumentData(documentQuery)
+                .collect(Collectors.toList());
+        assertThat(result.size(), equalTo(1));
+        final DocumentObject<DynamodbNodeVisitor> first = (DocumentObject<DynamodbNodeVisitor>) result.get(0);
+        final DynamodbString isbnResult = (DynamodbString) first.get("isbn");
+        assertThat(isbnResult.getValue(), equalTo("1235673"));
     }
 }
