@@ -13,7 +13,7 @@ abstract class AbstractPropertyToColumnMapping extends AbstractColumnMapping imp
     /**
      * Creates an instance of {@link AbstractPropertyToColumnMapping}.
      *
-     * @param exasolColumnName     Name of the Exasol column
+     * @param exasolColumnName     name of the Exasol column
      * @param pathToSourceProperty {@link DocumentPathExpression} path to the property to extract
      * @param lookupFailBehaviour  {@link LookupFailBehaviour} behaviour for the case, that the defined path does not
      *                             exist

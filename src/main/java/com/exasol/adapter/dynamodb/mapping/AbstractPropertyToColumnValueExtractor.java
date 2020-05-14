@@ -7,7 +7,7 @@ import com.exasol.adapter.dynamodb.documentpath.PathIterationStateProvider;
 import com.exasol.sql.expression.ValueExpression;
 
 /**
- * This class is the abstract basis for mapping a property of an document to an Exasol column. It provides functionality
+ * This class is the abstract basis for mapping a property of a document to an Exasol column. It provides functionality
  * for extracting the the property described by the path in the {@link PropertyToColumnMapping}. The conversion of the
  * value is delegated to the implementation using the abstract method {@link #mapValue(DocumentNode)}.
  */
@@ -17,8 +17,8 @@ public abstract class AbstractPropertyToColumnValueExtractor<DocumentVisitorType
     private final PropertyToColumnMapping column;
 
     /**
-     * Creates an instance of {@link ColumnValueExtractor} for extracting a value specified parameter column from a
-     * DynamoDB row.
+     * Creates an instance of {@link AbstractColumnValueExtractor} for extracting a value specified parameter column
+     * from a DynamoDB row.
      *
      * @param column {@link PropertyToColumnMapping} defining the mapping
      */

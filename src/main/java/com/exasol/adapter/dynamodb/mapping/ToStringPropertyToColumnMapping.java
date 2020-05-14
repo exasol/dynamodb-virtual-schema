@@ -70,7 +70,7 @@ public class ToStringPropertyToColumnMapping extends AbstractPropertyToColumnMap
     }
 
     @Override
-    public ColumnMapping copyWithNewExasolName(final String newExasolName) {
+    public ColumnMapping withNewExasolName(final String newExasolName) {
         return new ToStringPropertyToColumnMapping(newExasolName, getPathToSourceProperty(), getLookupFailBehaviour(),
                 getExasolStringSize(), getOverflowBehaviour());
     }

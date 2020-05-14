@@ -50,7 +50,7 @@ public interface ColumnMapping extends Serializable {
      * @param newExasolName new name
      * @return copy
      */
-    public ColumnMapping copyWithNewExasolName(String newExasolName);
+    public ColumnMapping withNewExasolName(String newExasolName);
 
     public void accept(ColumnMappingVisitor visitor);
 }

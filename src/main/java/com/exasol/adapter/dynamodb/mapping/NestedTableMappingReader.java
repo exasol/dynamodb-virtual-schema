@@ -74,7 +74,7 @@ class NestedTableMappingReader extends AbstractTableMappingReader {
     private List<ColumnMapping> getForeignKey() {
         return this.parentKeyColumns.stream()
                 .map(column -> column
-                        .copyWithNewExasolName(this.parentTable.getExasolName() + "_" + column.getExasolColumnName()))
+                        .withNewExasolName(this.parentTable.getExasolName() + "_" + column.getExasolColumnName()))
                 .collect(Collectors.toList());
     }
 

@@ -46,7 +46,7 @@ public class IterationIndexColumnMapping implements ColumnMapping {
     }
 
     @Override
-    public ColumnMapping copyWithNewExasolName(final String newExasolName) {
+    public ColumnMapping withNewExasolName(final String newExasolName) {
         return new IterationIndexColumnMapping(newExasolName, this.tablesPath);
     }
 
