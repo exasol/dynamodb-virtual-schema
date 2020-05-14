@@ -12,15 +12,16 @@ import com.exasol.adapter.dynamodb.remotetablequery.RemoteTableQuery;
 /**
  * This class represents a DynamoDB {@code SCAN} operation.
  */
-class DynamodbScanOperationPlan implements DynamodbOperationPlan {
+class DynamodbScanDocumentFetcher extends AbstractDynamodbDocumentFetcher {
+    private static final long serialVersionUID = -2402720048900542839L;
     private final ScanRequest scanRequest;
 
     /**
-     * Creates an instance of {@link DynamodbScanOperationPlan}.
+     * Creates an instance of {@link DynamodbScanDocumentFetcher}.
      *
      * @param documentQuery document query to fetch the documents for
      */
-    protected DynamodbScanOperationPlan(final RemoteTableQuery<DynamodbNodeVisitor> documentQuery) {
+    protected DynamodbScanDocumentFetcher(final RemoteTableQuery<DynamodbNodeVisitor> documentQuery) {
         this.scanRequest = new ScanRequest().withTableName(documentQuery.getFromTable().getRemoteName());
         final DynamodbValueListBuilder valueListBuilder = new DynamodbValueListBuilder();
         final String filterExpression = new DynamodbFilterExpressionFactory()

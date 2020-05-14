@@ -16,8 +16,8 @@ import com.exasol.adapter.VirtualSchemaAdapter;
 import com.exasol.adapter.capabilities.Capabilities;
 import com.exasol.adapter.capabilities.LiteralCapability;
 import com.exasol.adapter.capabilities.PredicateCapability;
-import com.exasol.adapter.dynamodb.documentfetcher.DocumentFetcher;
-import com.exasol.adapter.dynamodb.documentfetcher.dynamodb.DynamodbDocumentFetcher;
+import com.exasol.adapter.dynamodb.documentfetcher.DocumentFetcherFactory;
+import com.exasol.adapter.dynamodb.documentfetcher.dynamodb.DynamodbDocumentFetcherFactory;
 import com.exasol.adapter.dynamodb.documentnode.dynamodb.DynamodbNodeVisitor;
 import com.exasol.adapter.dynamodb.literalconverter.dynamodb.SqlLiteralToDynamodbValueConverter;
 import com.exasol.adapter.dynamodb.mapping.*;
@@ -130,12 +130,13 @@ public class DynamodbAdapter implements VirtualSchemaAdapter {
 
     private String runQuery(final ExaMetadata exaMetadata, final PushDownRequest request,
             final RemoteTableQuery<DynamodbNodeVisitor> remoteTableQuery) throws ExaConnectionAccessException {
-        final DocumentFetcher documentFetcher = new DynamodbDocumentFetcher(
-                getConnectionInformation(exaMetadata, request));
+        final DocumentFetcherFactory<DynamodbNodeVisitor> documentFetcherFactory = new DynamodbDocumentFetcherFactory();
         final SchemaMapper<DynamodbNodeVisitor> schemaMapper = new SchemaMapper<>(remoteTableQuery,
                 new DynamodbPropertyToColumnValueExtractorFactory());
         final List<List<ValueExpression>> resultRows = new ArrayList<>();
-        documentFetcher.fetchDocumentData(remoteTableQuery)
+        final ExaConnectionInformation connectionInformation = getConnectionInformation(exaMetadata, request);
+        documentFetcherFactory.buildDocumentFetcherForQuery(remoteTableQuery, connectionInformation)
+                .run(connectionInformation)
                 .forEach(dynamodbRow -> schemaMapper.mapRow(dynamodbRow).forEach(resultRows::add));
         return new ValueExpressionsToSqlSelectFromValuesConverter().convert(remoteTableQuery, resultRows);
     }

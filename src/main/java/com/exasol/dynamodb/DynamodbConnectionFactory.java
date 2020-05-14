@@ -6,6 +6,7 @@ import com.amazonaws.client.builder.AwsClientBuilder;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
 import com.amazonaws.services.dynamodbv2.document.DynamoDB;
+import com.exasol.ExaConnectionInformation;
 
 /**
  * This class represents a factory that creates connections to DynamoDB.
@@ -20,7 +21,7 @@ public class DynamodbConnectionFactory {
      * @param uri  either aws:<REGION> or the address of a local DynamoDB server (e.g. http://localhost:8000)
      * @param user aws credential id
      * @param key  aws credential key
-     * @return AmazonDynamoDB (low level api client)
+     * @return {@link AmazonDynamoDB} (low level api client)
      */
     public AmazonDynamoDB getLowLevelConnection(final String uri, final String user, final String key) {
         final BasicAWSCredentials awsCredentials = new BasicAWSCredentials(user, key);
@@ -32,6 +33,18 @@ public class DynamodbConnectionFactory {
             clientBuilder.withEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration(uri, AWS_LOCAL_REGION));
         }
         return clientBuilder.build();
+    }
+
+    /**
+     * Creates an AmazonDynamoDB (low level api client) with connection settings from an Exasol
+     * {@link ExaConnectionInformation} object.
+     * 
+     * @param exaConnectionInformation connection settings
+     * @return {@link AmazonDynamoDB} (low level api client)
+     */
+    public AmazonDynamoDB getLowLevelConnection(final ExaConnectionInformation exaConnectionInformation) {
+        return getLowLevelConnection(exaConnectionInformation.getAddress(), exaConnectionInformation.getUser(),
+                exaConnectionInformation.getPassword());
     }
 
     /**

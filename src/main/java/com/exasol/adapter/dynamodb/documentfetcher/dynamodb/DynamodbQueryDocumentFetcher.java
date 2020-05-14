@@ -17,24 +17,25 @@ import com.exasol.adapter.dynamodb.remotetablequery.RemoteTableQuery;
 /**
  * This class represents a DynamoDB {@code QUERY} operation.
  */
-public class DynamodbQueryOperationPlan implements DynamodbOperationPlan {
+public class DynamodbQueryDocumentFetcher extends AbstractDynamodbDocumentFetcher {
+    private static final long serialVersionUID = -2972732083876517763L;
     private final QueryRequest queryRequest;
 
     /**
-     * Creates an a {@link DynamodbQueryOperationPlan} if possible for the given query.
+     * Creates an a {@link DynamodbQueryDocumentFetcher} if possible for the given query.
      *
-     * @param documentQuery document query to build the plan for
-     * @param tableMetadata DynamoDB table metadata used for checking the primary key
+     * @param remoteTableQuery query to build the plan for
+     * @param tableMetadata    DynamoDB table metadata used for checking the primary key
      * @throws PlanDoesNotFitException if a DynamoDB {@code QUERY} operation can't fetch the data required by the query
      */
-    public DynamodbQueryOperationPlan(final RemoteTableQuery<DynamodbNodeVisitor> documentQuery,
+    public DynamodbQueryDocumentFetcher(final RemoteTableQuery<DynamodbNodeVisitor> remoteTableQuery,
             final DynamodbTableMetadata tableMetadata) {
         final DynamodbIndex mostRestrictedIndex = new DynamodbQueryIndexSelector()
-                .findMostRestrictedIndex(documentQuery.getSelection(), tableMetadata.getAllIndexes());
+                .findMostRestrictedIndex(remoteTableQuery.getSelection(), tableMetadata.getAllIndexes());
         abortIfNoFittingIndexWasFound(mostRestrictedIndex);
-        this.queryRequest = new QueryRequest(documentQuery.getFromTable().getRemoteName());
+        this.queryRequest = new QueryRequest(remoteTableQuery.getFromTable().getRemoteName());
         setIndexToQuery(mostRestrictedIndex);
-        addKeyConditionAndFilterExpression(documentQuery, mostRestrictedIndex);
+        addKeyConditionAndFilterExpression(remoteTableQuery, mostRestrictedIndex);
     }
 
     private void abortIfNoFittingIndexWasFound(final DynamodbIndex mostRestrictedIndex) {
