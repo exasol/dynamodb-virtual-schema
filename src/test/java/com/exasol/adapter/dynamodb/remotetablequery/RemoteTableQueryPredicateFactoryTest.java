@@ -14,16 +14,14 @@ import org.junit.jupiter.api.Test;
 
 import com.exasol.adapter.dynamodb.documentnode.DocumentValue;
 import com.exasol.adapter.dynamodb.literalconverter.SqlLiteralToDocumentValueConverter;
-import com.exasol.adapter.dynamodb.mapping.AbstractColumnMappingDefinition;
-import com.exasol.adapter.dynamodb.mapping.ColumnMappingDefinition;
-import com.exasol.adapter.dynamodb.mapping.SchemaMappingDefinitionToSchemaMetadataConverter;
-import com.exasol.adapter.dynamodb.mapping.ToJsonColumnMappingDefinition;
+import com.exasol.adapter.dynamodb.mapping.ColumnMapping;
+import com.exasol.adapter.dynamodb.mapping.SchemaMappingToSchemaMetadataConverter;
+import com.exasol.adapter.dynamodb.mapping.ToJsonPropertyToColumnMapping;
 import com.exasol.adapter.metadata.ColumnMetadata;
 import com.exasol.adapter.sql.*;
 
 class QueryPredicateFactoryTest {
-    private static final ColumnMappingDefinition COLUMN_MAPPING = new ToJsonColumnMappingDefinition(
-            new AbstractColumnMappingDefinition.ConstructorParameters("name", null, null));
+    private static final ColumnMapping COLUMN_MAPPING = new ToJsonPropertyToColumnMapping("name", null, null);
     private static final DocumentValue<Object> LITERAL = (DocumentValue<Object>) visitor -> {
     };
     private static final SqlLiteralToDocumentValueConverter<Object> LITERAL_FACTORY = exasolLiteralNode -> LITERAL;
@@ -33,7 +31,7 @@ class QueryPredicateFactoryTest {
 
     @BeforeAll
     static void setup() throws IOException {
-        columnMetadata = new SchemaMappingDefinitionToSchemaMetadataConverter().convertColumn(COLUMN_MAPPING);
+        columnMetadata = new SchemaMappingToSchemaMetadataConverter().convertColumn(COLUMN_MAPPING);
         validColumnLiteralEqualityPredicate = new SqlPredicateEqual(new SqlLiteralString("test"),
                 new SqlColumn(0, columnMetadata));
     }

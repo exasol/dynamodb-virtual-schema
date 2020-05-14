@@ -12,9 +12,9 @@ import org.junit.jupiter.api.Test;
 import com.exasol.adapter.AdapterException;
 import com.exasol.adapter.dynamodb.documentnode.DocumentValue;
 import com.exasol.adapter.dynamodb.literalconverter.SqlLiteralToDocumentValueConverter;
-import com.exasol.adapter.dynamodb.mapping.ColumnMappingDefinition;
-import com.exasol.adapter.dynamodb.mapping.HardCodedMappingFactory;
-import com.exasol.adapter.dynamodb.mapping.SchemaMappingDefinitionToSchemaMetadataConverter;
+import com.exasol.adapter.dynamodb.mapping.ColumnMapping;
+import com.exasol.adapter.dynamodb.mapping.HardCodedSchemaMappingReader;
+import com.exasol.adapter.dynamodb.mapping.SchemaMappingToSchemaMetadataConverter;
 import com.exasol.adapter.metadata.ColumnMetadata;
 import com.exasol.adapter.metadata.SchemaMetadata;
 import com.exasol.adapter.metadata.TableMetadata;
@@ -26,8 +26,8 @@ import com.exasol.adapter.sql.SqlTable;
 public class RemoteTableQueryBuilderTest {
     @Test
     void testBuildSelectStar() throws IOException, AdapterException {
-        final SchemaMetadata schemaMetadata = new SchemaMappingDefinitionToSchemaMetadataConverter()
-                .convert(new HardCodedMappingFactory().getSchemaMapping());
+        final SchemaMetadata schemaMetadata = new SchemaMappingToSchemaMetadataConverter()
+                .convert(new HardCodedSchemaMappingReader().getSchemaMapping());
         final TableMetadata tableMetadata = schemaMetadata.getTables().get(0);
         final SqlStatementSelect statement = SqlStatementSelect.builder()
                 .fromClause(new SqlTable(tableMetadata.getName(), tableMetadata))
@@ -35,7 +35,7 @@ public class RemoteTableQueryBuilderTest {
         final RemoteTableQuery<Object> resultTable = new RemoteTableQueryFactory<>(
                 new SqlLiteralToDocumentValueConverterStub()).build(statement, schemaMetadata);
         final List<String> actualDestinationNames = resultTable.getSelectList().stream()
-                .map(ColumnMappingDefinition::getExasolColumnName).collect(Collectors.toList());
+                .map(ColumnMapping::getExasolColumnName).collect(Collectors.toList());
         final String[] expectedDestinationNames = tableMetadata.getColumns().stream().map(ColumnMetadata::getName)
                 .toArray(String[]::new);
         assertThat(actualDestinationNames, containsInAnyOrder(expectedDestinationNames));

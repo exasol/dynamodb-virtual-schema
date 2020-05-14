@@ -29,7 +29,7 @@ public class DocumentPathWalkerTest {
 
     @Test
     void testWalkEmptyPath() throws DocumentPathWalkerException {
-        final DocumentPathExpression pathExpression = new DocumentPathExpression.Builder().build();
+        final DocumentPathExpression pathExpression = DocumentPathExpression.empty();
         final DocumentNode<Object> result = new DocumentPathWalker<Object>(pathExpression,
                 new StaticDocumentPathIterator()).walkThroughDocument(TEST_OBJECT_NODE);
         assertThat(result, equalTo(TEST_OBJECT_NODE));

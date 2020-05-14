@@ -26,15 +26,15 @@ public class SchemaMapperTest {
 
     @Test
     public void testMapRow() {
-        final ToJsonColumnMappingDefinition columnMapping = new ToJsonColumnMappingDefinition(
-                new AbstractColumnMappingDefinition.ConstructorParameters("test", DocumentPathExpression.empty(),
-                        LookupFailBehaviour.EXCEPTION));
+        final ToJsonPropertyToColumnMapping columnMapping = new ToJsonPropertyToColumnMapping("test",
+                DocumentPathExpression.empty(), LookupFailBehaviour.EXCEPTION);
 
-        final TableMappingDefinition tableMapping = TableMappingDefinition.rootTableBuilder("table", "table")
+        final TableMapping tableMapping = TableMapping.rootTableBuilder("table", "table")
                 .withColumnMappingDefinition(columnMapping).build();
         final RemoteTableQuery<Object> remoteTableQuery = new RemoteTableQuery<>(tableMapping, List.of(columnMapping),
                 new NoPredicate<>());
-        final SchemaMapper<Object> schemaMapper = new SchemaMapper<>(remoteTableQuery, new MockValueMapperFactory());
+        final SchemaMapper<Object> schemaMapper = new SchemaMapper<>(remoteTableQuery,
+                new MockPropertyToColumnValueExtractorFactory());
         final List<List<ValueExpression>> result = schemaMapper
                 .mapRow(new MockObjectNode(Map.of("testKey", new MockValueNode("testValue"))))
                 .collect(Collectors.toList());
@@ -49,15 +49,14 @@ public class SchemaMapperTest {
         final String nestedListKey = "topics";
         final DocumentPathExpression pathToNestedTable = new DocumentPathExpression.Builder()
                 .addObjectLookup(nestedListKey).addArrayAll().build();
-        final ToJsonColumnMappingDefinition columnMapping = new ToJsonColumnMappingDefinition(
-                new AbstractColumnMappingDefinition.ConstructorParameters("test", pathToNestedTable,
-                        LookupFailBehaviour.EXCEPTION));
-        final TableMappingDefinition tableMapping = TableMappingDefinition
-                .nestedTableBuilder("table", "table", pathToNestedTable).withColumnMappingDefinition(columnMapping)
-                .build();
+        final ToJsonPropertyToColumnMapping columnMapping = new ToJsonPropertyToColumnMapping("test", pathToNestedTable,
+                LookupFailBehaviour.EXCEPTION);
+        final TableMapping tableMapping = TableMapping.nestedTableBuilder("table", "table", pathToNestedTable)
+                .withColumnMappingDefinition(columnMapping).build();
         final RemoteTableQuery<Object> remoteTableQuery = new RemoteTableQuery<>(tableMapping, List.of(columnMapping),
                 new NoPredicate<>());
-        final SchemaMapper<Object> schemaMapper = new SchemaMapper<>(remoteTableQuery, new MockValueMapperFactory());
+        final SchemaMapper<Object> schemaMapper = new SchemaMapper<>(remoteTableQuery,
+                new MockPropertyToColumnValueExtractorFactory());
         final List<List<ValueExpression>> result = schemaMapper
                 .mapRow(new MockObjectNode(Map.of(nestedListKey,
                         new MockArrayNode(List.of(new MockValueNode("testValue"), new MockValueNode("testValue"))))))
@@ -68,22 +67,23 @@ public class SchemaMapperTest {
         );
     }
 
-    private static class MockValueMapperFactory implements ValueMapperFactory<Object> {
+    private static class MockPropertyToColumnValueExtractorFactory
+            implements PropertyToColumnValueExtractorFactory<Object> {
 
         @Override
-        public AbstractValueMapper<Object> getValueMapperForColumn(final ColumnMappingDefinition column) {
+        public ColumnValueExtractor<Object> getValueExtractorForColumn(final PropertyToColumnMapping column) {
             return new MockValueMapper(column);
         }
     }
 
-    private static class MockValueMapper extends AbstractValueMapper<Object> {
+    private static class MockValueMapper extends AbstractPropertyToColumnValueExtractor<Object> {
 
-        public MockValueMapper(final ColumnMappingDefinition column) {
+        public MockValueMapper(final PropertyToColumnMapping column) {
             super(column);
         }
 
         @Override
-        protected ValueExpression mapValue(final DocumentNode<Object> remoteProperty) {
+        protected ValueExpression mapValue(final DocumentNode<Object> documentValue) {
             return STRING_LITERAL;
         }
     }

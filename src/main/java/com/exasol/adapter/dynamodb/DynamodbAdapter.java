@@ -21,7 +21,7 @@ import com.exasol.adapter.dynamodb.documentfetcher.dynamodb.DynamodbDocumentFetc
 import com.exasol.adapter.dynamodb.documentnode.dynamodb.DynamodbNodeVisitor;
 import com.exasol.adapter.dynamodb.literalconverter.dynamodb.SqlLiteralToDynamodbValueConverter;
 import com.exasol.adapter.dynamodb.mapping.*;
-import com.exasol.adapter.dynamodb.mapping.dynamodb.DynamodbValueMapperFactory;
+import com.exasol.adapter.dynamodb.mapping.dynamodb.DynamodbPropertyToColumnValueExtractorFactory;
 import com.exasol.adapter.dynamodb.remotetablequery.RemoteTableQuery;
 import com.exasol.adapter.dynamodb.remotetablequery.RemoteTableQueryFactory;
 import com.exasol.adapter.metadata.SchemaMetadata;
@@ -58,17 +58,17 @@ public class DynamodbAdapter implements VirtualSchemaAdapter {
     }
 
     private SchemaMetadata getSchemaMetadata(final AdapterRequest request) throws IOException, AdapterException {
-        final SchemaMappingDefinition schemaMappingDefinition = getSchemaMappingDefinition(request);
-        return new SchemaMappingDefinitionToSchemaMetadataConverter().convert(schemaMappingDefinition);
+        final SchemaMapping schemaMapping = getSchemaMappingDefinition(request);
+        return new SchemaMappingToSchemaMetadataConverter().convert(schemaMapping);
     }
 
-    private SchemaMappingDefinition getSchemaMappingDefinition(final AdapterRequest request)
+    private SchemaMapping getSchemaMappingDefinition(final AdapterRequest request)
             throws AdapterException, IOException {
         final AdapterProperties adapterProperties = new AdapterProperties(
                 request.getSchemaMetadataInfo().getProperties());
         final DynamodbAdapterProperties dynamodbAdapterProperties = new DynamodbAdapterProperties(adapterProperties);
         final File mappingDefinitionFile = getSchemaMappingFile(dynamodbAdapterProperties);
-        final MappingDefinitionFactory mappingFactory = new JsonMappingFactory(mappingDefinitionFile);
+        final SchemaMappingReader mappingFactory = new JsonSchemaMappingReader(mappingDefinitionFile);
         return mappingFactory.getSchemaMapping();
     }
 
@@ -133,7 +133,7 @@ public class DynamodbAdapter implements VirtualSchemaAdapter {
         final DocumentFetcher documentFetcher = new DynamodbDocumentFetcher(
                 getConnectionInformation(exaMetadata, request));
         final SchemaMapper<DynamodbNodeVisitor> schemaMapper = new SchemaMapper<>(remoteTableQuery,
-                new DynamodbValueMapperFactory());
+                new DynamodbPropertyToColumnValueExtractorFactory());
         final List<List<ValueExpression>> resultRows = new ArrayList<>();
         documentFetcher.fetchDocumentData(remoteTableQuery)
                 .forEach(dynamodbRow -> schemaMapper.mapRow(dynamodbRow).forEach(resultRows::add));

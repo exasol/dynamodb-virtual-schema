@@ -17,18 +17,19 @@ import com.exasol.sql.expression.ValueExpression;
 @java.lang.SuppressWarnings("squid:S119") // DocumentVisitorType does not fit naming conventions.
 public class SchemaMapper<DocumentVisitorType> {
     private final SchemaMappingQuery query;
-    private final ValueMapperFactory<DocumentVisitorType> valueMapperFactory;
+    private final ColumnValueExtractorFactory<DocumentVisitorType> columnValueExtractorFactory;
 
     /**
      * Creates a new {@link SchemaMapper} for the given query.
      *
-     * @param query              query used as plan for the schema mapping
-     * @param valueMapperFactory factory for value mapper corresponding to {@link DocumentVisitorType}
+     * @param query                                 query used as plan for the schema mapping
+     * @param propertyToColumnValueExtractorFactory factory for value mapper corresponding to
+     *                                              {@link DocumentVisitorType}
      */
     public SchemaMapper(final RemoteTableQuery<DocumentVisitorType> query,
-            final ValueMapperFactory<DocumentVisitorType> valueMapperFactory) {
+            final PropertyToColumnValueExtractorFactory<DocumentVisitorType> propertyToColumnValueExtractorFactory) {
         this.query = query;
-        this.valueMapperFactory = valueMapperFactory;
+        this.columnValueExtractorFactory = new ColumnValueExtractorFactory<>(propertyToColumnValueExtractorFactory);
     }
 
     /**
@@ -48,10 +49,10 @@ public class SchemaMapper<DocumentVisitorType> {
     private List<ValueExpression> mapColumns(final DocumentNode<DocumentVisitorType> document,
             final PathIterationStateProvider arrayAllIterationState) {
         final List<ValueExpression> resultValues = new ArrayList<>(this.query.getSelectList().size());
-        for (final ColumnMappingDefinition resultColumn : this.query.getSelectList()) {
-            final AbstractValueMapper<DocumentVisitorType> valueMapper = this.valueMapperFactory
-                    .getValueMapperForColumn(resultColumn);
-            final ValueExpression result = valueMapper.mapRow(document, arrayAllIterationState);
+        for (final ColumnMapping resultColumn : this.query.getSelectList()) {
+            final ColumnValueExtractor<DocumentVisitorType> columnValueExtractor = this.columnValueExtractorFactory
+                    .getValueExtractorForColumn(resultColumn);
+            final ValueExpression result = columnValueExtractor.extractColumnValue(document, arrayAllIterationState);
             resultValues.add(result);
         }
         return resultValues;

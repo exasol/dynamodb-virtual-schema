@@ -1,7 +1,7 @@
 package com.exasol.adapter.dynamodb.remotetablequery;
 
 import com.exasol.adapter.dynamodb.documentnode.DocumentValue;
-import com.exasol.adapter.dynamodb.mapping.ColumnMappingDefinition;
+import com.exasol.adapter.dynamodb.mapping.ColumnMapping;
 
 /**
  * This class represents a comparison between a literal and a column of a table.
@@ -10,7 +10,7 @@ import com.exasol.adapter.dynamodb.mapping.ColumnMappingDefinition;
 public class ColumnLiteralComparisonPredicate<DocumentVisitorType> extends ComparisonPredicate<DocumentVisitorType> {
     private static final long serialVersionUID = 4471077828317147591L;
     private final DocumentValue<DocumentVisitorType> literal;
-    private final ColumnMappingDefinition column;
+    private final ColumnMapping column;
 
     /**
      * Creates an instance of {@link ColumnLiteralComparisonPredicate}.
@@ -19,7 +19,7 @@ public class ColumnLiteralComparisonPredicate<DocumentVisitorType> extends Compa
      * @param column   column to compare
      * @param literal  literal to compare
      */
-    public ColumnLiteralComparisonPredicate(final Operator operator, final ColumnMappingDefinition column,
+    public ColumnLiteralComparisonPredicate(final Operator operator, final ColumnMapping column,
             final DocumentValue<DocumentVisitorType> literal) {
         super(operator);
         this.literal = literal;
@@ -40,7 +40,7 @@ public class ColumnLiteralComparisonPredicate<DocumentVisitorType> extends Compa
      * 
      * @return column
      */
-    public ColumnMappingDefinition getColumn() {
+    public ColumnMapping getColumn() {
         return this.column;
     }
 

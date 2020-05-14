@@ -1,0 +1,37 @@
+@startuml
+!include mappingDefinitionInterface.puml
+class ToStringPropertyToColumnMapping {
+exasolColumnName
+propertyExtraction
+...
+}
+
+class "..." as other {
+}
+
+class IterationIndexColumnMapping{
++accept(ColumnMappingVisitor)
+...
+}
+
+abstract class AbstractColumnMapping{
+-exasolColumnName
++getExasolColumnName()
+}
+
+abstract class AbstractPropertyToColumnMapping{
+-pathToSourceProperty
+-lookupFailBehaviour
++pathToSourceProperty()
++lookupFailBehaviour()
++accept(ColumnMappingVisitor)
+}
+
+ColumnMapping <|. AbstractColumnMapping
+AbstractColumnMapping <|-- IterationIndexColumnMapping
+AbstractColumnMapping <|-- AbstractPropertyToColumnMapping
+PropertyToColumnMapping <|. AbstractPropertyToColumnMapping
+AbstractPropertyToColumnMapping <|-- ToStringPropertyToColumnMapping
+AbstractPropertyToColumnMapping <|-- other
+@enduml 
+

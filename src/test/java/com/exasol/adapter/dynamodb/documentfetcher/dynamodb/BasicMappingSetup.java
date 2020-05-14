@@ -9,10 +9,10 @@ import com.exasol.adapter.AdapterException;
 import com.exasol.adapter.dynamodb.documentnode.dynamodb.DynamodbNodeVisitor;
 import com.exasol.adapter.dynamodb.documentnode.dynamodb.DynamodbNumber;
 import com.exasol.adapter.dynamodb.documentnode.dynamodb.DynamodbString;
-import com.exasol.adapter.dynamodb.mapping.ColumnMappingDefinition;
-import com.exasol.adapter.dynamodb.mapping.JsonMappingFactory;
+import com.exasol.adapter.dynamodb.mapping.ColumnMapping;
+import com.exasol.adapter.dynamodb.mapping.JsonSchemaMappingReader;
 import com.exasol.adapter.dynamodb.mapping.MappingTestFiles;
-import com.exasol.adapter.dynamodb.mapping.TableMappingDefinition;
+import com.exasol.adapter.dynamodb.mapping.TableMapping;
 import com.exasol.adapter.dynamodb.remotetablequery.*;
 
 public class BasicMappingSetup {
@@ -21,13 +21,12 @@ public class BasicMappingSetup {
     public final static String INDEX_NAME = "publisherIndex";
     public final static String INDEX_PARTITION_KEY = "publisher";
     public final static String INDEX_SORT_KEY = "price";
-
-    public final TableMappingDefinition tableMapping;
-    private final ColumnMappingDefinition publisherColumn;
-    private final ColumnMappingDefinition priceColumn;
+    public final TableMapping tableMapping;
+    private final ColumnMapping publisherColumn;
+    private final ColumnMapping priceColumn;
 
     public BasicMappingSetup() throws IOException, AdapterException {
-        this.tableMapping = new JsonMappingFactory(MappingTestFiles.BASIC_MAPPING_FILE).getSchemaMapping()
+        this.tableMapping = new JsonSchemaMappingReader(MappingTestFiles.BASIC_MAPPING_FILE).getSchemaMapping()
                 .getTableMappings().get(0);
         this.publisherColumn = this.tableMapping.getColumns().stream()
                 .filter(column -> column.getExasolColumnName().equals("PUBLISHER")).findAny().get();
@@ -47,7 +46,7 @@ public class BasicMappingSetup {
      * @return query
      */
     public RemoteTableQuery<DynamodbNodeVisitor> getQueryForIsbn(final String isbn) {
-        final ColumnMappingDefinition isbnColumn = this.tableMapping.getColumns().stream()
+        final ColumnMapping isbnColumn = this.tableMapping.getColumns().stream()
                 .filter(column -> column.getExasolColumnName().equals("ISBN")).findAny().get();
         final ColumnLiteralComparisonPredicate<DynamodbNodeVisitor> selection = new ColumnLiteralComparisonPredicate<>(
                 ComparisonPredicate.Operator.EQUAL, isbnColumn, new DynamodbString(isbn));

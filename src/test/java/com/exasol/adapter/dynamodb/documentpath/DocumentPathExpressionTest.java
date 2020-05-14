@@ -18,7 +18,7 @@ public class DocumentPathExpressionTest {
 
     @Test
     void testEmpty() {
-        final DocumentPathExpression pathExpression = new DocumentPathExpression.Builder().build();
+        final DocumentPathExpression pathExpression = DocumentPathExpression.empty();
         assertThat(pathExpression.size(), equalTo(0));
     }
 

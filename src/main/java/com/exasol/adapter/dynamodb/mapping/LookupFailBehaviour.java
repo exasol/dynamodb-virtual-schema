@@ -1,8 +1,7 @@
 package com.exasol.adapter.dynamodb.mapping;
 
 /**
- * This enum describes behaviour of the mapping definition when the requested property is not set in a given DynamoDB
- * row.
+ * This enum describes behaviour of the mapping definition when the requested property is not set in a given document.
  */
 public enum LookupFailBehaviour {
     /**

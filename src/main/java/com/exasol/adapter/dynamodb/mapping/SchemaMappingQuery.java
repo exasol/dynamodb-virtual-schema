@@ -10,14 +10,14 @@ public interface SchemaMappingQuery {
     /**
      * Gives the table defined in the {@code FROM} clause of the statement.
      *
-     * @return {{@link TableMappingDefinition}}
+     * @return {{@link TableMapping}}
      */
-    public TableMappingDefinition getFromTable();
+    public TableMapping getFromTable();
 
     /**
      * Gives the select list columns.
      *
      * @return select list columns
      */
-    public List<ColumnMappingDefinition> getSelectList();
+    public List<ColumnMapping> getSelectList();
 }

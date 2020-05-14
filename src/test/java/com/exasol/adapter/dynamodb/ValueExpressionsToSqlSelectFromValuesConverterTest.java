@@ -17,15 +17,14 @@ public class ValueExpressionsToSqlSelectFromValuesConverterTest {
     SchemaMappingQuery getRemoteTableQueryStub() {
         return new SchemaMappingQuery() {
             @Override
-            public TableMappingDefinition getFromTable() {
+            public TableMapping getFromTable() {
                 return null;
             }
 
             @Override
-            public List<ColumnMappingDefinition> getSelectList() {
-                return List.of(new ToJsonColumnMappingDefinition(
-                        new AbstractColumnMappingDefinition.ConstructorParameters("json",
-                                new DocumentPathExpression.Builder().build(), LookupFailBehaviour.DEFAULT_VALUE)));
+            public List<ColumnMapping> getSelectList() {
+                return List.of(new ToJsonPropertyToColumnMapping("json", DocumentPathExpression.empty(),
+                        LookupFailBehaviour.DEFAULT_VALUE));
             }
         };
     }

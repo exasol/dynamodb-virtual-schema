@@ -2,9 +2,9 @@ package com.exasol.adapter.dynamodb.remotetablequery;
 
 import java.util.List;
 
-import com.exasol.adapter.dynamodb.mapping.ColumnMappingDefinition;
+import com.exasol.adapter.dynamodb.mapping.ColumnMapping;
 import com.exasol.adapter.dynamodb.mapping.SchemaMappingQuery;
-import com.exasol.adapter.dynamodb.mapping.TableMappingDefinition;
+import com.exasol.adapter.dynamodb.mapping.TableMapping;
 
 /**
  * This class represents the whole query inside of one document.
@@ -12,8 +12,8 @@ import com.exasol.adapter.dynamodb.mapping.TableMappingDefinition;
 @java.lang.SuppressWarnings("squid:S119") // DocumentVisitorType does not fit naming conventions.
 public class RemoteTableQuery<DocumentVisitorType> implements SchemaMappingQuery {
 
-    private final TableMappingDefinition fromTable;
-    private final List<ColumnMappingDefinition> selectList;
+    private final TableMapping fromTable;
+    private final List<ColumnMapping> selectList;
     private final QueryPredicate<DocumentVisitorType> selection;
 
     /**
@@ -23,7 +23,7 @@ public class RemoteTableQuery<DocumentVisitorType> implements SchemaMappingQuery
      * @param selectList in correct order
      * @param selection  where clause
      */
-    public RemoteTableQuery(final TableMappingDefinition fromTable, final List<ColumnMappingDefinition> selectList,
+    public RemoteTableQuery(final TableMapping fromTable, final List<ColumnMapping> selectList,
             final QueryPredicate<DocumentVisitorType> selection) {
         this.fromTable = fromTable;
         this.selectList = selectList;
@@ -31,7 +31,7 @@ public class RemoteTableQuery<DocumentVisitorType> implements SchemaMappingQuery
     }
 
     @Override
-    public TableMappingDefinition getFromTable() {
+    public TableMapping getFromTable() {
         return this.fromTable;
     }
 
@@ -41,7 +41,7 @@ public class RemoteTableQuery<DocumentVisitorType> implements SchemaMappingQuery
      * @return select list columns
      */
     @Override
-    public List<ColumnMappingDefinition> getSelectList() {
+    public List<ColumnMapping> getSelectList() {
         return this.selectList;
     }
 

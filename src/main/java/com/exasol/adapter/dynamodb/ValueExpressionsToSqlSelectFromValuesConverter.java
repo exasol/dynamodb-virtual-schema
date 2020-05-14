@@ -3,7 +3,7 @@ package com.exasol.adapter.dynamodb;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.exasol.adapter.dynamodb.mapping.ColumnMappingDefinition;
+import com.exasol.adapter.dynamodb.mapping.ColumnMapping;
 import com.exasol.adapter.dynamodb.mapping.SchemaMappingQuery;
 import com.exasol.sql.StatementFactory;
 import com.exasol.sql.ValueTable;
@@ -46,7 +46,7 @@ public class ValueExpressionsToSqlSelectFromValuesConverter {
     }
 
     private List<ValueExpression> getDefaultValueRow(final SchemaMappingQuery tableStructure) {
-        return tableStructure.getSelectList().stream().map(ColumnMappingDefinition::getExasolDefaultValue)
+        return tableStructure.getSelectList().stream().map(ColumnMapping::getExasolDefaultValue)
                 .collect(Collectors.toList());
     }
 }
