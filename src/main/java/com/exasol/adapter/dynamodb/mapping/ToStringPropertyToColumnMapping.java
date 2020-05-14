@@ -75,6 +75,30 @@ public class ToStringPropertyToColumnMapping extends AbstractPropertyToColumnMap
                 getExasolStringSize(), getOverflowBehaviour());
     }
 
+    @Override
+    public boolean equals(final Object other) {
+        if (this == other) {
+            return true;
+        }
+        if (!(other instanceof ToStringPropertyToColumnMapping)) {
+            return false;
+        }
+        if (!super.equals(other)) {
+            return false;
+        }
+        final ToStringPropertyToColumnMapping that = (ToStringPropertyToColumnMapping) other;
+        if (this.exasolStringSize != that.exasolStringSize) {
+            return false;
+        }
+        return this.overflowBehaviour == that.overflowBehaviour;
+    }
+
+    @Override
+    public int hashCode() {
+        final int superHashcode = super.hashCode();
+        return (31 * superHashcode + this.exasolStringSize) * 31 + this.overflowBehaviour.hashCode();
+    }
+
     /**
      * Specifies the behaviour of {@link ToStringPropertyToColumnValueExtractor} if the string from DynamoDB is longer
      * than {@link #exasolStringSize}.

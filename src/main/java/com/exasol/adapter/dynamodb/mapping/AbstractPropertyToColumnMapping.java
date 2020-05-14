@@ -42,4 +42,29 @@ abstract class AbstractPropertyToColumnMapping extends AbstractColumnMapping imp
     public final LookupFailBehaviour getLookupFailBehaviour() {
         return this.lookupFailBehaviour;
     }
+
+    @Override
+    public boolean equals(final Object other) {
+        if (this == other) {
+            return true;
+        }
+        if (!(other instanceof AbstractPropertyToColumnMapping)) {
+            return false;
+        }
+        if (!super.equals(other)) {
+            return false;
+        }
+        final AbstractPropertyToColumnMapping that = (AbstractPropertyToColumnMapping) other;
+        if (!this.pathToSourceProperty.equals(that.pathToSourceProperty)) {
+            return false;
+        }
+        return this.lookupFailBehaviour == that.lookupFailBehaviour;
+    }
+
+    @Override
+    public int hashCode() {
+        final int superHashcode = super.hashCode();
+        final int hashCodeWithPath = 31 * superHashcode + this.pathToSourceProperty.hashCode();
+        return 31 * hashCodeWithPath + this.lookupFailBehaviour.hashCode();
+    }
 }

@@ -48,4 +48,17 @@ public class ToJsonPropertyToColumnMapping extends AbstractPropertyToColumnMappi
         return new ToJsonPropertyToColumnMapping(newExasolName, this.getPathToSourceProperty(),
                 this.getLookupFailBehaviour());
     }
+
+    @Override
+    public boolean equals(final Object other) {
+        if (!(other instanceof ToJsonPropertyToColumnMapping)) {
+            return false;
+        }
+        return super.equals(other);
+    }
+
+    @Override
+    public int hashCode() {
+        return super.hashCode() + 623;
+    }
 }

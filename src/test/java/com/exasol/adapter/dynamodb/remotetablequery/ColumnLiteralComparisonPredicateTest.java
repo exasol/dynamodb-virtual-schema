@@ -7,14 +7,17 @@ import static org.hamcrest.Matchers.not;
 import org.junit.jupiter.api.Test;
 
 import com.exasol.adapter.dynamodb.documentnode.DocumentValue;
+import com.exasol.adapter.dynamodb.documentpath.DocumentPathExpression;
 import com.exasol.adapter.dynamodb.mapping.ColumnMapping;
+import com.exasol.adapter.dynamodb.mapping.LookupFailBehaviour;
 import com.exasol.adapter.dynamodb.mapping.ToJsonPropertyToColumnMapping;
 
 class ColumnLiteralComparisonPredicateTest {
     private static final ComparisonPredicate.Operator OPERATOR = ComparisonPredicate.Operator.EQUAL;
     private static final DocumentValue<Object> LITERAL = (DocumentValue<Object>) visitor -> {
     };
-    private static final ColumnMapping COLUMN = new ToJsonPropertyToColumnMapping(null, null, null);
+    private static final ColumnMapping COLUMN = new ToJsonPropertyToColumnMapping("", DocumentPathExpression.empty(),
+            LookupFailBehaviour.EXCEPTION);
     private static final ColumnLiteralComparisonPredicate<Object> TEST_PREDICATE = new ColumnLiteralComparisonPredicate<>(
             OPERATOR, COLUMN, LITERAL);
 

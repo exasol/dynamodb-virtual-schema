@@ -20,4 +20,21 @@ abstract class AbstractColumnMapping implements ColumnMapping {
     public final String getExasolColumnName() {
         return this.exasolColumnName;
     }
+
+    @Override
+    public boolean equals(final Object other) {
+        if (this == other) {
+            return true;
+        }
+        if (!(other instanceof AbstractColumnMapping)) {
+            return false;
+        }
+        final AbstractColumnMapping that = (AbstractColumnMapping) other;
+        return this.exasolColumnName.equals(that.exasolColumnName);
+    }
+
+    @Override
+    public int hashCode() {
+        return this.exasolColumnName.hashCode();
+    }
 }
