@@ -17,8 +17,8 @@ public abstract class AbstractPropertyToColumnValueExtractor<DocumentVisitorType
     private final PropertyToColumnMapping column;
 
     /**
-     * Creates an instance of {@link AbstractColumnValueExtractor} for extracting a value specified parameter column from a
-     * DynamoDB row.
+     * Creates an instance of {@link AbstractColumnValueExtractor} for extracting a value specified parameter column
+     * from a DynamoDB row.
      *
      * @param column {@link PropertyToColumnMapping} defining the mapping
      */

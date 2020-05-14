@@ -34,7 +34,7 @@ public class MockPropertyToColumnMapping extends AbstractPropertyToColumnMapping
     }
 
     @Override
-    public ColumnMapping copyWithNewExasolName(final String newExasolName) {
+    public ColumnMapping withNewExasolName(final String newExasolName) {
         return new MockPropertyToColumnMapping(newExasolName, getPathToSourceProperty(), getLookupFailBehaviour());
     }
 }

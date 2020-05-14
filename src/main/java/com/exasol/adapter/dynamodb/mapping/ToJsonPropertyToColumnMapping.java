@@ -44,7 +44,7 @@ public class ToJsonPropertyToColumnMapping extends AbstractPropertyToColumnMappi
     }
 
     @Override
-    public ColumnMapping copyWithNewExasolName(final String newExasolName) {
+    public ColumnMapping withNewExasolName(final String newExasolName) {
         return new ToJsonPropertyToColumnMapping(newExasolName, this.getPathToSourceProperty(),
                 this.getLookupFailBehaviour());
     }

@@ -25,17 +25,23 @@ public class ColumnValueExtractorFactory<DocumentVisitorType> {
      * @return built {@link ColumnValueExtractor}
      */
     public ColumnValueExtractor<DocumentVisitorType> getValueExtractorForColumn(final ColumnMapping columnMapping) {
-        final Visitor visitor = new Visitor();
+        final Visitor<DocumentVisitorType> visitor = new Visitor<>(this.propertyToColumnValueExtractorFactory);
         columnMapping.accept(visitor);
         return visitor.getExtractor();
     }
 
-    private class Visitor implements ColumnMappingVisitor {
+    private static class Visitor<DocumentVisitorType> implements ColumnMappingVisitor {
+        private final PropertyToColumnValueExtractorFactory<DocumentVisitorType> propertyToColumnValueExtractorFactory;
         private ColumnValueExtractor<DocumentVisitorType> extractor;
+
+        private Visitor(
+                final PropertyToColumnValueExtractorFactory<DocumentVisitorType> propertyToColumnValueExtractorFactory) {
+            this.propertyToColumnValueExtractorFactory = propertyToColumnValueExtractorFactory;
+        }
 
         @Override
         public void visit(final PropertyToColumnMapping propertyToColumnMapping) {
-            this.extractor = ColumnValueExtractorFactory.this.propertyToColumnValueExtractorFactory
+            this.extractor = this.propertyToColumnValueExtractorFactory
                     .getValueExtractorForColumn(propertyToColumnMapping);
         }
 
