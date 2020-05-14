@@ -47,7 +47,7 @@ public class TableMapping implements Serializable {
     }
 
     /**
-     * m Gives an instance of the Builder for {@link TableMapping}. This version of the builder is used to create tables
+     * Gives an instance of the builder for {@link TableMapping}. This version of the builder is used to create tables
      * extracted from nested lists.
      *
      * @param destName          Name of the Exasol table

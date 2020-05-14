@@ -12,7 +12,7 @@ import com.exasol.sql.expression.ValueExpression;
 public interface ColumnValueExtractor<DocumentVisitorType> {
 
     /**
-     * Extracts a columns values from the given document.
+     * Extracts the columns values from the given document.
      *
      * @param document               to extract the value from
      * @param arrayAllIterationState array all iteration state used for extracting the correct values for nested lists

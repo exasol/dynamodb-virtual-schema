@@ -15,7 +15,7 @@ public class RootTableMappingReader extends AbstractTableMappingReader {
     private final JsonObject definition;
 
     /**
-     * Creates an {@link RootTableMappingReader} that reads a table definition from an exasol document mapping language
+     * Creates an {@link RootTableMappingReader} that reads a table definition from an Exasol document mapping language
      * definition. If nested lists are mapped using a {@code ToTableMapping}, multiple tables are read. The read tables
      * can be retrieved using {@link #getTables()}.
      *

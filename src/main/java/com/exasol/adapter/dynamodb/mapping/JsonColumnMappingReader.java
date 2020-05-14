@@ -5,7 +5,7 @@ import javax.json.JsonObject;
 import com.exasol.adapter.dynamodb.documentpath.DocumentPathExpression;
 
 /**
- * This class read {@link ColumnMapping}s from a JSON definition. It is used in the {@link JsonSchemaMappingReader}.
+ * This class creates {@link ColumnMapping}s from a JSON definition. It is used in the {@link JsonSchemaMappingReader}.
  */
 class JsonColumnMappingReader {
     private static final String MAX_LENGTH_KEY = "maxLength";

@@ -16,15 +16,14 @@ This structure is used:
 
 ## Mapping Remote Attributes
 
-The `ColumnValueExtractor` extracts an the value of a column from a document. 
+The `ColumnValueExtractor` extracts the value of a column from a document. 
 As the extraction depends on the type of the column, 
 there is an hierarchy of `ColumnValueExtractor` analog to the column hierarchy. 
 
 ![Class diagram](diagrams/valueExtractors.png)
 
-The `ColumnValueExtractor` are built by a `ColumnValueExtractorFactory`. This factory uses a implementation of `PropertyToColumnValueExtractorFactory` to build the 
-`PropertyToColumnValueExtractorFactory` specific for a remote database.
+The `ColumnValueExtractor`s are built by a `ColumnValueExtractorFactory`. This factory uses an implementation of `PropertyToColumnValueExtractorFactory` to build the 
+specific factory implementation for a remote database.
 
 ![Class diagram](diagrams/valueExtractorFactory.png)
-
 

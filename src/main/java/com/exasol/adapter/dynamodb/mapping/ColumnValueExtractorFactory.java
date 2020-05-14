@@ -21,7 +21,7 @@ public class ColumnValueExtractorFactory<DocumentVisitorType> {
     /**
      * Builds a {@link ColumnValueExtractor} for a given {@link ColumnMapping}.
      * 
-     * @param columnMapping {@link ColumnMapping} do build the {@link ColumnValueExtractor} for.
+     * @param columnMapping {@link ColumnMapping} that builds the {@link ColumnValueExtractor}.
      * @return built {@link ColumnValueExtractor}
      */
     public ColumnValueExtractor<DocumentVisitorType> getValueExtractorForColumn(final ColumnMapping columnMapping) {

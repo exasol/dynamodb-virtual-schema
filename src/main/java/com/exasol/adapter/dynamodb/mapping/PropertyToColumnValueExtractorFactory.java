@@ -1,7 +1,7 @@
 package com.exasol.adapter.dynamodb.mapping;
 
 /**
- * Factory for {@link ColumnValueExtractor}s. In contrast to {@link ColumnValueExtractorFactory} this interface for the
+ * Factory for {@link ColumnValueExtractor}s. In contrast to {@link ColumnValueExtractorFactory} this interface is for the
  * subset of {@link PropertyToColumnMapping} columns.
  */
 @java.lang.SuppressWarnings("squid:S119") // DocumentVisitorType does not fit naming conventions.

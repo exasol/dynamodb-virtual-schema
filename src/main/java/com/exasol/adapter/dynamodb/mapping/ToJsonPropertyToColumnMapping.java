@@ -6,7 +6,7 @@ import com.exasol.sql.expression.StringLiteral;
 import com.exasol.sql.expression.ValueExpression;
 
 /**
- * Maps a property of a DynamoDB table and all it's descendants to a JSON string
+ * Maps a property of a DynamoDB table and all its descendants to a JSON string.
  */
 public class ToJsonPropertyToColumnMapping extends AbstractPropertyToColumnMapping {
     private static final long serialVersionUID = 7687302490848045236L;
