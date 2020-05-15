@@ -1,5 +1,7 @@
 package com.exasol.adapter.dynamodb.mapping;
 
+import java.util.Objects;
+
 import com.exasol.adapter.dynamodb.documentpath.DocumentPathExpression;
 import com.exasol.adapter.metadata.DataType;
 import com.exasol.sql.expression.IntegerLiteral;
@@ -10,7 +12,7 @@ import com.exasol.sql.expression.ValueExpression;
  * that do not have an key.
  */
 public class IterationIndexColumnMapping extends AbstractColumnMapping {
-    private static final long serialVersionUID = -5048863774264562514L;
+    private static final long serialVersionUID = -2526873217496416853L;
     private final DocumentPathExpression tablesPath;
 
     /**
@@ -75,6 +77,6 @@ public class IterationIndexColumnMapping extends AbstractColumnMapping {
 
     @Override
     public int hashCode() {
-        return this.tablesPath.hashCode() + super.hashCode() * 31;
+        return Objects.hash(super.hashCode(), this.tablesPath);
     }
 }

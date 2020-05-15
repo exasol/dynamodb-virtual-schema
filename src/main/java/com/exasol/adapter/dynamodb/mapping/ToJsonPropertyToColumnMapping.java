@@ -1,5 +1,7 @@
 package com.exasol.adapter.dynamodb.mapping;
 
+import java.util.Objects;
+
 import com.exasol.adapter.dynamodb.documentpath.DocumentPathExpression;
 import com.exasol.adapter.metadata.DataType;
 import com.exasol.sql.expression.StringLiteral;
@@ -9,7 +11,7 @@ import com.exasol.sql.expression.ValueExpression;
  * Maps a property of a DynamoDB table and all its descendants to a JSON string.
  */
 public class ToJsonPropertyToColumnMapping extends AbstractPropertyToColumnMapping {
-    private static final long serialVersionUID = 7687302490848045236L;
+    private static final long serialVersionUID = -8905031243395926232L;
 
     /**
      * Creates an instance of {@link ToJsonPropertyToColumnMapping}.
@@ -59,6 +61,6 @@ public class ToJsonPropertyToColumnMapping extends AbstractPropertyToColumnMappi
 
     @Override
     public int hashCode() {
-        return super.hashCode() + 623;
+        return Objects.hash(super.hashCode());
     }
 }

@@ -1,12 +1,14 @@
 package com.exasol.adapter.dynamodb.mapping;
 
+import java.util.Objects;
+
 import com.exasol.adapter.dynamodb.documentpath.DocumentPathExpression;
 
 /**
  * This class is an abstract basis for {@link PropertyToColumnMapping}s.
  */
 abstract class AbstractPropertyToColumnMapping extends AbstractColumnMapping implements PropertyToColumnMapping {
-    private static final long serialVersionUID = -1909538874201933178L;
+    private static final long serialVersionUID = 8355270641073197862L;
     private final DocumentPathExpression pathToSourceProperty;
     private final LookupFailBehaviour lookupFailBehaviour;
 
@@ -48,23 +50,21 @@ abstract class AbstractPropertyToColumnMapping extends AbstractColumnMapping imp
         if (this == other) {
             return true;
         }
-        if (!(other instanceof AbstractPropertyToColumnMapping)) {
+        if (!(other instanceof PropertyToColumnMapping)) {
             return false;
         }
         if (!super.equals(other)) {
             return false;
         }
-        final AbstractPropertyToColumnMapping that = (AbstractPropertyToColumnMapping) other;
-        if (!this.pathToSourceProperty.equals(that.pathToSourceProperty)) {
+        final PropertyToColumnMapping that = (PropertyToColumnMapping) other;
+        if (this.lookupFailBehaviour != that.getLookupFailBehaviour()) {
             return false;
         }
-        return this.lookupFailBehaviour == that.lookupFailBehaviour;
+        return this.pathToSourceProperty.equals(that.getPathToSourceProperty());
     }
 
     @Override
     public int hashCode() {
-        final int superHashcode = super.hashCode();
-        final int hashCodeWithPath = 31 * superHashcode + this.pathToSourceProperty.hashCode();
-        return 31 * hashCodeWithPath + this.lookupFailBehaviour.hashCode();
+        return Objects.hash(super.hashCode(), this.pathToSourceProperty, this.lookupFailBehaviour);
     }
 }

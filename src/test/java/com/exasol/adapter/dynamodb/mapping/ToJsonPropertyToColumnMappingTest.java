@@ -1,8 +1,7 @@
 package com.exasol.adapter.dynamodb.mapping;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
-import static org.junit.jupiter.api.Assertions.assertAll;
+import static com.exasol.EqualityTest.assertSymmetricEqualWithHashAndEquals;
+import static com.exasol.EqualityTest.assertSymmetricNotEqualWithHashAndEquals;
 
 import org.junit.jupiter.api.Test;
 
@@ -17,29 +16,20 @@ class ToJsonPropertyToColumnMappingTest {
     void testEqual() {
         final ToJsonPropertyToColumnMapping other = new ToJsonPropertyToColumnMapping(TEST_OBJECT.getExasolColumnName(),
                 TEST_OBJECT.getPathToSourceProperty(), TEST_OBJECT.getLookupFailBehaviour());
-        assertAll(//
-                () -> assertThat(TEST_OBJECT.equals(other), equalTo(true)),
-                () -> assertThat(TEST_OBJECT.hashCode() == other.hashCode(), equalTo(true))//
-        );
+        assertSymmetricEqualWithHashAndEquals(TEST_OBJECT, other);
     }
 
     @Test
     void testNotEqualWithDifferentName() {
         final ToJsonPropertyToColumnMapping other = new ToJsonPropertyToColumnMapping("otherName",
                 TEST_OBJECT.getPathToSourceProperty(), TEST_OBJECT.getLookupFailBehaviour());
-        assertAll(//
-                () -> assertThat(TEST_OBJECT.equals(other), equalTo(false)),
-                () -> assertThat(TEST_OBJECT.hashCode() == other.hashCode(), equalTo(false))//
-        );
+        assertSymmetricNotEqualWithHashAndEquals(TEST_OBJECT, other);
     }
 
     @Test
     void testNotEqualWithDifferentColumn() {
         final ToJsonPropertyToColumnMapping other = new ToJsonPropertyToColumnMapping(TEST_OBJECT.getExasolColumnName(),
                 DocumentPathExpression.empty(), TEST_OBJECT.getLookupFailBehaviour());
-        assertAll(//
-                () -> assertThat(TEST_OBJECT.equals(other), equalTo(false)),
-                () -> assertThat(TEST_OBJECT.hashCode() == other.hashCode(), equalTo(false))//
-        );
+        assertSymmetricNotEqualWithHashAndEquals(TEST_OBJECT, other);
     }
 }

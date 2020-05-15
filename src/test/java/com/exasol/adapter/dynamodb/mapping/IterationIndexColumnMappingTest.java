@@ -1,5 +1,7 @@
 package com.exasol.adapter.dynamodb.mapping;
 
+import static com.exasol.EqualityTest.assertSymmetricEqualWithHashAndEquals;
+import static com.exasol.EqualityTest.assertSymmetricNotEqualWithHashAndEquals;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -25,34 +27,25 @@ class IterationIndexColumnMappingTest {
     @Test
     void testEqual() {
         final IterationIndexColumnMapping other = new IterationIndexColumnMapping(EXASOL_COLUMN_NAME, PATH);
-        assertAll(//
-                () -> assertThat(TEST_OBJECT.equals(other), equalTo(true)),
-                () -> assertThat(TEST_OBJECT.hashCode() == other.hashCode(), equalTo(true))//
-        );
+        assertSymmetricEqualWithHashAndEquals(TEST_OBJECT, other);
     }
 
     @Test
     void testNotEqualWithDifferentName() {
         final IterationIndexColumnMapping other = new IterationIndexColumnMapping("otherName", PATH);
-        assertAll(//
-                () -> assertThat(TEST_OBJECT.equals(other), equalTo(false)),
-                () -> assertThat(TEST_OBJECT.hashCode() == other.hashCode(), equalTo(false))//
-        );
+        assertSymmetricNotEqualWithHashAndEquals(TEST_OBJECT, other);
     }
 
     @Test
     void testNotEqualWithDifferentPath() {
         final IterationIndexColumnMapping other = new IterationIndexColumnMapping(EXASOL_COLUMN_NAME,
                 DocumentPathExpression.empty());
-        assertAll(//
-                () -> assertThat(TEST_OBJECT.equals(other), equalTo(false)),
-                () -> assertThat(TEST_OBJECT.hashCode() == other.hashCode(), equalTo(false))//
-        );
+        assertSymmetricNotEqualWithHashAndEquals(TEST_OBJECT, other);
     }
 
     @Test
     void testWithNewExasolColumnNamePreservesAllProperties() {
-        assertThat(TEST_OBJECT.withNewExasolName(EXASOL_COLUMN_NAME).equals(TEST_OBJECT), equalTo(true));
+        assertSymmetricEqualWithHashAndEquals(TEST_OBJECT, TEST_OBJECT.withNewExasolName(EXASOL_COLUMN_NAME));
     }
 
     @Test

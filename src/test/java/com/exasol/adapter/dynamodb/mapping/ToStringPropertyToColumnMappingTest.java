@@ -1,5 +1,7 @@
 package com.exasol.adapter.dynamodb.mapping;
 
+import static com.exasol.EqualityTest.assertSymmetricEqualWithHashAndEquals;
+import static com.exasol.EqualityTest.assertSymmetricNotEqualWithHashAndEquals;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -40,10 +42,7 @@ public class ToStringPropertyToColumnMappingTest {
         final ToStringPropertyToColumnMapping other = new ToStringPropertyToColumnMapping(COLUMN_NAME,
                 TEST_OBJECT.getPathToSourceProperty(), TEST_OBJECT.getLookupFailBehaviour(),
                 TEST_OBJECT.getExasolStringSize(), TEST_OBJECT.getOverflowBehaviour());
-        assertAll(//
-                () -> assertThat(TEST_OBJECT.equals(other), equalTo(true)),
-                () -> assertThat(TEST_OBJECT.hashCode() == other.hashCode(), equalTo(true))//
-        );
+        assertSymmetricEqualWithHashAndEquals(TEST_OBJECT, other);
     }
 
     @Test
@@ -51,10 +50,7 @@ public class ToStringPropertyToColumnMappingTest {
         final ToStringPropertyToColumnMapping other = new ToStringPropertyToColumnMapping("otherName",
                 TEST_OBJECT.getPathToSourceProperty(), TEST_OBJECT.getLookupFailBehaviour(),
                 TEST_OBJECT.getExasolStringSize(), TEST_OBJECT.getOverflowBehaviour());
-        assertAll(//
-                () -> assertThat(TEST_OBJECT.equals(other), equalTo(false)),
-                () -> assertThat(TEST_OBJECT.hashCode() == other.hashCode(), equalTo(false))//
-        );
+        assertSymmetricNotEqualWithHashAndEquals(TEST_OBJECT, other);
     }
 
     @Test
@@ -62,10 +58,7 @@ public class ToStringPropertyToColumnMappingTest {
         final ToStringPropertyToColumnMapping other = new ToStringPropertyToColumnMapping(COLUMN_NAME,
                 DocumentPathExpression.empty(), TEST_OBJECT.getLookupFailBehaviour(), TEST_OBJECT.getExasolStringSize(),
                 TEST_OBJECT.getOverflowBehaviour());
-        assertAll(//
-                () -> assertThat(TEST_OBJECT.equals(other), equalTo(false)),
-                () -> assertThat(TEST_OBJECT.hashCode() == other.hashCode(), equalTo(false))//
-        );
+        assertSymmetricNotEqualWithHashAndEquals(TEST_OBJECT, other);
     }
 
     @Test
@@ -73,9 +66,6 @@ public class ToStringPropertyToColumnMappingTest {
         final ToStringPropertyToColumnMapping other = new ToStringPropertyToColumnMapping(COLUMN_NAME,
                 TEST_OBJECT.getPathToSourceProperty(), TEST_OBJECT.getLookupFailBehaviour(), 123,
                 TEST_OBJECT.getOverflowBehaviour());
-        assertAll(//
-                () -> assertThat(TEST_OBJECT.equals(other), equalTo(false)),
-                () -> assertThat(TEST_OBJECT.hashCode() == other.hashCode(), equalTo(false))//
-        );
+        assertSymmetricNotEqualWithHashAndEquals(TEST_OBJECT, other);
     }
 }

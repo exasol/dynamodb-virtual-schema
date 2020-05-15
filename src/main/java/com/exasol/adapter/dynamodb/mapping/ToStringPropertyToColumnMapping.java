@@ -1,5 +1,7 @@
 package com.exasol.adapter.dynamodb.mapping;
 
+import java.util.Objects;
+
 import com.exasol.adapter.dynamodb.documentpath.DocumentPathExpression;
 import com.exasol.adapter.metadata.DataType;
 import com.exasol.sql.expression.StringLiteral;
@@ -9,7 +11,7 @@ import com.exasol.sql.expression.ValueExpression;
  * This class defines a mapping that extracts a string from the remote document and maps it to an Exasol VARCHAR column.
  */
 public class ToStringPropertyToColumnMapping extends AbstractPropertyToColumnMapping {
-    private static final long serialVersionUID = -6772281079326146978L;
+    private static final long serialVersionUID = 6745045082640538961L;
     private final int exasolStringSize;
     private final OverflowBehaviour overflowBehaviour;
 
@@ -87,16 +89,12 @@ public class ToStringPropertyToColumnMapping extends AbstractPropertyToColumnMap
             return false;
         }
         final ToStringPropertyToColumnMapping that = (ToStringPropertyToColumnMapping) other;
-        if (this.exasolStringSize != that.exasolStringSize) {
-            return false;
-        }
-        return this.overflowBehaviour == that.overflowBehaviour;
+        return this.overflowBehaviour == that.overflowBehaviour && this.exasolStringSize == that.exasolStringSize;
     }
 
     @Override
     public int hashCode() {
-        final int superHashcode = super.hashCode();
-        return (31 * superHashcode + this.exasolStringSize) * 31 + this.overflowBehaviour.hashCode();
+        return Objects.hash(super.hashCode(), this.exasolStringSize, this.overflowBehaviour);
     }
 
     /**
