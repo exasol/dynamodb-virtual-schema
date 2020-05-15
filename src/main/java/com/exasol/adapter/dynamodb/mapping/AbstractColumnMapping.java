@@ -37,6 +37,6 @@ abstract class AbstractColumnMapping implements ColumnMapping {
 
     @Override
     public int hashCode() {
-        return Objects.hash(this.exasolColumnName.hashCode());
+        return Objects.hash(this.exasolColumnName);
     }
 }
