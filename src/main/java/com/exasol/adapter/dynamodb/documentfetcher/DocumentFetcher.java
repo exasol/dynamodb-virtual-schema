@@ -1,22 +1,21 @@
 package com.exasol.adapter.dynamodb.documentfetcher;
 
+import java.io.Serializable;
 import java.util.stream.Stream;
 
+import com.exasol.ExaConnectionInformation;
 import com.exasol.adapter.dynamodb.documentnode.DocumentNode;
-import com.exasol.adapter.dynamodb.documentnode.dynamodb.DynamodbNodeVisitor;
-import com.exasol.adapter.dynamodb.remotetablequery.RemoteTableQuery;
 
 /**
- * This interface fetches document data from a remote database for a given {@link RemoteTableQuery}.
+ * This interface fetches document data from a remote database.
  */
-public interface DocumentFetcher {
+@java.lang.SuppressWarnings("squid:S119") // DocumentVisitorType does not fit naming conventions.
+public interface DocumentFetcher<DocumentVisitorType> extends Serializable {
     /**
-     * Fetches the document data required for the query.
+     * Executes the planed operation.
      *
-     * @param remoteTableQuery the query to run
-     * @return stream of results
+     * @param connectionInformation for creating a connection to the remote database
+     * @return result of the operation.
      */
-    public Stream<DocumentNode<DynamodbNodeVisitor>> fetchDocumentData(
-            final RemoteTableQuery<DynamodbNodeVisitor> remoteTableQuery);
-
+    public Stream<DocumentNode<DocumentVisitorType>> run(ExaConnectionInformation connectionInformation);
 }

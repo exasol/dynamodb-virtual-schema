@@ -24,6 +24,7 @@ public class BasicMappingSetup {
     public final TableMapping tableMapping;
     private final ColumnMapping publisherColumn;
     private final ColumnMapping priceColumn;
+    private final ColumnMapping nameColumn;
 
     public BasicMappingSetup() throws IOException, AdapterException {
         this.tableMapping = new JsonSchemaMappingReader(MappingTestFiles.BASIC_MAPPING_FILE).getSchemaMapping()
@@ -32,6 +33,8 @@ public class BasicMappingSetup {
                 .filter(column -> column.getExasolColumnName().equals("PUBLISHER")).findAny().get();
         this.priceColumn = this.tableMapping.getColumns().stream()
                 .filter(column -> column.getExasolColumnName().equals("PRICE")).findAny().get();
+        this.nameColumn = this.tableMapping.getColumns().stream()
+                .filter(column -> column.getExasolColumnName().equals("NAME")).findAny().get();
     }
 
     @NotNull
@@ -72,7 +75,7 @@ public class BasicMappingSetup {
      * @param price to filter
      * @return query
      */
-    public RemoteTableQuery<DynamodbNodeVisitor> getQueryForMinPrice(final float price) {
+    public RemoteTableQuery<DynamodbNodeVisitor> getQueryForMinPrice(final double price) {
         final QueryPredicate<DynamodbNodeVisitor> selection = new ColumnLiteralComparisonPredicate<>(
                 ComparisonPredicate.Operator.GREATER, this.priceColumn, new DynamodbNumber(String.valueOf(price)));
         return new RemoteTableQuery<>(this.tableMapping, this.tableMapping.getColumns(), selection);
@@ -90,6 +93,24 @@ public class BasicMappingSetup {
         final QueryPredicate<DynamodbNodeVisitor> selection = new LogicalOperator<>(List.of(
                 new ColumnLiteralComparisonPredicate<>(ComparisonPredicate.Operator.GREATER, this.priceColumn,
                         new DynamodbNumber(String.valueOf(price))),
+                new ColumnLiteralComparisonPredicate<>(ComparisonPredicate.Operator.EQUAL, this.publisherColumn,
+                        new DynamodbString(String.valueOf(publisher)))),
+                LogicalOperator.Operator.AND);
+        return new RemoteTableQuery<>(this.tableMapping, this.tableMapping.getColumns(), selection);
+    }
+
+    /**
+     * Creates a query representing: {@code SELECT * FROM BOOKS WHERE name = :name AND publisher = :publisher}
+     *
+     * @param name      for selection
+     * @param publisher to selection
+     * @return query
+     */
+    public RemoteTableQuery<DynamodbNodeVisitor> getQueryForNameAndPublisher(final String name,
+            final String publisher) {
+        final QueryPredicate<DynamodbNodeVisitor> selection = new LogicalOperator<>(List.of(
+                new ColumnLiteralComparisonPredicate<>(ComparisonPredicate.Operator.EQUAL, this.nameColumn,
+                        new DynamodbString(String.valueOf(name))),
                 new ColumnLiteralComparisonPredicate<>(ComparisonPredicate.Operator.EQUAL, this.publisherColumn,
                         new DynamodbString(String.valueOf(publisher)))),
                 LogicalOperator.Operator.AND);

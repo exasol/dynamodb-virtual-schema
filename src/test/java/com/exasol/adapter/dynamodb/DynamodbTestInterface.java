@@ -22,6 +22,7 @@ import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.auth.DefaultAWSCredentialsProviderChain;
 import com.amazonaws.services.dynamodbv2.document.*;
 import com.amazonaws.services.dynamodbv2.model.*;
+import com.exasol.ExaConnectionInformation;
 import com.exasol.dynamodb.DynamodbConnectionFactory;
 import com.github.dockerjava.api.model.ContainerNetwork;
 
@@ -214,6 +215,30 @@ public class DynamodbTestInterface {
 
     public String getDynamoPass() {
         return this.dynamoPass;
+    }
+
+    public ExaConnectionInformation getExaConnectionInformationForDynamodb() {
+        return new ExaConnectionInformation() {
+            @Override
+            public ConnectionType getType() {
+                return ConnectionType.PASSWORD;
+            }
+
+            @Override
+            public String getAddress() {
+                return DynamodbTestInterface.this.getDynamoUrl();
+            }
+
+            @Override
+            public String getUser() {
+                return DynamodbTestInterface.this.getDynamoUser();
+            }
+
+            @Override
+            public String getPassword() {
+                return DynamodbTestInterface.this.getDynamoPass();
+            }
+        };
     }
 
     @SuppressWarnings("serial")
