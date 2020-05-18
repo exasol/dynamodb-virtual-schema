@@ -10,7 +10,7 @@ import com.exasol.sql.expression.ValueExpression;
 /**
  * This class defines a mapping that extracts a string from the remote document and maps it to an Exasol VARCHAR column.
  */
-public class ToStringPropertyToColumnMapping extends AbstractPropertyToColumnMapping {
+public final class ToStringPropertyToColumnMapping extends AbstractPropertyToColumnMapping {
     private static final long serialVersionUID = 6745045082640538961L;
     private final int exasolStringSize;
     private final OverflowBehaviour overflowBehaviour;

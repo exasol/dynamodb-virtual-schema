@@ -11,7 +11,7 @@ import com.exasol.sql.expression.ValueExpression;
  * This class defines a column that maps the array index of a nested list. Such columns are useful for nested tables
  * that do not have an key.
  */
-public class IterationIndexColumnMapping extends AbstractColumnMapping {
+public final class IterationIndexColumnMapping extends AbstractColumnMapping {
     private static final long serialVersionUID = -2526873217496416853L;
     private final DocumentPathExpression tablesPath;
 
