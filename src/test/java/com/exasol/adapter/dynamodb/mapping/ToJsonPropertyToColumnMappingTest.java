@@ -1,7 +1,7 @@
 package com.exasol.adapter.dynamodb.mapping;
 
-import static com.exasol.EqualityTest.assertSymmetricEqualWithHashAndEquals;
-import static com.exasol.EqualityTest.assertSymmetricNotEqualWithHashAndEquals;
+import static com.exasol.EqualityMatchers.assertSymmetricEqualWithHashAndEquals;
+import static com.exasol.EqualityMatchers.assertSymmetricNotEqualWithHashAndEquals;
 
 import org.junit.jupiter.api.Test;
 

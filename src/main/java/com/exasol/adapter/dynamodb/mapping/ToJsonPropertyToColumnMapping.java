@@ -10,7 +10,7 @@ import com.exasol.sql.expression.ValueExpression;
 /**
  * Maps a property of a DynamoDB table and all its descendants to a JSON string.
  */
-public class ToJsonPropertyToColumnMapping extends AbstractPropertyToColumnMapping {
+public final class ToJsonPropertyToColumnMapping extends AbstractPropertyToColumnMapping {
     private static final long serialVersionUID = -8905031243395926232L;
 
     /**
@@ -61,6 +61,6 @@ public class ToJsonPropertyToColumnMapping extends AbstractPropertyToColumnMappi
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode());
+        return Objects.hash(super.hashCode(), this.getClass().getName());
     }
 }

@@ -5,7 +5,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
-public class EqualityTest {
+public class EqualityMatchers {
 
     public static void assertSymmetricEqualWithHashAndEquals(final Object a, final Object b) {
         assertAll(//
