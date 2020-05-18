@@ -16,16 +16,25 @@ import com.amazonaws.services.dynamodbv2.model.TableDescription;
  * call to DynamoDB.
  */
 public class DynamodbTableMetadataFactory {
+    private final AmazonDynamoDB connection;
+
+    /**
+     * Creates an instance of {@link DynamodbTableMetadataFactory}.
+     *
+     * @param connection DynamoDB connection used for {@code describeTable} call
+     */
+    public DynamodbTableMetadataFactory(final AmazonDynamoDB connection) {
+        this.connection = connection;
+    }
 
     /**
      * Builds {@link DynamodbTableMetadata} for a DynamoDB table.
-     * 
-     * @param connection DynamoDB connection used for {@code describeTable} call
-     * @param tableName  DynamoDB table name
+     *
+     * @param tableName DynamoDB table name
      * @return {@link DynamodbTableMetadata} describing the keys and indexes of the table
      */
-    public DynamodbTableMetadata buildMetadataForTable(final AmazonDynamoDB connection, final String tableName) {
-        final TableDescription tableDescription = connection.describeTable(tableName).getTable();
+    public DynamodbTableMetadata buildMetadataForTable(final String tableName) {
+        final TableDescription tableDescription = this.connection.describeTable(tableName).getTable();
         final List<KeySchemaElement> keySchema = tableDescription.getKeySchema();
         final DynamodbPrimaryIndex primaryKey = new DynamodbPrimaryIndex(extractPartitionKey(keySchema),
                 extractSortKey(keySchema));

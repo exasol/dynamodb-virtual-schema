@@ -22,21 +22,25 @@ import com.exasol.adapter.AdapterException;
  */
 public class JsonSchemaMappingReader implements SchemaMappingReader {
     private final List<TableMapping> tables = new ArrayList<>();
+    private final TableKeyFetcher tableKeyFetcher;
 
     /**
      * Creates an instance of {@link JsonSchemaMappingReader}.
      *
      * @param definitionsPath path to the definition. Can either be a {@code .json} file or an directory. If it points
      *                        to a directory, all {@code .json} files are loaded.
+     * @param tableKeyFetcher remote database specific {@link TableKeyFetcher}
      * @throws IOException                            if could not open file
      * @throws AdapterException                       if schema mapping no mapping files were found
      * @throws ExasolDocumentMappingLanguageException if schema mapping invalid
      */
-    public JsonSchemaMappingReader(final File definitionsPath) throws IOException, AdapterException {
-        this(splitIfDirectory(definitionsPath));
+    public JsonSchemaMappingReader(final File definitionsPath, TableKeyFetcher tableKeyFetcher)
+            throws IOException, AdapterException {
+        this(splitIfDirectory(definitionsPath), tableKeyFetcher);
     }
 
-    private JsonSchemaMappingReader(final File[] definitionsPaths) throws IOException {
+    private JsonSchemaMappingReader(final File[] definitionsPaths, TableKeyFetcher tableKeyFetcher) throws IOException {
+        this.tableKeyFetcher = tableKeyFetcher;
         final JsonSchemaMappingValidator jsonSchemaMappingValidator = new JsonSchemaMappingValidator();
         for (final File definitionPath : definitionsPaths) {
             jsonSchemaMappingValidator.validate(definitionPath);
@@ -77,7 +81,7 @@ public class JsonSchemaMappingReader implements SchemaMappingReader {
         try (final InputStream inputStream = new FileInputStream(definitionPath);
                 final JsonReader reader = Json.createReader(inputStream)) {
             final JsonObject definitionObject = reader.readObject();
-            this.tables.addAll(new RootTableMappingReader(definitionObject).getTables());
+            this.tables.addAll(new RootTableMappingReader(definitionObject, tableKeyFetcher).getTables());
         }
     }
 

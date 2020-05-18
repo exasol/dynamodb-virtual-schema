@@ -10,7 +10,6 @@ import com.exasol.adapter.dynamodb.mapping.ColumnMapping;
 import com.exasol.adapter.dynamodb.mapping.SchemaMappingToSchemaMetadataConverter;
 import com.exasol.adapter.dynamodb.mapping.TableMapping;
 import com.exasol.adapter.metadata.ColumnMetadata;
-import com.exasol.adapter.metadata.SchemaMetadata;
 import com.exasol.adapter.metadata.TableMetadata;
 import com.exasol.adapter.sql.*;
 
@@ -28,16 +27,16 @@ public class RemoteTableQueryFactory<DocumentVisitorType> {
     /**
      * Builds the {@link RemoteTableQuery} from an {@link SqlStatementSelect}
      * 
-     * @param selectStatement select statement
-     * @param schemaMetadata  metadata of the schema
+     * @param selectStatement    select statement
+     * @param schemaAdapterNotes adapter notes of the schema
      * @return {@link RemoteTableQuery}
      */
     public RemoteTableQuery<DocumentVisitorType> build(final SqlStatement selectStatement,
-            final SchemaMetadata schemaMetadata) throws AdapterException {
+            final String schemaAdapterNotes) throws AdapterException {
         final Visitor visitor = new Visitor();
         selectStatement.accept(visitor);
         final SchemaMappingToSchemaMetadataConverter converter = new SchemaMappingToSchemaMetadataConverter();
-        final TableMapping tableMapping = converter.convertBackTable(visitor.tableMetadata, schemaMetadata);
+        final TableMapping tableMapping = converter.convertBackTable(visitor.tableMetadata, schemaAdapterNotes);
         final QueryPredicate<DocumentVisitorType> selection = this.predicateFactory
                 .buildPredicateFor(visitor.getWhereClause());
         return new RemoteTableQuery<>(tableMapping, Collections.unmodifiableList(visitor.resultColumns), selection);

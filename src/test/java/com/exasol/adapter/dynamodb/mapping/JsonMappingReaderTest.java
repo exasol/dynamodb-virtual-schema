@@ -21,7 +21,7 @@ public class JsonMappingReaderTest {
     private final MappingTestFiles mappingTestFiles = new MappingTestFiles();
 
     private SchemaMapping getMappingDefinitionForFile(final File mappingFile) throws IOException, AdapterException {
-        final SchemaMappingReader mappingFactory = new JsonSchemaMappingReader(mappingFile);
+        final SchemaMappingReader mappingFactory = new JsonSchemaMappingReader(mappingFile, null);
         return mappingFactory.getSchemaMapping();
     }
 

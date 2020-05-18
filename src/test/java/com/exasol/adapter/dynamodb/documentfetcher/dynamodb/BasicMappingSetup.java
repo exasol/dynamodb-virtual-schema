@@ -27,7 +27,7 @@ public class BasicMappingSetup {
     private final ColumnMapping nameColumn;
 
     public BasicMappingSetup() throws IOException, AdapterException {
-        this.tableMapping = new JsonSchemaMappingReader(MappingTestFiles.BASIC_MAPPING_FILE).getSchemaMapping()
+        this.tableMapping = new JsonSchemaMappingReader(MappingTestFiles.BASIC_MAPPING_FILE, null).getSchemaMapping()
                 .getTableMappings().get(0);
         this.publisherColumn = this.tableMapping.getColumns().stream()
                 .filter(column -> column.getExasolColumnName().equals("PUBLISHER")).findAny().get();
