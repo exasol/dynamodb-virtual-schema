@@ -24,17 +24,17 @@ class DynamodbScanDocumentFetcher extends AbstractDynamodbDocumentFetcher {
     protected DynamodbScanDocumentFetcher(final RemoteTableQuery<DynamodbNodeVisitor> documentQuery) {
         this.scanRequest = new ScanRequest().withTableName(documentQuery.getFromTable().getRemoteName());
         final DynamodbAttributeNamePlaceholderMapBuilder namePlaceholderMapBuilder = new DynamodbAttributeNamePlaceholderMapBuilder();
-        final DynamodbAttributeValuePlaceholderMapBuilder valueListBuilder = new DynamodbAttributeValuePlaceholderMapBuilder();
-        final String filterExpression = new DynamodbFilterExpressionFactory()
-                .buildFilterExpression(documentQuery.getSelection(), namePlaceholderMapBuilder, valueListBuilder);
-        if (!namePlaceholderMapBuilder.getValueMap().isEmpty()) {
-            this.scanRequest.setExpressionAttributeNames(namePlaceholderMapBuilder.getValueMap());
+        final DynamodbAttributeValuePlaceholderMapBuilder valuePlaceholderMapBuilder = new DynamodbAttributeValuePlaceholderMapBuilder();
+        final String filterExpression = new DynamodbFilterExpressionFactory().buildFilterExpression(
+                documentQuery.getSelection(), namePlaceholderMapBuilder, valuePlaceholderMapBuilder);
+        if (!namePlaceholderMapBuilder.getPlaceholderMap().isEmpty()) {
+            this.scanRequest.setExpressionAttributeNames(namePlaceholderMapBuilder.getPlaceholderMap());
         }
         if (!filterExpression.isEmpty()) {
             this.scanRequest.setFilterExpression(filterExpression);
         }
-        if (!valueListBuilder.getValueMap().isEmpty()) {
-            this.scanRequest.setExpressionAttributeValues(valueListBuilder.getValueMap());
+        if (!valuePlaceholderMapBuilder.getPlaceholderMap().isEmpty()) {
+            this.scanRequest.setExpressionAttributeValues(valuePlaceholderMapBuilder.getPlaceholderMap());
         }
     }
 

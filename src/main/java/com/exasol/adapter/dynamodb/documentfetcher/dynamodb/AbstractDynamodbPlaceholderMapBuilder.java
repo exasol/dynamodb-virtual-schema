@@ -9,7 +9,7 @@ import java.util.Map;
  * @param <T> Type of the value to be mapped
  */
 public abstract class AbstractDynamodbPlaceholderMapBuilder<T> {
-    private final Map<String, T> valueMap = new HashMap<>();
+    private final Map<String, T> placeholderMap = new HashMap<>();
     private final Map<T, String> invertedMap = new HashMap<>();
     private int counter = 0;
 
@@ -21,7 +21,9 @@ public abstract class AbstractDynamodbPlaceholderMapBuilder<T> {
     protected abstract String getPlaceholderCharacter();
 
     /**
-     * Adds a value to the placeholder map and gives a placeholder for it.
+     * Adds a value to the placeholder map and gives a placeholder for it. This method generates unique placeholders by
+     * like {@code #1} by a application specific placeholder character and a number that is increased for each generated
+     * placeholder.
      * 
      * @param valueToAdd value to be replaced by a placeholder
      * @return placeholder for the value
@@ -31,17 +33,17 @@ public abstract class AbstractDynamodbPlaceholderMapBuilder<T> {
             return this.invertedMap.get(valueToAdd);
         }
         final String key = getPlaceholderCharacter() + this.counter++;
-        this.valueMap.put(key, valueToAdd);
+        this.placeholderMap.put(key, valueToAdd);
         this.invertedMap.put(valueToAdd, key);
         return key;
     }
 
     /**
-     * Gives the built value map.
+     * Gives the built placeholder map.
      * 
      * @return value map
      */
-    public final Map<String, T> getValueMap() {
-        return this.valueMap;
+    public final Map<String, T> getPlaceholderMap() {
+        return this.placeholderMap;
     }
 }

@@ -63,8 +63,8 @@ public class DynamodbQueryDocumentFetcher extends AbstractDynamodbDocumentFetche
         final String keyConditionExpression = filterExpressionFactory.buildFilterExpression(selectionOnIndex,
                 namePlaceholderBuilder, valuePlaceholderBuilder);
         this.queryRequest.setKeyConditionExpression(keyConditionExpression);
-        this.queryRequest.setExpressionAttributeNames(namePlaceholderBuilder.getValueMap());
-        this.queryRequest.setExpressionAttributeValues(valuePlaceholderBuilder.getValueMap());
+        this.queryRequest.setExpressionAttributeNames(namePlaceholderBuilder.getPlaceholderMap());
+        this.queryRequest.setExpressionAttributeValues(valuePlaceholderBuilder.getPlaceholderMap());
     }
 
     private List<String> getIndexPropertyNameWhitelist(final DynamodbIndex index) {

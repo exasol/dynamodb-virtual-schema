@@ -107,15 +107,15 @@ class DynamodbFilterExpressionFactoryTest {
             final String expectedExpression, final Map<String, String> expectedAttributeNameMap,
             final Map<String, String> expectedValueMap) {
         final DynamodbAttributeNamePlaceholderMapBuilder namePlaceholderMapBuilder = new DynamodbAttributeNamePlaceholderMapBuilder();
-        final DynamodbAttributeValuePlaceholderMapBuilder valueListBuilder = new DynamodbAttributeValuePlaceholderMapBuilder();
+        final DynamodbAttributeValuePlaceholderMapBuilder valuePlaceholderMapBuilder = new DynamodbAttributeValuePlaceholderMapBuilder();
         final String result = new DynamodbFilterExpressionFactory().buildFilterExpression(predicateToTest,
-                namePlaceholderMapBuilder, valueListBuilder);
-        final Map<String, String> valuesStrings = valueListBuilder.getValueMap().entrySet().stream()
+                namePlaceholderMapBuilder, valuePlaceholderMapBuilder);
+        final Map<String, String> valuesStrings = valuePlaceholderMapBuilder.getPlaceholderMap().entrySet().stream()
                 .collect(Collectors.toMap(Map.Entry::getKey, entry -> entry.getValue().getS()));
         assertAll(//
                 () -> assertThat(result, equalTo(expectedExpression)),
                 () -> assertThat(valuesStrings, equalTo(expectedValueMap)),
-                () -> assertThat(namePlaceholderMapBuilder.getValueMap(), equalTo(expectedAttributeNameMap))//
+                () -> assertThat(namePlaceholderMapBuilder.getPlaceholderMap(), equalTo(expectedAttributeNameMap))//
         );
     }
 }

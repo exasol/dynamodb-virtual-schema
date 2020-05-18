@@ -19,7 +19,7 @@ class DynamodbAttributeValuePlaceholderMapBuilderTest {
         final DynamodbAttributeValuePlaceholderMapBuilder builder = new DynamodbAttributeValuePlaceholderMapBuilder();
         final String key1 = builder.addValue(VALUE_1);
         final String key2 = builder.addValue(VALUE_2);
-        final Map<String, AttributeValue> valueMap = builder.getValueMap();
+        final Map<String, AttributeValue> valueMap = builder.getPlaceholderMap();
         assertThat(valueMap.get(key1), equalTo(VALUE_1));
         assertThat(valueMap.get(key2), equalTo(VALUE_2));
     }
