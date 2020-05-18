@@ -178,7 +178,7 @@ public class DynamodbAdapterTestLocalIT {
     void testSelectNestedTableSchema() throws SQLException, IOException {
         createNestedTableVirtualSchema();
         final Map<String, String> rowNames = exasolTestInterface.describeTable(TEST_SCHEMA, "BOOKS_TOPICS");
-        assertThat(rowNames, equalTo(Map.of("NAME", "VARCHAR(254) UTF8")));
+        assertThat(rowNames, equalTo(Map.of("NAME", "VARCHAR(254) UTF8", "BOOKS_ISBN", "VARCHAR(20) UTF8")));
     }
 
     @Test
