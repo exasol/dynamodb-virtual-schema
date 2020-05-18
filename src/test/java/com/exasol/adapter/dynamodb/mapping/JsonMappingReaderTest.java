@@ -82,12 +82,11 @@ public class JsonMappingReaderTest {
         final List<TableMapping> tables = schemaMapping.getTableMappings();
         final TableMapping nestedTable = tables.stream().filter(table -> !table.isRootTable()).findAny().get();
         final ToStringPropertyToColumnMapping column = (ToStringPropertyToColumnMapping) getColumnByExasolName(
-                nestedTable, "TOPIC_NAME");
+                nestedTable, "NAME");
         assertAll(//
                 () -> assertThat(tables.size(), equalTo(2)),
                 () -> assertThat(nestedTable.getExasolName(), equalTo("BOOKS_TOPICS")),
-                () -> assertThat(getColumnNames(nestedTable.getColumns()),
-                        containsInAnyOrder("BOOKS_ISBN", "TOPIC_NAME")),
+                () -> assertThat(getColumnNames(nestedTable.getColumns()), containsInAnyOrder("BOOKS_ISBN", "NAME")),
                 () -> assertThat(column.getPathToSourceProperty().toString(), equalTo("/topics[*]"))//
         );
     }

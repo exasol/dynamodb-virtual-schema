@@ -178,19 +178,33 @@ public class DynamodbAdapterTestLocalIT {
     void testSelectNestedTableSchema() throws SQLException, IOException {
         createNestedTableVirtualSchema();
         final Map<String, String> rowNames = exasolTestInterface.describeTable(TEST_SCHEMA, "BOOKS_TOPICS");
-        assertThat(rowNames, equalTo(Map.of("TOPIC_NAME", "VARCHAR(254) UTF8")));
+        assertThat(rowNames, equalTo(Map.of("NAME", "VARCHAR(254) UTF8")));
     }
 
     @Test
     void testSelectNestedTableResult() throws SQLException, IOException {
         createNestedTableVirtualSchema();
         final ResultSet actualResultSet = exasolTestInterface.getStatement()
-                .executeQuery("SELECT TOPIC_NAME FROM " + TEST_SCHEMA + ".\"BOOKS_TOPICS\";");
+                .executeQuery("SELECT NAME FROM " + TEST_SCHEMA + ".\"BOOKS_TOPICS\";");
         final List<String> topics = new ArrayList<>();
         while (actualResultSet.next()) {
-            topics.add(actualResultSet.getString("TOPIC_NAME"));
+            topics.add(actualResultSet.getString("NAME"));
         }
         assertThat(topics, containsInAnyOrder("Exasol", "DynamoDB", "Virtual Schema", "Fantasy", "Birds", "Nature"));
+    }
+
+    // TODO change test to filter on name when bug is fixed: https://github.com/exasol/dynamodb-virtual-schema/issues/55
+    @Test
+    void testJoinOnNestedTable() throws IOException, SQLException {
+        createNestedTableVirtualSchema();
+        final ResultSet actualResultSet = exasolTestInterface.getStatement()
+                .executeQuery("SELECT BOOKS_TOPICS.NAME as TOPIC FROM " + TEST_SCHEMA + ".BOOKS JOIN " + TEST_SCHEMA
+                        + ".\"BOOKS_TOPICS\" ON ISBN = BOOKS_ISBN WHERE ISBN = '123567';");
+        final List<String> topics = new ArrayList<>();
+        while (actualResultSet.next()) {
+            topics.add(actualResultSet.getString("TOPIC"));
+        }
+        assertThat(topics, containsInAnyOrder("Exasol", "DynamoDB", "Virtual Schema"));
     }
 
     @Test
