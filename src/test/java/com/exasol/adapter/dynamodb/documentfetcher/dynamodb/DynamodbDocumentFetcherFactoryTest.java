@@ -49,7 +49,9 @@ class DynamodbDocumentFetcherFactoryTest {
                 () -> assertThat(queryPlan.getQueryRequest().getTableName(),
                         equalTo(basicMappingSetup.tableMapping.getRemoteName())),
                 () -> assertThat(queryPlan.getQueryRequest().getIndexName(), equalTo("publisherIndex")),
-                () -> assertThat(queryPlan.getQueryRequest().getKeyConditionExpression(), equalTo("publisher = :0")),
+                () -> assertThat(queryPlan.getQueryRequest().getKeyConditionExpression(), equalTo("#0 = :0")),
+                () -> assertThat(queryPlan.getQueryRequest().getExpressionAttributeNames().get("#0"),
+                        equalTo("publisher")),
                 () -> assertThat(queryPlan.getQueryRequest().getExpressionAttributeValues().get(":0").getS(),
                         equalTo(publisher))//
         );
@@ -70,9 +72,12 @@ class DynamodbDocumentFetcherFactoryTest {
                 () -> assertThat(queryPlan.getQueryRequest().getTableName(),
                         equalTo(basicMappingSetup.tableMapping.getRemoteName())),
                 () -> assertThat(queryPlan.getQueryRequest().getKeyConditionExpression(),
-                        equalTo("price > :0 and publisher = :1")),
+                        equalTo("#0 > :0 and #1 = :1")),
                 () -> assertThat(queryPlan.getQueryRequest().getExpressionAttributeValues().get(":0").getN(),
                         equalTo(String.valueOf(price))),
+                () -> assertThat(queryPlan.getQueryRequest().getExpressionAttributeNames().get("#0"), equalTo("price")),
+                () -> assertThat(queryPlan.getQueryRequest().getExpressionAttributeNames().get("#1"),
+                        equalTo("publisher")),
                 () -> assertThat(queryPlan.getQueryRequest().getExpressionAttributeValues().get(":1").getS(),
                         equalTo(publisher))//
         );
@@ -87,7 +92,8 @@ class DynamodbDocumentFetcherFactoryTest {
         assertAll(//
                 () -> assertThat(scanPlan.getScanRequest().getTableName(),
                         equalTo(basicMappingSetup.tableMapping.getRemoteName())),
-                () -> assertThat(scanPlan.getScanRequest().getFilterExpression(), equalTo("price > :0")),
+                () -> assertThat(scanPlan.getScanRequest().getFilterExpression(), equalTo("#0 > :0")),
+                () -> assertThat(scanPlan.getScanRequest().getExpressionAttributeNames().get("#0"), equalTo("price")),
                 () -> assertThat(scanPlan.getScanRequest().getExpressionAttributeValues().get(":0").getN(),
                         equalTo(String.valueOf(price))));
     }

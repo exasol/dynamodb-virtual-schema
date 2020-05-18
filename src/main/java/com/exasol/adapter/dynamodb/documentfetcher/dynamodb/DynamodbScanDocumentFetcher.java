@@ -23,9 +23,13 @@ class DynamodbScanDocumentFetcher extends AbstractDynamodbDocumentFetcher {
      */
     protected DynamodbScanDocumentFetcher(final RemoteTableQuery<DynamodbNodeVisitor> documentQuery) {
         this.scanRequest = new ScanRequest().withTableName(documentQuery.getFromTable().getRemoteName());
-        final DynamodbValueListBuilder valueListBuilder = new DynamodbValueListBuilder();
+        final DynamodbAttributeNamePlaceholderMapBuilder namePlaceholderMapBuilder = new DynamodbAttributeNamePlaceholderMapBuilder();
+        final DynamodbAttributeValuePlaceholderMapBuilder valueListBuilder = new DynamodbAttributeValuePlaceholderMapBuilder();
         final String filterExpression = new DynamodbFilterExpressionFactory()
-                .buildFilterExpression(documentQuery.getSelection(), valueListBuilder);
+                .buildFilterExpression(documentQuery.getSelection(), namePlaceholderMapBuilder, valueListBuilder);
+        if (!namePlaceholderMapBuilder.getValueMap().isEmpty()) {
+            this.scanRequest.setExpressionAttributeNames(namePlaceholderMapBuilder.getValueMap());
+        }
         if (!filterExpression.isEmpty()) {
             this.scanRequest.setFilterExpression(filterExpression);
         }
