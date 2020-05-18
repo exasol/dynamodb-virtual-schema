@@ -1,5 +1,7 @@
 package com.exasol.adapter.dynamodb.mapping;
 
+import static com.exasol.EqualityTest.assertSymmetricEqualWithHashAndEquals;
+import static com.exasol.EqualityTest.assertSymmetricNotEqualWithHashAndEquals;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -10,31 +12,60 @@ import com.exasol.adapter.dynamodb.documentpath.DocumentPathExpression;
 import com.exasol.adapter.metadata.DataType;
 
 public class ToStringPropertyToColumnMappingTest {
-    private static final String DEST_COLUMN = "destColumn";
+    private static final String COLUMN_NAME = "columnName";
+    private static final int STRING_LENGTH = 10;
+    private static final ToStringPropertyToColumnMapping TEST_OBJECT = new ToStringPropertyToColumnMapping(COLUMN_NAME,
+            new DocumentPathExpression.Builder().addArrayAll().build(), LookupFailBehaviour.DEFAULT_VALUE,
+            STRING_LENGTH, ToStringPropertyToColumnMapping.OverflowBehaviour.TRUNCATE);
 
     @Test
     void testDestinationDataType() {
-        final int stringLength = 10;
-        final ToStringPropertyToColumnMapping toStringColumnMappingDefinition = new ToStringPropertyToColumnMapping(
-                DEST_COLUMN, DocumentPathExpression.empty(), LookupFailBehaviour.DEFAULT_VALUE, stringLength,
-                ToStringPropertyToColumnMapping.OverflowBehaviour.TRUNCATE);
         assertAll(
-                () -> assertThat(toStringColumnMappingDefinition.getExasolDataType().getExaDataType(),
+                () -> assertThat(TEST_OBJECT.getExasolDataType().getExaDataType(),
                         equalTo(DataType.ExaDataType.VARCHAR)),
-                () -> assertThat(toStringColumnMappingDefinition.getExasolDataType().getSize(), equalTo(stringLength)));
+                () -> assertThat(TEST_OBJECT.getExasolDataType().getSize(), equalTo(STRING_LENGTH))//
+        );
     }
 
     @Test
     void testGetDestinationDefaultValue() {
-        final ToStringPropertyToColumnMapping toStringColumnMappingDefinition = new ToStringPropertyToColumnMapping(
-                null, null, null, 0, null);
-        assertThat(toStringColumnMappingDefinition.getExasolDefaultValue().toString(), equalTo(""));
+        assertThat(TEST_OBJECT.getExasolDefaultValue().toString(), equalTo(""));
     }
 
     @Test
     void testIsDestinationNullable() {
-        final ToStringPropertyToColumnMapping toStringColumnMappingDefinition = new ToStringPropertyToColumnMapping(
-                null, null, null, 0, null);
-        assertThat(toStringColumnMappingDefinition.isExasolColumnNullable(), equalTo(true));
+        assertThat(TEST_OBJECT.isExasolColumnNullable(), equalTo(true));
+    }
+
+    @Test
+    void testEqual() {
+        final ToStringPropertyToColumnMapping other = new ToStringPropertyToColumnMapping(COLUMN_NAME,
+                TEST_OBJECT.getPathToSourceProperty(), TEST_OBJECT.getLookupFailBehaviour(),
+                TEST_OBJECT.getExasolStringSize(), TEST_OBJECT.getOverflowBehaviour());
+        assertSymmetricEqualWithHashAndEquals(TEST_OBJECT, other);
+    }
+
+    @Test
+    void testNotEqualWithDifferentName() {
+        final ToStringPropertyToColumnMapping other = new ToStringPropertyToColumnMapping("otherName",
+                TEST_OBJECT.getPathToSourceProperty(), TEST_OBJECT.getLookupFailBehaviour(),
+                TEST_OBJECT.getExasolStringSize(), TEST_OBJECT.getOverflowBehaviour());
+        assertSymmetricNotEqualWithHashAndEquals(TEST_OBJECT, other);
+    }
+
+    @Test
+    void testNotEqualWithDifferentPath() {
+        final ToStringPropertyToColumnMapping other = new ToStringPropertyToColumnMapping(COLUMN_NAME,
+                DocumentPathExpression.empty(), TEST_OBJECT.getLookupFailBehaviour(), TEST_OBJECT.getExasolStringSize(),
+                TEST_OBJECT.getOverflowBehaviour());
+        assertSymmetricNotEqualWithHashAndEquals(TEST_OBJECT, other);
+    }
+
+    @Test
+    void testNotEqualWithDifferentStringSize() {
+        final ToStringPropertyToColumnMapping other = new ToStringPropertyToColumnMapping(COLUMN_NAME,
+                TEST_OBJECT.getPathToSourceProperty(), TEST_OBJECT.getLookupFailBehaviour(), 123,
+                TEST_OBJECT.getOverflowBehaviour());
+        assertSymmetricNotEqualWithHashAndEquals(TEST_OBJECT, other);
     }
 }

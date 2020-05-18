@@ -1,5 +1,7 @@
 package com.exasol.adapter.dynamodb.mapping;
 
+import java.util.Objects;
+
 import com.exasol.adapter.dynamodb.documentpath.DocumentPathExpression;
 import com.exasol.adapter.metadata.DataType;
 import com.exasol.sql.expression.StringLiteral;
@@ -8,8 +10,8 @@ import com.exasol.sql.expression.ValueExpression;
 /**
  * This class defines a mapping that extracts a string from the remote document and maps it to an Exasol VARCHAR column.
  */
-public class ToStringPropertyToColumnMapping extends AbstractPropertyToColumnMapping {
-    private static final long serialVersionUID = -6772281079326146978L;
+public final class ToStringPropertyToColumnMapping extends AbstractPropertyToColumnMapping {
+    private static final long serialVersionUID = 6745045082640538961L;
     private final int exasolStringSize;
     private final OverflowBehaviour overflowBehaviour;
 
@@ -73,6 +75,26 @@ public class ToStringPropertyToColumnMapping extends AbstractPropertyToColumnMap
     public ColumnMapping withNewExasolName(final String newExasolName) {
         return new ToStringPropertyToColumnMapping(newExasolName, getPathToSourceProperty(), getLookupFailBehaviour(),
                 getExasolStringSize(), getOverflowBehaviour());
+    }
+
+    @Override
+    public boolean equals(final Object other) {
+        if (this == other) {
+            return true;
+        }
+        if (!(other instanceof ToStringPropertyToColumnMapping)) {
+            return false;
+        }
+        if (!super.equals(other)) {
+            return false;
+        }
+        final ToStringPropertyToColumnMapping that = (ToStringPropertyToColumnMapping) other;
+        return this.overflowBehaviour == that.overflowBehaviour && this.exasolStringSize == that.exasolStringSize;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), this.exasolStringSize, this.overflowBehaviour);
     }
 
     /**

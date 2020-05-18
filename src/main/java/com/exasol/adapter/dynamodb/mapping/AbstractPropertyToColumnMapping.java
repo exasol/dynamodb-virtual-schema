@@ -1,12 +1,14 @@
 package com.exasol.adapter.dynamodb.mapping;
 
+import java.util.Objects;
+
 import com.exasol.adapter.dynamodb.documentpath.DocumentPathExpression;
 
 /**
  * This class is an abstract basis for {@link PropertyToColumnMapping}s.
  */
 abstract class AbstractPropertyToColumnMapping extends AbstractColumnMapping implements PropertyToColumnMapping {
-    private static final long serialVersionUID = -1909538874201933178L;
+    private static final long serialVersionUID = 8355270641073197862L;
     private final DocumentPathExpression pathToSourceProperty;
     private final LookupFailBehaviour lookupFailBehaviour;
 
@@ -41,5 +43,28 @@ abstract class AbstractPropertyToColumnMapping extends AbstractColumnMapping imp
      */
     public final LookupFailBehaviour getLookupFailBehaviour() {
         return this.lookupFailBehaviour;
+    }
+
+    @Override
+    public boolean equals(final Object other) {
+        if (this == other) {
+            return true;
+        }
+        if (!(other instanceof PropertyToColumnMapping)) {
+            return false;
+        }
+        if (!super.equals(other)) {
+            return false;
+        }
+        final PropertyToColumnMapping that = (PropertyToColumnMapping) other;
+        if (this.lookupFailBehaviour != that.getLookupFailBehaviour()) {
+            return false;
+        }
+        return this.pathToSourceProperty.equals(that.getPathToSourceProperty());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), this.pathToSourceProperty, this.lookupFailBehaviour);
     }
 }
