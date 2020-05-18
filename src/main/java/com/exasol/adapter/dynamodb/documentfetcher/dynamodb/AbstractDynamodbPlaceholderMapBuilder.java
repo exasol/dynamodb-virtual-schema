@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * This class ist the abstract basis for classes that build a map that maps placeholders to an value.
+ * This class is an abstract basis for classes that build a map that maps placeholders to a value.
  *
  * @param <T> Type of the value to be mapped
  */

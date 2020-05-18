@@ -19,7 +19,7 @@ public class DynamodbFilterExpressionFactory {
      * Build a DynamoDB filter expression for the given selection.
      * 
      * @param selection                 selection to converted.
-     * @param namePlaceholderMapBuilder builder that takes attribute names and gives placeholders for it
+     * @param namePlaceholderMapBuilder builder that takes attribute names and gives placeholders for them
      * @param valueListBuilder          value list builder that takes the literals form the queries and gives
      *                                  placeholders for them.
      * @return DynamoDB filter expression
