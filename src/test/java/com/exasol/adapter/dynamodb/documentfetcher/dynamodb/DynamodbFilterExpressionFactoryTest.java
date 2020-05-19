@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
 
 import com.exasol.adapter.dynamodb.documentnode.dynamodb.DynamodbNodeVisitor;
@@ -95,7 +94,6 @@ class DynamodbFilterExpressionFactoryTest {
         assertFilterExpression(new NoPredicate<>(), "", Collections.emptyMap());
     }
 
-    @NotNull
     private ColumnLiteralComparisonPredicate<DynamodbNodeVisitor> getComparison(final String literal,
             final ComparisonPredicate.Operator operator) {
         final DocumentPathExpression sourcePath = new DocumentPathExpression.Builder().addObjectLookup("key").build();

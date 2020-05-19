@@ -10,7 +10,6 @@ import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.jetbrains.annotations.NotNull;
 import org.json.JSONObject;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
@@ -70,7 +69,6 @@ public class JsonMappingReaderTest {
                 () -> assertThat(columnNames, containsInAnyOrder("ISBN", "NAME", "TOPICS")));
     }
 
-    @NotNull
     private List<String> getColumnNames(final List<ColumnMapping> columns) {
         return columns.stream().map(ColumnMapping::getExasolColumnName).collect(Collectors.toList());
     }

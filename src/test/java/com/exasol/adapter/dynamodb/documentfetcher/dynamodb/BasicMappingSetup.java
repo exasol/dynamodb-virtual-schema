@@ -3,8 +3,6 @@ package com.exasol.adapter.dynamodb.documentfetcher.dynamodb;
 import java.io.IOException;
 import java.util.List;
 
-import org.jetbrains.annotations.NotNull;
-
 import com.exasol.adapter.AdapterException;
 import com.exasol.adapter.dynamodb.documentnode.dynamodb.DynamodbNodeVisitor;
 import com.exasol.adapter.dynamodb.documentnode.dynamodb.DynamodbNumber;
@@ -37,7 +35,6 @@ public class BasicMappingSetup {
                 .filter(column -> column.getExasolColumnName().equals("NAME")).findAny().get();
     }
 
-    @NotNull
     public RemoteTableQuery<DynamodbNodeVisitor> getSelectAllQuery() {
         return new RemoteTableQuery<>(this.tableMapping, this.tableMapping.getColumns(), new NoPredicate<>());
     }
