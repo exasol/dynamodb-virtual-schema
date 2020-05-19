@@ -18,6 +18,7 @@ import com.exasol.adapter.dynamodb.documentnode.MockValueNode;
 import com.exasol.adapter.dynamodb.documentpath.DocumentPathExpression;
 import com.exasol.adapter.dynamodb.remotetablequery.NoPredicate;
 import com.exasol.adapter.dynamodb.remotetablequery.RemoteTableQuery;
+import com.exasol.sql.expression.IntegerLiteral;
 import com.exasol.sql.expression.StringLiteral;
 import com.exasol.sql.expression.ValueExpression;
 
@@ -47,14 +48,17 @@ public class SchemaMapperTest {
     @Test
     void testMapNestedTable() {
         final String nestedListKey = "topics";
+
         final DocumentPathExpression pathToNestedTable = new DocumentPathExpression.Builder()
                 .addObjectLookup(nestedListKey).addArrayAll().build();
         final ToJsonPropertyToColumnMapping columnMapping = new ToJsonPropertyToColumnMapping("test", pathToNestedTable,
                 LookupFailBehaviour.EXCEPTION);
+        final ColumnMapping indexColumn = new IterationIndexColumnMapping("INDEX",
+                new DocumentPathExpression.Builder().addObjectLookup(nestedListKey).addArrayAll().build());
         final TableMapping tableMapping = TableMapping.nestedTableBuilder("table", "table", pathToNestedTable)
-                .withColumnMappingDefinition(columnMapping).build();
-        final RemoteTableQuery<Object> remoteTableQuery = new RemoteTableQuery<>(tableMapping, List.of(columnMapping),
-                new NoPredicate<>());
+                .withColumnMappingDefinition(columnMapping).withColumnMappingDefinition(indexColumn).build();
+        final RemoteTableQuery<Object> remoteTableQuery = new RemoteTableQuery<>(tableMapping,
+                List.of(columnMapping, indexColumn), new NoPredicate<>());
         final SchemaMapper<Object> schemaMapper = new SchemaMapper<>(remoteTableQuery,
                 new MockPropertyToColumnValueExtractorFactory());
         final List<List<ValueExpression>> result = schemaMapper
@@ -63,7 +67,9 @@ public class SchemaMapperTest {
                 .collect(Collectors.toList());
         assertAll(//
                 () -> assertThat(result.size(), equalTo(2)),
-                () -> assertThat(result.get(0), containsInAnyOrder(STRING_LITERAL))//
+                () -> assertThat(result.get(0).get(0), equalTo(STRING_LITERAL)), //
+                () -> assertThat(((IntegerLiteral) result.get(0).get(1)).getValue(), equalTo(0)),
+                () -> assertThat(((IntegerLiteral) result.get(1).get(1)).getValue(), equalTo(1))//
         );
     }
 

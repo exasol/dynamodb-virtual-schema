@@ -38,8 +38,7 @@ public class JsonMappingReaderTest {
         final List<TableMapping> tables = schemaMapping.getTableMappings();
         final TableMapping table = tables.get(0);
         final List<ColumnMapping> columns = table.getColumns();
-        final List<String> columnNames = columns.stream().map(ColumnMapping::getExasolColumnName)
-                .collect(Collectors.toList());
+        final List<String> columnNames = getColumnNames(columns);
         final ToStringPropertyToColumnMapping isbnColumn = (ToStringPropertyToColumnMapping) getColumnByExasolName(
                 table, "ISBN");
         final ToStringPropertyToColumnMapping nameColumn = (ToStringPropertyToColumnMapping) getColumnByExasolName(
@@ -64,11 +63,14 @@ public class JsonMappingReaderTest {
         final List<TableMapping> tables = schemaMapping.getTableMappings();
         final TableMapping table = tables.get(0);
         final List<ColumnMapping> columns = table.getColumns();
-        final List<String> columnNames = columns.stream().map(ColumnMapping::getExasolColumnName)
-                .collect(Collectors.toList());
+        final List<String> columnNames = getColumnNames(columns);
         assertAll(() -> assertThat(tables.size(), equalTo(1)), //
                 () -> assertThat(table.getExasolName(), equalTo("BOOKS")),
                 () -> assertThat(columnNames, containsInAnyOrder("ISBN", "NAME", "TOPICS")));
+    }
+
+    private List<String> getColumnNames(final List<ColumnMapping> columns) {
+        return columns.stream().map(ColumnMapping::getExasolColumnName).collect(Collectors.toList());
     }
 
     @Test
@@ -77,12 +79,12 @@ public class JsonMappingReaderTest {
                 MappingTestFiles.SINGLE_COLUMN_TO_TABLE_MAPPING_FILE);
         final List<TableMapping> tables = schemaMapping.getTableMappings();
         final TableMapping nestedTable = tables.stream().filter(table -> !table.isRootTable()).findAny().get();
-        final ToStringPropertyToColumnMapping column = (ToStringPropertyToColumnMapping) nestedTable.getColumns()
-                .get(0);
+        final ToStringPropertyToColumnMapping column = (ToStringPropertyToColumnMapping) getColumnByExasolName(
+                nestedTable, "NAME");
         assertAll(//
                 () -> assertThat(tables.size(), equalTo(2)),
                 () -> assertThat(nestedTable.getExasolName(), equalTo("BOOKS_TOPICS")),
-                () -> assertThat(column.getExasolColumnName(), equalTo("TOPIC_NAME")),
+                () -> assertThat(getColumnNames(nestedTable.getColumns()), containsInAnyOrder("BOOKS_ISBN", "NAME")),
                 () -> assertThat(column.getPathToSourceProperty().toString(), equalTo("/topics[*]"))//
         );
     }
@@ -143,11 +145,14 @@ public class JsonMappingReaderTest {
         final PropertyToColumnMapping foreignKey1 = (PropertyToColumnMapping) getColumnByExasolName(nestedTable,
                 "BOOKS_ISBN");
         final IterationIndexColumnMapping indexColumn = (IterationIndexColumnMapping) getColumnByExasolName(nestedTable,
-                "BOOKS_CHAPTERS_INDEX");
+                "INDEX");
         final ToStringPropertyToColumnMapping figureNameColumn = (ToStringPropertyToColumnMapping) getColumnByExasolName(
-                doubleNestedTable, "FIGURE_NAME");
+                doubleNestedTable, "NAME");
         assertAll(//
                 () -> assertThat(tables.size(), equalTo(3)),
+                () -> assertThat(getColumnNames(nestedTable.getColumns()), containsInAnyOrder("BOOKS_ISBN", "INDEX")),
+                () -> assertThat(getColumnNames(doubleNestedTable.getColumns()),
+                        containsInAnyOrder("BOOKS_ISBN", "BOOKS_CHAPTERS_INDEX", "NAME")),
                 () -> assertThat(figureNameColumn.getPathToSourceProperty().toString(),
                         equalTo("/chapters[*]/figures[*]")),
                 () -> assertThat(foreignKey1.getPathToSourceProperty().toString(), equalTo("/isbn")), //

@@ -9,7 +9,7 @@
         "toTableMapping": {
           "mapping": {
             "toStringMapping": {
-              "destName": "TOPIC_NAME"
+              "destName": "NAME"
             }
           }
         }
@@ -20,6 +20,10 @@
           "overflow": "ABORT",
           "required": true,
           "key": "global"
+        }
+      },
+      "name": {
+        "toStringMapping": {
         }
       }
     }
