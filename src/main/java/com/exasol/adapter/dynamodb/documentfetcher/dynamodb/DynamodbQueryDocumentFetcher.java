@@ -57,12 +57,14 @@ public class DynamodbQueryDocumentFetcher extends AbstractDynamodbDocumentFetche
             final DynamodbIndex mostRestrictedIndex) {
         final QueryPredicate<DynamodbNodeVisitor> selectionOnIndex = new DynamodbQuerySelectionFilter()
                 .filter(documentQuery.getSelection(), getIndexPropertyNameWhitelist(mostRestrictedIndex));
-        final DynamodbValueListBuilder valueListBuilder = new DynamodbValueListBuilder();
+        final DynamodbAttributeNamePlaceholderMapBuilder namePlaceholderBuilder = new DynamodbAttributeNamePlaceholderMapBuilder();
+        final DynamodbAttributeValuePlaceholderMapBuilder valuePlaceholderBuilder = new DynamodbAttributeValuePlaceholderMapBuilder();
         final DynamodbFilterExpressionFactory filterExpressionFactory = new DynamodbFilterExpressionFactory();
         final String keyConditionExpression = filterExpressionFactory.buildFilterExpression(selectionOnIndex,
-                valueListBuilder);
+                namePlaceholderBuilder, valuePlaceholderBuilder);
         this.queryRequest.setKeyConditionExpression(keyConditionExpression);
-        this.queryRequest.setExpressionAttributeValues(valueListBuilder.getValueMap());
+        this.queryRequest.setExpressionAttributeNames(namePlaceholderBuilder.getPlaceholderMap());
+        this.queryRequest.setExpressionAttributeValues(valuePlaceholderBuilder.getPlaceholderMap());
     }
 
     private List<String> getIndexPropertyNameWhitelist(final DynamodbIndex index) {
