@@ -11,7 +11,7 @@ import java.util.Map;
 public abstract class AbstractDynamodbPlaceholderMapBuilder<T> {
     private final Map<String, T> placeholderMap = new HashMap<>();
     private final Map<T, String> invertedMap = new HashMap<>();
-    private int counter = 0;
+    private int uniquePlaceholderIdentifier = 0;
 
     /**
      * Gives the start character for placeholders. For example {@code #}.
@@ -32,7 +32,7 @@ public abstract class AbstractDynamodbPlaceholderMapBuilder<T> {
         if (this.invertedMap.containsKey(valueToAdd)) {
             return this.invertedMap.get(valueToAdd);
         }
-        final String key = getPlaceholderCharacter() + this.counter++;
+        final String key = getPlaceholderCharacter() + this.uniquePlaceholderIdentifier++;
         this.placeholderMap.put(key, valueToAdd);
         this.invertedMap.put(valueToAdd, key);
         return key;
