@@ -16,26 +16,30 @@ import com.exasol.adapter.dynamodb.remotetablequery.*;
 public class DynamodbFilterExpressionFactory {
 
     /**
-     * Build a DynamoDB filter expression for the given selection.
+     * Build a DynamoDB filter expression for the given predicate.
      * 
-     * @param selection        selection to converted.
-     * @param valueListBuilder value list builder that takes the literals form the queries and gives placeholders for
-     *                         them.
+     * @param predicate                  predicate that will be converted into a filter expression
+     * @param namePlaceholderMapBuilder  builder that takes attribute names and gives placeholders for them
+     * @param valuePlaceholderMapBuilder builder that takes literals and gives placeholders for them.
      * @return DynamoDB filter expression
      */
-    public String buildFilterExpression(final QueryPredicate<DynamodbNodeVisitor> selection,
-            final DynamodbValueListBuilderAddValueInterface valueListBuilder) {
-        final Visitor visitor = new Visitor(valueListBuilder);
-        selection.accept(visitor);
+    public String buildFilterExpression(final QueryPredicate<DynamodbNodeVisitor> predicate,
+            final DynamodbAttributeNamePlaceholderMapBuilder namePlaceholderMapBuilder,
+            final DynamodbAttributeValuePlaceholderMapBuilder valuePlaceholderMapBuilder) {
+        final Visitor visitor = new Visitor(namePlaceholderMapBuilder, valuePlaceholderMapBuilder);
+        predicate.accept(visitor);
         return visitor.getFilterExpression();
     }
 
     private static class Visitor implements QueryPredicateVisitor<DynamodbNodeVisitor> {
-        private final DynamodbValueListBuilderAddValueInterface valueListBuilder;
+        private final DynamodbAttributeNamePlaceholderMapBuilder namePlaceholderMapBuilder;
+        private final DynamodbAttributeValuePlaceholderMapBuilder valuePlaceholderMapBuilder;
         private String filterExpression;
 
-        private Visitor(final DynamodbValueListBuilderAddValueInterface valueListBuilder) {
-            this.valueListBuilder = valueListBuilder;
+        private Visitor(final DynamodbAttributeNamePlaceholderMapBuilder namePlaceholderMapBuilder,
+                final DynamodbAttributeValuePlaceholderMapBuilder valuePlaceholderMapBuilder) {
+            this.namePlaceholderMapBuilder = namePlaceholderMapBuilder;
+            this.valuePlaceholderMapBuilder = valuePlaceholderMapBuilder;
         }
 
         @Override
@@ -47,10 +51,11 @@ public class DynamodbFilterExpressionFactory {
                 final DocumentPathExpression columnsPath = columnMapping.getPathToSourceProperty();
                 final String columnPathExpression = new DocumentPathToDynamodbExpressionConverter()
                         .convert(columnsPath);
+                final String namePlaceholder = this.namePlaceholderMapBuilder.addValue(columnPathExpression);
                 final AttributeValue attributeValue = new DynamodbNodeToAttributeValueConverter()
                         .convertToAttributeValue(columnLiteralComparisonPredicate.getLiteral());
-                final String valuePlaceholder = this.valueListBuilder.addValue(attributeValue);
-                this.filterExpression = columnPathExpression + " "
+                final String valuePlaceholder = this.valuePlaceholderMapBuilder.addValue(attributeValue);
+                this.filterExpression = namePlaceholder + " "
                         + convertComparisonOperator(columnLiteralComparisonPredicate.getOperator()) + " "
                         + valuePlaceholder;
             } else {
@@ -83,8 +88,8 @@ public class DynamodbFilterExpressionFactory {
                 throw new IllegalArgumentException(
                         "Logic expressions with only one operand can be must be replaced by the operand.");
             }
-            final String firstOperandsExpression = new DynamodbFilterExpressionFactory()
-                    .buildFilterExpression(operands.get(0), this.valueListBuilder);
+            final String firstOperandsExpression = new DynamodbFilterExpressionFactory().buildFilterExpression(
+                    operands.get(0), this.namePlaceholderMapBuilder, this.valuePlaceholderMapBuilder);
             final LogicalOperator.Operator operator = logicalOperator.getOperator();
             this.filterExpression = firstOperandsExpression + " " + getComparisionOperatorsExpression(operator) + " "
                     + getSecondOperandsExpression(operands, operator);
@@ -98,10 +103,10 @@ public class DynamodbFilterExpressionFactory {
                 final LogicalOperator<DynamodbNodeVisitor> logicalOperatorForRemaining = new LogicalOperator<>(
                         remainingOperands, operator);
                 return "(" + new DynamodbFilterExpressionFactory().buildFilterExpression(logicalOperatorForRemaining,
-                        this.valueListBuilder) + ")";
+                        this.namePlaceholderMapBuilder, this.valuePlaceholderMapBuilder) + ")";
             } else {
                 return new DynamodbFilterExpressionFactory().buildFilterExpression(operands.get(1),
-                        this.valueListBuilder);
+                        this.namePlaceholderMapBuilder, this.valuePlaceholderMapBuilder);
             }
         }
 
