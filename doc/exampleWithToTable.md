@@ -58,7 +58,7 @@ To achieve this we create the following mapping definition:
         "toTableMapping": {
           "mapping": {
             "toStringMapping": {
-              "destName": "TOPIC_NAME"
+              "destName": "NAME"
             }
           }
         }

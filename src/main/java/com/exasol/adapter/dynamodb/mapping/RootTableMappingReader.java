@@ -34,7 +34,7 @@ public class RootTableMappingReader extends AbstractTableMappingReader {
     }
 
     @Override
-    protected List<ColumnMapping> generateGlobalKeyColumns() {
+    protected GlobalKey generateGlobalKey() {
         throw new UnsupportedOperationException("fetching keys from remote database is not yet supported"); // TODO
     }
 
@@ -49,7 +49,7 @@ public class RootTableMappingReader extends AbstractTableMappingReader {
     }
 
     @Override
-    protected List<ColumnMapping> makeLocalKeyGlobal(final List<ColumnMapping> keyColumns) {
+    protected List<ColumnMapping> getForeignKey() {
         throw new ExasolDocumentMappingLanguageException(
                 "Local keys make no sense in root table mapping definitions. Please make this key global.");
     }

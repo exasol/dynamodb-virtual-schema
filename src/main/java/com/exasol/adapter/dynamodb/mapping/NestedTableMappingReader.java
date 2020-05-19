@@ -3,6 +3,7 @@ package com.exasol.adapter.dynamodb.mapping;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.json.JsonObject;
 
@@ -14,7 +15,7 @@ import com.exasol.adapter.dynamodb.documentpath.DocumentPathExpression;
  */
 class NestedTableMappingReader extends AbstractTableMappingReader {
     final DocumentPathExpression.Builder tablesSourcePath;
-    private final List<ColumnMapping> parentKeyColumns;
+    private final GlobalKey parentsKey;
     private final TableMapping parentTable;
     private final String tableName;
 
@@ -26,31 +27,41 @@ class NestedTableMappingReader extends AbstractTableMappingReader {
      *                                    maps) is nested in
      * @param containingListsPropertyName the property name of the nested list that this table maps
      * @param sourcePath                  the path to the nested list that this table maps
-     * @param parentKeyColumns            list of parent's key columns. This must always be a global key. If the parent
-     *                                    has a local key, the foreign key must be added to make it global
+     * @param parentsKey                  parent's key columns. This must always be a global key. If the parent has a
+     *                                    local key, the foreign key must be added to make it global
      */
     NestedTableMappingReader(final JsonObject definition, final TableMapping parentTable,
             final String containingListsPropertyName, final DocumentPathExpression.Builder sourcePath,
-            final List<ColumnMapping> parentKeyColumns) {
+            final GlobalKey parentsKey) {
         this.parentTable = parentTable;
         this.tablesSourcePath = new DocumentPathExpression.Builder(sourcePath).addArrayAll();
-        this.parentKeyColumns = parentKeyColumns;
+        this.parentsKey = parentsKey;
         this.tableName = getNestedTableName(definition, this.parentTable.getExasolName(), containingListsPropertyName);
         readMappingDefinition(definition);
     }
 
     @Override
     protected TableMapping createTable(final List<ColumnMapping> columns) {
-        // TODO add foreign key columns
-        return new TableMapping(this.tableName, this.parentTable.getRemoteName(), columns, getPathToTable().build());
+        final List<ColumnMapping> columnsWithForeignKey = addForeignKeyColumnsToColumnListIfNotPresent(columns);
+        return new TableMapping(this.tableName, this.parentTable.getRemoteName(), columnsWithForeignKey,
+                getPathToTable().build());
+    }
+
+    private List<ColumnMapping> addForeignKeyColumnsToColumnListIfNotPresent(final List<ColumnMapping> columns) {
+        final List<ColumnMapping> columnsWithForeignKey = new ArrayList<>(columns);
+        for (final ColumnMapping foreignKeyColumn : getForeignKey()) {
+            if (!columnsWithForeignKey.contains(foreignKeyColumn)) {
+                columnsWithForeignKey.add(foreignKeyColumn);
+            }
+        }
+        return columnsWithForeignKey;
     }
 
     @Override
-    protected List<ColumnMapping> generateGlobalKeyColumns() {
-        final List<ColumnMapping> keys = new ArrayList<>(getForeignKey());
-        final String indexColumnName = this.tableName + "_" + "INDEX";
-        keys.add(new IterationIndexColumnMapping(indexColumnName, getPathToTable().build()));
-        return keys;
+    protected GlobalKey generateGlobalKey() {
+        final IterationIndexColumnMapping indexColumn = new IterationIndexColumnMapping("INDEX",
+                getPathToTable().build());
+        return new GlobalKey(getForeignKey(), List.of(indexColumn));
     }
 
     @Override
@@ -63,18 +74,20 @@ class NestedTableMappingReader extends AbstractTableMappingReader {
         return true;
     }
 
-    @Override
-    protected List<ColumnMapping> makeLocalKeyGlobal(final List<ColumnMapping> localKeyColumns) {
+    protected List<ColumnMapping> getForeignKey(final List<ColumnMapping> localKeyColumns) {
         final List<ColumnMapping> globalKeyColumns = new ArrayList<>();
         globalKeyColumns.addAll(getForeignKey());
         globalKeyColumns.addAll(localKeyColumns);
         return globalKeyColumns;
     }
 
-    private List<ColumnMapping> getForeignKey() {
-        return this.parentKeyColumns.stream()
-                .map(column -> column
-                        .withNewExasolName(this.parentTable.getExasolName() + "_" + column.getExasolColumnName()))
+    @Override
+    protected List<ColumnMapping> getForeignKey() {
+        return Stream
+                .concat(this.parentsKey.getForeignKeyColumns().stream(),
+                        this.parentsKey.getOwnKeyColumns().stream()
+                                .map(column -> column.withNewExasolName(
+                                        this.parentTable.getExasolName() + "_" + column.getExasolColumnName())))
                 .collect(Collectors.toList());
     }
 

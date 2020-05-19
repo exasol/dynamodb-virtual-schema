@@ -27,10 +27,10 @@ public abstract class AbstractTableMappingReader {
     }
 
     private void readTableWithNestedTable(final SchemaMappingDefinitionLanguageVisitor visitor) {
-        final List<ColumnMapping> globalKey = buildGlobalKey(visitor);
-        final List<ColumnMapping> allColumns = new ArrayList<>();
+        final GlobalKey globalKey = buildGlobalKey(visitor);
+        final List<ColumnMapping> allColumns = new ArrayList<>(globalKey.getOwnKeyColumns());
+        allColumns.addAll(globalKey.getForeignKeyColumns());
         allColumns.addAll(visitor.getNonKeyColumns());
-        allColumns.addAll(globalKey);
         final TableMapping rootTable = createTable(allColumns);
         this.tables.add(rootTable);
         for (final NestedTableReader nestedTableReader : visitor.getNestedTableReaderQueue()) {
@@ -38,15 +38,15 @@ public abstract class AbstractTableMappingReader {
         }
     }
 
-    private List<ColumnMapping> buildGlobalKey(final SchemaMappingDefinitionLanguageVisitor visitor) {
+    private GlobalKey buildGlobalKey(final SchemaMappingDefinitionLanguageVisitor visitor) {
         final List<ColumnMapping> userDefinedKeyColumns = visitor.getKeyColumns();
         if (userDefinedKeyColumns.isEmpty()) {
-            return generateGlobalKeyColumns();
+            return generateGlobalKey();
         } else {
             if (visitor.getKeyType().equals(ColumnMappingDefinitionKeyTypeReader.KeyType.LOCAL)) {
-                return makeLocalKeyGlobal(userDefinedKeyColumns);
+                return new GlobalKey(getForeignKey(), userDefinedKeyColumns);
             } else {
-                return userDefinedKeyColumns;
+                return new GlobalKey(Collections.emptyList(), userDefinedKeyColumns);
             }
         }
     }
@@ -60,20 +60,38 @@ public abstract class AbstractTableMappingReader {
     /**
      * This method is called if no key columns were defined in the schema mapping definition but key columns are
      * required (for a nested table).
-     * 
+     *
      * @return list containing the generated key columns
      */
-    protected abstract List<ColumnMapping> generateGlobalKeyColumns();
+    protected abstract GlobalKey generateGlobalKey();
 
     protected abstract DocumentPathExpression.Builder getPathToTable();
 
     protected abstract boolean isNestedTable();
 
-    protected abstract List<ColumnMapping> makeLocalKeyGlobal(List<ColumnMapping> keyColumns);
+    protected abstract List<ColumnMapping> getForeignKey();
 
     @FunctionalInterface
     private static interface NestedTableReader {
-        List<TableMapping> readNestedTable(TableMapping parentTable, List<ColumnMapping> parentKeyColumns);
+        List<TableMapping> readNestedTable(TableMapping parentTable, GlobalKey parentKeyColumns);
+    }
+
+    protected static class GlobalKey {
+        private final List<ColumnMapping> foreignKeyColumns;
+        private final List<ColumnMapping> ownKeyColumns;
+
+        public GlobalKey(final List<ColumnMapping> foreignKeyColumns, final List<ColumnMapping> ownKeyColumns) {
+            this.foreignKeyColumns = foreignKeyColumns;
+            this.ownKeyColumns = ownKeyColumns;
+        }
+
+        public List<ColumnMapping> getForeignKeyColumns() {
+            return this.foreignKeyColumns;
+        }
+
+        public List<ColumnMapping> getOwnKeyColumns() {
+            return this.ownKeyColumns;
+        }
     }
 
     private static class SchemaMappingDefinitionLanguageVisitor {

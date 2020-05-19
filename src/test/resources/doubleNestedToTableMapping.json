@@ -13,7 +13,7 @@
                 "toTableMapping": {
                   "mapping": {
                     "toStringMapping": {
-                      "destName": "FIGURE_NAME"
+                      "destName": "NAME"
                     }
                   }
                 }
