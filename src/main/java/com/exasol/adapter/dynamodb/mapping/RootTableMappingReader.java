@@ -45,7 +45,7 @@ public class RootTableMappingReader extends AbstractTableMappingReader {
                     this.tableKeyFetcher.fetchKeyForTable(this.remoteTableName, availableColumns));
         } catch (final TableKeyFetcher.NoKeyFoundException e) {
             throw new ExasolDocumentMappingLanguageException("Could not infer keys for table " + this.exasolTableName
-                    + ". Please mark define a unique key by setting key='global' for one or more columns");
+                    + ". Please mark define a unique key by setting key='global' for one or more columns.");
         }
     }
 

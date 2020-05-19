@@ -74,13 +74,6 @@ class NestedTableMappingReader extends AbstractTableMappingReader {
         return true;
     }
 
-    protected List<ColumnMapping> getForeignKey(final List<ColumnMapping> localKeyColumns) {
-        final List<ColumnMapping> globalKeyColumns = new ArrayList<>();
-        globalKeyColumns.addAll(getForeignKey());
-        globalKeyColumns.addAll(localKeyColumns);
-        return globalKeyColumns;
-    }
-
     @Override
     protected List<ColumnMapping> getForeignKey() {
         return Stream

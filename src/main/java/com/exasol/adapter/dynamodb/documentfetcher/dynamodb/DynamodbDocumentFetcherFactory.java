@@ -6,6 +6,7 @@ import com.exasol.adapter.dynamodb.documentfetcher.DocumentFetcherFactory;
 import com.exasol.adapter.dynamodb.documentnode.dynamodb.DynamodbNodeVisitor;
 import com.exasol.adapter.dynamodb.dynamodbmetadata.DynamodbTableMetadata;
 import com.exasol.adapter.dynamodb.dynamodbmetadata.DynamodbTableMetadataFactory;
+import com.exasol.adapter.dynamodb.dynamodbmetadata.DynamodbTableMetadataFactoryImplementation;
 import com.exasol.adapter.dynamodb.remotetablequery.RemoteTableQuery;
 
 /**
@@ -22,7 +23,7 @@ public class DynamodbDocumentFetcherFactory implements DocumentFetcherFactory<Dy
      * @param dynamodbClient DynamoDB connection used for fetching table metadata
      */
     public DynamodbDocumentFetcherFactory(final AmazonDynamoDB dynamodbClient) {
-        this.tableMetadataFactory = new DynamodbTableMetadataFactory(dynamodbClient);
+        this.tableMetadataFactory = new DynamodbTableMetadataFactoryImplementation(dynamodbClient);
     }
 
     @Override

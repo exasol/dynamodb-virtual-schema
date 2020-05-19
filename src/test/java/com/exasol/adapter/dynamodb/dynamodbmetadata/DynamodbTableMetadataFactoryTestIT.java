@@ -32,7 +32,7 @@ class DynamodbTableMetadataFactoryTestIT {
     @BeforeAll
     static void beforeAll() throws DynamodbTestInterface.NoNetworkFoundException {
         dynamodbTestInterface = new DynamodbTestInterface(LOCAL_DYNAMO, NETWORK);
-        tableMetadataFactory = new DynamodbTableMetadataFactory(
+        tableMetadataFactory = new DynamodbTableMetadataFactoryImplementation(
                 new DynamodbConnectionFactory().getLowLevelConnection(dynamodbTestInterface.getDynamoUrl(),
                         dynamodbTestInterface.getDynamoUser(), dynamodbTestInterface.getDynamoPass()));
     }
