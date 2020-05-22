@@ -165,7 +165,7 @@ public class JsonSchemaMappingReaderTest {
         final ExasolDocumentMappingLanguageException exception = assertThrows(
                 ExasolDocumentMappingLanguageException.class, () -> getMappingDefinitionForFile(mappingFile));
         assertThat(exception.getMessage(), startsWith(
-                "Could not infer keys for table BOOKS. Please mark define a unique key by setting key='global' for one or more columns."));
+                "Could not infer keys for table BOOKS. Please define a unique key by setting key='global' for one or more columns."));
     }
 
     @Test
