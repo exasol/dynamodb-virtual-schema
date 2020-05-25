@@ -92,17 +92,20 @@ class QueryPredicateFactoryTest {
 
     @Test
     void testBuildColumnLiteralEqualityPredicateFailsForTwoColumns() {
+        final SqlPredicateEqual predicate = new SqlPredicateEqual(new SqlColumn(0, columnMetadata),
+                new SqlColumn(1, columnMetadata));
         final UnsupportedOperationException exception = assertThrows(UnsupportedOperationException.class,
-                () -> FACTORY.buildPredicateFor(
-                        new SqlPredicateEqual(new SqlColumn(0, columnMetadata), new SqlColumn(1, columnMetadata))));
+                () -> FACTORY.buildPredicateFor(predicate));
         assertThat(exception.getMessage(),
                 equalTo("Predicates on two columns are not yet supported in this Virtual Schema version."));
     }
 
     @Test
     void testBuildColumnLiteralEqualityPredicateFailsForTwoLiterals() {
-        final UnsupportedOperationException exception = assertThrows(UnsupportedOperationException.class, () -> FACTORY
-                .buildPredicateFor(new SqlPredicateEqual(new SqlLiteralString("test"), new SqlLiteralString("test"))));
+        final SqlPredicateEqual predicate = new SqlPredicateEqual(new SqlLiteralString("test"),
+                new SqlLiteralString("test"));
+        final UnsupportedOperationException exception = assertThrows(UnsupportedOperationException.class,
+                () -> FACTORY.buildPredicateFor(predicate));
         assertThat(exception.getMessage(),
                 equalTo("Predicates on two literals are not yet supported in this Virtual Schema version."));
     }

@@ -5,7 +5,7 @@ import static org.hamcrest.Matchers.equalTo;
 
 import org.junit.jupiter.api.Test;
 
-public class AbstractPropertyToColumnMappingTest {
+class AbstractPropertyToColumnMappingTest {
     private static final String EXASOL_COLUMN_NAME = "columnName";
 
     @Test

@@ -16,7 +16,10 @@ import com.exasol.adapter.dynamodb.documentpath.DocumentPathWalkerException;
 import com.exasol.adapter.dynamodb.documentpath.StaticDocumentPathIterator;
 import com.exasol.sql.expression.ValueExpression;
 
-public class AbstractPropertyToColumnValueExtractorTest {
+class AbstractPropertyToColumnValueExtractorTest {
+
+    private static final StubDocumentObject STUB_DOCUMENT = new StubDocumentObject();
+
     @Test
     void testLookup() {
         final DocumentPathExpression sourcePath = new DocumentPathExpression.Builder().addObjectLookup("isbn").build();
@@ -24,8 +27,7 @@ public class AbstractPropertyToColumnValueExtractorTest {
                 LookupFailBehaviour.EXCEPTION);
 
         final ValueMapperStub valueMapperStub = new ValueMapperStub(columnMappingDefinition);
-        final StubDocumentObject testObject = new StubDocumentObject();
-        valueMapperStub.extractColumnValue(testObject, new StaticDocumentPathIterator());
+        valueMapperStub.extractColumnValue(STUB_DOCUMENT, new StaticDocumentPathIterator());
         assertThat(valueMapperStub.remoteValue, equalTo(StubDocumentObject.MAP.get("isbn")));
     }
 
@@ -35,8 +37,9 @@ public class AbstractPropertyToColumnValueExtractorTest {
                 .addObjectLookup("nonExistingColumn").build();
         final MockPropertyToColumnMapping columnMappingDefinition = new MockPropertyToColumnMapping("d", sourcePath,
                 LookupFailBehaviour.DEFAULT_VALUE);
-        final ValueExpression valueExpression = new ValueMapperStub(columnMappingDefinition)
-                .extractColumnValue(new StubDocumentObject(), new StaticDocumentPathIterator());
+        final ValueMapperStub valueMapper = new ValueMapperStub(columnMappingDefinition);
+        final ValueExpression valueExpression = valueMapper.extractColumnValue(STUB_DOCUMENT,
+                new StaticDocumentPathIterator());
         assertThat(valueExpression.toString(), equalTo("default"));
     }
 
@@ -46,18 +49,21 @@ public class AbstractPropertyToColumnValueExtractorTest {
                 .addObjectLookup("nonExistingColumn").build();
         final MockPropertyToColumnMapping columnMappingDefinition = new MockPropertyToColumnMapping("d", sourcePath,
                 LookupFailBehaviour.EXCEPTION);
-        assertThrows(DocumentPathWalkerException.class, () -> new ValueMapperStub(columnMappingDefinition)
-                .extractColumnValue(new StubDocumentObject(), new StaticDocumentPathIterator()));
+        final ValueMapperStub valueMapper = new ValueMapperStub(columnMappingDefinition);
+        final StaticDocumentPathIterator pathIterator = new StaticDocumentPathIterator();
+        assertThrows(DocumentPathWalkerException.class,
+                () -> valueMapper.extractColumnValue(STUB_DOCUMENT, pathIterator));
     }
 
     @Test
-    public void testColumnMappingException() {
+    void testColumnMappingException() {
         final String columnName = "name";
         final MockPropertyToColumnMapping mappingDefinition = new MockPropertyToColumnMapping(columnName,
                 DocumentPathExpression.empty(), LookupFailBehaviour.EXCEPTION);
+        final ExceptionMockColumnValueMapper valueMapper = new ExceptionMockColumnValueMapper(mappingDefinition);
+        final StaticDocumentPathIterator pathIterator = new StaticDocumentPathIterator();
         final ColumnValueExtractorException exception = assertThrows(ColumnValueExtractorException.class,
-                () -> new ExceptionMockColumnValueMapper(mappingDefinition).extractColumnValue(new StubDocumentObject(),
-                        new StaticDocumentPathIterator()));
+                () -> valueMapper.extractColumnValue(STUB_DOCUMENT, pathIterator));
         assertThat(exception.getCausingColumn().getExasolColumnName(), equalTo(columnName));
     }
 
@@ -67,6 +73,7 @@ public class AbstractPropertyToColumnValueExtractorTest {
 
     private static class StubDocumentObject implements DocumentObject<DummyVisitor> {
         private static final Map<String, DocumentNode<DummyVisitor>> MAP = Map.of("isbn", new StubDocumentValue());
+        private static final long serialVersionUID = 9179578910701283315L;
 
         @Override
         public Map<String, DocumentNode<DummyVisitor>> getKeyValueMap() {
@@ -90,6 +97,8 @@ public class AbstractPropertyToColumnValueExtractorTest {
     }
 
     private static class StubDocumentValue implements DocumentValue<DummyVisitor> {
+
+        private static final long serialVersionUID = -2835741189976407365L;
 
         @Override
         public void accept(final DummyVisitor visitor) {

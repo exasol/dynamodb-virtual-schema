@@ -21,18 +21,18 @@ class DynamodbQuerySelectionFilterTest {
             .getCompareForColumn(WHITELISTED_NAME);
     private static final ColumnLiteralComparisonPredicate<DynamodbNodeVisitor> NON_WHITELISTED_PREDICATE = TestSetup
             .getCompareForColumn("nameNotOnWhitelist");
+    private static final DynamodbQuerySelectionFilter FILTER = new DynamodbQuerySelectionFilter();
 
     @Test
     void testWhitelistedColumnIsNotFiltered() throws PlanDoesNotFitException {
-        final QueryPredicate<DynamodbNodeVisitor> result = new DynamodbQuerySelectionFilter()
-                .filter(WHITELISTED_PREDICATE, List.of(WHITELISTED_NAME));
+        final QueryPredicate<DynamodbNodeVisitor> result = FILTER.filter(WHITELISTED_PREDICATE,
+                List.of(WHITELISTED_NAME));
         assertThat(result, equalTo(WHITELISTED_PREDICATE));
     }
 
     @Test
     void testNonWhitelistedColumnIsFiltered() throws PlanDoesNotFitException {
-        final QueryPredicate<DynamodbNodeVisitor> result = new DynamodbQuerySelectionFilter()
-                .filter(WHITELISTED_PREDICATE, List.of("other key"));
+        final QueryPredicate<DynamodbNodeVisitor> result = FILTER.filter(WHITELISTED_PREDICATE, List.of("other key"));
         assertThat(result, equalTo(new NoPredicate<>()));
     }
 
@@ -41,8 +41,7 @@ class DynamodbQuerySelectionFilterTest {
         final LogicalOperator<DynamodbNodeVisitor> and = new LogicalOperator<>(
                 List.of(WHITELISTED_PREDICATE, WHITELISTED_PREDICATE, NON_WHITELISTED_PREDICATE),
                 LogicalOperator.Operator.AND);
-        final QueryPredicate<DynamodbNodeVisitor> result = new DynamodbQuerySelectionFilter().filter(and,
-                List.of(WHITELISTED_NAME));
+        final QueryPredicate<DynamodbNodeVisitor> result = FILTER.filter(and, List.of(WHITELISTED_NAME));
         final LogicalOperator<DynamodbNodeVisitor> compareResult = (LogicalOperator<DynamodbNodeVisitor>) result;
         assertThat(compareResult.getOperands(), containsInAnyOrder(WHITELISTED_PREDICATE, WHITELISTED_PREDICATE));
     }
@@ -51,8 +50,7 @@ class DynamodbQuerySelectionFilterTest {
     void testFilterAndWithOneResult() throws PlanDoesNotFitException {
         final LogicalOperator<DynamodbNodeVisitor> and = new LogicalOperator<>(
                 List.of(WHITELISTED_PREDICATE, NON_WHITELISTED_PREDICATE), LogicalOperator.Operator.AND);
-        final QueryPredicate<DynamodbNodeVisitor> result = new DynamodbQuerySelectionFilter().filter(and,
-                List.of(WHITELISTED_NAME));
+        final QueryPredicate<DynamodbNodeVisitor> result = FILTER.filter(and, List.of(WHITELISTED_NAME));
         assertThat(result, equalTo(WHITELISTED_PREDICATE));
     }
 
@@ -60,8 +58,7 @@ class DynamodbQuerySelectionFilterTest {
     void testFilterAndWithNoResults() throws PlanDoesNotFitException {
         final LogicalOperator<DynamodbNodeVisitor> and = new LogicalOperator<>(List.of(NON_WHITELISTED_PREDICATE),
                 LogicalOperator.Operator.AND);
-        final QueryPredicate<DynamodbNodeVisitor> result = new DynamodbQuerySelectionFilter().filter(and,
-                List.of(WHITELISTED_NAME));
+        final QueryPredicate<DynamodbNodeVisitor> result = FILTER.filter(and, List.of(WHITELISTED_NAME));
         assertThat(result, equalTo(new NoPredicate<>()));
     }
 
@@ -69,8 +66,7 @@ class DynamodbQuerySelectionFilterTest {
     void testFilterOrWithOnlyWhitelisted() throws PlanDoesNotFitException {
         final LogicalOperator<DynamodbNodeVisitor> or = new LogicalOperator<>(List.of(WHITELISTED_PREDICATE),
                 LogicalOperator.Operator.OR);
-        final QueryPredicate<DynamodbNodeVisitor> result = new DynamodbQuerySelectionFilter().filter(or,
-                List.of(WHITELISTED_NAME));
+        final QueryPredicate<DynamodbNodeVisitor> result = FILTER.filter(or, List.of(WHITELISTED_NAME));
         assertThat(result, equalTo(WHITELISTED_PREDICATE));
     }
 
@@ -78,17 +74,17 @@ class DynamodbQuerySelectionFilterTest {
     void testFilterOrWithNotOnlyWhitelisted() throws PlanDoesNotFitException {
         final LogicalOperator<DynamodbNodeVisitor> or = new LogicalOperator<>(
                 List.of(WHITELISTED_PREDICATE, NON_WHITELISTED_PREDICATE), LogicalOperator.Operator.OR);
+        final List<String> whitelist = List.of(WHITELISTED_NAME);
         final DynamodbQuerySelectionFilterException exception = assertThrows(
-                DynamodbQuerySelectionFilterException.class,
-                () -> new DynamodbQuerySelectionFilter().filter(or, List.of(WHITELISTED_NAME)));
+                DynamodbQuerySelectionFilterException.class, () -> FILTER.filter(or, whitelist));
         assertThat(exception.getMessage(), equalTo(
                 "The key predicates of this plan could not be extracted without potentially loosing results of this query. Please simplify the query or use a different DynamoDB operation."));
     }
 
     @Test
     void testFilterNoPredicate() throws PlanDoesNotFitException {
-        final QueryPredicate<DynamodbNodeVisitor> result = new DynamodbQuerySelectionFilter()
-                .filter(new NoPredicate<>(), List.of(WHITELISTED_NAME));
+        final QueryPredicate<DynamodbNodeVisitor> result = FILTER.filter(new NoPredicate<>(),
+                List.of(WHITELISTED_NAME));
         assertThat(result, equalTo(new NoPredicate<>()));
     }
 }

@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.exasol.dynamodb.attributevalue.AttributeValueQuickCreator;
 
-public class DynamodbNumberSetTest {
+class DynamodbNumberSetTest {
     private static final String NUMBER_1 = "123";
     private static final String NUMBER_2 = "456";
     private static final AttributeValue NUMBER_SET = AttributeValueQuickCreator

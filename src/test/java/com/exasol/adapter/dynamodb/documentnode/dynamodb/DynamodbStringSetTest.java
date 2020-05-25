@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.exasol.dynamodb.attributevalue.AttributeValueQuickCreator;
 
-public class DynamodbStringSetTest {
+class DynamodbStringSetTest {
     private static final String STRING_1 = "string1";
     private static final String STRING_2 = "string2";
     private static final AttributeValue STRING_SET = AttributeValueQuickCreator

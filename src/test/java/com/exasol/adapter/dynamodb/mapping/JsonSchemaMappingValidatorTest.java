@@ -14,7 +14,7 @@ import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class JsonSchemaMappingValidatorTest {
+class JsonSchemaMappingValidatorTest {
     private static final Logger LOGGER = LoggerFactory.getLogger(JsonSchemaMappingValidatorTest.class);
     private final MappingTestFiles mappingTestFiles = new MappingTestFiles();
 

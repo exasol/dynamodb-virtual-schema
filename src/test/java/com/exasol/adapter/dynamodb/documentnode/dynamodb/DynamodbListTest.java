@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.exasol.dynamodb.attributevalue.AttributeValueQuickCreator;
 
-public class DynamodbListTest {
+class DynamodbListTest {
     private static final AttributeValue NESTED_1 = AttributeValueQuickCreator.forString("test1");
     private static final AttributeValue NESTED_2 = AttributeValueQuickCreator.forString("test2");
     private static final AttributeValue LIST = AttributeValueQuickCreator.forList(NESTED_1, NESTED_2);

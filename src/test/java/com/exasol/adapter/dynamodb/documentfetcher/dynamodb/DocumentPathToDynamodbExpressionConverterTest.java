@@ -9,12 +9,13 @@ import org.junit.jupiter.api.Test;
 import com.exasol.adapter.dynamodb.documentpath.DocumentPathExpression;
 
 class DocumentPathToDynamodbExpressionConverterTest {
+    private static final DocumentPathToDynamodbExpressionConverter CONVERTER = new DocumentPathToDynamodbExpressionConverter();
 
     @Test
     void testConvertPath() {
         final DocumentPathExpression path = new DocumentPathExpression.Builder().addObjectLookup("key")
                 .addArrayLookup(2).addObjectLookup("nestedKey").build();
-        final String result = new DocumentPathToDynamodbExpressionConverter().convert(path);
+        final String result = CONVERTER.convert(path);
         assertThat(result, equalTo("key[2].nestedKey"));
     }
 
@@ -22,7 +23,7 @@ class DocumentPathToDynamodbExpressionConverterTest {
     void testArrayAllException() {
         final DocumentPathExpression path = new DocumentPathExpression.Builder().addArrayAll().build();
         final UnsupportedOperationException exception = assertThrows(UnsupportedOperationException.class,
-                () -> new DocumentPathToDynamodbExpressionConverter().convert(path));
+                () -> CONVERTER.convert(path));
         assertThat(exception.getMessage(),
                 equalTo("ArrayAll path segments can't be converted to DynamoDB path expressions."));
     }

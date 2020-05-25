@@ -10,7 +10,7 @@ import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.exasol.adapter.dynamodb.documentnode.DocumentNode;
 import com.exasol.dynamodb.attributevalue.AttributeValueQuickCreator;
 
-public class DynamodbNullTest {
+class DynamodbNullTest {
     private static final AttributeValue ATTRIBUTE_VALUE = AttributeValueQuickCreator.forNull();
 
     @Test

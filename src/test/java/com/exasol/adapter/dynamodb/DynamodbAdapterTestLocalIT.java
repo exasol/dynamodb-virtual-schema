@@ -34,7 +34,7 @@ import com.exasol.containers.ExasolContainer;
  **/
 @Tag("integration")
 @Testcontainers
-public class DynamodbAdapterTestLocalIT {
+class DynamodbAdapterTestLocalIT {
     private static final Logger LOGGER = LoggerFactory.getLogger(DynamodbAdapterTestLocalIT.class);
 
     private static final Network NETWORK = Network.newNetwork();
@@ -83,7 +83,7 @@ public class DynamodbAdapterTestLocalIT {
     }
 
     @Test
-    public void testSchemaDefinition() throws SQLException {
+    void testSchemaDefinition() throws SQLException {
         createBasicMappingVirtualSchema();
         final Map<String, String> rowNames = exasolTestInterface.describeTable(TEST_SCHEMA, "BOOKS");
         assertThat(rowNames, equalTo(Map.of("ISBN", "VARCHAR(20) UTF8", "NAME", "VARCHAR(100) UTF8", "AUTHOR_NAME",

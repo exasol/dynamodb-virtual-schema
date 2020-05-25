@@ -13,7 +13,7 @@ import com.exasol.adapter.dynamodb.mapping.*;
 import com.exasol.sql.expression.StringLiteral;
 import com.exasol.sql.expression.ValueExpression;
 
-public class ValueExpressionsToSqlSelectFromValuesConverterTest {
+class ValueExpressionsToSqlSelectFromValuesConverterTest {
     SchemaMappingQuery getRemoteTableQueryStub() {
         return new SchemaMappingQuery() {
             @Override
@@ -30,14 +30,14 @@ public class ValueExpressionsToSqlSelectFromValuesConverterTest {
     }
 
     @Test
-    public void testEmptyConvert() {
+    void testEmptyConvert() {
         final ValueExpressionsToSqlSelectFromValuesConverter converter = new ValueExpressionsToSqlSelectFromValuesConverter();
         final String sql = converter.convert(getRemoteTableQueryStub(), Collections.emptyList());
         assertThat(sql, equalTo("SELECT * FROM (VALUES ('')) WHERE FALSE"));
     }
 
     @Test
-    public void testSingleItemConvert() {
+    void testSingleItemConvert() {
         final String testString = "test";
         final ValueExpression stringFrame = StringLiteral.of(testString);
         final ValueExpressionsToSqlSelectFromValuesConverter converter = new ValueExpressionsToSqlSelectFromValuesConverter();
@@ -46,7 +46,7 @@ public class ValueExpressionsToSqlSelectFromValuesConverterTest {
     }
 
     @Test
-    public void testTwoItemConvert() {
+    void testTwoItemConvert() {
         final String testString1 = "test1";
         final ValueExpression stringFrame1 = StringLiteral.of(testString1);
         final String testString2 = "test2";

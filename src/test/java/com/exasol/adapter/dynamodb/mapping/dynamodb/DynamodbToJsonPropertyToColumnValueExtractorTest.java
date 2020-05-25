@@ -15,7 +15,7 @@ import com.exasol.adapter.dynamodb.mapping.ToJsonPropertyToColumnMapping;
 import com.exasol.dynamodb.attributevalue.AttributeValueQuickCreator;
 import com.exasol.sql.expression.ValueExpression;
 
-public class DynamodbToJsonPropertyToColumnValueExtractorTest {
+class DynamodbToJsonPropertyToColumnValueExtractorTest {
     private static final String DEST_COLUMN = "destColumn";
 
     @Test

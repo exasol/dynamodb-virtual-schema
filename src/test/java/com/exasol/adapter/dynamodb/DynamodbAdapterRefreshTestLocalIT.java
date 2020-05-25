@@ -30,7 +30,7 @@ import com.exasol.containers.ExasolContainer;
  **/
 @Tag("integration")
 @Testcontainers
-public class DynamodbAdapterRefreshTestLocalIT {
+class DynamodbAdapterRefreshTestLocalIT {
     private static final Logger LOGGER = LoggerFactory.getLogger(DynamodbAdapterRefreshTestLocalIT.class);
 
     private static final Network NETWORK = Network.newNetwork();
@@ -78,7 +78,7 @@ public class DynamodbAdapterRefreshTestLocalIT {
      * should not change.
      */
     @Test
-    public void testSchemaDefinitionDoesNotChangeUntilRefresh()
+    void testSchemaDefinitionDoesNotChangeUntilRefresh()
             throws SQLException, InterruptedException, BucketAccessException, TimeoutException {
         exasolTestInterface.uploadMapping(MappingTestFiles.BASIC_MAPPING_FILE_NAME, BUCKETFS_MAPPING_FILE_NAME);
         exasolTestInterface.createDynamodbVirtualSchema(TEST_SCHEMA, DYNAMODB_CONNECTION, BUCKETFS_MAPPING_FULL_PATH);
@@ -93,7 +93,7 @@ public class DynamodbAdapterRefreshTestLocalIT {
      * have change.
      */
     @Test
-    public void testSchemaDefinitionChangesOnRefresh()
+    void testSchemaDefinitionChangesOnRefresh()
             throws SQLException, InterruptedException, BucketAccessException, TimeoutException {
         exasolTestInterface.uploadMapping(MappingTestFiles.BASIC_MAPPING_FILE_NAME, BUCKETFS_MAPPING_FILE_NAME);
         exasolTestInterface.createDynamodbVirtualSchema(TEST_SCHEMA, DYNAMODB_CONNECTION, BUCKETFS_MAPPING_FULL_PATH);

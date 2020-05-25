@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.exasol.dynamodb.attributevalue.AttributeValueQuickCreator;
 
-public class DynamodbBinaryTest {
+class DynamodbBinaryTest {
     private static final ByteBuffer TEST_VALUE = ByteBuffer.wrap("test".getBytes());
     private static final AttributeValue ATTRIBUTE_VALUE = AttributeValueQuickCreator.forBinary(TEST_VALUE);
 

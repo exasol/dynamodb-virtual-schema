@@ -97,8 +97,9 @@ class DocumentPathIteratorTest {
                 Map.of(KEY, new MockArrayNode(List.of(new MockValueNode("value1"), new MockValueNode("value2")))));
         final Iterator<PathIterationStateProvider> iterator = new DocumentPathIteratorFactory<>(SINGLE_NESTED_PATH,
                 testDocument).iterator();
+        final PathIterationStateProvider next = iterator.next();
         final IllegalStateException exception = assertThrows(IllegalStateException.class,
-                () -> iterator.next().getIndexFor(otherPath));
+                () -> next.getIndexFor(otherPath));
         assertThat(exception.getMessage(),
                 equalTo("The requested path does not match the path that this iterator unwinds."));
     }
@@ -111,8 +112,9 @@ class DocumentPathIteratorTest {
                 Map.of(KEY, new MockArrayNode(List.of(new MockValueNode("value1"), new MockValueNode("value2")))));
         final Iterator<PathIterationStateProvider> iterator = new DocumentPathIteratorFactory<>(SINGLE_NESTED_PATH,
                 testDocument).iterator();
+        final PathIterationStateProvider next = iterator.next();
         final IllegalStateException exception = assertThrows(IllegalStateException.class,
-                () -> iterator.next().getIndexFor(tooLongPath));
+                () -> next.getIndexFor(tooLongPath));
         assertThat(exception.getMessage(), equalTo("The requested path is longer than the unwinded one."));
     }
 }
