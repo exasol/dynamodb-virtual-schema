@@ -15,15 +15,15 @@ import com.amazonaws.services.dynamodbv2.model.TableDescription;
  * This class builds {@link DynamodbTableMetadata} by fetching the required information using a {@code describeTable}
  * call to DynamoDB.
  */
-public class DynamodbTableMetadataFactoryImplementation implements DynamodbTableMetadataFactory {
+public class BaseDynamodbTableMetadataFactory implements DynamodbTableMetadataFactory {
     private final AmazonDynamoDB connection;
 
     /**
-     * Creates an instance of {@link DynamodbTableMetadataFactoryImplementation}.
+     * Creates an instance of {@link BaseDynamodbTableMetadataFactory}.
      *
      * @param connection DynamoDB connection used for {@code describeTable} call
      */
-    public DynamodbTableMetadataFactoryImplementation(final AmazonDynamoDB connection) {
+    public BaseDynamodbTableMetadataFactory(final AmazonDynamoDB connection) {
         this.connection = connection;
     }
 

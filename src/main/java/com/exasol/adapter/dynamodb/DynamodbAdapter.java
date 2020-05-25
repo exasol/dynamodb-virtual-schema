@@ -20,7 +20,7 @@ import com.exasol.adapter.capabilities.PredicateCapability;
 import com.exasol.adapter.dynamodb.documentfetcher.DocumentFetcherFactory;
 import com.exasol.adapter.dynamodb.documentfetcher.dynamodb.DynamodbDocumentFetcherFactory;
 import com.exasol.adapter.dynamodb.documentnode.dynamodb.DynamodbNodeVisitor;
-import com.exasol.adapter.dynamodb.dynamodbmetadata.DynamodbTableMetadataFactoryImplementation;
+import com.exasol.adapter.dynamodb.dynamodbmetadata.BaseDynamodbTableMetadataFactory;
 import com.exasol.adapter.dynamodb.literalconverter.dynamodb.SqlLiteralToDynamodbValueConverter;
 import com.exasol.adapter.dynamodb.mapping.*;
 import com.exasol.adapter.dynamodb.mapping.dynamodb.DynamodbPropertyToColumnValueExtractorFactory;
@@ -76,7 +76,7 @@ public class DynamodbAdapter implements VirtualSchemaAdapter {
         final DynamodbAdapterProperties dynamodbAdapterProperties = new DynamodbAdapterProperties(adapterProperties);
         final File mappingDefinitionFile = getSchemaMappingFile(dynamodbAdapterProperties);
         final DynamodbTableKeyFetcher dynamodbTableKeyFetcher = new DynamodbTableKeyFetcher(
-                new DynamodbTableMetadataFactoryImplementation(dynamodbClient));
+                new BaseDynamodbTableMetadataFactory(dynamodbClient));
         final SchemaMappingReader mappingFactory = new JsonSchemaMappingReader(mappingDefinitionFile,
                 dynamodbTableKeyFetcher);
         return mappingFactory.getSchemaMapping();
