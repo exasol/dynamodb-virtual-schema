@@ -70,4 +70,9 @@ public class ColumnLiteralComparisonPredicate<DocumentVisitorType> extends Compa
         final int literalHash = this.literal.hashCode();
         return 31 * literalHash + this.column.hashCode();
     }
+
+    @Override
+    public String toString() {
+        return this.column.getExasolColumnName() + super.toString() + this.literal.toString();
+    }
 }

@@ -26,6 +26,24 @@ public abstract class ComparisonPredicate<DocumentVisitorType> implements QueryP
         return this.operator;
     }
 
+    @Override
+    public String toString() {
+        switch (this.operator) {
+        case EQUAL:
+            return "=";
+        case LESS:
+            return "<";
+        case LESS_EQUAL:
+            return "<=";
+        case GREATER:
+            return ">";
+        case GREATER_EQUAL:
+            return ">=";
+        default:
+            throw new UnsupportedOperationException();// All possible operators are implemented
+        }
+    }
+
     /**
      * Possible comparision operators.
      */

@@ -1,6 +1,7 @@
 package com.exasol.adapter.dynamodb.remotetablequery;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * This class represents a {@code AND} or {@code OR} logical operator.
@@ -64,6 +65,12 @@ public class LogicalOperator<DocumentVisitorType> implements QueryPredicate<Docu
     public int hashCode() {
         final int operandsHashCode = this.operands.hashCode();
         return 31 * operandsHashCode + this.operator.hashCode();
+    }
+
+    @Override
+    public String toString() {
+        final String operatorString = this.operator.equals(Operator.AND) ? " AND " : " OR ";
+        return "(" + this.operands.stream().map(Object::toString).collect(Collectors.joining(operatorString)) + ")";
     }
 
     /**
