@@ -23,7 +23,7 @@ public class NoPredicate<DocumentVisitorType> implements QueryPredicate<Document
     @Override
     public int hashCode() {
         /*
-         * Gives a static value as all instances of this class are equal. The use of a single instance like * {@link
+         * Get a static value as all instances of this class are equal. The use of a single instance like * {@link
          * List#of()} is not possible due to generic type.
          */
         return 1;

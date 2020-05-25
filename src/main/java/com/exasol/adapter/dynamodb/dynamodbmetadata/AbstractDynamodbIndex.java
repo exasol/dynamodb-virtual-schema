@@ -11,7 +11,7 @@ abstract class AbstractDynamodbIndex implements DynamodbIndex {
     private final String sortKey;
 
     /**
-     * Creates an instance of {@link DynamodbIndex}.
+     * Create an instance of {@link DynamodbIndex}.
      *
      * @param partitionKey partition key of this index
      * @param sortKey      sort key of this index

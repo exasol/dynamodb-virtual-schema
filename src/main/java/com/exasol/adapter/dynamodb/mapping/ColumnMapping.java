@@ -45,7 +45,7 @@ public interface ColumnMapping extends Serializable {
     public boolean isExasolColumnNullable();
 
     /**
-     * Creates a copy of this column with a different name
+     * Create a copy of this column with a different name
      * 
      * @param newExasolName new name
      * @return copy

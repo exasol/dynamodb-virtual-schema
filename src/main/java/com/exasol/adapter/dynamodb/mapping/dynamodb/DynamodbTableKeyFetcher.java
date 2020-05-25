@@ -16,7 +16,7 @@ public class DynamodbTableKeyFetcher implements TableKeyFetcher {
     private final DynamodbTableMetadataFactory tableMetadataFactory;
 
     /**
-     * Creates an instance of {@link DynamodbTableKeyFetcher}.
+     * Create an instance of {@link DynamodbTableKeyFetcher}.
      * 
      * @param tableMetadataFactory metadata factory
      */

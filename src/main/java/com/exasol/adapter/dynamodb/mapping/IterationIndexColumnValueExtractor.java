@@ -14,7 +14,7 @@ public class IterationIndexColumnValueExtractor<DocumentVisitorType>
     private final IterationIndexColumnMapping column;
 
     /**
-     * Creates a new instance of {@link IterationIndexColumnValueExtractor}.
+     * Create a new instance of {@link IterationIndexColumnValueExtractor}.
      * 
      * @param column column definition describing which array's index to read
      */

@@ -25,7 +25,7 @@ public class JsonSchemaMappingReader implements SchemaMappingReader {
     private final TableKeyFetcher tableKeyFetcher;
 
     /**
-     * Creates an instance of {@link JsonSchemaMappingReader}.
+     * Create an instance of {@link JsonSchemaMappingReader}.
      *
      * @param definitionsPath path to the definition. Can either be a {@code .json} file or an directory. If it points
      *                        to a directory, all {@code .json} files are loaded.

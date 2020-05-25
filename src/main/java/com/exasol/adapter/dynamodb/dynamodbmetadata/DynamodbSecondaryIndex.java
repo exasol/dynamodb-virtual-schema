@@ -10,7 +10,7 @@ public class DynamodbSecondaryIndex extends AbstractDynamodbIndex {
     private final String indexName;
 
     /**
-     * Creates an instance of {@link DynamodbSecondaryIndex}.
+     * Create an instance of {@link DynamodbSecondaryIndex}.
      * 
      * @param partitionKey partition key of this key
      * @param sortKey      sort key of this key
@@ -22,7 +22,7 @@ public class DynamodbSecondaryIndex extends AbstractDynamodbIndex {
     }
 
     /**
-     * Gives the DynamoDB name for the index.
+     * Get the DynamoDB name for the index.
      * 
      * @return name of the index
      */

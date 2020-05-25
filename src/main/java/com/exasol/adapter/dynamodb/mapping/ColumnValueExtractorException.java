@@ -7,7 +7,7 @@ public class ColumnValueExtractorException extends RuntimeException {
     private final ColumnMapping causingColumn;
 
     /**
-     * Creates an instance of {@link ColumnValueExtractorException}.
+     * Create an instance of {@link ColumnValueExtractorException}.
      *
      * @param message Exception message
      * @param column  {@link ColumnMapping} that caused exception

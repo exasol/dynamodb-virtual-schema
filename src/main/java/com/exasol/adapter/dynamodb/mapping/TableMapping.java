@@ -36,7 +36,7 @@ public class TableMapping implements Serializable {
     }
 
     /**
-     * Gives an instance of the Builder for {@link TableMapping}. This version of the builder is used for root tables.
+     * Get an instance of the Builder for {@link TableMapping}. This version of the builder is used for root tables.
      *
      * @param destName Name of the Exasol table
      * @return {@link TableMapping.Builder}
@@ -47,7 +47,7 @@ public class TableMapping implements Serializable {
     }
 
     /**
-     * Gives an instance of the builder for {@link TableMapping}. This version of the builder is used to create tables
+     * Get an instance of the builder for {@link TableMapping}. This version of the builder is used to create tables
      * extracted from nested lists.
      *
      * @param destName          Name of the Exasol table
@@ -79,7 +79,7 @@ public class TableMapping implements Serializable {
     }
 
     /**
-     * Gives the path to the nested table that is mapped by this table.
+     * Get the path to the nested table that is mapped by this table.
      * 
      * @return path to nested list. Empty path expression if this tables maps a root document.
      */
@@ -124,7 +124,7 @@ public class TableMapping implements Serializable {
         }
 
         /**
-         * Adds a {@link ColumnMapping}
+         * Add a {@link ColumnMapping}
          * 
          * @param columnMapping Column MappingDefinition to add
          * @return self for fluent programming interface

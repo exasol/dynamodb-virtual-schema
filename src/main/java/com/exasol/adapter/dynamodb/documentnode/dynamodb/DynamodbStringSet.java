@@ -14,7 +14,7 @@ public class DynamodbStringSet implements DocumentArray<DynamodbNodeVisitor> {
     private final Collection<String> value;
 
     /**
-     * Creates an instance of {@link DynamodbStringSet}.
+     * Create an instance of {@link DynamodbStringSet}.
      *
      * @param value value to hold
      */

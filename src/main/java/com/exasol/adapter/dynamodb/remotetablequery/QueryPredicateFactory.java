@@ -21,7 +21,7 @@ public class QueryPredicateFactory<DocumentVisitorType> {
     private final SqlLiteralToDocumentValueConverter<DocumentVisitorType> literalConverter;
 
     /**
-     * Creates an instance of {@link QueryPredicateFactory}.
+     * Create an instance of {@link QueryPredicateFactory}.
      * 
      * @param literalConverter implementation specific converter for literals
      */

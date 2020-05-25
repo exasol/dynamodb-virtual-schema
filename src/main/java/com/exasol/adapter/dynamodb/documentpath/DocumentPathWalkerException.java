@@ -12,7 +12,7 @@ public class DocumentPathWalkerException extends RuntimeException {
     }
 
     /**
-     * Gives the path at which the Exception occurred.
+     * Get the path at which the Exception occurred.
      * 
      * @return path description
      */

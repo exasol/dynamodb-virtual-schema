@@ -22,38 +22,39 @@ class QueryPredicateToLogicngConverterTest {
 
     @Test
     void testConvertComparison() {
-        final QueryPredicateToLogicngConverter.Result<Object> result = CONVERTER.convert(Selections.EQUAL1);
+        final QueryPredicateToLogicngConverter.Result<Object> result = CONVERTER.convert(SelectionsConstants.EQUAL1);
         assertAll(//
                 () -> assertThat(result.getLogicngFormula().toString(), equalTo("Variable0")),
                 () -> assertThat(result.getVariablesMapping().values().stream().findFirst().get(),
-                        equalTo(Selections.EQUAL1))//
+                        equalTo(SelectionsConstants.EQUAL1))//
         );
     }
 
     @Test
     void testConvertAnd() {
         final QueryPredicateToLogicngConverter.Result<Object> result = CONVERTER
-                .convert(Selections.AND_OF_TWO_DIFFERENT_PREDICATES);
+                .convert(SelectionsConstants.AND_OF_TWO_DIFFERENT_PREDICATES);
         assertThat(result.getLogicngFormula().toString(), equalTo("Variable0 & Variable1"));
     }
 
     @Test
     void testConvertAndOfIdenticalPredicates() {
         final QueryPredicateToLogicngConverter.Result<Object> result = CONVERTER
-                .convert(Selections.AND_OF_TWO_IDENTICAL_PREDICATES);
+                .convert(SelectionsConstants.AND_OF_TWO_IDENTICAL_PREDICATES);
         assertThat(result.getLogicngFormula().toString(), equalTo("Variable0"));
     }
 
     @Test
     void testConvertOr() {
         final QueryPredicateToLogicngConverter.Result<Object> result = CONVERTER
-                .convert(Selections.OR_OF_TWO_DIFFERENT_PREDICATES);
+                .convert(SelectionsConstants.OR_OF_TWO_DIFFERENT_PREDICATES);
         assertThat(result.getLogicngFormula().toString(), equalTo("Variable0 | Variable1"));
     }
 
     @Test
     void testConvertNestedAnd() {
-        final QueryPredicateToLogicngConverter.Result<Object> result = CONVERTER.convert(Selections.NESTED_AND);
+        final QueryPredicateToLogicngConverter.Result<Object> result = CONVERTER
+                .convert(SelectionsConstants.NESTED_AND);
         assertThat(result.getLogicngFormula().toString(), equalTo("Variable0 | Variable1 & Variable2"));
     }
 }

@@ -38,7 +38,7 @@ public class ExasolTestInterface {
     private final Statement statement;
 
     /**
-     * Creates an instance of {@link ExasolTestInterface}.
+     * Create an instance of {@link ExasolTestInterface}.
      * 
      * @param container exasol test container
      * @throws SQLException on SQL error
@@ -81,7 +81,7 @@ public class ExasolTestInterface {
     }
 
     /**
-     * Creates a schema on the exasol test container.
+     * Create a schema on the exasol test container.
      * 
      * @param schemaName name of the schema to create
      * @throws SQLException on SQL error

@@ -22,7 +22,7 @@ import com.exasol.utils.StringSerializer;
 public class SchemaMappingToSchemaMetadataConverter {
 
     /**
-     * Creates a {@link SchemaMetadata} for a given {@link SchemaMapping}
+     * Create a {@link SchemaMetadata} for a given {@link SchemaMapping}
      *
      * @param schemaMapping the {@link SchemaMapping} to be converted
      * @return {@link SchemaMetadata}
@@ -55,7 +55,7 @@ public class SchemaMappingToSchemaMetadataConverter {
     }
 
     /**
-     * Creates a {@link ColumnMetadata} for a given {@link ColumnMapping}.
+     * Create a {@link ColumnMetadata} for a given {@link ColumnMapping}.
      * 
      * @param columnMapping to convert
      * @return {@link ColumnMetadata}

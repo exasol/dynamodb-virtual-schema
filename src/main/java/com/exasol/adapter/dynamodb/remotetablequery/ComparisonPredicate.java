@@ -9,7 +9,7 @@ public abstract class ComparisonPredicate<DocumentVisitorType> implements QueryP
     private final Operator operator;
 
     /**
-     * Creates a new instance of {@link ComparisonPredicate}.
+     * Create a new instance of {@link ComparisonPredicate}.
      * 
      * @param operator comparison operator
      */
@@ -18,7 +18,7 @@ public abstract class ComparisonPredicate<DocumentVisitorType> implements QueryP
     }
 
     /**
-     * Gives the comparison operator.
+     * Get the comparison operator.
      * 
      * @return the operator
      */

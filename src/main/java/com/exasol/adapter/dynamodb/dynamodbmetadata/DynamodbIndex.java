@@ -8,14 +8,14 @@ import java.io.Serializable;
 public interface DynamodbIndex extends Serializable {
 
     /**
-     * Gives the partition key of this index.
+     * Get the partition key of this index.
      *
      * @return partition key
      */
     public String getPartitionKey();
 
     /**
-     * Gives the sort key of this index.
+     * Get the sort key of this index.
      *
      * @return sort key. {@code null} if no sort key is present.
      */

@@ -35,7 +35,6 @@ class QueryPredicateToLogicngConverter<DocumentVisitorType> {
         private Formula formula;
 
         private Visitor(final VariablesMappingBuilder<DocumentVisitorType> variablesMappingBuilder) {
-
             this.variablesMappingBuilder = variablesMappingBuilder;
         }
 
@@ -115,7 +114,7 @@ class QueryPredicateToLogicngConverter<DocumentVisitorType> {
         }
 
         /**
-         * Gives the formula in the representation of the LogicNG library.
+         * Get the formula in the representation of the LogicNG library.
          * 
          * @return LogicNg formula
          */
@@ -124,7 +123,7 @@ class QueryPredicateToLogicngConverter<DocumentVisitorType> {
         }
 
         /**
-         * Gives a map that maps the Variables in the formla to {@link QueryPredicate}s.
+         * Get a map that maps the Variables in the formla to {@link QueryPredicate}s.
          * 
          * @return variable map
          */

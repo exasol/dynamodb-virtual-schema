@@ -52,7 +52,7 @@ public class DynamodbAdapterTestLocalIT {
     private static ExasolTestInterface exasolTestInterface;
 
     /**
-     * Creates a Virtual Schema in the Exasol test container accessing the local DynamoDB.
+     * Create a Virtual Schema in the Exasol test container accessing the local DynamoDB.
      */
     @BeforeAll
     static void beforeAll() throws DynamodbTestInterface.NoNetworkFoundException, SQLException, InterruptedException,

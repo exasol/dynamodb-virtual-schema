@@ -111,7 +111,7 @@ public class DynamodbTestInterface {
     }
 
     /**
-     * Adds one ore more items to a given table defined by a JSON string.
+     * Add one ore more items to a given table defined by a JSON string.
      * 
      * @param tableName name of the table to put the items in
      * @param itemsJson json definitions of the items
@@ -144,7 +144,7 @@ public class DynamodbTestInterface {
     }
 
     /**
-     * Creates a DynamoDB table.
+     * Create a DynamoDB table.
      * 
      * @param tableName name for the new DynamoDB table
      * @param keyName   partition key (type is always string)
@@ -157,7 +157,7 @@ public class DynamodbTestInterface {
     }
 
     /**
-     * Creates a DynamoDB table.
+     * Create a DynamoDB table.
      * 
      * @param request {@link CreateTableRequest}
      */

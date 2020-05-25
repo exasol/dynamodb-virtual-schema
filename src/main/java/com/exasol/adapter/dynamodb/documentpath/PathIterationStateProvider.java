@@ -9,8 +9,8 @@ package com.exasol.adapter.dynamodb.documentpath;
 public interface PathIterationStateProvider {
 
     /**
-     * Gives the array index for the {@link ArrayAllPathSegment} defined in pathToArrayAll, to that the iterator points
-     * at the moment.
+     * Get the array index for the {@link ArrayAllPathSegment} defined in pathToArrayAll, to that the iterator points at
+     * the moment.
      * 
      * @param pathToArrayAll path to the {@link ArrayAllPathSegment} for which the iteration index is requested
      * @return iteration index

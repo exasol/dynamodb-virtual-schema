@@ -14,7 +14,7 @@ public class DynamodbTableMetadata implements Serializable {
     private final List<DynamodbSecondaryIndex> globalIndexes;
 
     /**
-     * Creates an instance of {@link DynamodbTableMetadata}.
+     * Create an instance of {@link DynamodbTableMetadata}.
      * 
      * @param primaryIndex  the index defined by the primary key
      * @param localIndexes  list of the local secondary indexes
@@ -28,7 +28,7 @@ public class DynamodbTableMetadata implements Serializable {
     }
 
     /**
-     * Gives the index defined by the primary key of this DynamoDB table.
+     * Get the index defined by the primary key of this DynamoDB table.
      * 
      * @return primary index description.
      */
@@ -37,7 +37,7 @@ public class DynamodbTableMetadata implements Serializable {
     }
 
     /**
-     * Gives the local secondary indexes of this table.
+     * Get the local secondary indexes of this table.
      * 
      * @return list of index descriptions
      */
@@ -46,7 +46,7 @@ public class DynamodbTableMetadata implements Serializable {
     }
 
     /**
-     * Gives the global secondary indexes of this table.
+     * Get the global secondary indexes of this table.
      *
      * @return list of index descriptions
      */
@@ -55,7 +55,7 @@ public class DynamodbTableMetadata implements Serializable {
     }
 
     /**
-     * Gives the local and global secondary secondary indexes of this table.
+     * Get the local and global secondary secondary indexes of this table.
      *
      * @return list of index descriptions
      */
@@ -68,7 +68,7 @@ public class DynamodbTableMetadata implements Serializable {
     }
 
     /**
-     * Gives a list containing the primary index and all local and global indexes.
+     * Get a list containing the primary index and all local and global indexes.
      * 
      * @return list of all indexes
      */

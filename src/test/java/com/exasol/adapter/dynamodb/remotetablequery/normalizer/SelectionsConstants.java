@@ -8,7 +8,7 @@ import com.exasol.adapter.dynamodb.remotetablequery.ColumnLiteralComparisonPredi
 import com.exasol.adapter.dynamodb.remotetablequery.ComparisonPredicate;
 import com.exasol.adapter.dynamodb.remotetablequery.LogicalOperator;
 
-class Selections {
+class SelectionsConstants {
     static final ColumnLiteralComparisonPredicate<Object> EQUAL1 = new ColumnLiteralComparisonPredicate<>(
             ComparisonPredicate.Operator.EQUAL, new ToJsonPropertyToColumnMapping("isbn", null, null),
             new MockValueNode("test"));

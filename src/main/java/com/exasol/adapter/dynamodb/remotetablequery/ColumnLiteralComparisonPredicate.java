@@ -13,7 +13,7 @@ public class ColumnLiteralComparisonPredicate<DocumentVisitorType> extends Compa
     private final ColumnMapping column;
 
     /**
-     * Creates an instance of {@link ColumnLiteralComparisonPredicate}.
+     * Create an instance of {@link ColumnLiteralComparisonPredicate}.
      * 
      * @param operator comparison operator
      * @param column   column to compare
@@ -27,7 +27,7 @@ public class ColumnLiteralComparisonPredicate<DocumentVisitorType> extends Compa
     }
 
     /**
-     * Gives the literal that the column is compared to in this predicate.
+     * Get the literal that the column is compared to in this predicate.
      * 
      * @return literal
      */
@@ -36,7 +36,7 @@ public class ColumnLiteralComparisonPredicate<DocumentVisitorType> extends Compa
     }
 
     /**
-     * Gives the column that the literal is compared to in this predicate.
+     * Get the column that the literal is compared to in this predicate.
      * 
      * @return column
      */

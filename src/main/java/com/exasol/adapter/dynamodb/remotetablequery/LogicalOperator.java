@@ -13,7 +13,7 @@ public class LogicalOperator<DocumentVisitorType> implements QueryPredicate<Docu
     private final Operator operator;
 
     /**
-     * Creates new instance of {@link LogicalOperator}.
+     * Create new instance of {@link LogicalOperator}.
      *
      * @param operands the operands for this logical operator
      * @param operator logic operator
@@ -24,7 +24,7 @@ public class LogicalOperator<DocumentVisitorType> implements QueryPredicate<Docu
     }
 
     /**
-     * Gives the operands of this logical operator.
+     * Get the operands of this logical operator.
      *
      * @return list of operands.
      */
@@ -33,7 +33,7 @@ public class LogicalOperator<DocumentVisitorType> implements QueryPredicate<Docu
     }
 
     /**
-     * Gives the logic operator.
+     * Get the logic operator.
      *
      * @return the operator
      */

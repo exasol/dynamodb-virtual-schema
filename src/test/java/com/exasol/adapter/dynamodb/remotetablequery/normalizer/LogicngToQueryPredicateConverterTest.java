@@ -18,22 +18,22 @@ class LogicngToQueryPredicateConverterTest {
 
     @Test
     void testConvertComparison() {
-        testLoopConversion(Selections.EQUAL1);
+        testLoopConversion(SelectionsConstants.EQUAL1);
     }
 
     @Test
     void testConvertAnd() {
-        testLoopConversion(Selections.AND_OF_TWO_DIFFERENT_PREDICATES);
+        testLoopConversion(SelectionsConstants.AND_OF_TWO_DIFFERENT_PREDICATES);
     }
 
     @Test
     void testConvertNestedAnd() {
-        testLoopConversion(Selections.NESTED_AND);
+        testLoopConversion(SelectionsConstants.NESTED_AND);
     }
 
     @Test
     void testConvertOr() {
-        testLoopConversion(Selections.OR_OF_TWO_DIFFERENT_PREDICATES);
+        testLoopConversion(SelectionsConstants.OR_OF_TWO_DIFFERENT_PREDICATES);
     }
 
     void testLoopConversion(final QueryPredicate<Object> predicate) {

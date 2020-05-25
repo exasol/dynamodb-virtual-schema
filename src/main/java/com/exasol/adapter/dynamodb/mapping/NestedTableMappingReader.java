@@ -20,7 +20,7 @@ class NestedTableMappingReader extends AbstractTableMappingReader {
     private final String tableName;
 
     /**
-     * Creates an instance of {@link NestedTableMappingReader}.
+     * Create an instance of {@link NestedTableMappingReader}.
      *
      * @param definition                  exasol document mapping language definition
      * @param parentTable                 the parent table that maps the object in that the nested list (that this table

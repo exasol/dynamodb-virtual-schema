@@ -16,7 +16,7 @@ public final class IterationIndexColumnMapping extends AbstractColumnMapping {
     private final DocumentPathExpression tablesPath;
 
     /**
-     * Creates an instance of {@link IterationIndexColumnMapping}.
+     * Create an instance of {@link IterationIndexColumnMapping}.
      *
      * @param exasolColumnName name of the Exasol column
      * @param tablesPath       the path to the array that's row index is modeled using this column
@@ -52,7 +52,7 @@ public final class IterationIndexColumnMapping extends AbstractColumnMapping {
     }
 
     /**
-     * Gives the path to the array that's row index is modeled using this column
+     * Get the path to the array that's row index is modeled using this column
      * 
      * @return path
      */

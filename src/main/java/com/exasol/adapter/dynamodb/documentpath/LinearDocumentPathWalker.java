@@ -11,7 +11,7 @@ public class LinearDocumentPathWalker<VisitorType> {
     private final DocumentPathWalker<VisitorType> documentPathWalker;
 
     /**
-     * Creates a {@link LinearDocumentPathWalker}. This walker has the limitation that it can only walk linear paths.
+     * Create a {@link LinearDocumentPathWalker}. This walker has the limitation that it can only walk linear paths.
      * That is, the paths should not contain {@link ArrayAllPathSegment}s; otherwise it throws an exception.
      *
      * @param pathExpression Path definition. Must not contain {@link ArrayAllPathSegment}s.

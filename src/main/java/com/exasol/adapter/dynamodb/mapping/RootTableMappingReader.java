@@ -18,7 +18,7 @@ public class RootTableMappingReader extends AbstractTableMappingReader {
     private final String remoteTableName;
 
     /**
-     * Creates an {@link RootTableMappingReader} that reads a table definition from an Exasol document mapping language
+     * Create an {@link RootTableMappingReader} that reads a table definition from an Exasol document mapping language
      * definition. If nested lists are mapped using a {@code ToTableMapping}, multiple tables are read. The read tables
      * can be retrieved using {@link #getTables()}.
      *

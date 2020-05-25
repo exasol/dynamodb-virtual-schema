@@ -12,7 +12,7 @@ import com.exasol.adapter.dynamodb.mapping.ToStringPropertyToColumnValueExtracto
 public class DynamodbToStringPropertyToColumnValueExtractor
         extends ToStringPropertyToColumnValueExtractor<DynamodbNodeVisitor> {
     /**
-     * Creates an instance of {@link DynamodbToStringPropertyToColumnValueExtractor}.
+     * Create an instance of {@link DynamodbToStringPropertyToColumnValueExtractor}.
      *
      * @param column {@link ToStringPropertyToColumnMapping}
      */

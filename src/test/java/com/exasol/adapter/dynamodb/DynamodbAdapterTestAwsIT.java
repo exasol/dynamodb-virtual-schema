@@ -39,7 +39,7 @@ public class DynamodbAdapterTestAwsIT {
     private static ExasolTestInterface exasolTestInterface;
 
     /**
-     * Creates a Virtual Schema in the Exasol test container accessing DynamoDB on AWS.
+     * Create a Virtual Schema in the Exasol test container accessing DynamoDB on AWS.
      */
     @BeforeAll
     static void beforeAll() throws SQLException, BucketAccessException, InterruptedException,

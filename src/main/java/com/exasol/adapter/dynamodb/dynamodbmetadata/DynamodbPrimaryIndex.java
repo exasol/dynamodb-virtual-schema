@@ -9,7 +9,7 @@ public class DynamodbPrimaryIndex extends AbstractDynamodbIndex {
     private static final long serialVersionUID = 1990746116313161380L;
 
     /**
-     * Creates an instance of {@link DynamodbPrimaryIndex}.
+     * Create an instance of {@link DynamodbPrimaryIndex}.
      *
      * @param partitionKey partition key of this key
      * @param sortKey      sort key of this key
