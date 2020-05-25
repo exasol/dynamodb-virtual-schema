@@ -13,7 +13,7 @@ public class DnfNormalizer<DocumentVisitorType> {
     private final QueryPredicateToLogicngConverter<DocumentVisitorType> converter;
 
     /**
-     * Creates an instance of {@link DnfNormalizer}
+     * Create an instance of {@link DnfNormalizer}.
      */
     public DnfNormalizer() {
         this.converter = new QueryPredicateToLogicngConverter<>();
