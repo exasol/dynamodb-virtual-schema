@@ -62,13 +62,13 @@ public final class ToStringPropertyToColumnMapping extends AbstractPropertyToCol
     }
 
     @Override
-    public boolean isExasolColumnNullable() {
-        return true;
+    public void accept(final PropertyToColumnMappingVisitor visitor) {
+        visitor.visit(this);
     }
 
     @Override
-    public void accept(final PropertyToColumnMappingVisitor visitor) {
-        visitor.visit(this);
+    public boolean isExasolColumnNullable() {
+        return true;
     }
 
     @Override
