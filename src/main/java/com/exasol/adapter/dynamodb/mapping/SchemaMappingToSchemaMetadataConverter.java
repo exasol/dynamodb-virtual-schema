@@ -81,22 +81,22 @@ public class SchemaMappingToSchemaMetadataConverter {
     /**
      * Deserializes a {@link TableMapping} from {@link TableMetadata}.
      *
-     * @param tableMetadata  metadata for the table to be deserialized
-     * @param schemaMetadata needed because the tables can't be serialized into the TableMetadata due to a bug
+     * @param tableMetadata      metadata for the table to be deserialized
+     * @param schemaAdapterNotes needed because the tables can't be serialized into the TableMetadata due to a bug
      * @return deserialized {@link TableMapping}
      * @throws IllegalStateException if deserialization fails
      */
-    public TableMapping convertBackTable(final TableMetadata tableMetadata, final SchemaMetadata schemaMetadata) {
+    public TableMapping convertBackTable(final TableMetadata tableMetadata, final String schemaAdapterNotes) {
         try {
-            return convertBackTableIntern(tableMetadata, schemaMetadata);
+            return convertBackTableIntern(tableMetadata, schemaAdapterNotes);
         } catch (final IOException | ClassNotFoundException exception) {
             throw new IllegalStateException("Failed to deserialize TableMappingDefinition.", exception);
         }
     }
 
-    private TableMapping convertBackTableIntern(final TableMetadata tableMetadata, final SchemaMetadata schemaMetadata)
+    private TableMapping convertBackTableIntern(final TableMetadata tableMetadata, final String schemaAdapterNotes)
             throws IOException, ClassNotFoundException {
-        final TableMapping preliminaryTable = findTableInSchemaMetadata(tableMetadata.getName(), schemaMetadata);
+        final TableMapping preliminaryTable = findTableInSchemaMetadata(tableMetadata.getName(), schemaAdapterNotes);
         /*
          * As the columns are transient in TableMappingDefinition, they must be deserialized from the ColumnMetadata and
          * added separately.
@@ -112,10 +112,9 @@ public class SchemaMappingToSchemaMetadataConverter {
      * Workaround as tables cant be serialized to {@link TableMetadata} due to a bug in Exasol.
      * {@see https://github.com/exasol/dynamodb-virtual-schema/issues/25}
      */
-    private TableMapping findTableInSchemaMetadata(final String tableName, final SchemaMetadata schemaMetadata)
+    private TableMapping findTableInSchemaMetadata(final String tableName, final String schemaAdapterNotes)
             throws IOException, ClassNotFoundException {
-        final String serialized = schemaMetadata.getAdapterNotes();
-        final TableMappings tableMappings = (TableMappings) StringSerializer.deserializeFromString(serialized);
+        final TableMappings tableMappings = (TableMappings) StringSerializer.deserializeFromString(schemaAdapterNotes);
         return tableMappings.mappings.get(tableName);
     }
 

@@ -33,7 +33,7 @@ public class RemoteTableQueryBuilderTest {
                 .fromClause(new SqlTable(tableMetadata.getName(), tableMetadata))
                 .selectList(SqlSelectList.createSelectStarSelectList()).build();
         final RemoteTableQuery<Object> resultTable = new RemoteTableQueryFactory<>(
-                new SqlLiteralToDocumentValueConverterStub()).build(statement, schemaMetadata);
+                new SqlLiteralToDocumentValueConverterStub()).build(statement, schemaMetadata.getAdapterNotes());
         final List<String> actualDestinationNames = resultTable.getSelectList().stream()
                 .map(ColumnMapping::getExasolColumnName).collect(Collectors.toList());
         final String[] expectedDestinationNames = tableMetadata.getColumns().stream().map(ColumnMetadata::getName)

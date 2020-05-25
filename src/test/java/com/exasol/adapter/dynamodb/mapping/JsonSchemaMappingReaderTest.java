@@ -16,11 +16,19 @@ import org.junit.jupiter.api.Test;
 
 import com.exasol.adapter.AdapterException;
 
-public class JsonMappingReaderTest {
+public class JsonSchemaMappingReaderTest {
     private final MappingTestFiles mappingTestFiles = new MappingTestFiles();
 
     private SchemaMapping getMappingDefinitionForFile(final File mappingFile) throws IOException, AdapterException {
-        final SchemaMappingReader mappingFactory = new JsonSchemaMappingReader(mappingFile);
+        final SchemaMappingReader mappingFactory = new JsonSchemaMappingReader(mappingFile,
+                (tableName, mappedColumns) -> {
+                    final List<ColumnMapping> key = mappedColumns.stream()
+                            .filter(column -> column.getExasolColumnName().equals("ISBN")).collect(Collectors.toList());
+                    if (key.isEmpty()) {
+                        throw new TableKeyFetcher.NoKeyFoundException();
+                    }
+                    return key;
+                });
         return mappingFactory.getSchemaMapping();
     }
 
@@ -131,6 +139,33 @@ public class JsonMappingReaderTest {
                 ExasolDocumentMappingLanguageException.class, () -> getMappingDefinitionForFile(invalidFile));
         assertThat(exception.getMessage(),
                 startsWith("Local keys make no sense in root table mapping definitions. Please make this key global."));
+    }
+
+    @Test
+    void testNestedTableRootKeyGeneration() throws IOException, AdapterException {
+        final File mappingFile = this.mappingTestFiles
+                .generateInvalidFile(MappingTestFiles.SINGLE_COLUMN_TO_TABLE_MAPPING_FILE, base -> {
+                    base.getJSONObject("mapping").getJSONObject("fields").getJSONObject("isbn")
+                            .getJSONObject("toStringMapping").remove("key");
+                    return base;
+                });
+        final SchemaMapping schemaMapping = getMappingDefinitionForFile(mappingFile);
+        final List<TableMapping> tables = schemaMapping.getTableMappings();
+        final TableMapping nestedTable = tables.stream().filter(table -> !table.isRootTable()).findAny().get();
+        assertThat(getColumnNames(nestedTable.getColumns()), containsInAnyOrder("NAME", "BOOKS_ISBN"));
+    }
+
+    @Test
+    void testNestedTableRootKeyGenerationException() throws IOException, AdapterException {
+        final File mappingFile = this.mappingTestFiles
+                .generateInvalidFile(MappingTestFiles.SINGLE_COLUMN_TO_TABLE_MAPPING_FILE, base -> {
+                    base.getJSONObject("mapping").getJSONObject("fields").remove("isbn");
+                    return base;
+                });
+        final ExasolDocumentMappingLanguageException exception = assertThrows(
+                ExasolDocumentMappingLanguageException.class, () -> getMappingDefinitionForFile(mappingFile));
+        assertThat(exception.getMessage(), startsWith(
+                "Could not infer keys for table BOOKS. Please define a unique key by setting key='global' for one or more columns."));
     }
 
     @Test
