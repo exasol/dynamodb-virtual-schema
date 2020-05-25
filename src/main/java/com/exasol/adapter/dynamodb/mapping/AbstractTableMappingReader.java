@@ -41,7 +41,7 @@ public abstract class AbstractTableMappingReader {
     private GlobalKey buildGlobalKey(final SchemaMappingDefinitionLanguageVisitor visitor) {
         final List<ColumnMapping> userDefinedKeyColumns = visitor.getKeyColumns();
         if (userDefinedKeyColumns.isEmpty()) {
-            return generateGlobalKey();
+            return generateGlobalKey(visitor.getAllColumns());
         } else {
             if (visitor.getKeyType().equals(ColumnMappingDefinitionKeyTypeReader.KeyType.LOCAL)) {
                 return new GlobalKey(getForeignKey(), userDefinedKeyColumns);
@@ -61,9 +61,10 @@ public abstract class AbstractTableMappingReader {
      * This method is called if no key columns were defined in the schema mapping definition but key columns are
      * required (for a nested table).
      *
+     * @param availableColumns list of column mappings that could be used for building a key
      * @return list containing the generated key columns
      */
-    protected abstract GlobalKey generateGlobalKey();
+    protected abstract GlobalKey generateGlobalKey(List<ColumnMapping> availableColumns);
 
     protected abstract DocumentPathExpression.Builder getPathToTable();
 

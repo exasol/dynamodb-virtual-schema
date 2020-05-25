@@ -34,8 +34,8 @@ class DynamodbDocumentFetcherFactoryTest {
     @Test
     void testSelectAll() {
         final RemoteTableQuery<DynamodbNodeVisitor> documentQuery = basicMappingSetup.getSelectAllQuery();
-        final DynamodbScanDocumentFetcher scanPlan = (DynamodbScanDocumentFetcher) new DynamodbDocumentFetcherFactory()
-                .buildDocumentFetcherForQuery(documentQuery, tableMetadata);
+        final DynamodbScanDocumentFetcher scanPlan = (DynamodbScanDocumentFetcher) new DynamodbDocumentFetcherFactory(
+                null).buildDocumentFetcherForQuery(documentQuery, tableMetadata);
         assertThat(scanPlan.getScanRequest().getTableName(), equalTo(basicMappingSetup.tableMapping.getRemoteName()));
     }
 
@@ -43,8 +43,8 @@ class DynamodbDocumentFetcherFactoryTest {
     void testSecondaryIndexQuery() {
         final String publisher = "jb books";
         final RemoteTableQuery<DynamodbNodeVisitor> documentQuery = basicMappingSetup.getQueryForPublisher(publisher);
-        final DynamodbQueryDocumentFetcher queryPlan = (DynamodbQueryDocumentFetcher) new DynamodbDocumentFetcherFactory()
-                .buildDocumentFetcherForQuery(documentQuery, tableMetadata);
+        final DynamodbQueryDocumentFetcher queryPlan = (DynamodbQueryDocumentFetcher) new DynamodbDocumentFetcherFactory(
+                null).buildDocumentFetcherForQuery(documentQuery, tableMetadata);
         assertAll(//
                 () -> assertThat(queryPlan.getQueryRequest().getTableName(),
                         equalTo(basicMappingSetup.tableMapping.getRemoteName())),
@@ -66,8 +66,8 @@ class DynamodbDocumentFetcherFactoryTest {
 
         final RemoteTableQuery<DynamodbNodeVisitor> documentQuery = basicMappingSetup
                 .getQueryForMinPriceAndPublisher(price, publisher);
-        final DynamodbQueryDocumentFetcher queryPlan = (DynamodbQueryDocumentFetcher) new DynamodbDocumentFetcherFactory()
-                .buildDocumentFetcherForQuery(documentQuery, tableMetadata);
+        final DynamodbQueryDocumentFetcher queryPlan = (DynamodbQueryDocumentFetcher) new DynamodbDocumentFetcherFactory(
+                null).buildDocumentFetcherForQuery(documentQuery, tableMetadata);
         assertAll(//
                 () -> assertThat(queryPlan.getQueryRequest().getTableName(),
                         equalTo(basicMappingSetup.tableMapping.getRemoteName())),
@@ -87,8 +87,8 @@ class DynamodbDocumentFetcherFactoryTest {
     void testRangeQueryWithoutPrimaryKey() {
         final double price = 10.1;
         final RemoteTableQuery<DynamodbNodeVisitor> documentQuery = basicMappingSetup.getQueryForMinPrice(price);
-        final DynamodbScanDocumentFetcher scanPlan = (DynamodbScanDocumentFetcher) new DynamodbDocumentFetcherFactory()
-                .buildDocumentFetcherForQuery(documentQuery, tableMetadata);
+        final DynamodbScanDocumentFetcher scanPlan = (DynamodbScanDocumentFetcher) new DynamodbDocumentFetcherFactory(
+                null).buildDocumentFetcherForQuery(documentQuery, tableMetadata);
         assertAll(//
                 () -> assertThat(scanPlan.getScanRequest().getTableName(),
                         equalTo(basicMappingSetup.tableMapping.getRemoteName())),
@@ -108,8 +108,8 @@ class DynamodbDocumentFetcherFactoryTest {
 
         final RemoteTableQuery<DynamodbNodeVisitor> documentQuery = basicMappingSetup.getQueryForNameAndPublisher(name,
                 publisher);
-        final DynamodbQueryDocumentFetcher queryPlan = (DynamodbQueryDocumentFetcher) new DynamodbDocumentFetcherFactory()
-                .buildDocumentFetcherForQuery(documentQuery, tableMetadata);
+        final DynamodbQueryDocumentFetcher queryPlan = (DynamodbQueryDocumentFetcher) new DynamodbDocumentFetcherFactory(
+                null).buildDocumentFetcherForQuery(documentQuery, tableMetadata);
         assertAll(//
                 () -> assertThat(queryPlan.getQueryRequest().getTableName(),
                         equalTo(basicMappingSetup.tableMapping.getRemoteName())),

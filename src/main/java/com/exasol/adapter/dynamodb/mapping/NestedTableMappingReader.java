@@ -58,7 +58,7 @@ class NestedTableMappingReader extends AbstractTableMappingReader {
     }
 
     @Override
-    protected GlobalKey generateGlobalKey() {
+    protected GlobalKey generateGlobalKey(final List<ColumnMapping> availableColumns) {
         final IterationIndexColumnMapping indexColumn = new IterationIndexColumnMapping("INDEX",
                 getPathToTable().build());
         return new GlobalKey(getForeignKey(), List.of(indexColumn));
@@ -72,13 +72,6 @@ class NestedTableMappingReader extends AbstractTableMappingReader {
     @Override
     protected boolean isNestedTable() {
         return true;
-    }
-
-    protected List<ColumnMapping> getForeignKey(final List<ColumnMapping> localKeyColumns) {
-        final List<ColumnMapping> globalKeyColumns = new ArrayList<>();
-        globalKeyColumns.addAll(getForeignKey());
-        globalKeyColumns.addAll(localKeyColumns);
-        return globalKeyColumns;
     }
 
     @Override

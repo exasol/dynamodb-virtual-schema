@@ -19,7 +19,6 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import com.amazonaws.services.dynamodbv2.model.*;
-import com.exasol.ExaConnectionInformation;
 import com.exasol.adapter.AdapterException;
 import com.exasol.adapter.dynamodb.DynamodbTestInterface;
 import com.exasol.adapter.dynamodb.documentnode.DocumentNode;
@@ -40,7 +39,6 @@ class DynamodbDocumentFetcherFactoryIT {
             .withCommand("-jar DynamoDBLocal.jar -sharedDb -dbPath .");
     private static DynamodbTestInterface dynamodbTestInterface;
     private static BasicMappingSetup basicMappingSetup;
-    private static ExaConnectionInformation exaConnectionInformation;
 
     @BeforeAll
     static void beforeAll() throws DynamodbTestInterface.NoNetworkFoundException, IOException, AdapterException {
@@ -65,7 +63,6 @@ class DynamodbDocumentFetcherFactoryIT {
                         .withProvisionedThroughput(new ProvisionedThroughput(1L, 1L)));
         dynamodbTestInterface.createTable(request);
         dynamodbTestInterface.importData(basicMappingSetup.tableMapping.getRemoteName(), TestDocuments.BOOKS);
-        exaConnectionInformation = dynamodbTestInterface.getExaConnectionInformationForDynamodb();
     }
 
     @AfterAll
@@ -74,9 +71,10 @@ class DynamodbDocumentFetcherFactoryIT {
     }
 
     private List<DocumentNode<DynamodbNodeVisitor>> runQuery(final RemoteTableQuery<DynamodbNodeVisitor> query) {
-        final DynamodbDocumentFetcherFactory fetcherFactory = new DynamodbDocumentFetcherFactory();
-        return fetcherFactory.buildDocumentFetcherForQuery(query, exaConnectionInformation)
-                .run(exaConnectionInformation).collect(Collectors.toList());
+        final DynamodbDocumentFetcherFactory fetcherFactory = new DynamodbDocumentFetcherFactory(
+                dynamodbTestInterface.getDynamodbLowLevelConnection());
+        return fetcherFactory.buildDocumentFetcherForQuery(query)
+                .run(dynamodbTestInterface.getExaConnectionInformationForDynamodb()).collect(Collectors.toList());
     }
 
     @Test

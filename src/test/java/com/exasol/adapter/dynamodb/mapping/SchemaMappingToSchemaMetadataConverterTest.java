@@ -60,7 +60,8 @@ public class SchemaMappingToSchemaMetadataConverterTest {
         final SchemaMappingToSchemaMetadataConverter converter = new SchemaMappingToSchemaMetadataConverter();
         final SchemaMetadata schemaMetadata = converter.convert(schemaMapping);
         final TableMetadata firstTableMetadata = schemaMetadata.getTables().get(0);
-        final TableMapping tableMapping = converter.convertBackTable(firstTableMetadata, schemaMetadata);
+        final TableMapping tableMapping = converter.convertBackTable(firstTableMetadata,
+                schemaMetadata.getAdapterNotes());
         assertAll(//
                 () -> assertThat(tableMapping.getExasolName(), equalTo(DEST_TABLE_NAME)), //
                 () -> assertThat(tableMapping.getRemoteName(), equalTo(SRC_TABLE_NAME)), //
