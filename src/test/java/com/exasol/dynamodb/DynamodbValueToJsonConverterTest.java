@@ -16,7 +16,7 @@ import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.exasol.adapter.dynamodb.documentnode.dynamodb.*;
 import com.exasol.dynamodb.attributevalue.AttributeValueQuickCreator;
 
-public class DynamodbValueToJsonConverterTest {
+class DynamodbValueToJsonConverterTest {
 
     @Test
     void testConvertString() {

@@ -16,7 +16,7 @@ import org.junit.jupiter.api.Test;
 
 import com.exasol.adapter.AdapterException;
 
-public class JsonSchemaMappingReaderTest {
+class JsonSchemaMappingReaderTest {
     private final MappingTestFiles mappingTestFiles = new MappingTestFiles();
 
     private SchemaMapping getMappingDefinitionForFile(final File mappingFile) throws IOException, AdapterException {

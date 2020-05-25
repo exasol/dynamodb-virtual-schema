@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test;
 import com.amazonaws.AmazonWebServiceClient;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 
-public class DynamodbConnectionFactoryTest {
+class DynamodbConnectionFactoryTest {
 
     Object getPrivateField(final String name, final AmazonDynamoDB connection)
             throws NoSuchFieldException, IllegalAccessException {

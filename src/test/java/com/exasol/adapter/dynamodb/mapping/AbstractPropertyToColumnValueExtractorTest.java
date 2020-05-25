@@ -16,7 +16,7 @@ import com.exasol.adapter.dynamodb.documentpath.DocumentPathWalkerException;
 import com.exasol.adapter.dynamodb.documentpath.StaticDocumentPathIterator;
 import com.exasol.sql.expression.ValueExpression;
 
-public class AbstractPropertyToColumnValueExtractorTest {
+class AbstractPropertyToColumnValueExtractorTest {
     @Test
     void testLookup() {
         final DocumentPathExpression sourcePath = new DocumentPathExpression.Builder().addObjectLookup("isbn").build();
@@ -51,7 +51,7 @@ public class AbstractPropertyToColumnValueExtractorTest {
     }
 
     @Test
-    public void testColumnMappingException() {
+    void testColumnMappingException() {
         final String columnName = "name";
         final MockPropertyToColumnMapping mappingDefinition = new MockPropertyToColumnMapping(columnName,
                 DocumentPathExpression.empty(), LookupFailBehaviour.EXCEPTION);

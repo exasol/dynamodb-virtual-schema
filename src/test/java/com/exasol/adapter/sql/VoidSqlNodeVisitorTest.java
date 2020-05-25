@@ -9,7 +9,7 @@ import java.lang.reflect.Method;
 
 import org.junit.jupiter.api.Test;
 
-public class VoidSqlNodeVisitorTest {
+class VoidSqlNodeVisitorTest {
     @Test
     void testUnimplementedException() {
         final Method[] methods = VoidSqlNodeVisitor.class.getDeclaredMethods();

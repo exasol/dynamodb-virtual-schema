@@ -16,7 +16,7 @@ import com.exasol.adapter.metadata.ColumnMetadata;
 import com.exasol.adapter.metadata.SchemaMetadata;
 import com.exasol.adapter.metadata.TableMetadata;
 
-public class SchemaMappingToSchemaMetadataConverterTest {
+class SchemaMappingToSchemaMetadataConverterTest {
     private static final String DEST_TABLE_NAME = "TEST";
     private static final String SRC_TABLE_NAME = "srcTable";
     private static final String COLUMN_NAME = "json";

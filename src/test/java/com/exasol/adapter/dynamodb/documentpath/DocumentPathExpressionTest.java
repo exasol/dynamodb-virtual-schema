@@ -7,7 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 
 import org.junit.jupiter.api.Test;
 
-public class DocumentPathExpressionTest {
+class DocumentPathExpressionTest {
 
     private static final DocumentPathExpression TEST_PATH = new DocumentPathExpression.Builder().addObjectLookup("test")
             .build();

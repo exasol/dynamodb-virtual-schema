@@ -18,7 +18,7 @@ import com.exasol.adapter.dynamodb.mapping.TestDocuments;
  */
 @Tag("integration")
 @Testcontainers
-public class DynamodbTestInterfaceTestIT {
+class DynamodbTestInterfaceTestIT {
     private static final Network NETWORK = Network.newNetwork();
     @Container
     public static final GenericContainer LOCAL_DYNAMO = new GenericContainer<>("amazon/dynamodb-local")

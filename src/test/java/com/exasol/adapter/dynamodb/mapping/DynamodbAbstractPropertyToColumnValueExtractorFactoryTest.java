@@ -10,7 +10,7 @@ import com.exasol.adapter.dynamodb.mapping.dynamodb.DynamodbPropertyToColumnValu
 import com.exasol.adapter.dynamodb.mapping.dynamodb.DynamodbToJsonPropertyToColumnValueExtractor;
 import com.exasol.adapter.dynamodb.mapping.dynamodb.DynamodbToStringPropertyToColumnValueExtractor;
 
-public class DynamodbAbstractPropertyToColumnValueExtractorFactoryTest {
+class DynamodbAbstractPropertyToColumnValueExtractorFactoryTest {
 
     @Test
     void testToStringMapping() {

@@ -28,7 +28,7 @@ import com.exasol.containers.ExasolContainer;
  */
 @Tag("integration")
 @Testcontainers
-public class DynamodbAdapterTestAwsIT {
+class DynamodbAdapterTestAwsIT {
     private static final Logger LOGGER = LoggerFactory.getLogger(DynamodbAdapterTestAwsIT.class);
 
     @Container

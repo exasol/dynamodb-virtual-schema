@@ -23,7 +23,7 @@ import com.exasol.adapter.sql.SqlSelectList;
 import com.exasol.adapter.sql.SqlStatementSelect;
 import com.exasol.adapter.sql.SqlTable;
 
-public class RemoteTableQueryBuilderTest {
+class RemoteTableQueryBuilderTest {
     @Test
     void testBuildSelectStar() throws IOException, AdapterException {
         final SchemaMetadata schemaMetadata = new SchemaMappingToSchemaMetadataConverter()

@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Test;
 import com.exasol.adapter.dynamodb.mapping.MockPropertyToColumnMapping;
 import com.exasol.adapter.dynamodb.mapping.TableMapping;
 
-public class RemoteTableQueryTest {
+class RemoteTableQueryTest {
     @Test
     void testSetAndGetColumns() {
         final MockPropertyToColumnMapping columnDefinition = new MockPropertyToColumnMapping("", null, null);

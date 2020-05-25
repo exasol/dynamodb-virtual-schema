@@ -12,7 +12,7 @@ import com.exasol.adapter.dynamodb.documentnode.DocumentNode;
 import com.exasol.adapter.dynamodb.documentnode.MockObjectNode;
 import com.exasol.adapter.dynamodb.documentnode.MockValueNode;
 
-public class LinearDocumentPathWalkerTest {
+class LinearDocumentPathWalkerTest {
 
     private static final MockValueNode NESTED_VALUE = new MockValueNode("value");
     private static final MockObjectNode TEST_OBJECT_NODE = new MockObjectNode(Map.of("key", NESTED_VALUE));

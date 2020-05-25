@@ -10,7 +10,7 @@ import com.exasol.adapter.dynamodb.documentnode.DocumentNode;
 import com.exasol.adapter.dynamodb.documentpath.DocumentPathExpression;
 import com.exasol.sql.expression.ValueExpression;
 
-public class ToStringPropertyToColumnValueExtractorTest {
+class ToStringPropertyToColumnValueExtractorTest {
 
     private static final String TEST_STRING = "test";
 

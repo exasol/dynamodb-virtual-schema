@@ -22,11 +22,11 @@ import com.exasol.sql.expression.IntegerLiteral;
 import com.exasol.sql.expression.StringLiteral;
 import com.exasol.sql.expression.ValueExpression;
 
-public class SchemaMapperTest {
+class SchemaMapperTest {
     private static final StringLiteral STRING_LITERAL = StringLiteral.of("test");
 
     @Test
-    public void testMapRow() {
+    void testMapRow() {
         final ToJsonPropertyToColumnMapping columnMapping = new ToJsonPropertyToColumnMapping("test",
                 DocumentPathExpression.empty(), LookupFailBehaviour.EXCEPTION);
 

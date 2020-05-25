@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test;
 import com.exasol.adapter.dynamodb.documentpath.DocumentPathExpression;
 import com.exasol.adapter.metadata.DataType;
 
-public class ToStringPropertyToColumnMappingTest {
+class ToStringPropertyToColumnMappingTest {
     private static final String COLUMN_NAME = "columnName";
     private static final int STRING_LENGTH = 10;
     private static final ToStringPropertyToColumnMapping TEST_OBJECT = new ToStringPropertyToColumnMapping(COLUMN_NAME,

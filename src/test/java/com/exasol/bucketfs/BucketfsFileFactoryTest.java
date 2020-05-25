@@ -8,17 +8,17 @@ import java.io.File;
 
 import org.junit.jupiter.api.Test;
 
-public class BucketfsFileFactoryTest {
+class BucketfsFileFactoryTest {
 
     @Test
-    public void testOpenFile() {
+    void testOpenFile() {
         final String path = "/bfsdefault/default/folder/file.txt";
         final File file = new BucketfsFileFactory().openFile(path);
         assertThat(file.getAbsolutePath(), equalTo("/buckets/bfsdefault/default/folder/file.txt"));
     }
 
     @Test
-    public void testInjection() {
+    void testInjection() {
         final String injectionPath = "/../etc/secrets.conf";
         final IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
                 () -> new BucketfsFileFactory().openFile(injectionPath));

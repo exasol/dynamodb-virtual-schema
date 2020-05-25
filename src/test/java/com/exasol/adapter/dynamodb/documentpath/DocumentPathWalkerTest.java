@@ -15,7 +15,7 @@ import com.exasol.adapter.dynamodb.documentnode.MockArrayNode;
 import com.exasol.adapter.dynamodb.documentnode.MockObjectNode;
 import com.exasol.adapter.dynamodb.documentnode.MockValueNode;
 
-public class DocumentPathWalkerTest {
+class DocumentPathWalkerTest {
 
     private static final MockValueNode NESTED_VALUE1 = new MockValueNode("value");
     private static final MockValueNode NESTED_VALUE2 = new MockValueNode("value");

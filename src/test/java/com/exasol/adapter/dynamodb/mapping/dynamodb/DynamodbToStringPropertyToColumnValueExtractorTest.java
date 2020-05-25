@@ -15,7 +15,7 @@ import com.exasol.adapter.dynamodb.documentpath.DocumentPathExpression;
 import com.exasol.adapter.dynamodb.mapping.LookupFailBehaviour;
 import com.exasol.adapter.dynamodb.mapping.ToStringPropertyToColumnMapping;
 
-public class DynamodbToStringPropertyToColumnValueExtractorTest {
+class DynamodbToStringPropertyToColumnValueExtractorTest {
 
     private static final int TEST_NUMBER = 42;
     private static final String TEST_SOURCE_COLUMN = "myColumn";

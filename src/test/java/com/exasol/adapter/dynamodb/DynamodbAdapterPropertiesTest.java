@@ -11,18 +11,18 @@ import org.junit.jupiter.api.Test;
 import com.exasol.adapter.AdapterException;
 import com.exasol.adapter.AdapterProperties;
 
-public class DynamodbAdapterPropertiesTest {
+class DynamodbAdapterPropertiesTest {
     private static final String BUCKETFS_PATH = "/bfsdefault/default/mappings/mapping.json";
 
     @Test
-    public void testEmptySchema() {
+    void testEmptySchema() {
         final AdapterProperties adapterProperties = new AdapterProperties(Collections.emptyMap());
         final DynamodbAdapterProperties dynamodbAdapterProperties = new DynamodbAdapterProperties(adapterProperties);
         assertThat(dynamodbAdapterProperties.hasMappingDefinition(), equalTo(false));
     }
 
     @Test
-    public void testHasSchemaDefinitionProperty() {
+    void testHasSchemaDefinitionProperty() {
 
         final AdapterProperties adapterProperties = new AdapterProperties(Map.of("MAPPING", BUCKETFS_PATH));
         final DynamodbAdapterProperties dynamodbAdapterProperties = new DynamodbAdapterProperties(adapterProperties);
@@ -30,7 +30,7 @@ public class DynamodbAdapterPropertiesTest {
     }
 
     @Test
-    public void testGetSchemaDefinitionProperty() throws AdapterException {
+    void testGetSchemaDefinitionProperty() throws AdapterException {
         final AdapterProperties adapterProperties = new AdapterProperties(Map.of("MAPPING", BUCKETFS_PATH));
         final DynamodbAdapterProperties dynamodbAdapterProperties = new DynamodbAdapterProperties(adapterProperties);
         assertThat(dynamodbAdapterProperties.getMappingDefinition(), equalTo(BUCKETFS_PATH));

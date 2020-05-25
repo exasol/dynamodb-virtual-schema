@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Test;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.exasol.dynamodb.attributevalue.AttributeValueQuickCreator;
 
-public class DynamodbBinarySetTest {
+class DynamodbBinarySetTest {
     private static final ByteBuffer BINARY_1 = ByteBuffer.wrap("test1".getBytes());
     private static final ByteBuffer BINARY_2 = ByteBuffer.wrap("test1".getBytes());
     private static final AttributeValue BINARY_SET = AttributeValueQuickCreator

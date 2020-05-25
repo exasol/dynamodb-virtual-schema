@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.exasol.dynamodb.attributevalue.AttributeValueQuickCreator;
 
-public class DynamodbStringTest {
+class DynamodbStringTest {
     private static final String TEST_VALUE = "test";
     private static final AttributeValue ATTRIBUTE_VALUE = AttributeValueQuickCreator.forString(TEST_VALUE);
 
