@@ -20,8 +20,9 @@ class BucketfsFileFactoryTest {
     @Test
     void testInjection() {
         final String injectionPath = "/../etc/secrets.conf";
+        final BucketfsFileFactory bucketfsFileFactory = new BucketfsFileFactory();
         final IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
-                () -> new BucketfsFileFactory().openFile(injectionPath));
+                () -> bucketfsFileFactory.openFile(injectionPath));
         assertThat(exception.getMessage(), equalTo("Given path (/etc/secrets.conf) is outside of bucketfs."));
     }
 

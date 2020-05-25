@@ -44,9 +44,11 @@ class DynamodbToStringPropertyToColumnValueExtractorTest {
 
     @Test
     void testConvertUnsupportedDynamodbType() {
+        final DynamodbToStringPropertyToColumnValueExtractor valueExtractor = new DynamodbToStringPropertyToColumnValueExtractor(
+                TO_STRING_PROPERTY_TO_COLUMN_MAPPING);
+        final DynamodbList dynamodbList = new DynamodbList(Collections.emptyList());
         final UnsupportedOperationException exception = assertThrows(UnsupportedOperationException.class,
-                () -> new DynamodbToStringPropertyToColumnValueExtractor(TO_STRING_PROPERTY_TO_COLUMN_MAPPING)
-                        .mapStringValue(new DynamodbList(Collections.emptyList())));
+                () -> valueExtractor.mapStringValue(dynamodbList));
         assertThat(exception.getMessage(),
                 equalTo("The DynamoDB type List cant't be converted to string. Try using a different mapping."));
     }
