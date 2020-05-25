@@ -11,7 +11,7 @@ public class ColumnValueExtractorLookupException extends ColumnValueExtractorExc
     private static final long serialVersionUID = 6126777174742675113L;
 
     /**
-     * Creates an instance of {@link ColumnValueExtractorLookupException}.
+     * Create an instance of {@link ColumnValueExtractorLookupException}.
      *
      * @param message Exception message
      * @param column  {@link ColumnMapping} that caused exception

@@ -208,6 +208,11 @@
             <version>${jacoco.version}</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.logicng</groupId>
+            <artifactId>logicng</artifactId>
+            <version>1.6.2</version>
+        </dependency>
     </dependencies>
     <build>
         <plugins>

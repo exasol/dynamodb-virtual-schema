@@ -8,7 +8,7 @@ public class ColumnValueExtractorFactory<DocumentVisitorType> {
     private final PropertyToColumnValueExtractorFactory<DocumentVisitorType> propertyToColumnValueExtractorFactory;
 
     /**
-     * Creates an instance of {@link ColumnValueExtractorFactory}.
+     * Create an instance of {@link ColumnValueExtractorFactory}.
      * 
      * @param propertyToColumnValueExtractorFactory {@link PropertyToColumnValueExtractorFactory} for building
      *                                              {@link AbstractPropertyToColumnValueExtractor}s

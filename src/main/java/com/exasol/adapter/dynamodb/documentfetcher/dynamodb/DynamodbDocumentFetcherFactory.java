@@ -18,7 +18,7 @@ public class DynamodbDocumentFetcherFactory implements DocumentFetcherFactory<Dy
     private final DynamodbTableMetadataFactory tableMetadataFactory;
 
     /**
-     * Creates an instance of {@link DynamodbDocumentFetcherFactory}.
+     * Create an instance of {@link DynamodbDocumentFetcherFactory}.
      * 
      * @param dynamodbClient DynamoDB connection used for fetching table metadata
      */

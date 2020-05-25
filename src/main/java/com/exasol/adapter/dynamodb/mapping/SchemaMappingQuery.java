@@ -8,14 +8,14 @@ import java.util.List;
 public interface SchemaMappingQuery {
 
     /**
-     * Gives the table defined in the {@code FROM} clause of the statement.
+     * Get the table defined in the {@code FROM} clause of the statement.
      *
      * @return {{@link TableMapping}}
      */
     public TableMapping getFromTable();
 
     /**
-     * Gives the select list columns.
+     * Get the select list columns.
      *
      * @return select list columns
      */

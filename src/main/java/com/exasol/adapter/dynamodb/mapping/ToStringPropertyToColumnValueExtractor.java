@@ -13,7 +13,7 @@ public abstract class ToStringPropertyToColumnValueExtractor<DocumentVisitorType
     private final ToStringPropertyToColumnMapping column;
 
     /**
-     * Creates an instance of {@link ToStringPropertyToColumnValueExtractor}.
+     * Create an instance of {@link ToStringPropertyToColumnValueExtractor}.
      * 
      * @param column {@link ToStringPropertyToColumnMapping}
      */

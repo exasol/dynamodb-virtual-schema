@@ -14,7 +14,7 @@ public final class ToJsonPropertyToColumnMapping extends AbstractPropertyToColum
     private static final long serialVersionUID = -8905031243395926232L;
 
     /**
-     * Creates an instance of {@link ToJsonPropertyToColumnMapping}.
+     * Create an instance of {@link ToJsonPropertyToColumnMapping}.
      *
      * @param exasolColumnName     Name of the Exasol column
      * @param pathToSourceProperty {@link DocumentPathExpression} path to the property to extract

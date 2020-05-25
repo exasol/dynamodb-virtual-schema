@@ -10,7 +10,7 @@ public class DynamodbNumber implements DocumentValue<DynamodbNodeVisitor> {
     private final String value;
 
     /**
-     * Creates an instance of {@link DynamodbNumber}.
+     * Create an instance of {@link DynamodbNumber}.
      *
      * @param value value to hold
      */
@@ -19,7 +19,7 @@ public class DynamodbNumber implements DocumentValue<DynamodbNodeVisitor> {
     }
 
     /**
-     * Gives the number value.
+     * Get the number value.
      *
      * @return value of the string
      */

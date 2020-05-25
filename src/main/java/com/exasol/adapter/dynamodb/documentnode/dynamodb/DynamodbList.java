@@ -15,7 +15,7 @@ public class DynamodbList implements DocumentArray<DynamodbNodeVisitor> {
     private final List<AttributeValue> value;
 
     /**
-     * Creates an instance of {@link DynamodbList}.
+     * Create an instance of {@link DynamodbList}.
      *
      * @param value value to hold
      */

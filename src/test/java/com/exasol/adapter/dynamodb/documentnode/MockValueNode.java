@@ -16,4 +16,9 @@ public class MockValueNode implements DocumentValue<Object> {
     public void accept(final Object visitor) {
 
     }
+
+    @Override
+    public String toString() {
+        return "MockValueNode{" + "value='" + this.value + '\'' + '}';
+    }
 }

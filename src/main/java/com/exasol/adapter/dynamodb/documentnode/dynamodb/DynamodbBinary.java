@@ -12,7 +12,7 @@ public class DynamodbBinary implements DocumentValue<DynamodbNodeVisitor> {
     private final byte[] value;
 
     /**
-     * Creates an instance of {@link DynamodbBinary}.
+     * Create an instance of {@link DynamodbBinary}.
      *
      * @param value value to hold
      */
@@ -21,7 +21,7 @@ public class DynamodbBinary implements DocumentValue<DynamodbNodeVisitor> {
     }
 
     /**
-     * Gives the binary value.
+     * Get the binary value.
      *
      * @return value of the string
      */

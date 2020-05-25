@@ -19,7 +19,7 @@ public class BaseDynamodbTableMetadataFactory implements DynamodbTableMetadataFa
     private final AmazonDynamoDB connection;
 
     /**
-     * Creates an instance of {@link BaseDynamodbTableMetadataFactory}.
+     * Create an instance of {@link BaseDynamodbTableMetadataFactory}.
      *
      * @param connection DynamoDB connection used for {@code describeTable} call
      */

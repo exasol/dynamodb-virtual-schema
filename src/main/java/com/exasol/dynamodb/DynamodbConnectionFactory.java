@@ -16,7 +16,7 @@ public class DynamodbConnectionFactory {
     private static final String AWS_LOCAL_REGION = "eu-central-1";
 
     /**
-     * Creates an AmazonDynamoDB (low level api client) for a given uri, user and key.
+     * Create an AmazonDynamoDB (low level api client) for a given uri, user and key.
      *
      * @param uri  either aws:<REGION> or the address of a local DynamoDB server (e.g. http://localhost:8000)
      * @param user aws credential id
@@ -36,7 +36,7 @@ public class DynamodbConnectionFactory {
     }
 
     /**
-     * Creates an AmazonDynamoDB (low level api client) with connection settings from an Exasol
+     * Create an AmazonDynamoDB (low level api client) with connection settings from an Exasol
      * {@link ExaConnectionInformation} object.
      * 
      * @param exaConnectionInformation connection settings
@@ -48,7 +48,7 @@ public class DynamodbConnectionFactory {
     }
 
     /**
-     * Creates a DynamoDB (document api client) for a given uri, user and key. for details see
+     * Create a DynamoDB (document api client) for a given uri, user and key. for details see
      * {@link #getLowLevelConnection(String, String, String)}.
      *
      * @return DynamoDB (document api client)

@@ -19,7 +19,7 @@ public class DocumentPathExpression implements Serializable {
     }
 
     /**
-     * Gives an empty {@link DocumentPathExpression}.
+     * Get an empty {@link DocumentPathExpression}.
      *
      * @return empty {@link DocumentPathExpression}
      */
@@ -28,7 +28,7 @@ public class DocumentPathExpression implements Serializable {
     }
 
     /**
-     * Gives the list with the path segments.
+     * Get the list with the path segments.
      * 
      * @return list with path segments
      */
@@ -37,7 +37,7 @@ public class DocumentPathExpression implements Serializable {
     }
 
     /**
-     * Creates a subpath from startIndex (inclusive) til endIndex (exclusive).
+     * Create a subpath from startIndex (inclusive) til endIndex (exclusive).
      *
      * @param startIndex index in path for new path to start
      * @param endIndex   index in path for new path to end
@@ -48,7 +48,7 @@ public class DocumentPathExpression implements Serializable {
     }
 
     /**
-     * Gives the size of this path expression.
+     * Get the size of this path expression.
      *
      * @return size
      */
@@ -79,7 +79,7 @@ public class DocumentPathExpression implements Serializable {
     }
 
     /**
-     * Gives the index of the first {@link ArrayAllPathSegment}.
+     * Get the index of the first {@link ArrayAllPathSegment}.
      *
      * @return index of the first {@link ArrayAllPathSegment}; {@code -1} if not found.
      */
@@ -115,14 +115,14 @@ public class DocumentPathExpression implements Serializable {
         private final List<PathSegment> segments = new ArrayList<>();
 
         /**
-         * Creates an instance of {@link Builder} with an empty path.
+         * Create an instance of {@link Builder} with an empty path.
          */
         public Builder() {
             // intentionally left empty.
         }
 
         /**
-         * Creates a copy of the given {@link Builder}.
+         * Create a copy of the given {@link Builder}.
          * 
          * @param copy {@link Builder} to copy
          */

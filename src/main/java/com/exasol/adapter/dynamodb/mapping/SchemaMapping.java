@@ -10,7 +10,7 @@ public class SchemaMapping {
     private final List<TableMapping> tableMappings;
 
     /**
-     * Creates an instance of {@link SchemaMapping}.
+     * Create an instance of {@link SchemaMapping}.
      * 
      * @param tableMappings List of {@link TableMapping}s
      */

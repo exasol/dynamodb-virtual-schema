@@ -26,7 +26,7 @@ class JsonSchemaMappingValidator {
     private final Schema schema;
 
     /**
-     * Creates an instance of {@link JsonSchemaMappingValidator}.
+     * Create an instance of {@link JsonSchemaMappingValidator}.
      * 
      * @throws IOException if reading schema from resources fails.
      */

@@ -8,7 +8,7 @@ public class ArrayLookupPathSegment implements PathSegment {
     private final int lookupIndex;
 
     /**
-     * Creates an {@link ArrayLookupPathSegment}.
+     * Create an {@link ArrayLookupPathSegment}.
      * 
      * @param lookupIndex index to look up
      */

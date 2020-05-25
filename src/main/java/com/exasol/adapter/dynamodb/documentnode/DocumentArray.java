@@ -18,7 +18,7 @@ public interface DocumentArray<VisitorType> extends DocumentNode<VisitorType> {
     public List<? extends DocumentNode<VisitorType>> getValuesList();
 
     /**
-     * Gives a document node for an specific element of the wrapped array.
+     * Get a document node for an specific element of the wrapped array.
      * 
      * @param index index of the element that shall be returned
      * @return Document node wrapping the value.
@@ -26,7 +26,7 @@ public interface DocumentArray<VisitorType> extends DocumentNode<VisitorType> {
     public DocumentNode<VisitorType> getValue(int index);
 
     /**
-     * Gives the size of the wrapped array.
+     * Get the size of the wrapped array.
      * 
      * @return size of the wrapped array
      */

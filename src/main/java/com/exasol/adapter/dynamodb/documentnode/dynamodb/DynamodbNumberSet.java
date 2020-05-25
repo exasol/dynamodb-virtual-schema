@@ -14,7 +14,7 @@ public class DynamodbNumberSet implements DocumentArray<DynamodbNodeVisitor> {
     private final Collection<String> value;
 
     /**
-     * Creates an instance of {@link DynamodbNumberSet}.
+     * Create an instance of {@link DynamodbNumberSet}.
      *
      * @param value value to hold
      */

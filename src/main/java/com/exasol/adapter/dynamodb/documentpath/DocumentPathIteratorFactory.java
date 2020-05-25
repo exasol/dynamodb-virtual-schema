@@ -16,7 +16,7 @@ public class DocumentPathIteratorFactory<VisitorType> implements Iterable<PathIt
     private final DocumentNode<VisitorType> document;
 
     /**
-     * Creates an instance of {@link DocumentPathIteratorFactory}.
+     * Create an instance of {@link DocumentPathIteratorFactory}.
      * 
      * @param path     path expression to iterate
      * @param document document
@@ -36,7 +36,7 @@ public class DocumentPathIteratorFactory<VisitorType> implements Iterable<PathIt
     }
 
     /**
-     * Gives a stream of iteration states.
+     * Get a stream of iteration states.
      * 
      * @return stream of {@link PathIterationStateProvider}
      */

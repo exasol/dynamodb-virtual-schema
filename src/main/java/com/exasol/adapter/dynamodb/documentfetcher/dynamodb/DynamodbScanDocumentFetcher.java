@@ -17,7 +17,7 @@ class DynamodbScanDocumentFetcher extends AbstractDynamodbDocumentFetcher {
     private final ScanRequest scanRequest;
 
     /**
-     * Creates an instance of {@link DynamodbScanDocumentFetcher}.
+     * Create an instance of {@link DynamodbScanDocumentFetcher}.
      *
      * @param documentQuery document query to fetch the documents for
      */

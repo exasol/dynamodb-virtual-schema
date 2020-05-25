@@ -17,7 +17,7 @@ public class RemoteTableQuery<DocumentVisitorType> implements SchemaMappingQuery
     private final QueryPredicate<DocumentVisitorType> selection;
 
     /**
-     * Creates an instance of {@link RemoteTableQuery}.
+     * Create an instance of {@link RemoteTableQuery}.
      * 
      * @param fromTable  remote table to query
      * @param selectList in correct order
@@ -36,7 +36,7 @@ public class RemoteTableQuery<DocumentVisitorType> implements SchemaMappingQuery
     }
 
     /**
-     * Gives the select list columns.
+     * Get the select list columns.
      * 
      * @return select list columns
      */
@@ -46,7 +46,7 @@ public class RemoteTableQuery<DocumentVisitorType> implements SchemaMappingQuery
     }
 
     /**
-     * Gives the where clause of this query.
+     * Get the where clause of this query.
      * 
      * @return Predicate representing the selection
      */

@@ -16,7 +16,7 @@ public final class ToStringPropertyToColumnMapping extends AbstractPropertyToCol
     private final OverflowBehaviour overflowBehaviour;
 
     /**
-     * Creates an instance of {@link ToStringPropertyToColumnMapping}.
+     * Create an instance of {@link ToStringPropertyToColumnMapping}.
      *
      * @param exasolColumnName     Name of the Exasol column
      * @param pathToSourceProperty {@link DocumentPathExpression} path to the property to extract

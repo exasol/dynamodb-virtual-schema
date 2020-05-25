@@ -22,7 +22,7 @@ public class DynamodbQueryDocumentFetcher extends AbstractDynamodbDocumentFetche
     private final QueryRequest queryRequest;
 
     /**
-     * Creates an a {@link DynamodbQueryDocumentFetcher} if possible for the given query.
+     * Create an a {@link DynamodbQueryDocumentFetcher} if possible for the given query.
      *
      * @param remoteTableQuery query to build the plan for
      * @param tableMetadata    DynamoDB table metadata used for checking the primary key

@@ -20,7 +20,7 @@ public class SchemaMapper<DocumentVisitorType> {
     private final ColumnValueExtractorFactory<DocumentVisitorType> columnValueExtractorFactory;
 
     /**
-     * Creates a new {@link SchemaMapper} for the given query.
+     * Create a new {@link SchemaMapper} for the given query.
      *
      * @param query                                 query used as plan for the schema mapping
      * @param propertyToColumnValueExtractorFactory factory for value mapper corresponding to

@@ -14,14 +14,14 @@ public abstract class AbstractDynamodbPlaceholderMapBuilder<T> {
     private int uniquePlaceholderIdentifier = 0;
 
     /**
-     * Gives the start character for placeholders. For example {@code #}.
+     * Get the start character for placeholders. For example {@code #}.
      * 
      * @return start character for the placeholder
      */
     protected abstract String getPlaceholderCharacter();
 
     /**
-     * Adds a value to the placeholder map and gives a placeholder for it. This method generates unique placeholders by
+     * Add a value to the placeholder map and gives a placeholder for it. This method generates unique placeholders by
      * like {@code #1} by a application specific placeholder character and a number that is increased for each generated
      * placeholder.
      * 
@@ -39,7 +39,7 @@ public abstract class AbstractDynamodbPlaceholderMapBuilder<T> {
     }
 
     /**
-     * Gives the built placeholder map.
+     * Get the built placeholder map.
      * 
      * @return value map
      */

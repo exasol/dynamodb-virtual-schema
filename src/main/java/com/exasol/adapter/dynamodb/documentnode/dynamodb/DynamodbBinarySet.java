@@ -15,7 +15,7 @@ public class DynamodbBinarySet implements DocumentArray<DynamodbNodeVisitor> {
     private final List<DynamodbBinary> value;
 
     /**
-     * Creates an instance of {@link DynamodbBinarySet}.
+     * Create an instance of {@link DynamodbBinarySet}.
      *
      * @param value value to hold
      */

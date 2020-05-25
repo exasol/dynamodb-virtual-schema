@@ -7,7 +7,7 @@ public class ExasolDocumentMappingLanguageException extends RuntimeException {
     private static final long serialVersionUID = -2085914528874432089L;
 
     /**
-     * Creates an instance of {@link ExasolDocumentMappingLanguageException}.
+     * Create an instance of {@link ExasolDocumentMappingLanguageException}.
      *
      * @param message Exception message
      */

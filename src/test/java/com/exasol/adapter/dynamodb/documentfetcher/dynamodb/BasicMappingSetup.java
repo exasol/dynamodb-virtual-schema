@@ -40,7 +40,7 @@ public class BasicMappingSetup {
     }
 
     /**
-     * Creates a query that should fetch one item based on the primary key {@code isbn}.
+     * Create a query that should fetch one item based on the primary key {@code isbn}.
      * 
      * @param isbn primary keys value
      * @return query
@@ -54,8 +54,8 @@ public class BasicMappingSetup {
     }
 
     /**
-     * Creates a query that should return all books of a given publisher. For the publisher there is an index that can
-     * be used so this query can be answered using a {@code Query} operation.
+     * Create a query that should return all books of a given publisher. For the publisher there is an index that can be
+     * used so this query can be answered using a {@code Query} operation.
      * 
      * @param publisher name of the publisher to query
      * @return query
@@ -67,7 +67,7 @@ public class BasicMappingSetup {
     }
 
     /**
-     * Creates a query representing: {@code SELECT * FROM BOOKS WHERE price > :price}
+     * Create a query representing: {@code SELECT * FROM BOOKS WHERE price > :price}
      *
      * @param price to filter
      * @return query
@@ -79,7 +79,7 @@ public class BasicMappingSetup {
     }
 
     /**
-     * Creates a query representing: {@code SELECT * FROM BOOKS WHERE price > :price AND publisher = :publisher}
+     * Create a query representing: {@code SELECT * FROM BOOKS WHERE price > :price AND publisher = :publisher}
      *
      * @param price     to selection
      * @param publisher for selection
@@ -97,7 +97,7 @@ public class BasicMappingSetup {
     }
 
     /**
-     * Creates a query representing: {@code SELECT * FROM BOOKS WHERE name = :name AND publisher = :publisher}
+     * Create a query representing: {@code SELECT * FROM BOOKS WHERE name = :name AND publisher = :publisher}
      *
      * @param name      for selection
      * @param publisher to selection

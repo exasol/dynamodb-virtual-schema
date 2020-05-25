@@ -8,7 +8,7 @@ public class DynamodbQuerySelectionFilterException extends RuntimeException {
     private static final long serialVersionUID = -5314222741575889839L;
 
     /**
-     * Creates an instance of {@link DynamodbQuerySelectionFilterException}
+     * Create an instance of {@link DynamodbQuerySelectionFilterException}
      * 
      * @param message exception message
      */

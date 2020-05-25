@@ -9,7 +9,7 @@ import java.util.Map;
 public interface DocumentObject<VisitorType> extends DocumentNode<VisitorType> {
 
     /**
-     * Gives a map that represents this object. The values are wrapped as document nodes.
+     * Get a map that represents this object. The values are wrapped as document nodes.
      * 
      * @return map representing this object
      */

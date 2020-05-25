@@ -13,7 +13,7 @@ abstract class AbstractPropertyToColumnMapping extends AbstractColumnMapping imp
     private final LookupFailBehaviour lookupFailBehaviour;
 
     /**
-     * Creates an instance of {@link AbstractPropertyToColumnMapping}.
+     * Create an instance of {@link AbstractPropertyToColumnMapping}.
      *
      * @param exasolColumnName     name of the Exasol column
      * @param pathToSourceProperty {@link DocumentPathExpression} path to the property to extract
@@ -28,7 +28,7 @@ abstract class AbstractPropertyToColumnMapping extends AbstractColumnMapping imp
     }
 
     /**
-     * Gives the path to the property to extract.
+     * Get the path to the property to extract.
      *
      * @return path to the property to extract
      */
@@ -37,7 +37,7 @@ abstract class AbstractPropertyToColumnMapping extends AbstractColumnMapping imp
     }
 
     /**
-     * Gives the {@link LookupFailBehaviour} used in case that the path does not exist in the document.
+     * Get the {@link LookupFailBehaviour} used in case that the path does not exist in the document.
      *
      * @return {@link LookupFailBehaviour}
      */

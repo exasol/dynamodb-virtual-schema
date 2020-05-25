@@ -12,7 +12,7 @@ public abstract class ToJsonPropertyToColumnValueExtractor<DocumentVisitorType>
         extends AbstractPropertyToColumnValueExtractor<DocumentVisitorType> {
 
     /**
-     * Creates an instance of {@link ToJsonPropertyToColumnValueExtractor}.
+     * Create an instance of {@link ToJsonPropertyToColumnValueExtractor}.
      * 
      * @param column {@link ToJsonPropertyToColumnMapping}
      */

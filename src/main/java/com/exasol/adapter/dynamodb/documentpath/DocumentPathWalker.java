@@ -15,7 +15,7 @@ public class DocumentPathWalker<VisitorType> {
     private final PathIterationStateProvider iterationStateProvider;
 
     /**
-     * Creates an instance of {@link DocumentPathWalker}.
+     * Create an instance of {@link DocumentPathWalker}.
      * 
      * @param pathExpression path to walk
      */

@@ -23,7 +23,7 @@ public class LoopDocumentPathIterator<VisitorType> implements Iterator<PathItera
     private Iterator<PathIterationStateProvider> nestedIterator;
 
     /**
-     * Creates an instance of {@link LoopDocumentPathIterator}.
+     * Create an instance of {@link LoopDocumentPathIterator}.
      * 
      * @param path     path definition used for extracting the {@link ArrayAllPathSegment}s to iterate
      * @param document document used for reading the array sizes

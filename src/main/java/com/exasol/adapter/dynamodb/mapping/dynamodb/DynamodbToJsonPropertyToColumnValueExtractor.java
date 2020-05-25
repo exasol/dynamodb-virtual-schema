@@ -15,7 +15,7 @@ public class DynamodbToJsonPropertyToColumnValueExtractor
         extends ToJsonPropertyToColumnValueExtractor<DynamodbNodeVisitor> {
 
     /**
-     * Creates an instance of {@link DynamodbToJsonPropertyToColumnValueExtractor}.
+     * Create an instance of {@link DynamodbToJsonPropertyToColumnValueExtractor}.
      *
      * @param column {@link ToJsonPropertyToColumnMapping}
      */

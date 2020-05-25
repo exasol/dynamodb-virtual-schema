@@ -11,7 +11,7 @@ public class DynamodbAdapterProperties {
     private final AdapterProperties properties;
 
     /**
-     * Creates a new instance of {@link DynamodbAdapterProperties}.
+     * Create a new instance of {@link DynamodbAdapterProperties}.
      * 
      * @param properties Adapter Properties
      */

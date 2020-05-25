@@ -9,7 +9,7 @@ public abstract class ComparisonPredicate<DocumentVisitorType> implements QueryP
     private final Operator operator;
 
     /**
-     * Creates a new instance of {@link ComparisonPredicate}.
+     * Create a new instance of {@link ComparisonPredicate}.
      * 
      * @param operator comparison operator
      */
@@ -18,12 +18,30 @@ public abstract class ComparisonPredicate<DocumentVisitorType> implements QueryP
     }
 
     /**
-     * Gives the comparison operator.
+     * Get the comparison operator.
      * 
      * @return the operator
      */
     public Operator getOperator() {
         return this.operator;
+    }
+
+    @Override
+    public String toString() {
+        switch (this.operator) {
+        case EQUAL:
+            return "=";
+        case LESS:
+            return "<";
+        case LESS_EQUAL:
+            return "<=";
+        case GREATER:
+            return ">";
+        case GREATER_EQUAL:
+            return ">=";
+        default:
+            throw new UnsupportedOperationException();// All possible operators are implemented
+        }
     }
 
     /**

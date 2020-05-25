@@ -5,7 +5,7 @@ package com.exasol.adapter.dynamodb.mapping;
  */
 public interface SchemaMappingReader {
     /**
-     * Gives a {@link SchemaMapping}
+     * Get a {@link SchemaMapping}
      * 
      * @return {@link SchemaMapping}
      */

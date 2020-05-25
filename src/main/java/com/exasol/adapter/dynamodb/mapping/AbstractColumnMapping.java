@@ -10,7 +10,7 @@ abstract class AbstractColumnMapping implements ColumnMapping {
     private final String exasolColumnName;
 
     /**
-     * Creates an instance of {@link AbstractColumnMapping}
+     * Create an instance of {@link AbstractColumnMapping}
      *
      * @param exasolColumnName name of the Exasol column
      */
