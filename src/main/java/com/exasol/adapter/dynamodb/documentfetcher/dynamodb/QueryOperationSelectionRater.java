@@ -9,7 +9,6 @@ import com.exasol.adapter.dynamodb.remotetablequery.ColumnLiteralComparisonPredi
  * This class rates the selectivity of a {@link QueryOperationSelection}.
  */
 public class QueryOperationSelectionRater {
-//TODO improved to detect if key is unique
     /**
      * Rate the selectivity of a {@link QueryOperationSelection}.
      * 
