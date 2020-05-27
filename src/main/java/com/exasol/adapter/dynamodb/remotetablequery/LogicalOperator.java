@@ -7,7 +7,7 @@ import java.util.stream.Collectors;
  * This class represents a {@code AND} or {@code OR} logical operator.
  */
 @java.lang.SuppressWarnings("squid:S119") // DocumentVisitorType does not fit naming conventions.
-public class LogicalOperator<DocumentVisitorType> implements QueryPredicate<DocumentVisitorType> {
+public final class LogicalOperator<DocumentVisitorType> implements QueryPredicate<DocumentVisitorType> {
     private static final long serialVersionUID = -8351558984178219419L;
     private final List<QueryPredicate<DocumentVisitorType>> operands;
     private final Operator operator;
@@ -47,18 +47,29 @@ public class LogicalOperator<DocumentVisitorType> implements QueryPredicate<Docu
     }
 
     @Override
+    public QueryPredicate<DocumentVisitorType> simplify() {
+        final List<QueryPredicate<DocumentVisitorType>> simplifiedOperands = this.operands.stream()
+                .map(QueryPredicate::simplify).filter(operand -> !(operand instanceof NoPredicate))
+                .collect(Collectors.toList());
+        if (simplifiedOperands.isEmpty()) {
+            return new NoPredicate<>();
+        } else if (simplifiedOperands.size() == 1) {
+            return simplifiedOperands.iterator().next();
+        } else {
+            return new LogicalOperator<>(simplifiedOperands, this.operator);
+        }
+    }
+
+    @Override
     public boolean equals(final Object other) {
         if (this == other) {
             return true;
         }
-        if (other == null || getClass() != other.getClass()) {
+        if (!(other instanceof LogicalOperator)) {
             return false;
         }
         final LogicalOperator<?> that = (LogicalOperator<?>) other;
-        if (!this.operands.equals(that.operands)) {
-            return false;
-        }
-        return this.operator == that.operator;
+        return this.operator == that.operator && this.operands.equals(that.operands);
     }
 
     @Override

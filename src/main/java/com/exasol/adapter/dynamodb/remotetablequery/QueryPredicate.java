@@ -8,5 +8,12 @@ import java.io.Serializable;
  */
 @java.lang.SuppressWarnings("squid:S119") // DocumentVisitorType does not fit naming conventions.
 public interface QueryPredicate<DocumentVisitorType> extends Serializable {
-    void accept(QueryPredicateVisitor<DocumentVisitorType> visitor);
+    public void accept(QueryPredicateVisitor<DocumentVisitorType> visitor);
+
+    /**
+     * Eliminate ANDs and ORs with only no or only one operand.
+     * 
+     * @return simplified predicate.
+     */
+    public QueryPredicate<DocumentVisitorType> simplify();
 }

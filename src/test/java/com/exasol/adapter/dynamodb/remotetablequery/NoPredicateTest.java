@@ -14,4 +14,14 @@ class NoPredicateTest {
         TEST_PREDICATE.accept(visitor);
         assertThat(visitor.getVisited(), equalTo(PredicateTestVisitor.Visited.NO));
     }
+
+    @Test
+    void testSimplify() {
+        assertThat(TEST_PREDICATE.simplify(), equalTo(TEST_PREDICATE));
+    }
+
+    @Test
+    void testToString() {
+        assertThat(TEST_PREDICATE.toString(), equalTo("NoPredicate"));
+    }
 }

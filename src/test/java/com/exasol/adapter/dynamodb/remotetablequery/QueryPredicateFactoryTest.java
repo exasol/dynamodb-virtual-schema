@@ -73,7 +73,7 @@ class QueryPredicateFactoryTest {
                 () -> assertThat(predicate.getLiteral(), equalTo(LITERAL)),
                 () -> assertThat(predicate.getColumn().getExasolColumnName(),
                         equalTo(COLUMN_MAPPING.getExasolColumnName())),
-                () -> assertThat(predicate.getOperator(), equalTo(ComparisonPredicate.Operator.EQUAL))//
+                () -> assertThat(predicate.getOperator(), equalTo(AbstractComparisonPredicate.Operator.EQUAL))//
         );
     }
 
@@ -86,7 +86,7 @@ class QueryPredicateFactoryTest {
                 () -> assertThat(predicate.getLiteral(), equalTo(LITERAL)),
                 () -> assertThat(predicate.getColumn().getExasolColumnName(),
                         equalTo(COLUMN_MAPPING.getExasolColumnName())),
-                () -> assertThat(predicate.getOperator(), equalTo(ComparisonPredicate.Operator.EQUAL))//
+                () -> assertThat(predicate.getOperator(), equalTo(AbstractComparisonPredicate.Operator.EQUAL))//
         );
     }
 
@@ -119,7 +119,7 @@ class QueryPredicateFactoryTest {
                 () -> assertThat(predicate.getLiteral(), equalTo(LITERAL)),
                 () -> assertThat(predicate.getColumn().getExasolColumnName(),
                         equalTo(COLUMN_MAPPING.getExasolColumnName())),
-                () -> assertThat(predicate.getOperator(), equalTo(ComparisonPredicate.Operator.LESS))//
+                () -> assertThat(predicate.getOperator(), equalTo(AbstractComparisonPredicate.Operator.LESS))//
         );
     }
 
@@ -132,7 +132,7 @@ class QueryPredicateFactoryTest {
                 () -> assertThat(predicate.getLiteral(), equalTo(LITERAL)),
                 () -> assertThat(predicate.getColumn().getExasolColumnName(),
                         equalTo(COLUMN_MAPPING.getExasolColumnName())),
-                () -> assertThat(predicate.getOperator(), equalTo(ComparisonPredicate.Operator.GREATER))//
+                () -> assertThat(predicate.getOperator(), equalTo(AbstractComparisonPredicate.Operator.GREATER))//
         );
     }
 
@@ -145,7 +145,7 @@ class QueryPredicateFactoryTest {
                 () -> assertThat(predicate.getLiteral(), equalTo(LITERAL)),
                 () -> assertThat(predicate.getColumn().getExasolColumnName(),
                         equalTo(COLUMN_MAPPING.getExasolColumnName())),
-                () -> assertThat(predicate.getOperator(), equalTo(ComparisonPredicate.Operator.LESS_EQUAL))//
+                () -> assertThat(predicate.getOperator(), equalTo(AbstractComparisonPredicate.Operator.LESS_EQUAL))//
         );
     }
 
@@ -158,7 +158,15 @@ class QueryPredicateFactoryTest {
                 () -> assertThat(predicate.getLiteral(), equalTo(LITERAL)),
                 () -> assertThat(predicate.getColumn().getExasolColumnName(),
                         equalTo(COLUMN_MAPPING.getExasolColumnName())),
-                () -> assertThat(predicate.getOperator(), equalTo(ComparisonPredicate.Operator.GREATER_EQUAL))//
+                () -> assertThat(predicate.getOperator(), equalTo(AbstractComparisonPredicate.Operator.GREATER_EQUAL))//
         );
+    }
+
+    @Test
+    void testBuildNot() {
+        final SqlPredicateNot sqlNot = new SqlPredicateNot(validColumnLiteralEqualityPredicate);
+        final QueryPredicate<Object> queryPredicate = FACTORY.buildPredicateFor(sqlNot);
+        assertThat(queryPredicate, instanceOf(NotPredicate.class));
+
     }
 }

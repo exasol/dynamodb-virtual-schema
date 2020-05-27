@@ -57,4 +57,11 @@ class QueryPredicateToLogicngConverterTest {
                 .convert(SelectionsConstants.NESTED_AND);
         assertThat(result.getLogicngFormula().toString(), equalTo("Variable0 | Variable1 & Variable2"));
     }
+
+    @Test
+    void testConvertNot() {
+        final QueryPredicateToLogicngConverter.Result<Object> result = CONVERTER
+                .convert(SelectionsConstants.NOT_EQUAL1);
+        assertThat(result.getLogicngFormula().toString(), equalTo("~Variable0"));
+    }
 }

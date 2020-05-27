@@ -39,9 +39,8 @@ class QueryPredicateToLogicngConverter<DocumentVisitorType> {
         }
 
         @Override
-        public void visit(
-                final ColumnLiteralComparisonPredicate<DocumentVisitorType> columnLiteralComparisonPredicate) {
-            this.formula = this.variablesMappingBuilder.add(columnLiteralComparisonPredicate);
+        public void visit(final ComparisonPredicate<DocumentVisitorType> comparisonPredicate) {
+            this.formula = this.variablesMappingBuilder.add(comparisonPredicate);
         }
 
         @Override
@@ -59,6 +58,11 @@ class QueryPredicateToLogicngConverter<DocumentVisitorType> {
         @Override
         public void visit(final NoPredicate<DocumentVisitorType> noPredicate) {
             this.formula = new FormulaFactory().constant(true);
+        }
+
+        @Override
+        public void visit(final NotPredicate<DocumentVisitorType> notPredicate) {
+            this.formula = new FormulaFactory().not(callRecursive(notPredicate.getPredicate()));
         }
 
         private Formula callRecursive(final QueryPredicate<DocumentVisitorType> predicate) {

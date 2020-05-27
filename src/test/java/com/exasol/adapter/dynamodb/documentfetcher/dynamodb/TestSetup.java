@@ -10,8 +10,8 @@ import com.exasol.adapter.dynamodb.mapping.ColumnMapping;
 import com.exasol.adapter.dynamodb.mapping.SchemaMappingToSchemaMetadataConverter;
 import com.exasol.adapter.dynamodb.mapping.TableMapping;
 import com.exasol.adapter.dynamodb.mapping.ToJsonPropertyToColumnMapping;
+import com.exasol.adapter.dynamodb.remotetablequery.AbstractComparisonPredicate;
 import com.exasol.adapter.dynamodb.remotetablequery.ColumnLiteralComparisonPredicate;
-import com.exasol.adapter.dynamodb.remotetablequery.ComparisonPredicate;
 import com.exasol.adapter.dynamodb.remotetablequery.NoPredicate;
 import com.exasol.adapter.dynamodb.remotetablequery.RemoteTableQuery;
 import com.exasol.adapter.metadata.ColumnMetadata;
@@ -42,7 +42,7 @@ class TestSetup {
         final DocumentPathExpression sourcePath = new DocumentPathExpression.Builder().addObjectLookup(propertyName)
                 .build();
         final ToJsonPropertyToColumnMapping column = new ToJsonPropertyToColumnMapping("columnName", sourcePath, null);
-        return new ColumnLiteralComparisonPredicate<>(ComparisonPredicate.Operator.EQUAL, column,
+        return new ColumnLiteralComparisonPredicate<>(AbstractComparisonPredicate.Operator.EQUAL, column,
                 new DynamodbString(""));
     }
 

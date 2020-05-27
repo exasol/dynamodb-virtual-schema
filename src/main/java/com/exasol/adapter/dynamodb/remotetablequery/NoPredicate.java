@@ -4,7 +4,7 @@ package com.exasol.adapter.dynamodb.remotetablequery;
  * This class represents the absence of a selection predicate.
  */
 @java.lang.SuppressWarnings("squid:S119") // DocumentVisitorType does not fit naming conventions.
-public class NoPredicate<DocumentVisitorType> implements QueryPredicate<DocumentVisitorType> {
+public final class NoPredicate<DocumentVisitorType> implements QueryPredicate<DocumentVisitorType> {
     private static final long serialVersionUID = -7964488054466482230L;
 
     @Override
@@ -13,11 +13,18 @@ public class NoPredicate<DocumentVisitorType> implements QueryPredicate<Document
     }
 
     @Override
+    public QueryPredicate<DocumentVisitorType> simplify() {
+        return this;
+    }
+
+    @Override
+    public String toString() {
+        return "NoPredicate";
+    }
+
+    @Override
     public boolean equals(final Object other) {
-        if (other == null) {
-            return false;
-        }
-        return this.getClass().equals(other.getClass());
+        return other instanceof NoPredicate;
     }
 
     @Override

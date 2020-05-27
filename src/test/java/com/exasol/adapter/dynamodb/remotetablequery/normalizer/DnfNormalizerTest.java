@@ -8,14 +8,13 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 
 import com.exasol.adapter.dynamodb.remotetablequery.LogicalOperator;
-import com.exasol.adapter.dynamodb.remotetablequery.QueryPredicate;
 
 class DnfNormalizerTest {
     private static final DnfNormalizer<Object> NORMALIZER = new DnfNormalizer<>();
 
     @Test
     void testNormalization() {
-        final QueryPredicate<Object> dnf = NORMALIZER.normalize(new LogicalOperator<>(
+        final DnfOr<Object> dnf = NORMALIZER.normalize(new LogicalOperator<>(
                 List.of(SelectionsConstants.EQUAL3, new LogicalOperator<>(
                         List.of(SelectionsConstants.EQUAL1, SelectionsConstants.EQUAL2), LogicalOperator.Operator.OR)),
                 LogicalOperator.Operator.AND));

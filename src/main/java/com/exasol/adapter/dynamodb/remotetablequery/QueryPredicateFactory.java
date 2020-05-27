@@ -39,7 +39,7 @@ public class QueryPredicateFactory<DocumentVisitorType> {
         if (sqlPredicate == null) {
             return new NoPredicate<>();
         } else {
-            final Visitor visitor = new Visitor();
+            final Visitor<DocumentVisitorType> visitor = new Visitor<>(this.literalConverter);
             try {
                 sqlPredicate.accept(visitor);
             } catch (final AdapterException exception) {
@@ -50,28 +50,34 @@ public class QueryPredicateFactory<DocumentVisitorType> {
         }
     }
 
-    private class Visitor extends VoidSqlNodeVisitor {
+    private static class Visitor<DocumentVisitorType> extends VoidSqlNodeVisitor {
+        private final SqlLiteralToDocumentValueConverter<DocumentVisitorType> literalConverter;
         private QueryPredicate<DocumentVisitorType> predicate;
+
+        public Visitor(final SqlLiteralToDocumentValueConverter<DocumentVisitorType> literalConverter) {
+            this.literalConverter = literalConverter;
+        }
 
         @Override
         public Void visit(final SqlPredicateEqual sqlPredicateEqual) {
-            buildComparison(sqlPredicateEqual, ComparisonPredicate.Operator.EQUAL);
+            buildComparison(sqlPredicateEqual, AbstractComparisonPredicate.Operator.EQUAL);
             return null;
         }
 
         @Override
         public Void visit(final SqlPredicateLess sqlPredicateLess) {
-            buildComparison(sqlPredicateLess, ComparisonPredicate.Operator.LESS);
+            buildComparison(sqlPredicateLess, AbstractComparisonPredicate.Operator.LESS);
             return null;
         }
 
         @Override
         public Void visit(final SqlPredicateLessEqual sqlPredicateLessEqual) {
-            buildComparison(sqlPredicateLessEqual, ComparisonPredicate.Operator.LESS_EQUAL);
+            buildComparison(sqlPredicateLessEqual, AbstractComparisonPredicate.Operator.LESS_EQUAL);
             return null;
         }
 
-        void buildComparison(final AbstractSqlBinaryEquality sqlEquality, final ComparisonPredicate.Operator operator) {
+        void buildComparison(final AbstractSqlBinaryEquality sqlEquality,
+                final AbstractComparisonPredicate.Operator operator) {
             final SqlNode left = sqlEquality.getLeft();
             final SqlNode right = sqlEquality.getRight();
             if (left instanceof SqlColumn && right instanceof SqlColumn) {
@@ -87,30 +93,32 @@ public class QueryPredicateFactory<DocumentVisitorType> {
             }
         }
 
-        private ComparisonPredicate.Operator mirrorOperator(final ComparisonPredicate.Operator operator) {
+        private AbstractComparisonPredicate.Operator mirrorOperator(
+                final AbstractComparisonPredicate.Operator operator) {
             switch (operator) {
             case LESS:
-                return ComparisonPredicate.Operator.GREATER;
+                return AbstractComparisonPredicate.Operator.GREATER;
             case LESS_EQUAL:
-                return ComparisonPredicate.Operator.GREATER_EQUAL;
+                return AbstractComparisonPredicate.Operator.GREATER_EQUAL;
             case GREATER:
-                return ComparisonPredicate.Operator.LESS;
+                return AbstractComparisonPredicate.Operator.LESS;
             case GREATER_EQUAL:
-                return ComparisonPredicate.Operator.LESS_EQUAL;
+                return AbstractComparisonPredicate.Operator.LESS_EQUAL;
             case EQUAL:
-                return ComparisonPredicate.Operator.EQUAL;
+                return AbstractComparisonPredicate.Operator.EQUAL;
+            case NOT_EQUAL:
+                return AbstractComparisonPredicate.Operator.NOT_EQUAL;
             default:
                 throw new UnsupportedOperationException("this operator is not yet implemented");
             }
         }
 
         void buildColumnLiteralComparision(final SqlColumn column, final SqlNode literal,
-                final ComparisonPredicate.Operator operator) {
+                final AbstractComparisonPredicate.Operator operator) {
             try {
                 final ColumnMapping columnMapping = new SchemaMappingToSchemaMetadataConverter()
                         .convertBackColumn(column.getMetadata());
-                final DocumentValue<DocumentVisitorType> literalValue = QueryPredicateFactory.this.literalConverter
-                        .convert(literal);
+                final DocumentValue<DocumentVisitorType> literalValue = this.literalConverter.convert(literal);
                 this.predicate = new ColumnLiteralComparisonPredicate<>(operator, columnMapping, literalValue);
             } catch (final NotLiteralException e) {
                 throw new IllegalStateException(
@@ -132,10 +140,19 @@ public class QueryPredicateFactory<DocumentVisitorType> {
             return null;
         }
 
+        @Override
+        public Void visit(final SqlPredicateNot sqlPredicateNot) {
+            final QueryPredicateFactory<DocumentVisitorType> queryPredicateFactory = new QueryPredicateFactory<>(
+                    this.literalConverter);
+            this.predicate = new NotPredicate<>(
+                    queryPredicateFactory.buildPredicateFor(sqlPredicateNot.getExpression()));
+            return null;
+        }
+
         private List<QueryPredicate<DocumentVisitorType>> convertPredicates(final List<SqlNode> sqlPredicates) {
-            final QueryPredicateFactory<DocumentVisitorType> factory = new QueryPredicateFactory<>(
-                    QueryPredicateFactory.this.literalConverter);
-            return sqlPredicates.stream().map(factory::buildPredicateFor).collect(Collectors.toList());
+            final QueryPredicateFactory<DocumentVisitorType> queryPredicateFactory = new QueryPredicateFactory<>(
+                    this.literalConverter);
+            return sqlPredicates.stream().map(queryPredicateFactory::buildPredicateFor).collect(Collectors.toList());
         }
 
         private QueryPredicate<DocumentVisitorType> getPredicate() {
