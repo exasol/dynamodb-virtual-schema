@@ -27,7 +27,7 @@ class DynamodbDocumentFetcherFactoryTest {
     private static BasicMappingSetup basicMappingSetup;
 
     @BeforeAll
-    static void beforeAll() throws DynamodbTestInterface.NoNetworkFoundException, IOException, AdapterException {
+    static void beforeAll() throws IOException, AdapterException {
         basicMappingSetup = new BasicMappingSetup();
     }
 
@@ -191,20 +191,18 @@ class DynamodbDocumentFetcherFactoryTest {
         assertAll(//
                 () -> assertThat(queryPlan.getQueryRequest().getTableName(),
                         equalTo(basicMappingSetup.tableMapping.getRemoteName())),
-                () -> assertThat(queryPlan.getQueryRequest().getIndexName(), equalTo("publisherIndex")),
-                () -> assertThat(queryPlan.getQueryRequest().getKeyConditionExpression(),
-                        equalTo("#0 = :0 and #1 = :1")),
-                () -> assertThat(queryPlan.getQueryRequest().getExpressionAttributeNames().get("#0"),
+                () -> assertThat(queryPlan.getQueryRequest().getKeyConditionExpression(), equalTo("#0 = :0")),
+                () -> assertThat(queryPlan.getQueryRequest().getExpressionAttributeNames().get("#0"), equalTo("isbn")),
+                () -> assertThat(queryPlan.getQueryRequest().getExpressionAttributeValues().get(":0").getS(),
+                        equalTo(isbn)),
+                () -> assertThat(queryPlan.getQueryRequest().getFilterExpression(), equalTo("#1 = :1 and #2 = :2")),
+                () -> assertThat(queryPlan.getQueryRequest().getExpressionAttributeNames().get("#2"),
                         equalTo("publisher")),
                 () -> assertThat(queryPlan.getQueryRequest().getExpressionAttributeNames().get("#1"), equalTo("price")),
-                () -> assertThat(queryPlan.getQueryRequest().getExpressionAttributeValues().get(":0").getS(),
+                () -> assertThat(queryPlan.getQueryRequest().getExpressionAttributeValues().get(":2").getS(),
                         equalTo(publisher)),
                 () -> assertThat(queryPlan.getQueryRequest().getExpressionAttributeValues().get(":1").getN(),
-                        equalTo(price)),
-                () -> assertThat(queryPlan.getQueryRequest().getFilterExpression(), equalTo("#2 = :2")),
-                () -> assertThat(queryPlan.getQueryRequest().getExpressionAttributeNames().get("#2"), equalTo("isbn")),
-                () -> assertThat(queryPlan.getQueryRequest().getExpressionAttributeValues().get(":2").getS(),
-                        equalTo(isbn))//
+                        equalTo(price))//
         );
     }
 }

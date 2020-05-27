@@ -49,7 +49,6 @@ public abstract class AbstractComparisonPredicate<DocumentVisitorType>
     }
 
     protected Operator negateOperator() {
-        // TODO improve test coverage
         switch (this.operator) {
         case EQUAL:
             return Operator.NOT_EQUAL;

@@ -20,7 +20,11 @@ public class QueryOperationSelectionRater {
         final Optional<ColumnLiteralComparisonPredicate<DynamodbNodeVisitor>> sortKeyCondition = selection
                 .getSortKeyCondition();
         if (sortKeyCondition.isEmpty()) {
-            return 0;
+            if (selection.getIndex().hasSortKey()) {
+                return 0;
+            } else {
+                return 4;
+            }
         } else {
             switch (sortKeyCondition.get().getOperator()) {
             case EQUAL:
