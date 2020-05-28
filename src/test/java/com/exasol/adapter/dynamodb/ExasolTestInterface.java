@@ -117,8 +117,18 @@ public class ExasolTestInterface {
         createTestSchema(ADAPTER_SCHEMA);
         final StringBuilder statementBuilder = new StringBuilder(
                 "CREATE OR REPLACE JAVA ADAPTER SCRIPT " + ADAPTER_SCHEMA + "." + DYNAMODB_ADAPTER + " AS\n");
-        final String hostIp = getTestHostIpAddress();
+        addDebuggerOptions(statementBuilder);
+        // noinspection SpellCheckingInspection
+        statementBuilder.append("    %scriptclass com.exasol.adapter.RequestDispatcher;\n");
+        statementBuilder.append("    %jar /buckets/bfsdefault/default/" + VIRTUAL_SCHEMAS_JAR_NAME_AND_VERSION + ";\n");
+        statementBuilder.append("/");
+        final String sql = statementBuilder.toString();
+        LOGGER.info(sql);
+        this.statement.execute(sql);
+    }
 
+    private void addDebuggerOptions(final StringBuilder statementBuilder) {
+        final String hostIp = getTestHostIpAddress();
         if (hostIp != null) {
             final StringBuilder jvmOptions = new StringBuilder("-javaagent:/buckets/bfsdefault/default/"
                     + JACOCO_JAR_NAME + "=output=tcpclient,address=" + hostIp + ",port=3002");
@@ -129,8 +139,15 @@ public class ExasolTestInterface {
             }
             statementBuilder.append("  %jvmoption ").append(jvmOptions).append(";\n");
         }
-        // noinspection SpellCheckingInspection
-        statementBuilder.append("    %scriptclass com.exasol.adapter.RequestDispatcher;\n");
+    }
+
+    public void createUdf() throws SQLException {
+        final StringBuilder statementBuilder = new StringBuilder("CREATE OR REPLACE JAVA SET SCRIPT " + ADAPTER_SCHEMA
+                + "." + ImportFromDynamodb.class.getSimpleName() + "(" + ImportFromDynamodb.PARAMETER_DOCUMENT_FETCHER
+                + " VARCHAR(2000000), " + ImportFromDynamodb.PARAMETER_REMOTE_TABLE_QUERY + " VARCHAR(2000000), "
+                + ImportFromDynamodb.PARAMETER_CONNECTION_NAME + " VARCHAR(500)) EMITS(...) AS\n");
+        addDebuggerOptions(statementBuilder);
+        statementBuilder.append("    %scriptclass com.exasol.adapter.dynamodb.ImportFromDynamodb;\n");
         statementBuilder.append("    %jar /buckets/bfsdefault/default/" + VIRTUAL_SCHEMAS_JAR_NAME_AND_VERSION + ";\n");
         statementBuilder.append("/");
         final String sql = statementBuilder.toString();
@@ -188,6 +205,7 @@ public class ExasolTestInterface {
                     + "   LOG_LEVEL       =  'ALL'";
         }
         createStatement += ";";
+        LOGGER.info(createStatement);
         this.statement.execute(createStatement);
     }
 
