@@ -7,8 +7,8 @@ import com.exasol.adapter.dynamodb.remotetablequery.LogicalOperator;
 import com.exasol.adapter.dynamodb.remotetablequery.QueryPredicate;
 
 /**
- * This class represents an AND in the disjunctive normal form (DNF). By the definition of the DNF an AND is part always
- * part of an {@link DnfOr} and must not contain ANDs or ORs.
+ * This class represents an AND in the disjunctive normal form (DNF). By the definition of the DNF, an AND is always
+ * part of an OR ({@link DnfOr}) and must not contain nested ANDs or ORs.
  */
 @java.lang.SuppressWarnings("squid:S119") // DocumentVisitorType does not fit naming conventions.
 public class DnfAnd<DocumentVisitorType> {

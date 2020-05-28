@@ -59,7 +59,7 @@ public class DynamodbQueryDocumentFetcher extends AbstractDynamodbDocumentFetche
             }
         }
         if (bestQueryOperationSelection == null) {
-            throw new PlanDoesNotFitException("Could not find a Query operation plan");
+            throw new PlanDoesNotFitException("Could not find any Query operation plan");
         }
         return bestQueryOperationSelection;
     }
