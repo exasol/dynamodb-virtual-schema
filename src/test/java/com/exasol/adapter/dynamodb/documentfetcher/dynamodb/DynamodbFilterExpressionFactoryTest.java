@@ -106,6 +106,20 @@ class DynamodbFilterExpressionFactoryTest {
     }
 
     @Test
+    void testNestedNot() {
+        final String literal1 = "test1";
+        final String literal2 = "test2";
+        final ColumnLiteralComparisonPredicate<DynamodbNodeVisitor> comparison1 = getComparison(literal1,
+                AbstractComparisonPredicate.Operator.EQUAL);
+        final ColumnLiteralComparisonPredicate<DynamodbNodeVisitor> comparison2 = getComparison(literal2,
+                AbstractComparisonPredicate.Operator.EQUAL);
+        final LogicalOperator<DynamodbNodeVisitor> and = new LogicalOperator<>(
+                List.of(comparison1, new NotPredicate<>(comparison2)), LogicalOperator.Operator.AND);
+        assertFilterExpression(new NotPredicate<>(and), "NOT (#0 = :0 and NOT (#0 = :1))", Map.of("#0", "key"),
+                Map.of(":0", literal1, ":1", literal2));
+    }
+
+    @Test
     void testNoPredicate() {
         assertFilterExpression(new NoPredicate<>(), "", Collections.emptyMap(), Collections.emptyMap());
     }

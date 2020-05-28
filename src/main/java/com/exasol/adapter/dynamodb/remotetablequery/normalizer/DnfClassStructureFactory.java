@@ -7,24 +7,31 @@ import java.util.stream.Collectors;
 import com.exasol.adapter.dynamodb.remotetablequery.*;
 
 /**
- * This factory builds {@link DnfOr} class structures from {@link QueryPredicate} structures.
+ * This factory builds {@link DnfOr} class structures from {@link QueryPredicate} structures. The input predicate
+ * structure must fulfil the DNF. A valid consists of disjunctions that contain conjunctions that then contain variables
+ * or negated variables.
+ *
+ * Valid DNFs are for example: {@code A and B}, {@code A or B}, {@code A or (B and C)}, {@code A or (B and !C)}
+ * 
+ * Examples for invalid DNFs: {@code A and (B or C)}, {@code !(A or B)}
  */
 @java.lang.SuppressWarnings("squid:S119") // DocumentVisitorType does not fit naming conventions.
 class DnfClassStructureFactory<DocumentVisitorType> {
 
     /**
-     * Build {@link DnfOr} class structures from {@link QueryPredicate} structures.
+     * Build {@link DnfOr} class structures from a DNF normalized {@link QueryPredicate} structures.
      * 
-     * @param predicate dnf normalized {@link QueryPredicate} structure
+     * @param predicate DNF normalized {@link QueryPredicate} structure
      * @return {@link DnfOr} class structures
      */
     DnfOr<DocumentVisitorType> build(final QueryPredicate<DocumentVisitorType> predicate) {
-        final FirstLevelVisitor<DocumentVisitorType> visitor = new FirstLevelVisitor<>();
+        final DisjunctionExtractor<DocumentVisitorType> visitor = new DisjunctionExtractor<>();
         predicate.accept(visitor);
         return visitor.result;
     }
 
-    private static class FirstLevelVisitor<DocumentVisitorType> implements QueryPredicateVisitor<DocumentVisitorType> {
+    private static class DisjunctionExtractor<DocumentVisitorType>
+            implements QueryPredicateVisitor<DocumentVisitorType> {
         private DnfOr<DocumentVisitorType> result;
 
         @Override
@@ -54,13 +61,14 @@ class DnfClassStructureFactory<DocumentVisitorType> {
         }
 
         private DnfAnd<DocumentVisitorType> visitSecondLevel(final QueryPredicate<DocumentVisitorType> predicate) {
-            final SecondLevelVisitor<DocumentVisitorType> visitor = new SecondLevelVisitor<>();
+            final ConjunctionExtractor<DocumentVisitorType> visitor = new ConjunctionExtractor<>();
             predicate.accept(visitor);
             return visitor.result;
         }
     }
 
-    private static class SecondLevelVisitor<DocumentVisitorType> implements QueryPredicateVisitor<DocumentVisitorType> {
+    private static class ConjunctionExtractor<DocumentVisitorType>
+            implements QueryPredicateVisitor<DocumentVisitorType> {
         private DnfAnd<DocumentVisitorType> result;
 
         @Override
@@ -91,17 +99,17 @@ class DnfClassStructureFactory<DocumentVisitorType> {
 
         private DnfComparison<DocumentVisitorType> visitThirdLevel(
                 final QueryPredicate<DocumentVisitorType> predicate) {
-            final ThirdLevelVisitor<DocumentVisitorType> visitor = new ThirdLevelVisitor<>(false);
+            final VariableExtractor<DocumentVisitorType> visitor = new VariableExtractor<>(false);
             predicate.accept(visitor);
             return visitor.result;
         }
     }
 
-    private static class ThirdLevelVisitor<DocumentVisitorType> implements QueryPredicateVisitor<DocumentVisitorType> {
+    private static class VariableExtractor<DocumentVisitorType> implements QueryPredicateVisitor<DocumentVisitorType> {
         private final boolean isNegated;
         private DnfComparison<DocumentVisitorType> result;
 
-        private ThirdLevelVisitor(final boolean isNegated) {
+        private VariableExtractor(final boolean isNegated) {
             this.isNegated = isNegated;
         }
 
@@ -122,7 +130,7 @@ class DnfClassStructureFactory<DocumentVisitorType> {
 
         @Override
         public void visit(final NotPredicate<DocumentVisitorType> notPredicate) {
-            final ThirdLevelVisitor<DocumentVisitorType> visitor = new ThirdLevelVisitor<>(!this.isNegated);
+            final VariableExtractor<DocumentVisitorType> visitor = new VariableExtractor<>(!this.isNegated);
             notPredicate.getPredicate().accept(visitor);
             this.result = visitor.result;
         }
