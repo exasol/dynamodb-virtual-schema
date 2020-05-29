@@ -19,4 +19,8 @@ public class ImportDocumentData {
         // TODO dispatch
         new DynamodbUdf().run(exaMetadata, exaIterator);
     }
+
+    private ImportDocumentData() {
+        // Intentional empty. As this class is only accessed statical.
+    }
 }
