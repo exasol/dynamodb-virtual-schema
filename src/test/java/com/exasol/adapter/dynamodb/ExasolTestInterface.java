@@ -143,11 +143,11 @@ public class ExasolTestInterface {
 
     public void createUdf() throws SQLException {
         final StringBuilder statementBuilder = new StringBuilder("CREATE OR REPLACE JAVA SET SCRIPT " + ADAPTER_SCHEMA
-                + "." + ImportFromDynamodb.class.getSimpleName() + "(" + ImportFromDynamodb.PARAMETER_DOCUMENT_FETCHER
-                + " VARCHAR(2000000), " + ImportFromDynamodb.PARAMETER_REMOTE_TABLE_QUERY + " VARCHAR(2000000), "
-                + ImportFromDynamodb.PARAMETER_CONNECTION_NAME + " VARCHAR(500)) EMITS(...) AS\n");
+                + "." + ImportDocumentData.class.getSimpleName() + "(" + AbstractUdf.PARAMETER_DOCUMENT_FETCHER
+                + " VARCHAR(2000000), " + AbstractUdf.PARAMETER_REMOTE_TABLE_QUERY + " VARCHAR(2000000), "
+                + AbstractUdf.PARAMETER_CONNECTION_NAME + " VARCHAR(500)) EMITS(...) AS\n");
         addDebuggerOptions(statementBuilder);
-        statementBuilder.append("    %scriptclass com.exasol.adapter.dynamodb.ImportFromDynamodb;\n");
+        statementBuilder.append("    %scriptclass " + ImportDocumentData.class.getName() + ";\n");
         statementBuilder.append("    %jar /buckets/bfsdefault/default/" + VIRTUAL_SCHEMAS_JAR_NAME_AND_VERSION + ";\n");
         statementBuilder.append("/");
         final String sql = statementBuilder.toString();

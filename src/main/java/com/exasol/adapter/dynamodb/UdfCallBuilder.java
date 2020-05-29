@@ -18,13 +18,13 @@ import com.exasol.sql.rendering.StringRendererConfig;
 import com.exasol.utils.StringSerializer;
 
 /**
- * This class builds push down SQL statement with an UDF call to {@link ImportFromDynamodb}.
+ * This class builds push down SQL statement with an UDF call to {@link ImportDocumentData}.
  */
 @java.lang.SuppressWarnings("squid:S119") // DocumentVisitorType does not fit naming conventions.
 public class UdfCallBuilder<DocumentVisitorType> {
 
     /**
-     * Build push down SQL statement with an UDF call to {@link ImportFromDynamodb}.
+     * Build push down SQL statement with an UDF call to {@link ImportDocumentData}.
      * 
      * @param documentFetchers document fetchers. Each document fetcher gets an row that is passed to an UDF
      * @param query            document query that is passed to the UDF
@@ -44,7 +44,7 @@ public class UdfCallBuilder<DocumentVisitorType> {
                 column -> new Column(select, column.getExasolColumnName(), convertDataType(column.getExasolDataType())))
                 .collect(Collectors.toList());
         // TODO UDF name as parameter
-        select.udf("Adapter." + ImportFromDynamodb.class.getSimpleName(), new ColumnsDefinition(emitsColumns),
+        select.udf("Adapter." + ImportDocumentData.class.getSimpleName(), new ColumnsDefinition(emitsColumns),
                 column(documentFetcherParameter), column(remoteTableQueryParameter), column(connectionNameParameter));
         final ValueTable valueTable = buildValueTable(documentFetchers, query, connectionName, select);
         select.from().valueTable(valueTable);
