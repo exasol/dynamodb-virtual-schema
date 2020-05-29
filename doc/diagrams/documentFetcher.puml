@@ -9,9 +9,12 @@ interface DocumentFetcherFactory{
 }
 
 class DynamodbQueryDocumentFetcher{
+queryRequest
 {abstract} run() : Stream of documents
 }
+
 class DynamodbScanDocumentFetcher{
+scanRequest
 {abstract} run() : Stream of documents
 }
 
