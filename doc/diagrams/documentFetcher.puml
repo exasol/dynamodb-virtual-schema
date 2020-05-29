@@ -1,0 +1,25 @@
+@startuml
+
+interface DocumentFetcher{
+{abstract} run() : Stream of documents
+}
+
+interface DocumentFetcherFactory{
+{abstract} buildDocumentFetcherForQuery(query)
+}
+
+class DynamodbQueryDocumentFetcher{
+{abstract} run() : Stream of documents
+}
+class DynamodbScanDocumentFetcher{
+{abstract} run() : Stream of documents
+}
+
+class DynamodbDocumentFetcherFactory{
+buildDocumentFetcherForQuery(query)
+}
+DocumentFetcher <|.. DynamodbQueryDocumentFetcher
+DocumentFetcher <|.. DynamodbScanDocumentFetcher
+DocumentFetcherFactory <|.. DynamodbDocumentFetcherFactory
+
+@enduml
