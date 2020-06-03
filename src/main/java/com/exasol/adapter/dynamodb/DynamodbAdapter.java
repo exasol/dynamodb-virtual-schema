@@ -146,10 +146,10 @@ public class DynamodbAdapter implements VirtualSchemaAdapter {
         final AmazonDynamoDB dynamodbClient = getDynamoDBClient(exaMetadata, request);
         final DocumentFetcherFactory<DynamodbNodeVisitor> documentFetcherFactory = new DynamodbDocumentFetcherFactory(
                 dynamodbClient);
-        final DocumentFetcher<DynamodbNodeVisitor> documentFetcher = documentFetcherFactory
+        final List<DocumentFetcher<DynamodbNodeVisitor>> documentFetchers = documentFetcherFactory
                 .buildDocumentFetcherForQuery(remoteTableQuery);
         final String connectionName = getPropertiesFromRequest(request).getConnectionName();
-        return new UdfCallBuilder<DynamodbNodeVisitor>().getUdfCallSql(List.of(documentFetcher), remoteTableQuery,
+        return new UdfCallBuilder<DynamodbNodeVisitor>().getUdfCallSql(documentFetchers, remoteTableQuery,
                 connectionName);
     }
 
