@@ -143,7 +143,7 @@ public class ExasolTestInterface {
 
     public void createUdf() throws SQLException {
         final StringBuilder statementBuilder = new StringBuilder("CREATE OR REPLACE JAVA SET SCRIPT " + ADAPTER_SCHEMA
-                + "." + ImportDocumentData.class.getSimpleName() + "(" + AbstractUdf.PARAMETER_DOCUMENT_FETCHER
+                + "." + ImportDocumentData.UDF_NAME + "(" + AbstractUdf.PARAMETER_DOCUMENT_FETCHER
                 + " VARCHAR(2000000), " + AbstractUdf.PARAMETER_REMOTE_TABLE_QUERY + " VARCHAR(2000000), "
                 + AbstractUdf.PARAMETER_CONNECTION_NAME + " VARCHAR(500)) EMITS(...) AS\n");
         addDebuggerOptions(statementBuilder);

@@ -43,7 +43,7 @@ abstract class AbstractUdf<DocumentVisitorType> {
             ExaIterationException, ExaDataTypeException, IOException, ExaConnectionAccessException {
         final RemoteTableQuery<DocumentVisitorType> remoteTableQuery = deserializeRemoteTableQuery(exaIterator);
         final SchemaMapper<DocumentVisitorType> schemaMapper = new SchemaMapper<>(remoteTableQuery,
-                getDocumentVisitorTypePropertyToColumnValueExtractorFactory());
+                getValueExtractorFactory());
         do {
             runSingleDocumentFetcher(exaMetadata, exaIterator, schemaMapper);
         } while (exaIterator.next());
@@ -62,7 +62,12 @@ abstract class AbstractUdf<DocumentVisitorType> {
                         .forEach(values -> emitRow(values, exaIterator)));
     }
 
-    protected abstract PropertyToColumnValueExtractorFactory<DocumentVisitorType> getDocumentVisitorTypePropertyToColumnValueExtractorFactory();
+    /**
+     * Get a database specific {@link PropertyToColumnValueExtractorFactory}.
+     * 
+     * @return database specific {@link PropertyToColumnValueExtractorFactory}
+     */
+    protected abstract PropertyToColumnValueExtractorFactory<DocumentVisitorType> getValueExtractorFactory();
 
     private DocumentFetcher<DocumentVisitorType> deserializeDocumentFetcher(final ExaIterator exaIterator)
             throws ExaIterationException, ExaDataTypeException, IOException, ClassNotFoundException {
