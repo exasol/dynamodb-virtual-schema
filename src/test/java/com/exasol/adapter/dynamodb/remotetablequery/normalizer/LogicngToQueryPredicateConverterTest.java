@@ -36,6 +36,11 @@ class LogicngToQueryPredicateConverterTest {
         testLoopConversion(SelectionsConstants.OR_OF_TWO_DIFFERENT_PREDICATES);
     }
 
+    @Test
+    void testConvertNot() {
+        testLoopConversion(SelectionsConstants.NOT_EQUAL1);
+    }
+
     void testLoopConversion(final QueryPredicate<Object> predicate) {
         final QueryPredicateToLogicngConverter.Result<Object> result = CONVERTER.convert(predicate);
         final LogicngToQueryPredicateConverter<Object> backConverter = new LogicngToQueryPredicateConverter<>(

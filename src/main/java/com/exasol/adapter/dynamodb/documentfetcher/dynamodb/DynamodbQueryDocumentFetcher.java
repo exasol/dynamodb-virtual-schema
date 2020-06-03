@@ -1,6 +1,5 @@
 package com.exasol.adapter.dynamodb.documentfetcher.dynamodb;
 
-import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
@@ -9,10 +8,12 @@ import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.amazonaws.services.dynamodbv2.model.QueryRequest;
 import com.exasol.adapter.dynamodb.documentnode.dynamodb.DynamodbNodeVisitor;
 import com.exasol.adapter.dynamodb.dynamodbmetadata.DynamodbIndex;
+import com.exasol.adapter.dynamodb.dynamodbmetadata.DynamodbPrimaryIndex;
 import com.exasol.adapter.dynamodb.dynamodbmetadata.DynamodbSecondaryIndex;
 import com.exasol.adapter.dynamodb.dynamodbmetadata.DynamodbTableMetadata;
-import com.exasol.adapter.dynamodb.remotetablequery.QueryPredicate;
 import com.exasol.adapter.dynamodb.remotetablequery.RemoteTableQuery;
+import com.exasol.adapter.dynamodb.remotetablequery.normalizer.DnfNormalizer;
+import com.exasol.adapter.dynamodb.remotetablequery.normalizer.DnfOr;
 
 /**
  * This class represents a DynamoDB {@code QUERY} operation.
@@ -30,49 +31,59 @@ public class DynamodbQueryDocumentFetcher extends AbstractDynamodbDocumentFetche
      */
     public DynamodbQueryDocumentFetcher(final RemoteTableQuery<DynamodbNodeVisitor> remoteTableQuery,
             final DynamodbTableMetadata tableMetadata) {
-        final DynamodbIndex mostRestrictedIndex = new DynamodbQueryIndexSelector()
-                .findMostRestrictedIndex(remoteTableQuery.getSelection(), tableMetadata.getAllIndexes());
-        abortIfNoFittingIndexWasFound(mostRestrictedIndex);
+        final DnfOr<DynamodbNodeVisitor> dnfOr = new DnfNormalizer<DynamodbNodeVisitor>()
+                .normalize(remoteTableQuery.getSelection());
+        final QueryOperationSelection bestQueryOperationSelection = findMostSelectiveIndexSelection(tableMetadata,
+                dnfOr);
+
         this.queryRequest = new QueryRequest(remoteTableQuery.getFromTable().getRemoteName());
-        setIndexToQuery(mostRestrictedIndex);
-        addKeyConditionAndFilterExpression(remoteTableQuery, mostRestrictedIndex);
+        addSelectionToQuery(bestQueryOperationSelection);
     }
 
-    private void abortIfNoFittingIndexWasFound(final DynamodbIndex mostRestrictedIndex) {
-        if (mostRestrictedIndex == null) {
-            throw new PlanDoesNotFitException("Could not find a suitable key for a DynamoDB Query operation. "
-                    + "Non of the keys did a equality selection with the partition key. "
-                    + "Your can either add such a selection to your query or use a SCAN request.");
+    private QueryOperationSelection findMostSelectiveIndexSelection(final DynamodbTableMetadata tableMetadata,
+            final DnfOr<DynamodbNodeVisitor> dnfOr) {
+        QueryOperationSelection bestQueryOperationSelection = null;
+        int bestRating = -1;
+        final QueryOperationSelectionRater selectionRater = new QueryOperationSelectionRater();
+        for (final DynamodbIndex index : tableMetadata.getAllIndexes()) {
+            try {
+                final QueryOperationSelection queryOperationSelection = new QueryOperationSelectionFactory()
+                        .build(dnfOr, index);
+                final int rating = selectionRater.rate(queryOperationSelection);
+                if (rating > bestRating) {
+                    bestRating = rating;
+                    bestQueryOperationSelection = queryOperationSelection;
+                }
+            } catch (final PlanDoesNotFitException exception) {
+                continue;
+            }
         }
+        if (bestQueryOperationSelection == null) {
+            throw new PlanDoesNotFitException("Could not find any Query operation plan");
+        }
+        return bestQueryOperationSelection;
     }
 
-    private void setIndexToQuery(final DynamodbIndex mostRestrictedIndex) {
-        if (mostRestrictedIndex instanceof DynamodbSecondaryIndex) {
-            final DynamodbSecondaryIndex secondaryIndex = (DynamodbSecondaryIndex) mostRestrictedIndex;
+    private void addSelectionToQuery(final QueryOperationSelection bestQueryOperationSelection) {
+        if (!(bestQueryOperationSelection.getIndex() instanceof DynamodbPrimaryIndex)) {
+            final DynamodbSecondaryIndex secondaryIndex = (DynamodbSecondaryIndex) bestQueryOperationSelection
+                    .getIndex();
             this.queryRequest.setIndexName(secondaryIndex.getIndexName());
         }
-    }
-
-    private void addKeyConditionAndFilterExpression(final RemoteTableQuery<DynamodbNodeVisitor> documentQuery,
-            final DynamodbIndex mostRestrictedIndex) {
-        final QueryPredicate<DynamodbNodeVisitor> selectionOnIndex = new DynamodbQuerySelectionFilter()
-                .filter(documentQuery.getSelection(), getIndexPropertyNameWhitelist(mostRestrictedIndex));
-        final DynamodbAttributeNamePlaceholderMapBuilder namePlaceholderBuilder = new DynamodbAttributeNamePlaceholderMapBuilder();
-        final DynamodbAttributeValuePlaceholderMapBuilder valuePlaceholderBuilder = new DynamodbAttributeValuePlaceholderMapBuilder();
-        final DynamodbFilterExpressionFactory filterExpressionFactory = new DynamodbFilterExpressionFactory();
-        final String keyConditionExpression = filterExpressionFactory.buildFilterExpression(selectionOnIndex,
-                namePlaceholderBuilder, valuePlaceholderBuilder);
-        this.queryRequest.setKeyConditionExpression(keyConditionExpression);
-        this.queryRequest.setExpressionAttributeNames(namePlaceholderBuilder.getPlaceholderMap());
-        this.queryRequest.setExpressionAttributeValues(valuePlaceholderBuilder.getPlaceholderMap());
-    }
-
-    private List<String> getIndexPropertyNameWhitelist(final DynamodbIndex index) {
-        if (index.hasSortKey()) {
-            return List.of(index.getPartitionKey(), index.getSortKey());
-        } else {
-            return List.of(index.getPartitionKey());
+        final DynamodbAttributeNamePlaceholderMapBuilder namePlaceholderMapBuilder = new DynamodbAttributeNamePlaceholderMapBuilder();
+        final DynamodbAttributeValuePlaceholderMapBuilder valuePlaceholderMapBuilder = new DynamodbAttributeValuePlaceholderMapBuilder();
+        final DynamodbFilterExpressionFactory filterExpressionFactory = new DynamodbFilterExpressionFactory(
+                namePlaceholderMapBuilder, valuePlaceholderMapBuilder);
+        final String keyFilterExpression = filterExpressionFactory
+                .buildFilterExpression(bestQueryOperationSelection.getIndexSelectionAsQueryPredicate());
+        this.queryRequest.setKeyConditionExpression(keyFilterExpression);
+        final String nonKeyFilterExpression = filterExpressionFactory.buildFilterExpression(
+                bestQueryOperationSelection.getNonIndexSelection().asQueryPredicate().simplify());
+        if (!nonKeyFilterExpression.isEmpty()) {
+            this.queryRequest.setFilterExpression(nonKeyFilterExpression);
         }
+        this.queryRequest.setExpressionAttributeNames(namePlaceholderMapBuilder.getPlaceholderMap());
+        this.queryRequest.setExpressionAttributeValues(valuePlaceholderMapBuilder.getPlaceholderMap());
     }
 
     QueryRequest getQueryRequest() {

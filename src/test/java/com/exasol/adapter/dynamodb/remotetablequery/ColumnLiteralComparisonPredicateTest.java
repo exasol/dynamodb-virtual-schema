@@ -1,8 +1,9 @@
 package com.exasol.adapter.dynamodb.remotetablequery;
 
+import static com.exasol.EqualityMatchers.assertSymmetricEqualWithHashAndEquals;
+import static com.exasol.EqualityMatchers.assertSymmetricNotEqualWithHashAndEquals;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.not;
 
 import org.junit.jupiter.api.Test;
 
@@ -13,7 +14,7 @@ import com.exasol.adapter.dynamodb.mapping.LookupFailBehaviour;
 import com.exasol.adapter.dynamodb.mapping.ToJsonPropertyToColumnMapping;
 
 class ColumnLiteralComparisonPredicateTest {
-    private static final ComparisonPredicate.Operator OPERATOR = ComparisonPredicate.Operator.EQUAL;
+    private static final AbstractComparisonPredicate.Operator OPERATOR = AbstractComparisonPredicate.Operator.EQUAL;
     private static final DocumentValue<Object> LITERAL = (DocumentValue<Object>) visitor -> {
     };
     private static final ColumnMapping COLUMN = new ToJsonPropertyToColumnMapping("", DocumentPathExpression.empty(),
@@ -40,7 +41,19 @@ class ColumnLiteralComparisonPredicateTest {
     void testVisitor() {
         final PredicateTestVisitor visitor = new PredicateTestVisitor();
         TEST_PREDICATE.accept(visitor);
-        assertThat(visitor.getVisited(), equalTo(PredicateTestVisitor.Visited.COLUMN_LITERAL_COMPARISON));
+        assertThat(visitor.getVisited(), equalTo(PredicateTestVisitor.Visited.COMPARISON));
+    }
+
+    @Test
+    void testIdentical() {
+        assertSymmetricEqualWithHashAndEquals(TEST_PREDICATE, TEST_PREDICATE);
+    }
+
+    @Test
+    void testEqual() {
+        final ColumnLiteralComparisonPredicate<Object> otherPredicate = new ColumnLiteralComparisonPredicate<>(OPERATOR,
+                COLUMN, LITERAL);
+        assertSymmetricEqualWithHashAndEquals(TEST_PREDICATE, otherPredicate);
     }
 
     @Test
@@ -48,24 +61,6 @@ class ColumnLiteralComparisonPredicateTest {
         final ColumnLiteralComparisonPredicate<Object> other = new ColumnLiteralComparisonPredicate<>(OPERATOR, COLUMN,
                 (DocumentValue<Object>) visitor -> {
                 });
-        assertThat(TEST_PREDICATE, not(equalTo(other)));
-    }
-
-    @Test
-    void testEqual() {
-        assertThat(TEST_PREDICATE, equalTo(TEST_PREDICATE));
-    }
-
-    @Test
-    void testHashCodeEqual() {
-        assertThat(TEST_PREDICATE.hashCode(), equalTo(TEST_PREDICATE.hashCode()));
-    }
-
-    @Test
-    void testHashCodeNotEqual() {
-        final ColumnLiteralComparisonPredicate<Object> other = new ColumnLiteralComparisonPredicate<>(OPERATOR, COLUMN,
-                (DocumentValue<Object>) visitor -> {
-                });
-        assertThat(TEST_PREDICATE.hashCode(), not(equalTo(other.hashCode())));
+        assertSymmetricNotEqualWithHashAndEquals(TEST_PREDICATE, other);
     }
 }

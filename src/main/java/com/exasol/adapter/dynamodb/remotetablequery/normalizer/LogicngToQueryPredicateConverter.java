@@ -6,10 +6,12 @@ import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 import org.logicng.formulas.Formula;
+import org.logicng.formulas.Literal;
 import org.logicng.formulas.Variable;
 
 import com.exasol.adapter.dynamodb.remotetablequery.LogicalOperator;
 import com.exasol.adapter.dynamodb.remotetablequery.NoPredicate;
+import com.exasol.adapter.dynamodb.remotetablequery.NotPredicate;
 import com.exasol.adapter.dynamodb.remotetablequery.QueryPredicate;
 
 /**
@@ -43,9 +45,18 @@ class LogicngToQueryPredicateConverter<DocumentVisitorType> {
         case TRUE:
             return new NoPredicate<>();
         case LITERAL:
-            return this.variablesMapping.get(formula);
+            return convertLiteral((Literal) formula);
         default:
-            throw new UnsupportedOperationException("This formular type has no corresponding QueryPredicate.");
+            throw new UnsupportedOperationException("This formula type has no corresponding QueryPredicate.");
+        }
+    }
+
+    private QueryPredicate<DocumentVisitorType> convertLiteral(final Literal literal) {
+        final QueryPredicate<DocumentVisitorType> predicate = this.variablesMapping.get(literal.variable());
+        if (literal.phase()) {
+            return predicate;
+        } else {
+            return new NotPredicate<>(predicate);
         }
     }
 

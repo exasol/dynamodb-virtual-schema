@@ -12,7 +12,6 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import com.exasol.adapter.AdapterException;
-import com.exasol.adapter.dynamodb.DynamodbTestInterface;
 import com.exasol.adapter.dynamodb.documentnode.dynamodb.DynamodbNodeVisitor;
 import com.exasol.adapter.dynamodb.dynamodbmetadata.DynamodbPrimaryIndex;
 import com.exasol.adapter.dynamodb.dynamodbmetadata.DynamodbSecondaryIndex;
@@ -27,7 +26,7 @@ class DynamodbDocumentFetcherFactoryTest {
     private static BasicMappingSetup basicMappingSetup;
 
     @BeforeAll
-    static void beforeAll() throws DynamodbTestInterface.NoNetworkFoundException, IOException, AdapterException {
+    static void beforeAll() throws IOException, AdapterException {
         basicMappingSetup = new BasicMappingSetup();
     }
 
@@ -72,13 +71,39 @@ class DynamodbDocumentFetcherFactoryTest {
                 () -> assertThat(queryPlan.getQueryRequest().getTableName(),
                         equalTo(basicMappingSetup.tableMapping.getRemoteName())),
                 () -> assertThat(queryPlan.getQueryRequest().getKeyConditionExpression(),
-                        equalTo("#0 > :0 and #1 = :1")),
-                () -> assertThat(queryPlan.getQueryRequest().getExpressionAttributeValues().get(":0").getN(),
+                        equalTo("#0 = :0 and #1 > :1")),
+                () -> assertThat(queryPlan.getQueryRequest().getExpressionAttributeValues().get(":1").getN(),
                         equalTo(String.valueOf(price))),
-                () -> assertThat(queryPlan.getQueryRequest().getExpressionAttributeNames().get("#0"), equalTo("price")),
-                () -> assertThat(queryPlan.getQueryRequest().getExpressionAttributeNames().get("#1"),
+                () -> assertThat(queryPlan.getQueryRequest().getExpressionAttributeNames().get("#1"), equalTo("price")),
+                () -> assertThat(queryPlan.getQueryRequest().getExpressionAttributeNames().get("#0"),
                         equalTo("publisher")),
-                () -> assertThat(queryPlan.getQueryRequest().getExpressionAttributeValues().get(":1").getS(),
+                () -> assertThat(queryPlan.getQueryRequest().getExpressionAttributeValues().get(":0").getS(),
+                        equalTo(publisher))//
+        );
+    }
+
+    @Test
+    void testRangeQueryWithPrimaryKeyAndNot() {
+        final String publisher = "jb books";
+        final double price = 10.1;
+        final DynamodbTableMetadata tableMetadata = new DynamodbTableMetadata(
+                new DynamodbPrimaryIndex("publisher", Optional.of("price")), List.of(), List.of());
+
+        final RemoteTableQuery<DynamodbNodeVisitor> documentQuery = basicMappingSetup
+                .getQueryForMaxPriceAndPublisher(price, publisher);
+        final DynamodbQueryDocumentFetcher queryPlan = (DynamodbQueryDocumentFetcher) new DynamodbDocumentFetcherFactory(
+                null).buildDocumentFetcherForQuery(documentQuery, tableMetadata);
+        assertAll(//
+                () -> assertThat(queryPlan.getQueryRequest().getTableName(),
+                        equalTo(basicMappingSetup.tableMapping.getRemoteName())),
+                () -> assertThat(queryPlan.getQueryRequest().getKeyConditionExpression(),
+                        equalTo("#0 = :0 and #1 <= :1")),
+                () -> assertThat(queryPlan.getQueryRequest().getExpressionAttributeValues().get(":1").getN(),
+                        equalTo(String.valueOf(price))),
+                () -> assertThat(queryPlan.getQueryRequest().getExpressionAttributeNames().get("#1"), equalTo("price")),
+                () -> assertThat(queryPlan.getQueryRequest().getExpressionAttributeNames().get("#0"),
+                        equalTo("publisher")),
+                () -> assertThat(queryPlan.getQueryRequest().getExpressionAttributeValues().get(":0").getS(),
                         equalTo(publisher))//
         );
     }
@@ -98,8 +123,7 @@ class DynamodbDocumentFetcherFactoryTest {
                         equalTo(String.valueOf(price))));
     }
 
-    // TODO reactivate when implemented
-    // @Test
+    @Test
     void testQueryOnKeyAndNonKeyProperties() {
         final String publisher = "jb books";
         final String name = "test";
@@ -113,14 +137,71 @@ class DynamodbDocumentFetcherFactoryTest {
         assertAll(//
                 () -> assertThat(queryPlan.getQueryRequest().getTableName(),
                         equalTo(basicMappingSetup.tableMapping.getRemoteName())),
-                () -> assertThat(queryPlan.getQueryRequest().getKeyConditionExpression(), equalTo("publisher = :0")),
+                () -> assertThat(queryPlan.getQueryRequest().getKeyConditionExpression(), equalTo("#0 = :0")),
                 () -> assertThat(queryPlan.getQueryRequest().getExpressionAttributeValues().get(":0").getS(),
                         equalTo(publisher)),
-                () -> assertThat(queryPlan.getQueryRequest().getFilterExpression(),
-                        equalTo("name = :1 and publisher = :2")),
+                () -> assertThat(queryPlan.getQueryRequest().getExpressionAttributeNames().get("#0"),
+                        equalTo("publisher")),
+                () -> assertThat(queryPlan.getQueryRequest().getFilterExpression(), equalTo("#1 = :1")),
+                () -> assertThat(queryPlan.getQueryRequest().getExpressionAttributeNames().get("#1"), equalTo("name")),
                 () -> assertThat(queryPlan.getQueryRequest().getExpressionAttributeValues().get(":1").getS(),
-                        equalTo(name)),
+                        equalTo(name))//
+        );
+    }
+
+    @Test
+    void testExtractPrimaryKeyFromTwoPredicates() {
+        final String publisher = "jb books";
+        final String name1 = "name1";
+        final String name2 = "name2";
+        final DynamodbTableMetadata tableMetadata = new DynamodbTableMetadata(
+                new DynamodbPrimaryIndex("publisher", Optional.empty()), List.of(), List.of());
+
+        final RemoteTableQuery<DynamodbNodeVisitor> documentQuery = basicMappingSetup
+                .getQueryForTwoNamesAndPublisher(name1, name2, publisher);
+        final DynamodbQueryDocumentFetcher queryPlan = (DynamodbQueryDocumentFetcher) new DynamodbDocumentFetcherFactory(
+                null).buildDocumentFetcherForQuery(documentQuery, tableMetadata);
+        assertAll(//
+                () -> assertThat(queryPlan.getQueryRequest().getTableName(),
+                        equalTo(basicMappingSetup.tableMapping.getRemoteName())),
+                () -> assertThat(queryPlan.getQueryRequest().getKeyConditionExpression(), equalTo("#0 = :0")),
+                () -> assertThat(queryPlan.getQueryRequest().getExpressionAttributeValues().get(":0").getS(),
+                        equalTo(publisher)),
+                () -> assertThat(queryPlan.getQueryRequest().getExpressionAttributeNames().get("#0"),
+                        equalTo("publisher")),
+                () -> assertThat(queryPlan.getQueryRequest().getFilterExpression(), equalTo("#1 = :1 or #1 = :2")),
+                () -> assertThat(queryPlan.getQueryRequest().getExpressionAttributeNames().get("#1"), equalTo("name")),
+                () -> assertThat(queryPlan.getQueryRequest().getExpressionAttributeValues().get(":1").getS(),
+                        equalTo(name1)),
                 () -> assertThat(queryPlan.getQueryRequest().getExpressionAttributeValues().get(":2").getS(),
-                        equalTo(publisher)));
+                        equalTo(name2))//
+        );
+    }
+
+    @Test
+    void testQueryOnKeyAndIndexProperties() {
+        final String price = "10";
+        final String publisher = "jb books";
+        final String isbn = "1234";
+        final RemoteTableQuery<DynamodbNodeVisitor> documentQuery = basicMappingSetup
+                .getQueryForPriceAndPublisherAndIsbn(price, publisher, isbn);
+        final DynamodbQueryDocumentFetcher queryPlan = (DynamodbQueryDocumentFetcher) new DynamodbDocumentFetcherFactory(
+                null).buildDocumentFetcherForQuery(documentQuery, tableMetadata);
+        assertAll(//
+                () -> assertThat(queryPlan.getQueryRequest().getTableName(),
+                        equalTo(basicMappingSetup.tableMapping.getRemoteName())),
+                () -> assertThat(queryPlan.getQueryRequest().getKeyConditionExpression(), equalTo("#0 = :0")),
+                () -> assertThat(queryPlan.getQueryRequest().getExpressionAttributeNames().get("#0"), equalTo("isbn")),
+                () -> assertThat(queryPlan.getQueryRequest().getExpressionAttributeValues().get(":0").getS(),
+                        equalTo(isbn)),
+                () -> assertThat(queryPlan.getQueryRequest().getFilterExpression(), equalTo("#1 = :1 and #2 = :2")),
+                () -> assertThat(queryPlan.getQueryRequest().getExpressionAttributeNames().get("#2"),
+                        equalTo("publisher")),
+                () -> assertThat(queryPlan.getQueryRequest().getExpressionAttributeNames().get("#1"), equalTo("price")),
+                () -> assertThat(queryPlan.getQueryRequest().getExpressionAttributeValues().get(":2").getS(),
+                        equalTo(publisher)),
+                () -> assertThat(queryPlan.getQueryRequest().getExpressionAttributeValues().get(":1").getN(),
+                        equalTo(price))//
+        );
     }
 }

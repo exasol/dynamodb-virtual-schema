@@ -25,10 +25,12 @@ public class DnfNormalizer<DocumentVisitorType> {
      * @param predicate predicate structure to normalize
      * @return normalized predicate structure
      */
-    public QueryPredicate<DocumentVisitorType> normalize(final QueryPredicate<DocumentVisitorType> predicate) {
+    public DnfOr<DocumentVisitorType> normalize(final QueryPredicate<DocumentVisitorType> predicate) {
         final QueryPredicateToLogicngConverter.Result<DocumentVisitorType> conversionResult = this.converter
                 .convert(predicate);
         final Formula dnfFormula = conversionResult.getLogicngFormula().transform(new DNFFactorization());
-        return new LogicngToQueryPredicateConverter<>(conversionResult.getVariablesMapping()).convert(dnfFormula);
+        final QueryPredicate<DocumentVisitorType> dnf = new LogicngToQueryPredicateConverter<>(
+                conversionResult.getVariablesMapping()).convert(dnfFormula);
+        return new DnfClassStructureFactory<DocumentVisitorType>().build(dnf);
     }
 }
