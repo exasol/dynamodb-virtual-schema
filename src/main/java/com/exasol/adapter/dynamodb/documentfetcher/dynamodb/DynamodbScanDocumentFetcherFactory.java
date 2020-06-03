@@ -41,7 +41,7 @@ class DynamodbScanDocumentFetcherFactory {
     }
 
     private List<DocumentFetcher<DynamodbNodeVisitor>> parallelizeScan(final ScanRequest templateScanRequest) {
-        final int numberOfSegments = 10;
+        final int numberOfSegments = 10; // TODO replace by calculated number
         templateScanRequest.withTotalSegments(numberOfSegments);
         final List<DocumentFetcher<DynamodbNodeVisitor>> documentFetchers = new ArrayList<>(numberOfSegments);
         for (int segmentCounter = 0; segmentCounter < numberOfSegments; segmentCounter++) {
