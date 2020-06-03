@@ -13,10 +13,10 @@ import com.exasol.sql.expresion.ValueExpressionToJavaObjectConverter;
 import com.exasol.utils.StringSerializer;
 
 /**
- * This class is the abstract basis fot the database specific UDF call. In the UDF call the document data is fetched by
+ * This class is the abstract basis for the database-specific UDF call. In the UDF call, the document data is fetched by
  * the {@link DocumentFetcher}, mapped by the {@link SchemaMapper} and finally emitted to the Exasol database.
  * 
- * To save memory and process huge amounts of data, this process is implemented as a pipeline. That means that fetching
+ * To save memory and process huge amounts of data, this process is implemented as a pipeline. That means that fetching,
  * mapping and emitting of the rows is done for each row and not en-block.
  */
 @java.lang.SuppressWarnings("squid:S119") // DocumentVisitorType does not fit naming conventions.

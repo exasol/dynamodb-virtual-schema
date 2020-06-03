@@ -21,6 +21,6 @@ public class ImportDocumentData {
     }
 
     private ImportDocumentData() {
-        // Intentional empty. As this class is only accessed statical.
+        // Intentionally empty. As this class is only accessed statical.
     }
 }
