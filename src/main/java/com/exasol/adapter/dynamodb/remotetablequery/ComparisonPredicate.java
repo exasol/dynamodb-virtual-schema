@@ -1,53 +1,34 @@
 package com.exasol.adapter.dynamodb.remotetablequery;
 
+import java.util.List;
+
+import com.exasol.adapter.dynamodb.mapping.ColumnMapping;
+
 /**
- * This class represents a comparison between two values.
+ * This interface represents a comparison between a literal and a column of a table.
  */
 @java.lang.SuppressWarnings("squid:S119") // DocumentVisitorType does not fit naming conventions.
-public abstract class ComparisonPredicate<DocumentVisitorType> implements QueryPredicate<DocumentVisitorType> {
-    private static final long serialVersionUID = 3143229347002333048L;
-    private final Operator operator;
-
-    /**
-     * Create a new instance of {@link ComparisonPredicate}.
-     * 
-     * @param operator comparison operator
-     */
-    public ComparisonPredicate(final Operator operator) {
-        this.operator = operator;
-    }
+public interface ComparisonPredicate<DocumentVisitorType> extends QueryPredicate<DocumentVisitorType> {
 
     /**
      * Get the comparison operator.
-     * 
+     *
      * @return the operator
      */
-    public Operator getOperator() {
-        return this.operator;
-    }
-
-    @Override
-    public String toString() {
-        switch (this.operator) {
-        case EQUAL:
-            return "=";
-        case LESS:
-            return "<";
-        case LESS_EQUAL:
-            return "<=";
-        case GREATER:
-            return ">";
-        case GREATER_EQUAL:
-            return ">=";
-        default:
-            throw new UnsupportedOperationException();// All possible operators are implemented
-        }
-    }
+    public AbstractComparisonPredicate.Operator getOperator();
 
     /**
-     * Possible comparision operators.
+     * Accept an {@link ComparisonPredicateVisitor}.
      */
-    public enum Operator {
-        EQUAL, LESS, LESS_EQUAL, GREATER, GREATER_EQUAL
-    }
+    public void accept(ComparisonPredicateVisitor<DocumentVisitorType> visitor);
+
+    /**
+     * Get a list of {@link ColumnMapping}s involved in the comparison.
+     */
+    public List<ColumnMapping> getComparedColumns();
+
+    /**
+     * Negates this operator. e.g. A = B --> A != B
+     */
+    public ComparisonPredicate<DocumentVisitorType> negate();
 }

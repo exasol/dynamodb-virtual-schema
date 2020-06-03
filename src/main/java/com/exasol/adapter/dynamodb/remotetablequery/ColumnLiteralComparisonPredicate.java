@@ -1,5 +1,7 @@
 package com.exasol.adapter.dynamodb.remotetablequery;
 
+import java.util.List;
+
 import com.exasol.adapter.dynamodb.documentnode.DocumentValue;
 import com.exasol.adapter.dynamodb.mapping.ColumnMapping;
 
@@ -7,7 +9,8 @@ import com.exasol.adapter.dynamodb.mapping.ColumnMapping;
  * This class represents a comparison between a literal and a column of a table.
  */
 @java.lang.SuppressWarnings("squid:S119") // DocumentVisitorType does not fit naming conventions.
-public class ColumnLiteralComparisonPredicate<DocumentVisitorType> extends ComparisonPredicate<DocumentVisitorType> {
+public class ColumnLiteralComparisonPredicate<DocumentVisitorType>
+        extends AbstractComparisonPredicate<DocumentVisitorType> {
     private static final long serialVersionUID = 4471077828317147591L;
     private final DocumentValue<DocumentVisitorType> literal;
     private final ColumnMapping column;
@@ -54,15 +57,11 @@ public class ColumnLiteralComparisonPredicate<DocumentVisitorType> extends Compa
         if (this == other) {
             return true;
         }
-        if (other == null || getClass() != other.getClass()) {
+        if (!(other instanceof ColumnLiteralComparisonPredicate)) {
             return false;
         }
         final ColumnLiteralComparisonPredicate<?> that = (ColumnLiteralComparisonPredicate<?>) other;
-
-        if (!this.literal.equals(that.literal)) {
-            return false;
-        }
-        return this.column.equals(that.column);
+        return this.literal.equals(that.literal) && this.column.equals(that.column);
     }
 
     @Override
@@ -74,5 +73,20 @@ public class ColumnLiteralComparisonPredicate<DocumentVisitorType> extends Compa
     @Override
     public String toString() {
         return this.column.getExasolColumnName() + super.toString() + this.literal.toString();
+    }
+
+    @Override
+    public void accept(final ComparisonPredicateVisitor<DocumentVisitorType> visitor) {
+        visitor.visit(this);
+    }
+
+    @Override
+    public List<ColumnMapping> getComparedColumns() {
+        return List.of(this.column);
+    }
+
+    @Override
+    public ColumnLiteralComparisonPredicate<DocumentVisitorType> negate() {
+        return new ColumnLiteralComparisonPredicate<>(negateOperator(), this.column, this.literal);
     }
 }

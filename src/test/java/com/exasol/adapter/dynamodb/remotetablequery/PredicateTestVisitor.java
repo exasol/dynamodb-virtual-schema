@@ -4,8 +4,8 @@ class PredicateTestVisitor implements QueryPredicateVisitor<Object> {
     private Visited visited;
 
     @Override
-    public void visit(final ColumnLiteralComparisonPredicate<Object> columnLiteralComparisonPredicate) {
-        this.visited = Visited.COLUMN_LITERAL_COMPARISON;
+    public void visit(final ComparisonPredicate<Object> comparisonPredicate) {
+        this.visited = Visited.COMPARISON;
     }
 
     @Override
@@ -18,11 +18,16 @@ class PredicateTestVisitor implements QueryPredicateVisitor<Object> {
         this.visited = Visited.NO;
     }
 
+    @Override
+    public void visit(final NotPredicate<Object> notPredicate) {
+        this.visited = Visited.NOT;
+    }
+
     public Visited getVisited() {
         return this.visited;
     }
 
     enum Visited {
-        BINARY_LOGICAL_OPERATOR, OR, NO, COLUMN_LITERAL_COMPARISON
+        BINARY_LOGICAL_OPERATOR, NO, COMPARISON, NOT
     }
 }

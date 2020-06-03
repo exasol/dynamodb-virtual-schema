@@ -31,4 +31,9 @@ public class DynamodbString implements DocumentValue<DynamodbNodeVisitor> {
     public void accept(final DynamodbNodeVisitor visitor) {
         visitor.visit(this);
     }
+
+    @Override
+    public String toString() {
+        return "DynamodbString{" + "value='" + this.value + "'" + "}";
+    }
 }

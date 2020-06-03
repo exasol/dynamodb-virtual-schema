@@ -1,7 +1,10 @@
 package com.exasol.adapter.dynamodb.remotetablequery;
 
+import static com.exasol.EqualityMatchers.assertSymmetricEqualWithHashAndEquals;
+import static com.exasol.EqualityMatchers.assertSymmetricNotEqualWithHashAndEquals;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.equalTo;
 
 import java.util.List;
 
@@ -18,6 +21,7 @@ class LogicalOperatorTest {
         assertThat(TEST_PREDICATE.getOperands(), containsInAnyOrder(NO_PREDICATE));
     }
 
+    @Test
     void testGetOperator() {
         assertThat(TEST_PREDICATE.getOperator(), equalTo(OPERATOR));
     }
@@ -33,27 +37,19 @@ class LogicalOperatorTest {
     void testNotEqual() {
         final LogicalOperator<Object> otherPredicate = new LogicalOperator<>(List.of(NO_PREDICATE),
                 LogicalOperator.Operator.OR);
-        assertThat(TEST_PREDICATE, not(equalTo(otherPredicate)));
+        assertSymmetricNotEqualWithHashAndEquals(TEST_PREDICATE, otherPredicate);
     }
 
     @Test
-    void testHashNotEqual() {
+    void testIdentical() {
         final LogicalOperator<Object> otherPredicate = new LogicalOperator<>(List.of(NO_PREDICATE),
                 LogicalOperator.Operator.OR);
-        assertThat(TEST_PREDICATE.hashCode(), not(equalTo(otherPredicate.hashCode())));
+        assertSymmetricEqualWithHashAndEquals(TEST_PREDICATE, TEST_PREDICATE);
     }
 
     @Test
     void testEqual() {
-        final LogicalOperator<Object> otherPredicate = new LogicalOperator<>(List.of(NO_PREDICATE),
-                LogicalOperator.Operator.OR);
-        assertThat(TEST_PREDICATE, equalTo(TEST_PREDICATE));
-    }
-
-    @Test
-    void testHashCodeEqual() {
-        final LogicalOperator<Object> otherPredicate = new LogicalOperator<>(List.of(NO_PREDICATE),
-                LogicalOperator.Operator.OR);
-        assertThat(TEST_PREDICATE.hashCode(), equalTo(TEST_PREDICATE.hashCode()));
+        final LogicalOperator<Object> otherPredicate = new LogicalOperator<>(List.of(NO_PREDICATE), OPERATOR);
+        assertSymmetricEqualWithHashAndEquals(TEST_PREDICATE, otherPredicate);
     }
 }
