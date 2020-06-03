@@ -33,9 +33,9 @@ CREATE OR REPLACE JAVA ADAPTER SCRIPT ADAPTER.DYNAMODB_ADAPTER AS
 /
 ```
 
-In addition to the adapter script we must create an UDF function that will handle the loading of the data:
+In addition to the adapter script we must create a UDF function that will handle the loading of the data:
 ```
-CREATE OR REPLACE JAVA SET SCRIPT ADAPTER.ImportDocumentData(
+CREATE OR REPLACE JAVA SET SCRIPT ADAPTER.IMPORT_DOCUMENT_DATA(
   DOCUMENT_FETCHER VARCHAR(2000000),
   REMOTE_TABLE_QUERY VARCHAR(2000000),
   CONNECTION_NAME VARCHAR(500))

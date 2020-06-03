@@ -4,9 +4,11 @@ import com.exasol.ExaIterator;
 import com.exasol.ExaMetadata;
 
 /**
- * Main UDF entry point. Per convention, the UDF Script must have the same name as the main class.
+ * Main UDF entry point.
  */
 public class ImportDocumentData {
+    public static final String UDF_NAME = "IMPORT_DOCUMENT_DATA";
+
     /**
      * This method is called by the Exasol database when the ImportFromDynamodb UDF is called.
      * 
@@ -21,6 +23,6 @@ public class ImportDocumentData {
     }
 
     private ImportDocumentData() {
-        // Intentional empty. As this class is only accessed statical.
+        // Intentionally empty. As this class is only accessed statical.
     }
 }

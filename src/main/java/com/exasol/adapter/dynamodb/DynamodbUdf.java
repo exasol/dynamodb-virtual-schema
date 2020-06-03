@@ -9,7 +9,7 @@ import com.exasol.adapter.dynamodb.mapping.dynamodb.DynamodbPropertyToColumnValu
  */
 class DynamodbUdf extends AbstractUdf<DynamodbNodeVisitor> {
     @Override
-    protected PropertyToColumnValueExtractorFactory<DynamodbNodeVisitor> getDocumentVisitorTypePropertyToColumnValueExtractorFactory() {
+    protected PropertyToColumnValueExtractorFactory<DynamodbNodeVisitor> getValueExtractorFactory() {
         return new DynamodbPropertyToColumnValueExtractorFactory();
     }
 }
