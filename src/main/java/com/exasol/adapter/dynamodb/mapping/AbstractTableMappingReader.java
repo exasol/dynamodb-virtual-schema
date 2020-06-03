@@ -30,7 +30,12 @@ public abstract class AbstractTableMappingReader {
         final GlobalKey globalKey = buildGlobalKey(visitor);
         final List<ColumnMapping> allColumns = new ArrayList<>(globalKey.getOwnKeyColumns());
         allColumns.addAll(globalKey.getForeignKeyColumns());
-        allColumns.addAll(visitor.getNonKeyColumns());
+        for (final ColumnMapping nonKeyColumn : visitor.getNonKeyColumns()) {
+            if (!allColumns.contains(nonKeyColumn)) {
+                allColumns.add(nonKeyColumn);
+            }
+        }
+
         final TableMapping rootTable = createTable(allColumns);
         this.tables.add(rootTable);
         for (final NestedTableReader nestedTableReader : visitor.getNestedTableReaderQueue()) {

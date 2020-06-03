@@ -9,11 +9,19 @@
         "toTableMapping": {
           "mapping": {
             "fields": {
+              "name": {
+                "toStringMapping": {
+                }
+              },
               "figures": {
                 "toTableMapping": {
                   "mapping": {
-                    "toStringMapping": {
-                      "destName": "NAME"
+                    "fields": {
+                      "name": {
+                        "toStringMapping": {
+                          "destName": "NAME"
+                        }
+                      }
                     }
                   }
                 }
@@ -26,6 +34,11 @@
         "toStringMapping": {
           "maxLength": 20,
           "overflow": "ABORT",
+          "required": true
+        }
+      },
+      "name": {
+        "toStringMapping": {
           "required": true
         }
       }
