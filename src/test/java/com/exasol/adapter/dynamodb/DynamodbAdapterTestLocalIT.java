@@ -196,7 +196,6 @@ class DynamodbAdapterTestLocalIT {
         assertThat(topics, containsInAnyOrder("Exasol", "DynamoDB", "Virtual Schema", "Fantasy", "Birds", "Nature"));
     }
 
-    // TODO change test to filter on name when bug is fixed: https://github.com/exasol/dynamodb-virtual-schema/issues/55
     @Test
     void testJoinOnNestedTable() throws IOException, SQLException {
         createNestedTableVirtualSchema();
