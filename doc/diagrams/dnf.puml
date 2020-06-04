@@ -1,0 +1,10 @@
+@startuml
+
+class DnfComparison{
+comparisonPredicate: ComparisonPredicate
+isNegated: boolean
+}
+
+DnfOr "1" - "*" DnfAnd: > operands
+DnfAnd "1" - "*" DnfComparison: > operands
+@enduml
