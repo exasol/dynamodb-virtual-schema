@@ -5,6 +5,6 @@ comparisonPredicate: ComparisonPredicate
 isNegated: boolean
 }
 
-DnfOr "1" - "*" DnfAnd: > operands
-DnfAnd "1" - "*" DnfComparison: > operands
+DnfOr "1" - "0...*" DnfAnd: > operands
+DnfAnd "1" - "1...*" DnfComparison: > operands
 @enduml
