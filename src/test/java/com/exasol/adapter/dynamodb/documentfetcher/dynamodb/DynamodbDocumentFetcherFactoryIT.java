@@ -75,8 +75,11 @@ class DynamodbDocumentFetcherFactoryIT {
     private List<DocumentNode<DynamodbNodeVisitor>> runQuery(final RemoteTableQuery<DynamodbNodeVisitor> query) {
         final DynamodbDocumentFetcherFactory fetcherFactory = new DynamodbDocumentFetcherFactory(
                 dynamodbTestInterface.getDynamodbLowLevelConnection());
-        final DocumentFetcher<DynamodbNodeVisitor> documentFetcher = fetcherFactory.buildDocumentFetcherForQuery(query);
-        return documentFetcher.run(dynamodbTestInterface.getExaConnectionInformationForDynamodb())
+        final List<DocumentFetcher<DynamodbNodeVisitor>> documentFetchers = fetcherFactory
+                .buildDocumentFetcherForQuery(query);
+        return documentFetchers.stream()
+                .flatMap((DocumentFetcher<DynamodbNodeVisitor> documentFetcher) -> documentFetcher
+                        .run(dynamodbTestInterface.getExaConnectionInformationForDynamodb()))
                 .collect(Collectors.toList());
     }
 
