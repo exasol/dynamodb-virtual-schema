@@ -15,7 +15,8 @@ import com.exasol.adapter.dynamodb.remotetablequery.normalizer.DnfOr;
 
 /**
  * This factory builds {@link DynamodbQueryDocumentFetcher}s for a given query. If the query can't be solved by a single
- * Query operation but using a few, this factory generates multiple operations.
+ * {@code Query} operation (see https://docs.aws.amazon.com/amazondynamodb/latest/APIReference/API_Query.html) but using
+ * a few, this factory generates multiple operations.
  */
 class DynamodbQueryDocumentFetcherFactory {
 
