@@ -24,20 +24,6 @@ resource "aws_dynamodb_table" "open_library_test" {
   }
 }
 
-resource "aws_s3_bucket" "s3-bucket" {
-  bucket = "dynamodb-virtual-schema-test-bucket"
-  acl    = "private"
-
-  tags = {
-    "exa:owner": "jakob.braun@exasol.com",
-    "exa:deputy": "Sebastian.Baer@exasol.com"
-    "exa:project": "DDBVS"
-    "exa:project.name": "Virtual Schema for DynamoDB"
-    "exa:stage": "development"
-    "Name": "S3 bucket for storing test data for testing Dynamodb Virtual Schema"
-  }
-}
-
 
 module "exasol" {
   #source = "exasol/exasol/aws"
