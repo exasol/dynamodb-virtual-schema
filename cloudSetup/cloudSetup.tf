@@ -24,6 +24,68 @@ resource "aws_dynamodb_table" "open_library_test" {
   }
 }
 
+resource "aws_vpc" "dynamodb_test_vpc" {
+  cidr_block = "10.0.0.0/16"
+  tags = {
+    "exa:owner": "jakob.braun@exasol.com",
+    "exa:deputy": "Sebastian.Baer@exasol.com"
+    "exa:project": "DDBVS"
+    "exa:project.name": "Virtual Schema for DynamoDB"
+    "exa:stage": "development"
+    "Name": "VPC for DynamoDB Virtual Schema performance test"
+  }
+}
+
+resource "aws_subnet" "dynamodb_test_subnet" {
+  vpc_id     = "${aws_vpc.dynamodb_test_vpc.id}"
+  cidr_block = "10.0.0.0/24"
+
+  tags = {
+    "exa:owner": "jakob.braun@exasol.com",
+    "exa:deputy": "Sebastian.Baer@exasol.com"
+    "exa:project": "DDBVS"
+    "exa:project.name": "Virtual Schema for DynamoDB"
+    "exa:stage": "development"
+    "Name": "Subnet for DynamoDB Virtual Schema performance test"
+  }
+}
+
+resource "aws_security_group" "exasol_db_security_group" {
+  name        = "allow_tls"
+  description = "Allow TLS inbound traffic"
+  vpc_id      = "${aws_vpc.dynamodb_test_vpc.id}"
+
+  #ingress {
+  #  description = "TLS from VPC"
+  #  from_port   = 443
+  #  to_port     = 443
+  #  protocol    = "tcp"
+  #  cidr_blocks = [aws_vpc.dynamodb_test_vpc.cidr_block]
+  #}
+
+  #egress {
+  #  from_port   = 0
+  #  to_port     = 0
+  #  protocol    = "-1"
+  #  cidr_blocks = ["0.0.0.0/0"]
+  #}
+
+  tags = {
+    "exa:owner": "jakob.braun@exasol.com",
+    "exa:deputy": "Sebastian.Baer@exasol.com"
+    "exa:project": "DDBVS"
+    "exa:project.name": "Virtual Schema for DynamoDB"
+    "exa:stage": "development"
+    "Name": "Security Group for Exasol cluster for DynamoDB Virtual Schema performance test"
+  }
+}
+
+resource "aws_key_pair" "test_pc_key_pair" {
+  key_name   = "test-computer-key"
+  public_key = file("~/.ssh/id_rsa.pub")
+}
+
+
 
 module "exasol" {
   #source = "exasol/exasol/aws"
@@ -42,9 +104,9 @@ module "exasol" {
   public_ip = true
 
   # These values can be obtained from other modules.
-  key_pair_name = "exasol-key-pair"
-  subnet_id = "subnet-ed85b690"
-  security_group_id = "sg-07599522f13906845"
+  key_pair_name = aws_key_pair.test_pc_key_pair.id
+  subnet_id = aws_subnet.dynamodb_test_subnet.id
+  security_group_id = aws_security_group.exasol_db_security_group.id
 
   # Variables used in tags.
   project = "DDBVS"
