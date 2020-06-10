@@ -64,6 +64,7 @@ class DynamodbAdapterTestLocalIT {
         exasolTestInterface.uploadMapping(MappingTestFiles.SINGLE_COLUMN_TO_TABLE_MAPPING_FILE_NAME);
         exasolTestInterface.uploadMapping(MappingTestFiles.DATA_TYPE_TEST_MAPPING_FILE_NAME);
         exasolTestInterface.createAdapterScript();
+        exasolTestInterface.createUdf();
         LOGGER.info("created adapter script");
         exasolTestInterface.createConnection(DYNAMODB_CONNECTION, dynamodbTestInterface.getDynamoUrl(),
                 dynamodbTestInterface.getDynamoUser(), dynamodbTestInterface.getDynamoPass());
@@ -97,7 +98,7 @@ class DynamodbAdapterTestLocalIT {
     private SelectStringArrayResult selectStringArray() throws SQLException {
         final long start = System.currentTimeMillis();
         final ResultSet actualResultSet = exasolTestInterface.getStatement()
-                .executeQuery("SELECT \"ISBN\" FROM " + TEST_SCHEMA + ".\"BOOKS\";");
+                .executeQuery("SELECT * FROM " + TEST_SCHEMA + ".\"BOOKS\";");
         final long duration = System.currentTimeMillis() - start;
         final List<String> result = new ArrayList<>();
         while (actualResultSet.next()) {

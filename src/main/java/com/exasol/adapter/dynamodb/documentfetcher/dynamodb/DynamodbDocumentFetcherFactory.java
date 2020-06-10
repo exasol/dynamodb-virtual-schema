@@ -1,5 +1,7 @@
 package com.exasol.adapter.dynamodb.documentfetcher.dynamodb;
 
+import java.util.List;
+
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.exasol.adapter.dynamodb.documentfetcher.DocumentFetcher;
 import com.exasol.adapter.dynamodb.documentfetcher.DocumentFetcherFactory;
@@ -27,19 +29,20 @@ public class DynamodbDocumentFetcherFactory implements DocumentFetcherFactory<Dy
     }
 
     @Override
-    public DocumentFetcher<DynamodbNodeVisitor> buildDocumentFetcherForQuery(
+    public List<DocumentFetcher<DynamodbNodeVisitor>> buildDocumentFetcherForQuery(
             final RemoteTableQuery<DynamodbNodeVisitor> remoteTableQuery) {
         final DynamodbTableMetadata tableMetadata = this.tableMetadataFactory
                 .buildMetadataForTable(remoteTableQuery.getFromTable().getRemoteName());
         return buildDocumentFetcherForQuery(remoteTableQuery, tableMetadata);
     }
 
-    DocumentFetcher<DynamodbNodeVisitor> buildDocumentFetcherForQuery(
+    List<DocumentFetcher<DynamodbNodeVisitor>> buildDocumentFetcherForQuery(
             final RemoteTableQuery<DynamodbNodeVisitor> remoteTableQuery, final DynamodbTableMetadata tableMetadata) {
         try {
-            return new DynamodbQueryDocumentFetcher(remoteTableQuery, tableMetadata);
+            return new DynamodbQueryDocumentFetcherFactory().buildDocumentFetcherForQuery(remoteTableQuery,
+                    tableMetadata);
         } catch (final PlanDoesNotFitException exception) {
-            return new DynamodbScanDocumentFetcher(remoteTableQuery);
+            return new DynamodbScanDocumentFetcherFactory().buildDocumentFetcherForQuery(remoteTableQuery);
         }
     }
 }

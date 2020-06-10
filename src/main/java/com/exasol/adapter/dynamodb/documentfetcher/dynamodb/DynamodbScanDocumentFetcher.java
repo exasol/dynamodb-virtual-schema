@@ -9,8 +9,6 @@ import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.amazonaws.services.dynamodbv2.model.ScanRequest;
 import com.amazonaws.services.dynamodbv2.model.ScanResult;
-import com.exasol.adapter.dynamodb.documentnode.dynamodb.DynamodbNodeVisitor;
-import com.exasol.adapter.dynamodb.remotetablequery.RemoteTableQuery;
 
 /**
  * This class represents a DynamoDB {@code SCAN} operation.
@@ -22,23 +20,10 @@ class DynamodbScanDocumentFetcher extends AbstractDynamodbDocumentFetcher {
     /**
      * Create an instance of {@link DynamodbScanDocumentFetcher}.
      *
-     * @param documentQuery document query to fetch the documents for
+     * @param scanRequest DynamoDB scan request
      */
-    protected DynamodbScanDocumentFetcher(final RemoteTableQuery<DynamodbNodeVisitor> documentQuery) {
-        this.scanRequest = new ScanRequest().withTableName(documentQuery.getFromTable().getRemoteName());
-        final DynamodbAttributeNamePlaceholderMapBuilder namePlaceholderMapBuilder = new DynamodbAttributeNamePlaceholderMapBuilder();
-        final DynamodbAttributeValuePlaceholderMapBuilder valuePlaceholderMapBuilder = new DynamodbAttributeValuePlaceholderMapBuilder();
-        final String filterExpression = new DynamodbFilterExpressionFactory(namePlaceholderMapBuilder,
-                valuePlaceholderMapBuilder).buildFilterExpression(documentQuery.getSelection());
-        if (!namePlaceholderMapBuilder.getPlaceholderMap().isEmpty()) {
-            this.scanRequest.setExpressionAttributeNames(namePlaceholderMapBuilder.getPlaceholderMap());
-        }
-        if (!filterExpression.isEmpty()) {
-            this.scanRequest.setFilterExpression(filterExpression);
-        }
-        if (!valuePlaceholderMapBuilder.getPlaceholderMap().isEmpty()) {
-            this.scanRequest.setExpressionAttributeValues(valuePlaceholderMapBuilder.getPlaceholderMap());
-        }
+    DynamodbScanDocumentFetcher(final ScanRequest scanRequest) {
+        this.scanRequest = scanRequest;
     }
 
     ScanRequest getScanRequest() {

@@ -48,11 +48,6 @@ public class ColumnLiteralComparisonPredicate<DocumentVisitorType>
     }
 
     @Override
-    public void accept(final QueryPredicateVisitor<DocumentVisitorType> visitor) {
-        visitor.visit(this);
-    }
-
-    @Override
     public boolean equals(final Object other) {
         if (this == other) {
             return true;

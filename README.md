@@ -33,6 +33,18 @@ CREATE OR REPLACE JAVA ADAPTER SCRIPT ADAPTER.DYNAMODB_ADAPTER AS
 /
 ```
 
+In addition to the adapter script we must create a UDF function that will handle the loading of the data:
+```
+CREATE OR REPLACE JAVA SET SCRIPT ADAPTER.IMPORT_DOCUMENT_DATA(
+  DOCUMENT_FETCHER VARCHAR(2000000),
+  REMOTE_TABLE_QUERY VARCHAR(2000000),
+  CONNECTION_NAME VARCHAR(500))
+  EMITS(...) AS
+    %scriptclass com.exasol.adapter.dynamodb.ImportDocumentData;
+    %jar /buckets/bfsdefault/default/dynamodb-virtual-schemas-adapter-dist-0.2.1.jar;
+/
+```
+
 ## Creating a Virtual Schema
  
 For creating a Virtual Schema you need a connection either to AWS or to a local DynamoDB.

@@ -93,8 +93,18 @@ public abstract class AbstractExasolTestInterface {
         createSchema(ADAPTER_SCHEMA);
         final StringBuilder statementBuilder = new StringBuilder(
                 "CREATE OR REPLACE JAVA ADAPTER SCRIPT " + ADAPTER_SCHEMA + "." + DYNAMODB_ADAPTER + " AS\n");
-        final String hostIp = getTestHostIpAddress();
+        addDebuggerOptions(statementBuilder);
+        // noinspection SpellCheckingInspection
+        statementBuilder.append("    %scriptclass com.exasol.adapter.RequestDispatcher;\n");
+        statementBuilder.append("    %jar /buckets/bfsdefault/default/" + VIRTUAL_SCHEMAS_JAR_NAME_AND_VERSION + ";\n");
+        statementBuilder.append("/");
+        final String sql = statementBuilder.toString();
+        LOGGER.info(sql);
+        this.statement.execute(sql);
+    }
 
+    private void addDebuggerOptions(final StringBuilder statementBuilder) {
+        final String hostIp = getTestHostIpAddress();
         if (hostIp != null) {
             final StringBuilder jvmOptions = new StringBuilder("-javaagent:/buckets/bfsdefault/default/"
                     + JACOCO_JAR_NAME + "=output=tcpclient,address=" + hostIp + ",port=3002");
@@ -105,8 +115,15 @@ public abstract class AbstractExasolTestInterface {
             }
             statementBuilder.append("  %jvmoption ").append(jvmOptions).append(";\n");
         }
-        // noinspection SpellCheckingInspection
-        statementBuilder.append("    %scriptclass com.exasol.adapter.RequestDispatcher;\n");
+    }
+
+    public void createUdf() throws SQLException {
+        final StringBuilder statementBuilder = new StringBuilder("CREATE OR REPLACE JAVA SET SCRIPT " + ADAPTER_SCHEMA
+                + "." + ImportDocumentData.UDF_NAME + "(" + AbstractUdf.PARAMETER_DOCUMENT_FETCHER
+                + " VARCHAR(2000000), " + AbstractUdf.PARAMETER_REMOTE_TABLE_QUERY + " VARCHAR(2000000), "
+                + AbstractUdf.PARAMETER_CONNECTION_NAME + " VARCHAR(500)) EMITS(...) AS\n");
+        addDebuggerOptions(statementBuilder);
+        statementBuilder.append("    %scriptclass " + ImportDocumentData.class.getName() + ";\n");
         statementBuilder.append("    %jar /buckets/bfsdefault/default/" + VIRTUAL_SCHEMAS_JAR_NAME_AND_VERSION + ";\n");
         statementBuilder.append("/");
         final String sql = statementBuilder.toString();
@@ -132,6 +149,28 @@ public abstract class AbstractExasolTestInterface {
         final String noDebugProperty = System.getProperty("tests.noDebug");// if you want to debug set in your ide jvm
         // parameter -Dtests.noDebug="false"
         return noDebugProperty != null && noDebugProperty.equals("true");
+    }
+
+
+    /**
+     * Runs {@code CREATE VIRTUAL SCHEMA} on Exasol test container.
+     *
+     * @param name               name for the newly created schema
+     * @param dynamodbConnection name of the connection to use
+     * @throws SQLException on SQL error
+     */
+    public void createDynamodbVirtualSchema(final String name, final String dynamodbConnection, final String mapping)
+            throws SQLException {
+        String createStatement = "CREATE VIRTUAL SCHEMA " + name + "\n" + "    USING " + ADAPTER_SCHEMA + "."
+                + DYNAMODB_ADAPTER + " WITH\n" + "    CONNECTION_NAME = '" + dynamodbConnection + "'\n"
+                + "   SQL_DIALECT     = 'DYNAMO_DB'\n" + "	  MAPPING = '" + mapping + "'";
+        final String hostIp = getTestHostIpAddress();
+        if (hostIp != null) {
+            createStatement += "\n   DEBUG_ADDRESS   = '" + hostIp + ":" + LOGGER_PORT + "'\n"
+                    + "   LOG_LEVEL       =  'ALL'";
+        }
+        createStatement += ";";
+        this.getStatement().execute(createStatement);
     }
 
     /**
@@ -186,27 +225,6 @@ public abstract class AbstractExasolTestInterface {
      */
     public void dropVirtualSchema(final String schemaName) throws SQLException {
         this.getStatement().execute("DROP VIRTUAL SCHEMA IF EXISTS " + schemaName + " CASCADE;");
-    }
-
-    /**
-     * Runs {@code CREATE VIRTUAL SCHEMA} on Exasol test container.
-     *
-     * @param name               name for the newly created schema
-     * @param dynamodbConnection name of the connection to use
-     * @throws SQLException on SQL error
-     */
-    public void createDynamodbVirtualSchema(final String name, final String dynamodbConnection, final String mapping)
-            throws SQLException {
-        String createStatement = "CREATE VIRTUAL SCHEMA " + name + "\n" + "    USING " + ADAPTER_SCHEMA + "."
-                + DYNAMODB_ADAPTER + " WITH\n" + "    CONNECTION_NAME = '" + dynamodbConnection + "'\n"
-                + "   SQL_DIALECT     = 'DYNAMO_DB'\n" + "	  MAPPING = '" + mapping + "'";
-        final String hostIp = getTestHostIpAddress();
-        if (hostIp != null) {
-            createStatement += "\n   DEBUG_ADDRESS   = '" + hostIp + ":" + LOGGER_PORT + "'\n"
-                    + "   LOG_LEVEL       =  'ALL'";
-        }
-        createStatement += ";";
-        this.getStatement().execute(createStatement);
     }
 
     /**

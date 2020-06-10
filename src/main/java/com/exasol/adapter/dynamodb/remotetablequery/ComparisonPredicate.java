@@ -22,6 +22,11 @@ public interface ComparisonPredicate<DocumentVisitorType> extends QueryPredicate
      */
     public void accept(ComparisonPredicateVisitor<DocumentVisitorType> visitor);
 
+    @Override
+    public default void accept(final QueryPredicateVisitor<DocumentVisitorType> visitor) {
+        visitor.visit(this);
+    }
+
     /**
      * Get a list of {@link ColumnMapping}s involved in the comparison.
      */

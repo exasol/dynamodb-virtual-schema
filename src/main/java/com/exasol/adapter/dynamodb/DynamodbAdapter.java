@@ -4,7 +4,6 @@ import static com.exasol.adapter.capabilities.MainCapability.FILTER_EXPRESSIONS;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
@@ -17,13 +16,16 @@ import com.exasol.adapter.VirtualSchemaAdapter;
 import com.exasol.adapter.capabilities.Capabilities;
 import com.exasol.adapter.capabilities.LiteralCapability;
 import com.exasol.adapter.capabilities.PredicateCapability;
+import com.exasol.adapter.dynamodb.documentfetcher.DocumentFetcher;
 import com.exasol.adapter.dynamodb.documentfetcher.DocumentFetcherFactory;
 import com.exasol.adapter.dynamodb.documentfetcher.dynamodb.DynamodbDocumentFetcherFactory;
 import com.exasol.adapter.dynamodb.documentnode.dynamodb.DynamodbNodeVisitor;
 import com.exasol.adapter.dynamodb.dynamodbmetadata.BaseDynamodbTableMetadataFactory;
 import com.exasol.adapter.dynamodb.literalconverter.dynamodb.SqlLiteralToDynamodbValueConverter;
-import com.exasol.adapter.dynamodb.mapping.*;
-import com.exasol.adapter.dynamodb.mapping.dynamodb.DynamodbPropertyToColumnValueExtractorFactory;
+import com.exasol.adapter.dynamodb.mapping.JsonSchemaMappingReader;
+import com.exasol.adapter.dynamodb.mapping.SchemaMapping;
+import com.exasol.adapter.dynamodb.mapping.SchemaMappingReader;
+import com.exasol.adapter.dynamodb.mapping.SchemaMappingToSchemaMetadataConverter;
 import com.exasol.adapter.dynamodb.mapping.dynamodb.DynamodbTableKeyFetcher;
 import com.exasol.adapter.dynamodb.remotetablequery.RemoteTableQuery;
 import com.exasol.adapter.dynamodb.remotetablequery.RemoteTableQueryFactory;
@@ -32,7 +34,6 @@ import com.exasol.adapter.request.*;
 import com.exasol.adapter.response.*;
 import com.exasol.bucketfs.BucketfsFileFactory;
 import com.exasol.dynamodb.DynamodbConnectionFactory;
-import com.exasol.sql.expression.ValueExpression;
 
 /**
  * DynamoDB Virtual Schema adapter.
@@ -122,14 +123,14 @@ public class DynamodbAdapter implements VirtualSchemaAdapter {
             throws AdapterException {
         try {
             return runPushdown(exaMetadata, request);
-        } catch (final ExaConnectionAccessException exception) {
+        } catch (final ExaConnectionAccessException | IOException exception) {
             throw new AdapterException("Unable to create Virtual Schema \"" + request.getVirtualSchemaName() + "\". "
                     + "Cause: " + exception.getMessage(), exception);
         }
     }
 
     private PushDownResponse runPushdown(final ExaMetadata exaMetadata, final PushDownRequest request)
-            throws AdapterException, ExaConnectionAccessException {
+            throws AdapterException, ExaConnectionAccessException, IOException {
         final RemoteTableQuery<DynamodbNodeVisitor> remoteTableQuery = new RemoteTableQueryFactory<>(
                 new SqlLiteralToDynamodbValueConverter()).build(request.getSelect(),
                         request.getSchemaMetadataInfo().getAdapterNotes());
@@ -140,17 +141,16 @@ public class DynamodbAdapter implements VirtualSchemaAdapter {
     }
 
     private String runQuery(final ExaMetadata exaMetadata, final PushDownRequest request,
-            final RemoteTableQuery<DynamodbNodeVisitor> remoteTableQuery) throws ExaConnectionAccessException {
+            final RemoteTableQuery<DynamodbNodeVisitor> remoteTableQuery)
+            throws ExaConnectionAccessException, IOException {
         final AmazonDynamoDB dynamodbClient = getDynamoDBClient(exaMetadata, request);
         final DocumentFetcherFactory<DynamodbNodeVisitor> documentFetcherFactory = new DynamodbDocumentFetcherFactory(
                 dynamodbClient);
-        final SchemaMapper<DynamodbNodeVisitor> schemaMapper = new SchemaMapper<>(remoteTableQuery,
-                new DynamodbPropertyToColumnValueExtractorFactory());
-        final List<List<ValueExpression>> resultRows = new ArrayList<>();
-        final ExaConnectionInformation connectionInformation = getConnectionInformation(exaMetadata, request);
-        documentFetcherFactory.buildDocumentFetcherForQuery(remoteTableQuery).run(connectionInformation)
-                .forEach(dynamodbRow -> schemaMapper.mapRow(dynamodbRow).forEach(resultRows::add));
-        return new ValueExpressionsToSqlSelectFromValuesConverter().convert(remoteTableQuery, resultRows);
+        final List<DocumentFetcher<DynamodbNodeVisitor>> documentFetchers = documentFetcherFactory
+                .buildDocumentFetcherForQuery(remoteTableQuery);
+        final String connectionName = getPropertiesFromRequest(request).getConnectionName();
+        return new UdfCallBuilder<DynamodbNodeVisitor>().getUdfCallSql(documentFetchers, remoteTableQuery,
+                connectionName);
     }
 
     private AmazonDynamoDB getDynamoDBClient(final ExaMetadata exaMetadata, final AbstractAdapterRequest request)
