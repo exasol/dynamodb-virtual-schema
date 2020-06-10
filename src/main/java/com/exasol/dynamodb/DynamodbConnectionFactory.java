@@ -20,6 +20,14 @@ public class DynamodbConnectionFactory {
     private static final String AWS_LOCAL_REGION = "eu-central-1";
     private static final String TOKEN_SEPARATOR = "##TOKEN##";
 
+    public static String buildPassWithTokenSeparator(final String key, final Optional<String> token) {
+        if (token.isEmpty()) {
+            return key;
+        } else {
+            return key + TOKEN_SEPARATOR + token.get();
+        }
+    }
+
     /**
      * Create an AmazonDynamoDB (low level api client) for a given uri, user and key.
      *
@@ -60,7 +68,7 @@ public class DynamodbConnectionFactory {
     /**
      * Create an AmazonDynamoDB (low level api client) with connection settings from an Exasol
      * {@link ExaConnectionInformation} object.
-     * 
+     *
      * @param exaConnectionInformation connection settings
      * @return {@link AmazonDynamoDB} (low level api client)
      */
@@ -78,13 +86,5 @@ public class DynamodbConnectionFactory {
     public DynamoDB getDocumentConnection(final String uri, final String user, final String key,
             final Optional<String> sessionToken) {
         return new DynamoDB(getLowLevelConnection(uri, user, key, sessionToken));
-    }
-
-    public static String buildPassWithTokenSeparator(final String key, final Optional<String> token) {
-        if (token.isEmpty()) {
-            return key;
-        } else {
-            return key + TOKEN_SEPARATOR + token.get();
-        }
     }
 }

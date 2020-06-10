@@ -22,7 +22,8 @@ public class TerraformInterface {
         final String output = stdInput.readLine();
         if (output == null) {
             final StringBuilder errorMessage = new StringBuilder("Could not read terraform output:\n");
-            final BufferedReader stdError = new BufferedReader(new InputStreamReader(terraformProcess.getErrorStream()));
+            final BufferedReader stdError = new BufferedReader(
+                    new InputStreamReader(terraformProcess.getErrorStream()));
             errorMessage.append(stdError.lines().collect(Collectors.joining("\n")));
             throw new IllegalStateException(errorMessage.toString());
         }

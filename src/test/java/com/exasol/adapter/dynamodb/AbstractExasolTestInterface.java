@@ -14,6 +14,10 @@ import org.slf4j.LoggerFactory;
 
 import com.exasol.bucketfs.BucketAccessException;
 
+/**
+ * This is the abstract basis for test interfaces for the Exasol database. The classes implementing this class implement
+ * the test setup specific behaviour.
+ */
 public abstract class AbstractExasolTestInterface {
     public static final String ADAPTER_SCHEMA = "ADAPTER";
     public static final String DYNAMODB_ADAPTER = "DYNAMODB_ADAPTER";

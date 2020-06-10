@@ -14,7 +14,6 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 
 import com.amazonaws.services.dynamodbv2.model.*;
 import com.exasol.adapter.dynamodb.DynamodbTestInterface;
-import com.exasol.dynamodb.DynamodbConnectionFactory;
 
 @Tag("integration")
 @Tag("quick")
@@ -32,7 +31,8 @@ class DynamodbTableMetadataFactoryTestIT {
     @BeforeAll
     static void beforeAll() throws DynamodbTestInterface.NoNetworkFoundException {
         dynamodbTestInterface = new DynamodbTestInterface(LOCAL_DYNAMO, NETWORK);
-        tableMetadataFactory = new BaseDynamodbTableMetadataFactory(dynamodbTestInterface.getDynamodbLowLevelConnection());
+        tableMetadataFactory = new BaseDynamodbTableMetadataFactory(
+                dynamodbTestInterface.getDynamodbLowLevelConnection());
     }
 
     @AfterAll

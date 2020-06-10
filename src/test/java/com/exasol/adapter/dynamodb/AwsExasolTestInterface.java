@@ -20,6 +20,10 @@ import org.slf4j.LoggerFactory;
 import com.exasol.TerraformInterface;
 import com.exasol.bucketfs.BucketAccessException;
 
+/**
+ * Exasol test interface for exasol clusters running on AWS. Start the cluster by running {@code terraform apply} in
+ * {@code /cloudSetup}
+ */
 public class AwsExasolTestInterface extends AbstractExasolTestInterface {
     private static final Logger LOGGER = LoggerFactory.getLogger(AwsExasolTestInterface.class);
     private static final String SYS_USER_PW = "eXaSol1337DB";

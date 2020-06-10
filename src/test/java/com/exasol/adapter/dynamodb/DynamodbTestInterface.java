@@ -12,7 +12,6 @@ import javax.json.JsonArray;
 import javax.json.JsonReader;
 import javax.json.JsonValue;
 
-import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testcontainers.containers.GenericContainer;
@@ -21,6 +20,7 @@ import org.testcontainers.containers.Network;
 import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.auth.AWSSessionCredentials;
 import com.amazonaws.auth.DefaultAWSCredentialsProviderChain;
+import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.document.*;
 import com.amazonaws.services.dynamodbv2.model.*;
 import com.exasol.ExaConnectionInformation;
@@ -59,7 +59,29 @@ public class DynamodbTestInterface {
      * Constructor using DynamoDB at AWS with given AWS credentials.
      */
     private DynamodbTestInterface(final AWSCredentials awsCredentials) {
-        this(AWS_LOCAL_URL, awsCredentials.getAWSAccessKeyId(), awsCredentials.getAWSSecretKey(), getSessionTokenIfPossible(awsCredentials));
+        this(AWS_LOCAL_URL, awsCredentials.getAWSAccessKeyId(), awsCredentials.getAWSSecretKey(),
+                getSessionTokenIfPossible(awsCredentials));
+    }
+
+    /**
+     * Constructor using default login credentials for the local dynamodb docker instance.
+     */
+    public DynamodbTestInterface(final GenericContainer localDynamo, final Network dockerNetwork)
+            throws NoNetworkFoundException {
+        this(getDockerNetworkUrlForLocalDynamodb(localDynamo, dockerNetwork), LOCAL_DYNAMO_USER, LOCAL_DYNAMO_PASS,
+                Optional.empty());
+    }
+
+    /**
+     * Constructor called by all other constructors.
+     */
+    private DynamodbTestInterface(final String dynamoUrl, final String user, final String pass,
+            final Optional<String> sessionToken) {
+        this.dynamoUrl = dynamoUrl;
+        this.dynamoUser = user;
+        this.dynamoPass = pass;
+        this.sessionToken = sessionToken;
+        this.dynamoClient = new DynamodbConnectionFactory().getDocumentConnection(dynamoUrl, user, pass, sessionToken);
     }
 
     private static Optional<String> getSessionTokenIfPossible(final AWSCredentials awsCredentials) {
@@ -69,25 +91,6 @@ public class DynamodbTestInterface {
         } else {
             return Optional.empty();
         }
-    }
-
-    /**
-     * Constructor using default login credentials for the local dynamodb docker instance.
-     */
-    public DynamodbTestInterface(final GenericContainer localDynamo, final Network dockerNetwork)
-            throws NoNetworkFoundException {
-        this(getDockerNetworkUrlForLocalDynamodb(localDynamo, dockerNetwork), LOCAL_DYNAMO_USER, LOCAL_DYNAMO_PASS, Optional.empty());
-    }
-
-    /**
-     * Constructor called by all other constructors.
-     */
-    private DynamodbTestInterface(final String dynamoUrl, final String user, final String pass, final Optional<String> sessionToken) {
-        this.dynamoUrl = dynamoUrl;
-        this.dynamoUser = user;
-        this.dynamoPass = pass;
-        this.sessionToken = sessionToken;
-        this.dynamoClient = new DynamodbConnectionFactory().getDocumentConnection(dynamoUrl, user, pass, sessionToken);
     }
 
     private static String getDockerNetworkUrlForLocalDynamodb(final GenericContainer localDynamo,
@@ -224,40 +227,6 @@ public class DynamodbTestInterface {
         }
     }
 
-    private class BatchWriter implements Consumer<String> {
-        private static final int BATCH_SIZE = 20;
-        private final String tableName;
-        final List<Item> batch = new ArrayList<>(BATCH_SIZE);
-
-        private BatchWriter(final String tableName) {
-            this.tableName = tableName;
-        }
-
-        private int itemCounter;
-
-        @Override
-        public void accept(final String jsonString) {
-            final Item item = Item.fromJSON(jsonString);
-            this.itemCounter++;
-            this.batch.add(item);
-            if (this.batch.size() >= BATCH_SIZE) {
-                flush();
-            }
-        }
-
-        public void flush() {
-            final TableWriteItems writeRequest = new TableWriteItems(this.tableName).withItemsToPut(this.batch);
-            final BatchWriteItemOutcome batchWriteItemOutcome = DynamodbTestInterface.this.dynamoClient
-                    .batchWriteItem(writeRequest);
-            LOGGER.info("# Unprocessed items: " + batchWriteItemOutcome.getUnprocessedItems().size());
-            this.batch.clear();
-        }
-
-        public int getItemCounter() {
-            return this.itemCounter;
-        }
-    }
-
     private String[] splitJsonArrayInArrayOfJsonStrings(final JsonArray jsonArray) {
         return jsonArray.stream()//
                 .map(JsonValue::toString)//
@@ -311,5 +280,37 @@ public class DynamodbTestInterface {
         }
     }
 
+    private class BatchWriter implements Consumer<String> {
+        private static final int BATCH_SIZE = 20;
+        final List<Item> batch = new ArrayList<>(BATCH_SIZE);
+        private final String tableName;
+        private int itemCounter;
+
+        private BatchWriter(final String tableName) {
+            this.tableName = tableName;
+        }
+
+        @Override
+        public void accept(final String jsonString) {
+            final Item item = Item.fromJSON(jsonString);
+            this.itemCounter++;
+            this.batch.add(item);
+            if (this.batch.size() >= BATCH_SIZE) {
+                flush();
+            }
+        }
+
+        public void flush() {
+            final TableWriteItems writeRequest = new TableWriteItems(this.tableName).withItemsToPut(this.batch);
+            final BatchWriteItemOutcome batchWriteItemOutcome = DynamodbTestInterface.this.dynamoClient
+                    .batchWriteItem(writeRequest);
+            LOGGER.info("# Unprocessed items: " + batchWriteItemOutcome.getUnprocessedItems().size());
+            this.batch.clear();
+        }
+
+        public int getItemCounter() {
+            return this.itemCounter;
+        }
+    }
 
 }

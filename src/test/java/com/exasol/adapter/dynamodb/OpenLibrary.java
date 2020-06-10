@@ -1,7 +1,5 @@
 package com.exasol.adapter.dynamodb;
 
-import com.amazonaws.services.dynamodbv2.model.ScanRequest;
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -10,18 +8,18 @@ import java.nio.channels.Channels;
 import java.nio.channels.FileChannel;
 import java.nio.channels.ReadableByteChannel;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
-
+/**
+ * This class imports the open library dataset into a DynamoDB table.
+ */
 public class OpenLibrary {
     private static final String DATASET_URL = "https://s3-eu-west-1.amazonaws.com/csparkdata/ol_cdump.json";
     private static final String TMP_FILE_NAME = "/tmp/dataset.json";
-    private final DynamodbTestInterface dynamodbTestInterface;
     private static final String TABLE_NAME = "open_library_test";
+    private final DynamodbTestInterface dynamodbTestInterface;
 
     public OpenLibrary(final DynamodbTestInterface dynamodbTestInterface) throws IOException {
         this.dynamodbTestInterface = dynamodbTestInterface;
-        if(dynamodbTestInterface.isTableEmpty(TABLE_NAME)) {
+        if (dynamodbTestInterface.isTableEmpty(TABLE_NAME)) {
             loadTestData();
             importTestData();
         }

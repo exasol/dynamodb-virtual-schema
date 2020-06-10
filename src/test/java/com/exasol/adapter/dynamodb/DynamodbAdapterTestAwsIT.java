@@ -1,6 +1,7 @@
 package com.exasol.adapter.dynamodb;
 
 import java.io.IOException;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import org.junit.jupiter.api.BeforeAll;
@@ -12,6 +13,9 @@ import org.slf4j.LoggerFactory;
 import com.exasol.adapter.dynamodb.mapping.MappingTestFiles;
 import com.exasol.bucketfs.BucketAccessException;
 import com.exasol.dynamodb.DynamodbConnectionFactory;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
 
 /**
  * Tests using the AWS DynamoDB. Setup credentials on your machine using: {@code aws configure}. For now two factor
@@ -40,9 +44,9 @@ class DynamodbAdapterTestAwsIT {
         exasolTestInterface.uploadMapping(MappingTestFiles.OPEN_LIBRARY_MAPPING_FILE_NAME);
         exasolTestInterface.dropConnection(DYNAMODB_CONNECTION);
         exasolTestInterface.dropVirtualSchema(TEST_SCHEMA);
-        exasolTestInterface.createConnection(DYNAMODB_CONNECTION, "aws:eu-central-1", dynamodbTestInterface.getDynamoUser(),
-                DynamodbConnectionFactory.buildPassWithTokenSeparator(dynamodbTestInterface.getDynamoPass(),
-                        dynamodbTestInterface.getSessionToken()));
+        exasolTestInterface.createConnection(DYNAMODB_CONNECTION, "aws:eu-central-1",
+                dynamodbTestInterface.getDynamoUser(), DynamodbConnectionFactory.buildPassWithTokenSeparator(
+                        dynamodbTestInterface.getDynamoPass(), dynamodbTestInterface.getSessionToken()));
         exasolTestInterface.createAdapterScript();
         exasolTestInterface.createDynamodbVirtualSchema(TEST_SCHEMA, DYNAMODB_CONNECTION,
                 "/bfsdefault/default/mappings/" + MappingTestFiles.OPEN_LIBRARY_MAPPING_FILE_NAME);
@@ -50,6 +54,9 @@ class DynamodbAdapterTestAwsIT {
 
     @Test
     void test() throws SQLException {
-        exasolTestInterface.getStatement().executeQuery("SELECT COUNT(*) FROM OPENLIBRARY");
+        final ResultSet resultSet = exasolTestInterface.getStatement().executeQuery("SELECT COUNT(*) FROM OPENLIBRARY");
+        resultSet.next();
+        final int count = resultSet.getInt(1);
+        assertThat(count, equalTo(148163));
     }
 }

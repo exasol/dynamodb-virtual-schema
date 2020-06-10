@@ -1,10 +1,6 @@
 package com.exasol.adapter.dynamodb;
 
 import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.http.HttpRequest;
 import java.nio.file.Path;
 import java.sql.SQLException;
 import java.util.Map;
@@ -18,7 +14,7 @@ import com.exasol.jacoco.JacocoServer;
 import com.github.dockerjava.api.model.ContainerNetwork;
 
 /**
- * This class provides methods simplified methods for running typical commands on an Exasol test container.
+ * Exasol test interface for a Testcontainer test setup.
  */
 public class TestcontainerExasolTestInterface extends AbstractExasolTestInterface {
     private final ExasolContainer<? extends ExasolContainer<?>> container;
