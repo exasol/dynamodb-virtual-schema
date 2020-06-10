@@ -25,6 +25,7 @@ public class UdfCallBuilder<DocumentVisitorType> {
     private static final String DOCUMENT_FETCHER_PARAMETER = "DOCUMENT_FETCHER";
     private static final String REMOTE_TABLE_QUERY_PARAMETER = "REMOTE_TABLE_QUERY";
     private static final String CONNECTION_NAME_PARAMETER = "CONNECTION_NAME";
+    private static final String FRAGMENT_ID = "FRAGMENT_ID";
 
     /**
      * Build push down SQL statement with a UDF call to {@link ImportDocumentData}.
@@ -53,18 +54,20 @@ public class UdfCallBuilder<DocumentVisitorType> {
         select.accept(renderer);
         // TODO refactor when https://github.com/exasol/sql-statement-builder/issues/76 is fixed
         return renderer.render() + " AS T(" + DOCUMENT_FETCHER_PARAMETER + ", " + REMOTE_TABLE_QUERY_PARAMETER + ", "
-                + CONNECTION_NAME_PARAMETER + ")";
+                + CONNECTION_NAME_PARAMETER + ", " + FRAGMENT_ID + ") GROUP BY " + FRAGMENT_ID;
+
     }
 
     private ValueTable buildValueTable(final List<DocumentFetcher<DocumentVisitorType>> documentFetchers,
             final RemoteTableQuery<DocumentVisitorType> query, final String connectionName, final Select select)
             throws IOException {
         final ValueTable valueTable = new ValueTable(select);
+        int rowCounter = 0;
         for (final DocumentFetcher<DocumentVisitorType> documentFetcher : documentFetchers) {
             final String serializedDocumentFetcher = StringSerializer.serializeToString(documentFetcher);
             final String serializedRemoteTableQuery = StringSerializer.serializeToString(query);
             final ValueTableRow row = ValueTableRow.builder(select).add(serializedDocumentFetcher)
-                    .add(serializedRemoteTableQuery).add(connectionName).build();
+                    .add(serializedRemoteTableQuery).add(connectionName).add(rowCounter++).build();
             valueTable.appendRow(row);
         }
         return valueTable;

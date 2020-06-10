@@ -1,9 +1,13 @@
 package com.exasol.adapter.dynamodb;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
+
 import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -13,9 +17,6 @@ import org.slf4j.LoggerFactory;
 import com.exasol.adapter.dynamodb.mapping.MappingTestFiles;
 import com.exasol.bucketfs.BucketAccessException;
 import com.exasol.dynamodb.DynamodbConnectionFactory;
-
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
 
 /**
  * Tests using the AWS DynamoDB. Setup credentials on your machine using: {@code aws configure}. For now two factor
@@ -48,6 +49,7 @@ class DynamodbAdapterTestAwsIT {
                 dynamodbTestInterface.getDynamoUser(), DynamodbConnectionFactory.buildPassWithTokenSeparator(
                         dynamodbTestInterface.getDynamoPass(), dynamodbTestInterface.getSessionToken()));
         exasolTestInterface.createAdapterScript();
+        exasolTestInterface.createUdf();
         exasolTestInterface.createDynamodbVirtualSchema(TEST_SCHEMA, DYNAMODB_CONNECTION,
                 "/bfsdefault/default/mappings/" + MappingTestFiles.OPEN_LIBRARY_MAPPING_FILE_NAME);
     }
@@ -58,5 +60,11 @@ class DynamodbAdapterTestAwsIT {
         resultSet.next();
         final int count = resultSet.getInt(1);
         assertThat(count, equalTo(148163));
+    }
+
+    @AfterAll
+    static void afterAll() throws SQLException {
+        exasolTestInterface.dropConnection(DYNAMODB_CONNECTION);
+        exasolTestInterface.dropVirtualSchema(TEST_SCHEMA);
     }
 }
