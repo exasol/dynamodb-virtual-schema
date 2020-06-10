@@ -1,24 +1,25 @@
 package com.exasol.adapter.dynamodb;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.function.Consumer;
 
 import javax.json.Json;
 import javax.json.JsonArray;
 import javax.json.JsonReader;
 import javax.json.JsonValue;
 
+import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.Network;
 
 import com.amazonaws.auth.AWSCredentials;
+import com.amazonaws.auth.AWSSessionCredentials;
 import com.amazonaws.auth.DefaultAWSCredentialsProviderChain;
 import com.amazonaws.services.dynamodbv2.document.*;
 import com.amazonaws.services.dynamodbv2.model.*;
@@ -41,6 +42,7 @@ public class DynamodbTestInterface {
     private final String dynamoUrl;
     private final String dynamoUser;
     private final String dynamoPass;
+    private final Optional<String> sessionToken;
     private final List<String> tableNames = new LinkedList<>();
 
     /**
@@ -57,14 +59,16 @@ public class DynamodbTestInterface {
      * Constructor using DynamoDB at AWS with given AWS credentials.
      */
     private DynamodbTestInterface(final AWSCredentials awsCredentials) {
-        this(awsCredentials.getAWSAccessKeyId(), awsCredentials.getAWSSecretKey());
+        this(AWS_LOCAL_URL, awsCredentials.getAWSAccessKeyId(), awsCredentials.getAWSSecretKey(), getSessionTokenIfPossible(awsCredentials));
     }
 
-    /**
-     * Constructor using DynamoDB at AWS with given user and pass.
-     */
-    private DynamodbTestInterface(final String user, final String pass) {
-        this(AWS_LOCAL_URL, user, pass);
+    private static Optional<String> getSessionTokenIfPossible(final AWSCredentials awsCredentials) {
+        if (awsCredentials instanceof AWSSessionCredentials) {
+            final AWSSessionCredentials sessionCredentials = (AWSSessionCredentials) awsCredentials;
+            return Optional.of(((AWSSessionCredentials) awsCredentials).getSessionToken());
+        } else {
+            return Optional.empty();
+        }
     }
 
     /**
@@ -72,17 +76,18 @@ public class DynamodbTestInterface {
      */
     public DynamodbTestInterface(final GenericContainer localDynamo, final Network dockerNetwork)
             throws NoNetworkFoundException {
-        this(getDockerNetworkUrlForLocalDynamodb(localDynamo, dockerNetwork), LOCAL_DYNAMO_USER, LOCAL_DYNAMO_PASS);
+        this(getDockerNetworkUrlForLocalDynamodb(localDynamo, dockerNetwork), LOCAL_DYNAMO_USER, LOCAL_DYNAMO_PASS, Optional.empty());
     }
 
     /**
      * Constructor called by all other constructors.
      */
-    private DynamodbTestInterface(final String dynamoUrl, final String user, final String pass) {
+    private DynamodbTestInterface(final String dynamoUrl, final String user, final String pass, final Optional<String> sessionToken) {
         this.dynamoUrl = dynamoUrl;
         this.dynamoUser = user;
         this.dynamoPass = pass;
-        this.dynamoClient = new DynamodbConnectionFactory().getDocumentConnection(dynamoUrl, user, pass);
+        this.sessionToken = sessionToken;
+        this.dynamoClient = new DynamodbConnectionFactory().getDocumentConnection(dynamoUrl, user, pass, sessionToken);
     }
 
     private static String getDockerNetworkUrlForLocalDynamodb(final GenericContainer localDynamo,
@@ -97,9 +102,9 @@ public class DynamodbTestInterface {
         throw new NoNetworkFoundException();
     }
 
-    public com.amazonaws.services.dynamodbv2.AmazonDynamoDB getDynamodbLowLevelConnection() {
+    public AmazonDynamoDB getDynamodbLowLevelConnection() {
         return new DynamodbConnectionFactory().getLowLevelConnection(this.getDynamoUrl(), this.getDynamoUser(),
-                this.getDynamoPass());
+                this.getDynamoPass(), this.sessionToken);
     }
 
     /**
@@ -141,6 +146,10 @@ public class DynamodbTestInterface {
             counter++;
         }
         return counter;
+    }
+
+    public boolean isTableEmpty(final String tableName) {
+        return this.getDynamodbLowLevelConnection().scan(new ScanRequest(tableName).withLimit(1)).getItems().isEmpty();
     }
 
     /**
@@ -186,16 +195,66 @@ public class DynamodbTestInterface {
     }
 
     /**
-     * Imports data from a json file. The File mus have the AWS json syntax. For running the import the aws-cli is used.
+     * Imports data from a json file.
      *
      * @param tableName name of the DynamoDB table
-     * @param asset     JSOn file to import
+     * @param asset     JSON file to import
      * @throws IOException if file can't get opened
      */
     public void importData(final String tableName, final File asset) throws IOException {
         try (final JsonReader jsonReader = Json.createReader(new FileReader(asset))) {
             final String[] itemsJson = splitJsonArrayInArrayOfJsonStrings(jsonReader.readArray());
             putJson(tableName, itemsJson);
+        }
+    }
+
+    /**
+     * Imports data JSON lines files. A JSON lines file has a JSON document in each line.
+     *
+     * @param tableName name of the DynamoDB table
+     * @param file      line JSON file to import
+     * @throws IOException if file can't get opened
+     */
+    public void importDataFromJsonLines(final String tableName, final File file) throws IOException {
+        try (final BufferedReader reader = new BufferedReader(new FileReader(file))) {
+            final BatchWriter batchWriter = new BatchWriter(tableName);
+            reader.lines().forEach(batchWriter);
+            batchWriter.flush();
+            LOGGER.info("Written items: " + batchWriter.getItemCounter());
+        }
+    }
+
+    private class BatchWriter implements Consumer<String> {
+        private static final int BATCH_SIZE = 20;
+        private final String tableName;
+        final List<Item> batch = new ArrayList<>(BATCH_SIZE);
+
+        private BatchWriter(final String tableName) {
+            this.tableName = tableName;
+        }
+
+        private int itemCounter;
+
+        @Override
+        public void accept(final String jsonString) {
+            final Item item = Item.fromJSON(jsonString);
+            this.itemCounter++;
+            this.batch.add(item);
+            if (this.batch.size() >= BATCH_SIZE) {
+                flush();
+            }
+        }
+
+        public void flush() {
+            final TableWriteItems writeRequest = new TableWriteItems(this.tableName).withItemsToPut(this.batch);
+            final BatchWriteItemOutcome batchWriteItemOutcome = DynamodbTestInterface.this.dynamoClient
+                    .batchWriteItem(writeRequest);
+            LOGGER.info("# Unprocessed items: " + batchWriteItemOutcome.getUnprocessedItems().size());
+            this.batch.clear();
+        }
+
+        public int getItemCounter() {
+            return this.itemCounter;
         }
     }
 
@@ -215,6 +274,10 @@ public class DynamodbTestInterface {
 
     public String getDynamoPass() {
         return this.dynamoPass;
+    }
+
+    public Optional<String> getSessionToken() {
+        return this.sessionToken;
     }
 
     public ExaConnectionInformation getExaConnectionInformationForDynamodb() {
@@ -247,4 +310,6 @@ public class DynamodbTestInterface {
             super("no matching network was found");
         }
     }
+
+
 }

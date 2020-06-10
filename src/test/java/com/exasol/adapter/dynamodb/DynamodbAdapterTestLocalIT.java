@@ -49,7 +49,7 @@ class DynamodbAdapterTestLocalIT {
     private static final String DYNAMODB_CONNECTION = "DYNAMODB_CONNECTION";
     private static final String DYNAMO_BOOKS_TABLE = "MY_BOOKS";
     private static DynamodbTestInterface dynamodbTestInterface;
-    private static ExasolTestInterface exasolTestInterface;
+    private static TestcontainerExasolTestInterface exasolTestInterface;
 
     /**
      * Create a Virtual Schema in the Exasol test container accessing the local DynamoDB.
@@ -58,7 +58,7 @@ class DynamodbAdapterTestLocalIT {
     static void beforeAll() throws DynamodbTestInterface.NoNetworkFoundException, SQLException, InterruptedException,
             BucketAccessException, TimeoutException, IOException {
         dynamodbTestInterface = new DynamodbTestInterface(LOCAL_DYNAMO, NETWORK);
-        exasolTestInterface = new ExasolTestInterface(EXASOL_CONTAINER);
+        exasolTestInterface = new TestcontainerExasolTestInterface(EXASOL_CONTAINER);
         exasolTestInterface.uploadDynamodbAdapterJar();
         exasolTestInterface.uploadMapping(MappingTestFiles.BASIC_MAPPING_FILE_NAME);
         exasolTestInterface.uploadMapping(MappingTestFiles.SINGLE_COLUMN_TO_TABLE_MAPPING_FILE_NAME);

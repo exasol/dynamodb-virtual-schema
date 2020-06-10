@@ -1,11 +1,6 @@
 package com.exasol.adapter.dynamodb;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.is;
-
 import java.io.IOException;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import org.junit.jupiter.api.BeforeAll;
@@ -13,12 +8,10 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.testcontainers.containers.output.Slf4jLogConsumer;
-import org.testcontainers.junit.jupiter.Container;
-import org.testcontainers.junit.jupiter.Testcontainers;
 
+import com.exasol.adapter.dynamodb.mapping.MappingTestFiles;
 import com.exasol.bucketfs.BucketAccessException;
-import com.exasol.containers.ExasolContainer;
+import com.exasol.dynamodb.DynamodbConnectionFactory;
 
 /**
  * Tests using the AWS DynamoDB. Setup credentials on your machine using: {@code aws configure}. For now two factor
@@ -27,16 +20,12 @@ import com.exasol.containers.ExasolContainer;
  * Preparation: create a table {@code JB_Books} with primary key {@code isbn} and insert one item.
  */
 @Tag("integration")
-@Testcontainers
 class DynamodbAdapterTestAwsIT {
     private static final Logger LOGGER = LoggerFactory.getLogger(DynamodbAdapterTestAwsIT.class);
 
-    @Container
-    private static final ExasolContainer<? extends ExasolContainer<?>> EXASOL_CONTAINER = new ExasolContainer<>()
-            .withLogConsumer(new Slf4jLogConsumer(LOGGER));
     private static final String TEST_SCHEMA = "TEST";
     private static final String DYNAMODB_CONNECTION = "DYNAMODB_CONNECTION";
-    private static ExasolTestInterface exasolTestInterface;
+    private static AwsExasolTestInterface exasolTestInterface;
 
     /**
      * Create a Virtual Schema in the Exasol test container accessing DynamoDB on AWS.
@@ -45,24 +34,22 @@ class DynamodbAdapterTestAwsIT {
     static void beforeAll() throws SQLException, BucketAccessException, InterruptedException,
             java.util.concurrent.TimeoutException, IOException {
         final DynamodbTestInterface dynamodbTestInterface = new DynamodbTestInterface();
-        exasolTestInterface = new ExasolTestInterface(EXASOL_CONTAINER);
+        new OpenLibrary(dynamodbTestInterface);
+        exasolTestInterface = new AwsExasolTestInterface();
         exasolTestInterface.uploadDynamodbAdapterJar();
+        exasolTestInterface.uploadMapping(MappingTestFiles.OPEN_LIBRARY_MAPPING_FILE_NAME);
+        exasolTestInterface.dropConnection(DYNAMODB_CONNECTION);
+        exasolTestInterface.dropVirtualSchema(TEST_SCHEMA);
+        exasolTestInterface.createConnection(DYNAMODB_CONNECTION, "aws:eu-central-1", dynamodbTestInterface.getDynamoUser(),
+                DynamodbConnectionFactory.buildPassWithTokenSeparator(dynamodbTestInterface.getDynamoPass(),
+                        dynamodbTestInterface.getSessionToken()));
         exasolTestInterface.createAdapterScript();
-        exasolTestInterface.createConnection(DYNAMODB_CONNECTION, dynamodbTestInterface.getDynamoUrl(),
-                dynamodbTestInterface.getDynamoUser(), dynamodbTestInterface.getDynamoPass());
-        exasolTestInterface.createDynamodbVirtualSchema(TEST_SCHEMA, DYNAMODB_CONNECTION, "");
+        exasolTestInterface.createDynamodbVirtualSchema(TEST_SCHEMA, DYNAMODB_CONNECTION,
+                "/bfsdefault/default/mappings/" + MappingTestFiles.OPEN_LIBRARY_MAPPING_FILE_NAME);
     }
 
-    /**
-     * Tests a simple {@code SELECT}.
-     */
     @Test
-    void testSelect() throws SQLException {
-        final ResultSet result = exasolTestInterface.getStatement()
-                .executeQuery("SELECT * FROM " + TEST_SCHEMA + ".\"testTable\";");// table name is hardcoded in adapter
-                                                                                  // definition (DynamodbAdapter)
-        result.next();
-        assertThat(result.getString(1), equalTo("1234234243"));
-        assertThat("result set has no other results", result.next(), is(false));
+    void test() throws SQLException {
+        exasolTestInterface.getStatement().executeQuery("SELECT COUNT(*) FROM OPENLIBRARY");
     }
 }
