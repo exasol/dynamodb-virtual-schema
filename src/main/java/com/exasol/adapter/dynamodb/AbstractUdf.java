@@ -8,7 +8,7 @@ import com.exasol.*;
 import com.exasol.adapter.dynamodb.documentfetcher.DocumentFetcher;
 import com.exasol.adapter.dynamodb.mapping.PropertyToColumnValueExtractorFactory;
 import com.exasol.adapter.dynamodb.mapping.SchemaMapper;
-import com.exasol.adapter.dynamodb.remotetablequery.RemoteTableQuery;
+import com.exasol.adapter.dynamodb.queryplanning.RemoteTableQuery;
 import com.exasol.sql.expresion.ValueExpressionToJavaObjectConverter;
 import com.exasol.utils.StringSerializer;
 

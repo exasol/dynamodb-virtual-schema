@@ -1,14 +1,14 @@
 package com.exasol.adapter.dynamodb.documentfetcher.dynamodb;
 
-import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import com.exasol.adapter.dynamodb.documentnode.dynamodb.DynamodbNodeVisitor;
 import com.exasol.adapter.dynamodb.dynamodbmetadata.DynamodbIndex;
-import com.exasol.adapter.dynamodb.remotetablequery.ColumnLiteralComparisonPredicate;
-import com.exasol.adapter.dynamodb.remotetablequery.LogicalOperator;
-import com.exasol.adapter.dynamodb.remotetablequery.QueryPredicate;
-import com.exasol.adapter.dynamodb.remotetablequery.normalizer.DnfOr;
+import com.exasol.adapter.dynamodb.querypredicate.ColumnLiteralComparisonPredicate;
+import com.exasol.adapter.dynamodb.querypredicate.LogicalOperator;
+import com.exasol.adapter.dynamodb.querypredicate.QueryPredicate;
+import com.exasol.adapter.dynamodb.querypredicate.normalizer.DnfOr;
 
 /**
  * This class represents the selection predicates of a DynamoDB query operation.
@@ -68,7 +68,7 @@ class QueryOperationSelection {
         if (this.sortKeyCondition.isEmpty()) {
             return this.partitionKeyCondition;
         } else {
-            return new LogicalOperator<>(List.of(this.partitionKeyCondition, this.sortKeyCondition.get()),
+            return new LogicalOperator<>(Set.of(this.partitionKeyCondition, this.sortKeyCondition.get()),
                     LogicalOperator.Operator.AND);
         }
     }

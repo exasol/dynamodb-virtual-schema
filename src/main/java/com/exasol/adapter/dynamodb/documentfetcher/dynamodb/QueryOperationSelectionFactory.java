@@ -1,6 +1,5 @@
 package com.exasol.adapter.dynamodb.documentfetcher.dynamodb;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -9,12 +8,12 @@ import com.exasol.adapter.dynamodb.documentnode.dynamodb.DynamodbNodeVisitor;
 import com.exasol.adapter.dynamodb.documentpath.DocumentPathExpression;
 import com.exasol.adapter.dynamodb.dynamodbmetadata.DynamodbIndex;
 import com.exasol.adapter.dynamodb.mapping.PropertyToColumnMapping;
-import com.exasol.adapter.dynamodb.remotetablequery.AbstractComparisonPredicate;
-import com.exasol.adapter.dynamodb.remotetablequery.ColumnLiteralComparisonPredicate;
-import com.exasol.adapter.dynamodb.remotetablequery.ComparisonPredicate;
-import com.exasol.adapter.dynamodb.remotetablequery.normalizer.DnfAnd;
-import com.exasol.adapter.dynamodb.remotetablequery.normalizer.DnfComparison;
-import com.exasol.adapter.dynamodb.remotetablequery.normalizer.DnfOr;
+import com.exasol.adapter.dynamodb.querypredicate.AbstractComparisonPredicate;
+import com.exasol.adapter.dynamodb.querypredicate.ColumnLiteralComparisonPredicate;
+import com.exasol.adapter.dynamodb.querypredicate.ComparisonPredicate;
+import com.exasol.adapter.dynamodb.querypredicate.normalizer.DnfAnd;
+import com.exasol.adapter.dynamodb.querypredicate.normalizer.DnfComparison;
+import com.exasol.adapter.dynamodb.querypredicate.normalizer.DnfOr;
 
 /**
  * This Factory builds {@link QueryOperationSelection}s for given selection predicate and DynamoDB index.
@@ -39,8 +38,8 @@ class QueryOperationSelectionFactory {
 
     private DnfOr<DynamodbNodeVisitor> extractNonIndexSelection(final DnfOr<DynamodbNodeVisitor> dnfOr,
             final DynamodbIndex index) {
-        final List<DnfAnd<DynamodbNodeVisitor>> operands = dnfOr.getOperands().stream()
-                .map(and -> getAndOfNonIndexComparisons(index, and)).collect(Collectors.toList());
+        final Set<DnfAnd<DynamodbNodeVisitor>> operands = dnfOr.getOperands().stream()
+                .map(and -> getAndOfNonIndexComparisons(index, and)).collect(Collectors.toSet());
         return new DnfOr<>(operands);
     }
 
@@ -49,7 +48,7 @@ class QueryOperationSelectionFactory {
         return new DnfAnd<>(and.getOperands().stream().filter(
                 comparison -> !isComparisonOnProperty(comparison.getComparisonPredicate(), index.getPartitionKey())
                         && !isComparisonOnProperty(comparison.getComparisonPredicate(), index.getSortKey()))
-                .collect(Collectors.toList()));
+                .collect(Collectors.toSet()));
     }
 
     private ColumnLiteralComparisonPredicate<DynamodbNodeVisitor> extractPartitionKeyCondition(

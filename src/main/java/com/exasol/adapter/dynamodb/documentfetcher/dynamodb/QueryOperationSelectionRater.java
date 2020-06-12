@@ -3,7 +3,7 @@ package com.exasol.adapter.dynamodb.documentfetcher.dynamodb;
 import java.util.Optional;
 
 import com.exasol.adapter.dynamodb.documentnode.dynamodb.DynamodbNodeVisitor;
-import com.exasol.adapter.dynamodb.remotetablequery.ColumnLiteralComparisonPredicate;
+import com.exasol.adapter.dynamodb.querypredicate.ColumnLiteralComparisonPredicate;
 
 /**
  * This class rates the selectivity of a {@link QueryOperationSelection}.

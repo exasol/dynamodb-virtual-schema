@@ -187,13 +187,13 @@ class JsonSchemaMappingReaderTest {
                 doubleNestedTable, "NAME");
         assertAll(//
                 () -> assertThat(tables.size(), equalTo(3)),
-                () -> assertThat(getColumnNames(rootTable.getColumns()), containsInAnyOrder("ISBN")),
+                () -> assertThat(getColumnNames(rootTable.getColumns()), containsInAnyOrder("ISBN", "NAME")),
                 () -> assertThat(getColumnNames(nestedTable.getColumns()),
                         containsInAnyOrder("BOOKS_ISBN", "INDEX", "NAME")),
                 () -> assertThat(getColumnNames(doubleNestedTable.getColumns()),
                         containsInAnyOrder("BOOKS_ISBN", "BOOKS_CHAPTERS_INDEX", "NAME")),
                 () -> assertThat(figureNameColumn.getPathToSourceProperty().toString(),
-                        equalTo("/chapters[*]/figures[*]")),
+                        equalTo("/chapters[*]/figures[*]/name")),
                 () -> assertThat(foreignKey1.getPathToSourceProperty().toString(), equalTo("/isbn")), //
                 () -> assertThat(indexColumn.getTablesPath().toString(), equalTo("/chapters[*]")));
     }

@@ -10,10 +10,10 @@ import com.exasol.adapter.dynamodb.mapping.ColumnMapping;
 import com.exasol.adapter.dynamodb.mapping.SchemaMappingToSchemaMetadataConverter;
 import com.exasol.adapter.dynamodb.mapping.TableMapping;
 import com.exasol.adapter.dynamodb.mapping.ToJsonPropertyToColumnMapping;
-import com.exasol.adapter.dynamodb.remotetablequery.AbstractComparisonPredicate;
-import com.exasol.adapter.dynamodb.remotetablequery.ColumnLiteralComparisonPredicate;
-import com.exasol.adapter.dynamodb.remotetablequery.NoPredicate;
-import com.exasol.adapter.dynamodb.remotetablequery.RemoteTableQuery;
+import com.exasol.adapter.dynamodb.queryplanning.RemoteTableQuery;
+import com.exasol.adapter.dynamodb.querypredicate.AbstractComparisonPredicate;
+import com.exasol.adapter.dynamodb.querypredicate.ColumnLiteralComparisonPredicate;
+import com.exasol.adapter.dynamodb.querypredicate.NoPredicate;
 import com.exasol.adapter.metadata.ColumnMetadata;
 import com.exasol.adapter.sql.*;
 

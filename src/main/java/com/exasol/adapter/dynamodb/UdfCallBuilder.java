@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.exasol.adapter.dynamodb.documentfetcher.DocumentFetcher;
-import com.exasol.adapter.dynamodb.remotetablequery.RemoteTableQuery;
+import com.exasol.adapter.dynamodb.queryplanning.RemoteTableQuery;
 import com.exasol.adapter.metadata.DataType;
 import com.exasol.datatype.type.*;
 import com.exasol.datatype.type.Boolean;

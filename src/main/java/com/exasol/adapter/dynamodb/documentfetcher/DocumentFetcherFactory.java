@@ -3,7 +3,7 @@ package com.exasol.adapter.dynamodb.documentfetcher;
 import java.util.List;
 
 import com.exasol.adapter.dynamodb.documentnode.dynamodb.DynamodbNodeVisitor;
-import com.exasol.adapter.dynamodb.remotetablequery.RemoteTableQuery;
+import com.exasol.adapter.dynamodb.queryplanning.RemoteTableQuery;
 
 /**
  * This factory builds {@link DocumentFetcher}s that fetch the required documents for a given {@link RemoteTableQuery}.

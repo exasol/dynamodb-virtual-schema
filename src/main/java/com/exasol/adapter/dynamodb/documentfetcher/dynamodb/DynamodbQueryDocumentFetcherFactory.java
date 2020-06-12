@@ -9,9 +9,9 @@ import com.exasol.adapter.dynamodb.dynamodbmetadata.DynamodbIndex;
 import com.exasol.adapter.dynamodb.dynamodbmetadata.DynamodbPrimaryIndex;
 import com.exasol.adapter.dynamodb.dynamodbmetadata.DynamodbSecondaryIndex;
 import com.exasol.adapter.dynamodb.dynamodbmetadata.DynamodbTableMetadata;
-import com.exasol.adapter.dynamodb.remotetablequery.RemoteTableQuery;
-import com.exasol.adapter.dynamodb.remotetablequery.normalizer.DnfNormalizer;
-import com.exasol.adapter.dynamodb.remotetablequery.normalizer.DnfOr;
+import com.exasol.adapter.dynamodb.queryplanning.RemoteTableQuery;
+import com.exasol.adapter.dynamodb.querypredicate.normalizer.DnfNormalizer;
+import com.exasol.adapter.dynamodb.querypredicate.normalizer.DnfOr;
 
 /**
  * This factory builds {@link DynamodbQueryDocumentFetcher}s for a given query. If the query can't be solved by a single

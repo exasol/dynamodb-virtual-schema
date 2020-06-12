@@ -6,7 +6,7 @@ import java.util.List;
 import com.amazonaws.services.dynamodbv2.model.ScanRequest;
 import com.exasol.adapter.dynamodb.documentfetcher.DocumentFetcher;
 import com.exasol.adapter.dynamodb.documentnode.dynamodb.DynamodbNodeVisitor;
-import com.exasol.adapter.dynamodb.remotetablequery.RemoteTableQuery;
+import com.exasol.adapter.dynamodb.queryplanning.RemoteTableQuery;
 
 /**
  * This factory builds {@link DynamodbScanDocumentFetcher}s for a given query. It returns multiple

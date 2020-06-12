@@ -8,7 +8,7 @@ import com.exasol.adapter.dynamodb.documentnode.DocumentNode;
 import com.exasol.adapter.dynamodb.documentpath.DocumentPathExpression;
 import com.exasol.adapter.dynamodb.documentpath.DocumentPathIteratorFactory;
 import com.exasol.adapter.dynamodb.documentpath.PathIterationStateProvider;
-import com.exasol.adapter.dynamodb.remotetablequery.RemoteTableQuery;
+import com.exasol.adapter.dynamodb.queryplanning.RemoteTableQuery;
 import com.exasol.sql.expression.ValueExpression;
 
 /**

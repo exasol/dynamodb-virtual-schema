@@ -28,7 +28,7 @@ import com.exasol.adapter.dynamodb.documentnode.DocumentObject;
 import com.exasol.adapter.dynamodb.documentnode.dynamodb.DynamodbNodeVisitor;
 import com.exasol.adapter.dynamodb.documentnode.dynamodb.DynamodbString;
 import com.exasol.adapter.dynamodb.mapping.TestDocuments;
-import com.exasol.adapter.dynamodb.remotetablequery.RemoteTableQuery;
+import com.exasol.adapter.dynamodb.queryplanning.RemoteTableQuery;
 
 @Tag("integration")
 @Tag("quick")

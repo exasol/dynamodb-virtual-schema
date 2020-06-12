@@ -9,7 +9,7 @@ import com.exasol.adapter.dynamodb.documentnode.dynamodb.DynamodbNodeVisitor;
 import com.exasol.adapter.dynamodb.dynamodbmetadata.BaseDynamodbTableMetadataFactory;
 import com.exasol.adapter.dynamodb.dynamodbmetadata.DynamodbTableMetadata;
 import com.exasol.adapter.dynamodb.dynamodbmetadata.DynamodbTableMetadataFactory;
-import com.exasol.adapter.dynamodb.remotetablequery.RemoteTableQuery;
+import com.exasol.adapter.dynamodb.queryplanning.RemoteTableQuery;
 
 /**
  * This class creates a {@link AbstractDynamodbDocumentFetcher} for a given request. It decides weather a

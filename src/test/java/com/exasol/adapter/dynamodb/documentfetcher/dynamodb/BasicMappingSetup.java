@@ -1,7 +1,7 @@
 package com.exasol.adapter.dynamodb.documentfetcher.dynamodb;
 
 import java.io.IOException;
-import java.util.List;
+import java.util.Set;
 
 import com.exasol.adapter.AdapterException;
 import com.exasol.adapter.dynamodb.documentnode.dynamodb.DynamodbNodeVisitor;
@@ -11,7 +11,8 @@ import com.exasol.adapter.dynamodb.mapping.ColumnMapping;
 import com.exasol.adapter.dynamodb.mapping.JsonSchemaMappingReader;
 import com.exasol.adapter.dynamodb.mapping.MappingTestFiles;
 import com.exasol.adapter.dynamodb.mapping.TableMapping;
-import com.exasol.adapter.dynamodb.remotetablequery.*;
+import com.exasol.adapter.dynamodb.queryplanning.RemoteTableQuery;
+import com.exasol.adapter.dynamodb.querypredicate.*;
 
 public class BasicMappingSetup {
 
@@ -102,7 +103,7 @@ public class BasicMappingSetup {
     public RemoteTableQuery<DynamodbNodeVisitor> getQueryForMinPriceAndPublisher(final double price,
             final String publisher) {
         final QueryPredicate<DynamodbNodeVisitor> selection = new LogicalOperator<>(
-                List.of(new ColumnLiteralComparisonPredicate<>(AbstractComparisonPredicate.Operator.GREATER,
+                Set.of(new ColumnLiteralComparisonPredicate<>(AbstractComparisonPredicate.Operator.GREATER,
                         this.priceColumn, new DynamodbNumber(String.valueOf(price))),
                         new ColumnLiteralComparisonPredicate<>(AbstractComparisonPredicate.Operator.EQUAL,
                                 this.publisherColumn, new DynamodbString(String.valueOf(publisher)))),
@@ -119,7 +120,7 @@ public class BasicMappingSetup {
      */
     public RemoteTableQuery<DynamodbNodeVisitor> getQueryForMaxPriceAndPublisher(final double price,
             final String publisher) {
-        final QueryPredicate<DynamodbNodeVisitor> selection = new LogicalOperator<>(List.of(
+        final QueryPredicate<DynamodbNodeVisitor> selection = new LogicalOperator<>(Set.of(
                 new NotPredicate<>(new ColumnLiteralComparisonPredicate<>(AbstractComparisonPredicate.Operator.GREATER,
                         this.priceColumn, new DynamodbNumber(String.valueOf(price)))),
                 new ColumnLiteralComparisonPredicate<>(AbstractComparisonPredicate.Operator.EQUAL, this.publisherColumn,
@@ -138,7 +139,7 @@ public class BasicMappingSetup {
     public RemoteTableQuery<DynamodbNodeVisitor> getQueryForNameAndPublisher(final String name,
             final String publisher) {
         final QueryPredicate<DynamodbNodeVisitor> selection = new LogicalOperator<>(
-                List.of(new ColumnLiteralComparisonPredicate<>(AbstractComparisonPredicate.Operator.EQUAL,
+                Set.of(new ColumnLiteralComparisonPredicate<>(AbstractComparisonPredicate.Operator.EQUAL,
                         this.nameColumn, new DynamodbString(String.valueOf(name))),
                         new ColumnLiteralComparisonPredicate<>(AbstractComparisonPredicate.Operator.EQUAL,
                                 this.publisherColumn, new DynamodbString(String.valueOf(publisher)))),
@@ -157,9 +158,9 @@ public class BasicMappingSetup {
      */
     public RemoteTableQuery<DynamodbNodeVisitor> getQueryForTwoNamesAndPublisher(final String name1, final String name2,
             final String publisher) {
-        final QueryPredicate<DynamodbNodeVisitor> selection = new LogicalOperator<>(List.of(
+        final QueryPredicate<DynamodbNodeVisitor> selection = new LogicalOperator<>(Set.of(
                 new LogicalOperator<>(
-                        List.of(new ColumnLiteralComparisonPredicate<>(AbstractComparisonPredicate.Operator.EQUAL,
+                        Set.of(new ColumnLiteralComparisonPredicate<>(AbstractComparisonPredicate.Operator.EQUAL,
                                 this.nameColumn, new DynamodbString(String.valueOf(name1))),
                                 new ColumnLiteralComparisonPredicate<>(AbstractComparisonPredicate.Operator.EQUAL,
                                         this.nameColumn, new DynamodbString(String.valueOf(name2)))),
@@ -182,7 +183,7 @@ public class BasicMappingSetup {
     public RemoteTableQuery<DynamodbNodeVisitor> getQueryForPriceAndPublisherAndIsbn(final String price,
             final String publisher, final String isbn) {
         final QueryPredicate<DynamodbNodeVisitor> selection = new LogicalOperator<>(
-                List.of(new ColumnLiteralComparisonPredicate<>(AbstractComparisonPredicate.Operator.EQUAL,
+                Set.of(new ColumnLiteralComparisonPredicate<>(AbstractComparisonPredicate.Operator.EQUAL,
                         this.priceColumn, new DynamodbNumber(String.valueOf(price))),
                         new ColumnLiteralComparisonPredicate<>(AbstractComparisonPredicate.Operator.EQUAL,
                                 this.isbnColumn, new DynamodbString(String.valueOf(isbn))),

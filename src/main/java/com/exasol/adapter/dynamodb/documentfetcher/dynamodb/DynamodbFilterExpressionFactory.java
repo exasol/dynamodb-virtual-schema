@@ -1,6 +1,7 @@
 package com.exasol.adapter.dynamodb.documentfetcher.dynamodb;
 
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.exasol.adapter.dynamodb.documentnode.dynamodb.DynamodbNodeToAttributeValueConverter;
@@ -8,7 +9,7 @@ import com.exasol.adapter.dynamodb.documentnode.dynamodb.DynamodbNodeVisitor;
 import com.exasol.adapter.dynamodb.documentpath.DocumentPathExpression;
 import com.exasol.adapter.dynamodb.mapping.ColumnMapping;
 import com.exasol.adapter.dynamodb.mapping.PropertyToColumnMapping;
-import com.exasol.adapter.dynamodb.remotetablequery.*;
+import com.exasol.adapter.dynamodb.querypredicate.*;
 
 /**
  * This class builds a DynamoDB filter expression for a given selection.
@@ -62,28 +63,37 @@ public class DynamodbFilterExpressionFactory {
 
         @Override
         public void visit(final LogicalOperator<DynamodbNodeVisitor> logicalOperator) {
-            final List<QueryPredicate<DynamodbNodeVisitor>> operands = logicalOperator.getOperands();
-            if (operands.size() < 2) {
+            final Set<QueryPredicate<DynamodbNodeVisitor>> operands = logicalOperator.getOperands();
+            if (operands.isEmpty()) {
                 throw new IllegalArgumentException(
-                        "Logic expressions with only one operand must be replaced by the operand.");
+                        "Empty logic expressions must be removed before converting to FilterExpression.");
+            } else if (operands.size() == 1) {
+                this.filterExpression = callRecursive(operands.iterator().next());
+            } else {
+                final QueryPredicate<DynamodbNodeVisitor> firstPredicate = operands.iterator().next();
+                final Set<QueryPredicate<DynamodbNodeVisitor>> remainingOperands = getRemainingOperands(operands,
+                        firstPredicate);
+                final String firstOperandsExpression = callRecursive(firstPredicate);
+                final LogicalOperator.Operator operator = logicalOperator.getOperator();
+                this.filterExpression = "(" + firstOperandsExpression + " "
+                        + getComparisionOperatorsExpression(operator) + " "
+                        + getSecondOperandsExpression(remainingOperands, operator) + ")";
             }
-            final String firstOperandsExpression = callRecursive(operands.get(0));
-            final LogicalOperator.Operator operator = logicalOperator.getOperator();
-            this.filterExpression = firstOperandsExpression + " " + getComparisionOperatorsExpression(operator) + " "
-                    + getSecondOperandsExpression(operands, operator);
         }
 
-        private String getSecondOperandsExpression(final List<QueryPredicate<DynamodbNodeVisitor>> operands,
+        private Set<QueryPredicate<DynamodbNodeVisitor>> getRemainingOperands(
+                final Set<QueryPredicate<DynamodbNodeVisitor>> operands,
+                final QueryPredicate<DynamodbNodeVisitor> firstPredicate) {
+            final HashSet<QueryPredicate<DynamodbNodeVisitor>> remainingPredicates = new HashSet<>(operands);
+            remainingPredicates.remove(firstPredicate);
+            return remainingPredicates;
+        }
+
+        private String getSecondOperandsExpression(final Set<QueryPredicate<DynamodbNodeVisitor>> remainingOperands,
                 final LogicalOperator.Operator operator) {
-            if (operands.size() > 2) {
-                final List<QueryPredicate<DynamodbNodeVisitor>> remainingOperands = operands.subList(1,
-                        operands.size());
-                final LogicalOperator<DynamodbNodeVisitor> logicalOperatorForRemaining = new LogicalOperator<>(
-                        remainingOperands, operator);
-                return "(" + callRecursive(logicalOperatorForRemaining) + ")";
-            } else {
-                return callRecursive(operands.get(1));
-            }
+            final LogicalOperator<DynamodbNodeVisitor> logicalOperatorForRemaining = new LogicalOperator<>(
+                    remainingOperands, operator);
+            return "(" + callRecursive(logicalOperatorForRemaining) + ")";
         }
 
         private String getComparisionOperatorsExpression(final LogicalOperator.Operator operator) {
