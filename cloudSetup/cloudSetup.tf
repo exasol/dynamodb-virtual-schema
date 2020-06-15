@@ -117,6 +117,13 @@ resource "aws_security_group" "exasol_db_security_group" {
       "0.0.0.0/0"]
   }
 
+  ingress {
+    from_port = 0
+    protocol = "-1"
+    to_port = 0
+    self = true
+  }
+
   egress {
     from_port = 0
     to_port = 0
