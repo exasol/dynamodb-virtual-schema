@@ -32,15 +32,15 @@ public class AwsExasolTestInterface extends AbstractExasolTestInterface {
     private static final String WRITE_PASSWORD = "writepw";
     private static final String BUCKET_NAME = "default";
     private final HttpClient client = HttpClient.newBuilder().build();
-    private final String exasolIpAddress;
+    private final String exasolIp;
 
     public AwsExasolTestInterface() throws SQLException, IOException {
-        this(new TerraformInterface().getExasolIp());
+        this(new TerraformInterface().getExasolDataNodeIp());
     }
 
-    private AwsExasolTestInterface(final String exasolIpAddress) throws IOException, SQLException {
-        super(getConnection(exasolIpAddress));
-        this.exasolIpAddress = exasolIpAddress;
+    private AwsExasolTestInterface(final String dataNodeIp) throws IOException, SQLException {
+        super(getConnection(dataNodeIp));
+        this.exasolIp = dataNodeIp;
     }
 
     public static Connection getConnection(final String exasolIpAddress) throws SQLException, IOException {
@@ -54,7 +54,7 @@ public class AwsExasolTestInterface extends AbstractExasolTestInterface {
     }
 
     @Override
-    protected void uploadFileToBucketfs(final Path localPath, final String bucketPath)
+    public void uploadFileToBucketfs(final Path localPath, final String bucketPath)
             throws InterruptedException, BucketAccessException, TimeoutException {
         final String extendedPathInBucket = extendPathInBucketDownToFilename(localPath, bucketPath);
         uploadFileNonBlocking(localPath, extendedPathInBucket);
@@ -83,7 +83,7 @@ public class AwsExasolTestInterface extends AbstractExasolTestInterface {
 
     private URI createWriteUri(final String pathInBucket) throws BucketAccessException {
         try {
-            return new URI("http", null, this.exasolIpAddress, BUCKETFS_PORT, "/" + BUCKET_NAME + "/" + pathInBucket,
+            return new URI("http", null, this.exasolIp, BUCKETFS_PORT, "/" + BUCKET_NAME + "/" + pathInBucket,
                     null, null).normalize();
         } catch (final URISyntaxException exception) {
             throw new BucketAccessException("Unable to create write URI.", exception);

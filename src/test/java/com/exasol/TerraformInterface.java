@@ -10,8 +10,12 @@ import java.util.stream.Collectors;
  */
 public class TerraformInterface {
 
-    public String getExasolIp() throws IOException {
+    public String getExasolManagementNodeIp() throws IOException {
         return getOutput("exasol_ip");
+    }
+
+    public String getExasolDataNodeIp() throws IOException {
+        return getOutput("exasol_datanode_ip");
     }
 
     private String getOutput(final String outputName) throws IOException {

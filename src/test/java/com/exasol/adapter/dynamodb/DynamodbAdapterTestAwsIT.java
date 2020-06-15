@@ -19,10 +19,8 @@ import com.exasol.bucketfs.BucketAccessException;
 import com.exasol.dynamodb.DynamodbConnectionFactory;
 
 /**
- * Tests using the AWS DynamoDB. Setup credentials on your machine using: {@code aws configure}. For now two factor
- * authentication is NOT SUPPORTED!
- * 
- * Preparation: create a table {@code JB_Books} with primary key {@code isbn} and insert one item.
+ * Tests using the AWS DynamoDB. Setup credentials on your machine using: {@code aws configure}.
+ *
  */
 @Tag("integration")
 class DynamodbAdapterTestAwsIT {
@@ -43,6 +41,7 @@ class DynamodbAdapterTestAwsIT {
         exasolTestInterface = new AwsExasolTestInterface();
         exasolTestInterface.uploadDynamodbAdapterJar();
         exasolTestInterface.uploadMapping(MappingTestFiles.OPEN_LIBRARY_MAPPING_FILE_NAME);
+        Thread.sleep(1000 * 5);// waiting for bucketfs to sync
         exasolTestInterface.dropConnection(DYNAMODB_CONNECTION);
         exasolTestInterface.dropVirtualSchema(TEST_SCHEMA);
         exasolTestInterface.createConnection(DYNAMODB_CONNECTION, "aws:eu-central-1",
@@ -55,11 +54,20 @@ class DynamodbAdapterTestAwsIT {
     }
 
     @Test
-    void test() throws SQLException {
+    void testCountAllRows() throws SQLException {
         final ResultSet resultSet = exasolTestInterface.getStatement().executeQuery("SELECT COUNT(*) FROM OPENLIBRARY");
         resultSet.next();
         final int count = resultSet.getInt(1);
         assertThat(count, equalTo(148163));
+    }
+
+    @Test
+    void testSelectSingleRow() throws SQLException {
+        final ResultSet resultSet = exasolTestInterface.getStatement()
+                .executeQuery("SELECT COUNT(*) FROM OPENLIBRARY WHERE KEY = '/authors/OL7124039A' AND REVISION = 1");
+        resultSet.next();
+        final int count = resultSet.getInt(1);
+        assertThat(count, equalTo(1));
     }
 
     @AfterAll

@@ -46,7 +46,7 @@ resource "aws_vpc" "dynamodb_test_vpc" {
 }
 
 resource "aws_subnet" "dynamodb_test_subnet" {
-  vpc_id = "${aws_vpc.dynamodb_test_vpc.id}"
+  vpc_id = aws_vpc.dynamodb_test_vpc.id
   cidr_block = "10.0.0.0/24"
 
   tags = {
@@ -61,10 +61,10 @@ resource "aws_subnet" "dynamodb_test_subnet" {
 
 
 resource "aws_default_route_table" "dynamodb_test_routing_table" {
-  default_route_table_id = "${aws_vpc.dynamodb_test_vpc.default_route_table_id}"
+  default_route_table_id = aws_vpc.dynamodb_test_vpc.default_route_table_id
   route {
     cidr_block = "0.0.0.0/0"
-    gateway_id = "${aws_internet_gateway.gw.id}"
+    gateway_id = aws_internet_gateway.gw.id
   }
   tags = {
     "exa:owner": "jakob.braun@exasol.com",
@@ -79,7 +79,7 @@ resource "aws_default_route_table" "dynamodb_test_routing_table" {
 resource "aws_security_group" "exasol_db_security_group" {
   name = "allow_tls"
   description = "Allow TLS inbound traffic"
-  vpc_id = "${aws_vpc.dynamodb_test_vpc.id}"
+  vpc_id = aws_vpc.dynamodb_test_vpc.id
 
   ingress {
     description = "SSH from VPC"
@@ -148,7 +148,7 @@ resource "aws_key_pair" "test_pc_key_pair" {
 }
 
 resource "aws_internet_gateway" "gw" {
-  vpc_id = "${aws_vpc.dynamodb_test_vpc.id}"
+  vpc_id = aws_vpc.dynamodb_test_vpc.id
 
   tags = {
     "exa:owner": "jakob.braun@exasol.com",
@@ -191,4 +191,8 @@ module "exasol" {
 
 output "exasol_ip" {
   value = module.exasol.management_server_ip
+}
+
+output "exasol_datanode_ip" {
+  value = module.exasol.first_datanode_ip
 }
