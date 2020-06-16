@@ -44,7 +44,6 @@ public class AwsExasolTestInterface extends AbstractExasolTestInterface {
     }
 
     public static Connection getConnection(final String exasolIpAddress) throws SQLException, IOException {
-
         return DriverManager.getConnection("jdbc:exa:" + exasolIpAddress + ":8563;schema=SYS", "sys", SYS_USER_PW);
     }
 

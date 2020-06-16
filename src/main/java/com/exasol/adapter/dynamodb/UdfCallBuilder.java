@@ -55,7 +55,6 @@ public class UdfCallBuilder<DocumentVisitorType> {
         // TODO refactor when https://github.com/exasol/sql-statement-builder/issues/76 is fixed
         return renderer.render() + " AS T(" + DOCUMENT_FETCHER_PARAMETER + ", " + REMOTE_TABLE_QUERY_PARAMETER + ", "
                 + CONNECTION_NAME_PARAMETER + ", " + FRAGMENT_ID + ") GROUP BY " + FRAGMENT_ID;
-
     }
 
     private ValueTable buildValueTable(final List<DocumentFetcher<DocumentVisitorType>> documentFetchers,

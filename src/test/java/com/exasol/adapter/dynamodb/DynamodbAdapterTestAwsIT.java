@@ -20,7 +20,6 @@ import com.exasol.dynamodb.DynamodbConnectionFactory;
 
 /**
  * Tests using the AWS DynamoDB. Setup credentials on your machine using: {@code aws configure}.
- *
  */
 @Tag("integration")
 class DynamodbAdapterTestAwsIT {
