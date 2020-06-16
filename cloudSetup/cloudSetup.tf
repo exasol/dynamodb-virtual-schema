@@ -2,14 +2,14 @@
 # Keys generated without the -m PEM will lead to login fails.
 
 provider "aws" {
-  region  = "eu-central-1"
+  region = "eu-central-1"
   profile = "default"
 }
 
 resource "aws_dynamodb_table" "open_library_test" {
-  name         = "open_library_test"
-  hash_key     = "key"
-  range_key    = "revision"
+  name = "open_library_test"
+  hash_key = "key"
+  range_key = "revision"
   billing_mode = "PAY_PER_REQUEST"
   tags = {
     "exa:owner" : var.owner,
@@ -44,7 +44,7 @@ resource "aws_vpc" "dynamodb_test_vpc" {
 }
 
 resource "aws_subnet" "dynamodb_test_subnet" {
-  vpc_id     = aws_vpc.dynamodb_test_vpc.id
+  vpc_id = aws_vpc.dynamodb_test_vpc.id
   cidr_block = "10.0.0.0/24"
 
   tags = {
@@ -75,59 +75,59 @@ resource "aws_default_route_table" "dynamodb_test_routing_table" {
 }
 
 resource "aws_security_group" "exasol_db_security_group" {
-  name        = "allow_tls"
+  name = "allow_tls"
   description = "Allow TLS inbound traffic"
-  vpc_id      = aws_vpc.dynamodb_test_vpc.id
+  vpc_id = aws_vpc.dynamodb_test_vpc.id
 
   ingress {
     description = "SSH from VPC"
-    from_port   = 22
-    to_port     = 22
-    protocol    = "tcp"
+    from_port = 22
+    to_port = 22
+    protocol = "tcp"
     cidr_blocks = [
-    "0.0.0.0/0"]
+      "0.0.0.0/0"]
   }
 
   ingress {
     description = "HTTPS from VPC"
-    from_port   = 443
-    to_port     = 443
-    protocol    = "tcp"
+    from_port = 443
+    to_port = 443
+    protocol = "tcp"
     cidr_blocks = [
-    "0.0.0.0/0"]
+      "0.0.0.0/0"]
   }
 
   ingress {
     description = "SQL from VPC"
-    from_port   = 8563
-    to_port     = 8563
-    protocol    = "tcp"
+    from_port = 8563
+    to_port = 8563
+    protocol = "tcp"
     cidr_blocks = [
-    "0.0.0.0/0"]
+      "0.0.0.0/0"]
   }
 
   ingress {
     description = "BucketFS"
-    from_port   = 2580
-    protocol    = "tcp"
-    to_port     = 2580
+    from_port = 2580
+    protocol = "tcp"
+    to_port = 2580
     cidr_blocks = [
-    "0.0.0.0/0"]
+      "0.0.0.0/0"]
   }
 
   ingress {
     from_port = 0
-    protocol  = "-1"
-    to_port   = 0
-    self      = true
+    protocol = "-1"
+    to_port = 0
+    self = true
   }
 
   egress {
     from_port = 0
-    to_port   = 0
-    protocol  = "-1"
+    to_port = 0
+    protocol = "-1"
     cidr_blocks = [
-    "0.0.0.0/0"]
+      "0.0.0.0/0"]
   }
 
   tags = {
@@ -141,7 +141,7 @@ resource "aws_security_group" "exasol_db_security_group" {
 }
 
 resource "aws_key_pair" "test_pc_key_pair" {
-  key_name   = "test-computer-key"
+  key_name = "test-computer-key"
   public_key = file("~/.ssh/id_rsa.pub")
 }
 
@@ -159,11 +159,14 @@ resource "aws_internet_gateway" "gw" {
 }
 
 resource "random_password" "exasol_sys_password" {
-  length = 16
+  length = 20
+  special = false
+
 }
 
 resource "random_password" "exasol_admin_password" {
   length = 16
+  special = false
 }
 
 module "exasol" {
@@ -171,28 +174,32 @@ module "exasol" {
   #version = "0.0.3"
   source = "../../terraform-aws-exasol"
 
-  cluster_name                    = "dynamodb-vs-test-cluster"
-  database_name                   = "exadb"
-  ami_image_name                  = "R6.2.3-BYOL"
-  sys_user_password               = random_password.exasol_sys_password.result
-  admin_user_password             = random_password.exasol_admin_password.result
+  cluster_name = "dynamodb-vs-test-cluster"
+  database_name = "exadb"
+  ami_image_name = "R6.2.3-BYOL"
+  sys_user_password = random_password.exasol_sys_password.result
+  admin_user_password = random_password.exasol_admin_password.result
   management_server_instance_type = "m5.xlarge"
-  datanode_instance_type          = "m5.2xlarge"
-  datanode_count                  = "2"
-  standbynode_count               = "0"
-  public_ip                       = true
+  datanode_instance_type = "m5.2xlarge"
+  datanode_count = "2"
+  standbynode_count = "0"
+  public_ip = true
 
   # These values can be obtained from other modules.
-  key_pair_name     = aws_key_pair.test_pc_key_pair.key_name
-  subnet_id         = aws_subnet.dynamodb_test_subnet.id
+  key_pair_name = aws_key_pair.test_pc_key_pair.key_name
+  subnet_id = aws_subnet.dynamodb_test_subnet.id
   security_group_id = aws_security_group.exasol_db_security_group.id
 
   # Variables used in tags.
-  project      = var.project
+  project = var.project
   project_name = var.project_name
-  owner        = var.owner
-  environment  = "dev"
-  license      = "./exasolution.lic"
+  owner = var.owner
+  environment = "dev"
+  license = "./exasolution.lic"
+}
+
+output "exasol_sys_pw" {
+  value = random_password.exasol_sys_password.result
 }
 
 output "exasol_admin_pw" {
