@@ -220,7 +220,7 @@ public class DynamodbTestInterface {
      */
     public void importDataFromJsonLines(final String tableName, final File file) throws IOException {
         try (final BufferedReader reader = new BufferedReader(new FileReader(file))) {
-            final BatchWriter batchWriter = new BatchWriter(tableName);
+            final BatchWriter batchWriter = new BatchWriter(this.dynamoClient, tableName);
             reader.lines().forEach(batchWriter);
             batchWriter.flush();
             LOGGER.info("Written items: " + batchWriter.getItemCounter());
@@ -280,13 +280,15 @@ public class DynamodbTestInterface {
         }
     }
 
-    private class BatchWriter implements Consumer<String> {
+    private static class BatchWriter implements Consumer<String> {
         private static final int BATCH_SIZE = 20;
+        private final DynamoDB dynamoClient;
         final List<Item> batch = new ArrayList<>(BATCH_SIZE);
         private final String tableName;
         private int itemCounter;
 
-        private BatchWriter(final String tableName) {
+        private BatchWriter(final DynamoDB dynamoClient, final String tableName) {
+            this.dynamoClient = dynamoClient;
             this.tableName = tableName;
         }
 
@@ -302,8 +304,7 @@ public class DynamodbTestInterface {
 
         public void flush() {
             final TableWriteItems writeRequest = new TableWriteItems(this.tableName).withItemsToPut(this.batch);
-            final BatchWriteItemOutcome batchWriteItemOutcome = DynamodbTestInterface.this.dynamoClient
-                    .batchWriteItem(writeRequest);
+            final BatchWriteItemOutcome batchWriteItemOutcome = this.dynamoClient.batchWriteItem(writeRequest);
             LOGGER.info("# Unprocessed items: " + batchWriteItemOutcome.getUnprocessedItems().size());
             this.batch.clear();
         }

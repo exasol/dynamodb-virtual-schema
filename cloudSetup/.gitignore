@@ -3,3 +3,4 @@ terraform.tfstate
 *.lic
 *.info
 terraform.tfstate.backup
+*.tfvars
