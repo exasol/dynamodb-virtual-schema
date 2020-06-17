@@ -4,9 +4,12 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 
 import java.io.IOException;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import org.apache.xmlrpc.XmlRpcException;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Tag;
@@ -34,7 +37,8 @@ class DynamodbAdapterTestAwsIT {
      */
     @BeforeAll
     static void beforeAll() throws SQLException, BucketAccessException, InterruptedException,
-            java.util.concurrent.TimeoutException, IOException {
+            java.util.concurrent.TimeoutException, IOException, NoSuchAlgorithmException, KeyManagementException,
+            XmlRpcException {
         final DynamodbTestInterface dynamodbTestInterface = new DynamodbTestInterface();
         new OpenLibrary(dynamodbTestInterface);
         exasolTestInterface = new AwsExasolTestInterface();

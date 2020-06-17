@@ -18,6 +18,14 @@ public class TerraformInterface {
         return getOutput("exasol_datanode_ip");
     }
 
+    public String getExasolAdminUserPass() throws IOException {
+        return getOutput("exasol_admin_pw");
+    }
+
+    public String getExasolSysUserPass() throws IOException {
+        return getOutput("exasol_sys_pw");
+    }
+
     private String getOutput(final String outputName) throws IOException {
         final Runtime runtime = Runtime.getRuntime();
         final String[] command = { "terraform", "output", "-state=./cloudSetup/terraform.tfstate", outputName };
