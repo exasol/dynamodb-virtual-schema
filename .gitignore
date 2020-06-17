@@ -26,3 +26,4 @@ Scripts
 .dbeaver*
 **/*.log
 .directory
+venv/

@@ -27,6 +27,8 @@ public class MappingTestFiles {
     public static final String DOUBLE_NESTED_TO_TABLE_MAPPING_FILE_NAME = "doubleNestedToTableMapping.json";
     public static final File DOUBLE_NESTED_TO_TABLE_MAPPING_FILE = readFile(DOUBLE_NESTED_TO_TABLE_MAPPING_FILE_NAME);
 
+    public static final String OPEN_LIBRARY_MAPPING_FILE_NAME = "openLibraryMapping.json";
+
     public static final String DATA_TYPE_TEST_MAPPING_FILE_NAME = "dataTypeTestMapping.json";
     public static final String DATA_TYPE_TEST_SRC_TABLE_NAME = "DATA_TYPE_TEST";
     public static final String DATA_TYPE_TEST_EXASOL_TABLE_NAME = "TEST";

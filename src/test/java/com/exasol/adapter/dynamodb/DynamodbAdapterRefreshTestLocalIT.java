@@ -47,7 +47,7 @@ class DynamodbAdapterRefreshTestLocalIT {
     private static final String BUCKETFS_MAPPING_FILE_NAME = "mappings/test.json";
     private static final String BUCKETFS_MAPPING_FULL_PATH = "/bfsdefault/default/" + BUCKETFS_MAPPING_FILE_NAME;
     private static DynamodbTestInterface dynamodbTestInterface;
-    private static ExasolTestInterface exasolTestInterface;
+    private static TestcontainerExasolTestInterface exasolTestInterface;
 
     /**
      * Create a Virtual Schema in the Exasol test container accessing the local DynamoDB.
@@ -56,7 +56,7 @@ class DynamodbAdapterRefreshTestLocalIT {
     static void beforeAll() throws DynamodbTestInterface.NoNetworkFoundException, SQLException, InterruptedException,
             BucketAccessException, TimeoutException, IOException {
         dynamodbTestInterface = new DynamodbTestInterface(LOCAL_DYNAMO, NETWORK);
-        exasolTestInterface = new ExasolTestInterface(EXASOL_CONTAINER);
+        exasolTestInterface = new TestcontainerExasolTestInterface(EXASOL_CONTAINER);
         exasolTestInterface.uploadDynamodbAdapterJar();
         exasolTestInterface.createAdapterScript();
         exasolTestInterface.createConnection(DYNAMODB_CONNECTION, dynamodbTestInterface.getDynamoUrl(),
