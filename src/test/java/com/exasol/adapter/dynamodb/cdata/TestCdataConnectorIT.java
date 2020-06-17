@@ -5,10 +5,13 @@ import static org.hamcrest.Matchers.equalTo;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.concurrent.TimeoutException;
 
+import org.apache.xmlrpc.XmlRpcException;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -42,15 +45,24 @@ public class TestCdataConnectorIT {
     private static String AWS_;
 
     @BeforeAll
-    static void beforeAll() throws SQLException, BucketAccessException, InterruptedException,
-            java.util.concurrent.TimeoutException, IOException {
+    static void beforeAll()
+            throws SQLException, BucketAccessException, InterruptedException, java.util.concurrent.TimeoutException,
+            IOException, NoSuchAlgorithmException, KeyManagementException, XmlRpcException {
         final CdataCredentialProvider cdataCredentialProvider = new CdataCredentialProvider();
 
         exasolTestInterface = new AwsExasolTestInterface();
         exasolTestInterface.dropVirtualSchema(TEST_SCHEMA);
         exasolTestInterface.dropSchema(ADAPTER_SCHEMA);
         exasolTestInterface.dropConnection(CONNECTION_NAME);
-
+        try {
+            exasolTestInterface.getExaOperationInterface().createAndUploadJdbcDriver("cdata",
+                    "cdata.jdbc.amazondynamodb.AmazonDynamoDBDriver", "jdbc:amazondynamodb:", true,
+                    PATH_TO_JDBC_ADAPTER_JAR.toFile());
+        } catch (final XmlRpcException exception) {
+            if (!exception.getMessage().equals("JDBC driver name is already used for another JDBC driver.")) {
+                throw exception;
+            }
+        }
         uploadExternalJars();
         Thread.sleep(1000 * 5);
         exasolTestInterface.createConnection(CONNECTION_NAME,

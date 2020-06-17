@@ -8,15 +8,19 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.file.Path;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Base64;
 import java.util.concurrent.TimeoutException;
 
+import org.apache.xmlrpc.XmlRpcException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.exasol.ExaOperationInterface;
 import com.exasol.TerraformInterface;
 import com.exasol.bucketfs.BucketAccessException;
 
@@ -26,25 +30,33 @@ import com.exasol.bucketfs.BucketAccessException;
  */
 public class AwsExasolTestInterface extends AbstractExasolTestInterface {
     private static final Logger LOGGER = LoggerFactory.getLogger(AwsExasolTestInterface.class);
-    private static final String SYS_USER_PW = "eXaSol1337DB";
     private static final int BUCKETFS_PORT = 2580;
     private static final String READ_PASSWORD = "readpw";
     private static final String WRITE_PASSWORD = "writepw";
     private static final String BUCKET_NAME = "default";
     private final HttpClient client = HttpClient.newBuilder().build();
     private final String exasolIp;
+    private final ExaOperationInterface exaOperationInterface;
 
-    public AwsExasolTestInterface() throws SQLException, IOException {
+    public AwsExasolTestInterface()
+            throws SQLException, IOException, KeyManagementException, NoSuchAlgorithmException, XmlRpcException {
         this(new TerraformInterface().getExasolDataNodeIp());
     }
 
-    private AwsExasolTestInterface(final String dataNodeIp) throws IOException, SQLException {
-        super(getConnection(dataNodeIp));
+    private AwsExasolTestInterface(final String dataNodeIp)
+            throws IOException, SQLException, NoSuchAlgorithmException, KeyManagementException, XmlRpcException {
+        super(getConnection(dataNodeIp, new TerraformInterface().getExasolSysUserPass()));
         this.exasolIp = dataNodeIp;
+        final TerraformInterface terraformInterface = new TerraformInterface();
+        this.exaOperationInterface = new ExaOperationInterface(terraformInterface.getExasolManagementNodeIp(), "admin",
+                terraformInterface.getExasolAdminUserPass());
+        this.exaOperationInterface.setBucketPasswords(READ_PASSWORD, WRITE_PASSWORD);
+        this.exaOperationInterface.setBucketfsPort(BUCKETFS_PORT);
     }
 
-    public static Connection getConnection(final String exasolIpAddress) throws SQLException, IOException {
-        return DriverManager.getConnection("jdbc:exa:" + exasolIpAddress + ":8563;schema=SYS", "sys", SYS_USER_PW);
+    public static Connection getConnection(final String exasolIpAddress, final String sysUserPw)
+            throws SQLException, IOException {
+        return DriverManager.getConnection("jdbc:exa:" + exasolIpAddress + ":8563;schema=SYS", "sys", sysUserPw);
     }
 
     @Override
@@ -102,5 +114,9 @@ public class AwsExasolTestInterface extends AbstractExasolTestInterface {
     private String encodeBasicAuth(final boolean write) {
         return "Basic " + Base64.getEncoder() //
                 .encodeToString((write ? ("w:" + WRITE_PASSWORD) : ("r:" + READ_PASSWORD)).getBytes());
+    }
+
+    public ExaOperationInterface getExaOperationInterface() {
+        return this.exaOperationInterface;
     }
 }
