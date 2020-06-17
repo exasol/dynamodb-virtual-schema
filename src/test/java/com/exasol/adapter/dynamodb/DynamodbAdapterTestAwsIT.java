@@ -40,7 +40,6 @@ class DynamodbAdapterTestAwsIT {
             java.util.concurrent.TimeoutException, IOException, NoSuchAlgorithmException, KeyManagementException,
             XmlRpcException {
         final DynamodbTestInterface dynamodbTestInterface = new DynamodbTestInterface();
-        new OpenLibrary(dynamodbTestInterface);
         exasolTestInterface = new AwsExasolTestInterface();
         exasolTestInterface.uploadDynamodbAdapterJar();
         exasolTestInterface.uploadMapping(MappingTestFiles.OPEN_LIBRARY_MAPPING_FILE_NAME);
