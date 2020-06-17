@@ -198,6 +198,92 @@ module "exasol" {
   license = "./exasolution.lic"
 }
 
+
+data "aws_ami" "ubuntu" {
+  most_recent = true
+
+  filter {
+    name = "name"
+    values = [
+      "ubuntu/images/hvm-ssd/ubuntu-focal-20.04-amd64-server-*"]
+  }
+
+  filter {
+    name = "virtualization-type"
+    values = [
+      "hvm"]
+  }
+
+  owners = [
+    "099720109477"]
+  # Canonical
+}
+
+resource "aws_instance" "test_runner" {
+  ami = "${data.aws_ami.ubuntu.id}"
+  instance_type = "m5.large"
+  key_name = "${aws_key_pair.test_pc_key_pair.key_name}"
+
+  tags = {
+    "exa:owner": var.owner,
+    "exa:deputy": var.deputy
+    "exa:project": var.project
+    "exa:project.name": var.project_name
+    "exa:stage": var.stage
+    "Name": "Test runner node for DynamoDB Virtual Schema performance test"
+  }
+
+  provisioner "remote-exec" {
+    inline = [
+      "sudo apt install -y openjdk-11-jre-headless"
+    ]
+
+    connection {
+      type = "ssh"
+      user = "ubuntu"
+      host = aws_instance.test_runner.public_ip
+      private_key = file("~/.ssh/id_rsa")
+    }
+  }
+
+  associate_public_ip_address = true
+}
+
+resource "aws_ebs_volume" "test_data_volume" {
+  availability_zone = aws_instance.test_runner.availability_zone
+  size = 250
+
+  tags = {
+    "exa:owner": var.owner,
+    "exa:deputy": var.deputy
+    "exa:project": var.project
+    "exa:project.name": var.project_name
+    "exa:stage": var.stage
+    "Name": "EBS volume for DynamoDB Virtual Schema performance test test data"
+  }
+}
+
+resource "aws_volume_attachment" "test_data_volume_attachment" {
+  device_name = "/dev/sdh"
+  volume_id = aws_ebs_volume.test_data_volume.id
+  instance_id = aws_instance.test_runner.id
+
+  provisioner "remote-exec" {
+    script = "mountEbsVolume.sh"
+
+    connection {
+      type = "ssh"
+      user = "ubuntu"
+      host = aws_instance.test_runner.public_ip
+      private_key = file("~/.ssh/id_rsa")
+    }
+  }
+}
+
+output "test_runner_ip" {
+  value = aws_instance.test_runner.public_ip
+}
+
 output "exasol_sys_pw" {
   value = random_password.exasol_sys_password.result
 }
