@@ -5,6 +5,7 @@ import static org.hamcrest.Matchers.equalTo;
 
 import java.lang.reflect.Field;
 import java.net.URI;
+import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
 
@@ -24,7 +25,8 @@ class DynamodbConnectionFactoryTest {
     @Test
     void testGetLowLevelConnectionLocal() throws NoSuchFieldException, IllegalAccessException {
         final String uri = "http://127.0.0.1:1234";
-        final AmazonDynamoDB connection = new DynamodbConnectionFactory().getLowLevelConnection(uri, "", "");
+        final AmazonDynamoDB connection = new DynamodbConnectionFactory().getLowLevelConnection(uri, "", "",
+                Optional.empty());
         final URI endpoint = (URI) getPrivateField("endpoint", connection);
         final String region = (String) getPrivateField("signerRegionOverride", connection);
         assertThat(endpoint.toString(), equalTo(uri));
@@ -34,7 +36,8 @@ class DynamodbConnectionFactoryTest {
     @Test
     void testGetLowLevelConnectionAws() throws NoSuchFieldException, IllegalAccessException {
         final String uri = "aws:ca-central-1";
-        final AmazonDynamoDB connection = new DynamodbConnectionFactory().getLowLevelConnection(uri, "", "");
+        final AmazonDynamoDB connection = new DynamodbConnectionFactory().getLowLevelConnection(uri, "", "",
+                Optional.empty());
         final URI endpoint = (URI) getPrivateField("endpoint", connection);
         assertThat(endpoint.toString(), equalTo("https://dynamodb.ca-central-1.amazonaws.com"));
     }

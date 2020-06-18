@@ -5,7 +5,7 @@ interface DocumentFetcher{
 }
 
 interface DocumentFetcherFactory{
-{abstract} buildDocumentFetcherForQuery(query)
+{abstract} buildDocumentFetcherForQuery(query): DocumentFetcher
 }
 
 class DynamodbQueryDocumentFetcher{
@@ -19,10 +19,12 @@ scanRequest
 }
 
 class DynamodbDocumentFetcherFactory{
-buildDocumentFetcherForQuery(query)
+buildDocumentFetcherForQuery(query): DocumentFetcher
 }
-DocumentFetcher <|.. DynamodbQueryDocumentFetcher
-DocumentFetcher <|.. DynamodbScanDocumentFetcher
+DocumentFetcher <|.... DynamodbQueryDocumentFetcher
+DocumentFetcher <|.... DynamodbScanDocumentFetcher
 DocumentFetcherFactory <|.. DynamodbDocumentFetcherFactory
+DynamodbDocumentFetcherFactory ---> DynamodbQueryDocumentFetcher: <<create>>
+DynamodbDocumentFetcherFactory ---> DynamodbScanDocumentFetcher: <<create>>
 
 @enduml
