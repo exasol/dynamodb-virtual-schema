@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.exasol.adapter.dynamodb.documentfetcher.DocumentFetcher;
-import com.exasol.adapter.dynamodb.mapping.ColumnMapping;
 import com.exasol.adapter.dynamodb.queryplanning.RemoteTableQuery;
 import com.exasol.adapter.dynamodb.querypredicate.QueryPredicate;
 import com.exasol.adapter.dynamodb.querypredicate.QueryPredicateToBooleanExpressionConverter;
@@ -58,11 +57,9 @@ public class UdfCallBuilder<DocumentVisitorType> {
         select.accept(renderer);
         // TODO refactor when https://github.com/exasol/sql-statement-builder/issues/76 is fixed
         final String whereClause = getWhereClause(query.getPostSelection(), config);
-        final String columnNames = query.getSelectList().stream().map(ColumnMapping::getExasolColumnName)
-                .collect(Collectors.joining(", "));
-        final String statement = "SELECT * FROM (" + renderer.render() + " AS T(" + DOCUMENT_FETCHER_PARAMETER + ", "
-                + REMOTE_TABLE_QUERY_PARAMETER + ", " + CONNECTION_NAME_PARAMETER + ", " + FRAGMENT_ID + ") GROUP BY " + FRAGMENT_ID +" ) " + whereClause;
-        return statement;
+        return "SELECT * FROM (" + renderer.render() + " AS T(" + DOCUMENT_FETCHER_PARAMETER + ", "
+                + REMOTE_TABLE_QUERY_PARAMETER + ", " + CONNECTION_NAME_PARAMETER + ", " + FRAGMENT_ID + ") GROUP BY "
+                + FRAGMENT_ID + " ) " + whereClause;
     }
 
     private String getWhereClause(final QueryPredicate selection, final StringRendererConfig config) {

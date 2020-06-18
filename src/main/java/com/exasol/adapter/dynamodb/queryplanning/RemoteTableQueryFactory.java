@@ -41,7 +41,7 @@ public class RemoteTableQueryFactory {
         final SchemaMappingToSchemaMetadataConverter converter = new SchemaMappingToSchemaMetadataConverter();
         final TableMapping tableMapping = converter.convertBackTable(visitor.tableMetadata, schemaAdapterNotes);
         final QueryPredicate selection = this.predicateFactory.buildPredicateFor(visitor.getWhereClause());
-        final IndexColumnSelectionExtractor.Result indexColumnExtractionResult = this.indexColumnSelectionExtractor
+        final AbstractSelectionExtractor.Result indexColumnExtractionResult = this.indexColumnSelectionExtractor
                 .extractIndexColumnSelection(selection);
         return new RemoteTableQuery(tableMapping, Collections.unmodifiableList(visitor.resultColumns),
                 indexColumnExtractionResult.getRemainingSelection().asQueryPredicate(),

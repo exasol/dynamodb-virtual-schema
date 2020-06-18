@@ -16,8 +16,8 @@ public class RemoteTableQuery implements SchemaMappingQuery, Serializable {
     private static final long serialVersionUID = 131878909365046330L;
     private final TableMapping fromTable;
     private final List<ColumnMapping> selectList;
-    private transient final QueryPredicate pushDownSelection; // TODO refactor
-    private transient final QueryPredicate postSelection;
+    private final transient QueryPredicate pushDownSelection; // TODO refactor
+    private final transient QueryPredicate postSelection;
 
     /**
      * Create an instance of {@link RemoteTableQuery}.
