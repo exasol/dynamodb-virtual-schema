@@ -7,9 +7,9 @@ import java.util.stream.Collectors;
  * This class represents a {@code AND} or {@code OR} logical operator.
  */
 @java.lang.SuppressWarnings("squid:S119") // DocumentVisitorType does not fit naming conventions.
-public final class LogicalOperator<DocumentVisitorType> implements QueryPredicate<DocumentVisitorType> {
+public final class LogicalOperator implements QueryPredicate {
     private static final long serialVersionUID = -8351558984178219419L;
-    private final Set<QueryPredicate<DocumentVisitorType>> operands;
+    private final Set<QueryPredicate> operands;
     private final Operator operator;
 
     /**
@@ -18,7 +18,7 @@ public final class LogicalOperator<DocumentVisitorType> implements QueryPredicat
      * @param operands the operands for this logical operator
      * @param operator logic operator
      */
-    public LogicalOperator(final Set<QueryPredicate<DocumentVisitorType>> operands, final Operator operator) {
+    public LogicalOperator(final Set<QueryPredicate> operands, final Operator operator) {
         this.operands = operands;
         this.operator = operator;
     }
@@ -28,7 +28,7 @@ public final class LogicalOperator<DocumentVisitorType> implements QueryPredicat
      *
      * @return list of operands.
      */
-    public Set<QueryPredicate<DocumentVisitorType>> getOperands() {
+    public Set<QueryPredicate> getOperands() {
         return this.operands;
     }
 
@@ -42,21 +42,21 @@ public final class LogicalOperator<DocumentVisitorType> implements QueryPredicat
     }
 
     @Override
-    public void accept(final QueryPredicateVisitor<DocumentVisitorType> visitor) {
+    public void accept(final QueryPredicateVisitor visitor) {
         visitor.visit(this);
     }
 
     @Override
-    public QueryPredicate<DocumentVisitorType> simplify() {
-        final Set<QueryPredicate<DocumentVisitorType>> simplifiedOperands = this.operands.stream()
+    public QueryPredicate simplify() {
+        final Set<QueryPredicate> simplifiedOperands = this.operands.stream()
                 .map(QueryPredicate::simplify).filter(operand -> !(operand instanceof NoPredicate))
                 .collect(Collectors.toSet());
         if (simplifiedOperands.isEmpty()) {
-            return new NoPredicate<>();
+            return new NoPredicate();
         } else if (simplifiedOperands.size() == 1) {
             return simplifiedOperands.iterator().next();
         } else {
-            return new LogicalOperator<>(simplifiedOperands, this.operator);
+            return new LogicalOperator(simplifiedOperands, this.operator);
         }
     }
 
@@ -68,7 +68,7 @@ public final class LogicalOperator<DocumentVisitorType> implements QueryPredicat
         if (!(other instanceof LogicalOperator)) {
             return false;
         }
-        final LogicalOperator<?> that = (LogicalOperator<?>) other;
+        final LogicalOperator that = (LogicalOperator) other;
         return this.operator == that.operator && this.operands.equals(that.operands);
     }
 

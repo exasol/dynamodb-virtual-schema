@@ -13,21 +13,21 @@ import com.exasol.adapter.dynamodb.querypredicate.NoPredicate;
 import com.exasol.adapter.dynamodb.querypredicate.NotPredicate;
 
 class DnfClassStructureFactoryTest {
-    private static final DnfClassStructureFactory<Object> FACTORY = new DnfClassStructureFactory<>();
+    private static final DnfClassStructureFactory FACTORY = new DnfClassStructureFactory();
 
     @Test
     void testBuildAnd() {
-        final DnfOr<Object> or = FACTORY.build(SelectionsConstants.AND_OF_TWO_DIFFERENT_PREDICATES);
-        final DnfAnd<Object> and = or.getOperands().iterator().next();
+        final DnfOr or = FACTORY.build(SelectionsConstants.AND_OF_TWO_DIFFERENT_PREDICATES);
+        final DnfAnd and = or.getOperands().iterator().next();
         assertThat(and.asQueryPredicate(), equalTo(SelectionsConstants.AND_OF_TWO_DIFFERENT_PREDICATES));
     }
 
     @Test
     void testBuildOr() {
-        final DnfOr<Object> or = FACTORY.build(SelectionsConstants.OR_OF_TWO_DIFFERENT_PREDICATES);
-        final Iterator<DnfAnd<Object>> iterator = or.getOperands().iterator();
-        final DnfAnd<Object> and1 = iterator.next();
-        final DnfAnd<Object> and2 = iterator.next();
+        final DnfOr or = FACTORY.build(SelectionsConstants.OR_OF_TWO_DIFFERENT_PREDICATES);
+        final Iterator<DnfAnd> iterator = or.getOperands().iterator();
+        final DnfAnd and1 = iterator.next();
+        final DnfAnd and2 = iterator.next();
         assertAll(//
                 () -> assertThat(or.getOperands().size(), equalTo(2)),
                 () -> assertThat(and1.getOperands().size(), equalTo(1)),
@@ -37,10 +37,10 @@ class DnfClassStructureFactoryTest {
 
     @Test
     void testBuildNestedAnd() {
-        final DnfOr<Object> or = FACTORY.build(SelectionsConstants.NESTED_AND);
+        final DnfOr or = FACTORY.build(SelectionsConstants.NESTED_AND);
         assertAll(//
                 () -> assertThat(or.getOperands().size(), equalTo(2)), () -> {
-                    final LogicalOperator<Object> queryPredicateOr = (LogicalOperator<Object>) or.asQueryPredicate();
+                    final LogicalOperator queryPredicateOr = (LogicalOperator) or.asQueryPredicate();
                     assertThat(queryPredicateOr.getOperator(), equalTo(LogicalOperator.Operator.OR));
                 }//
         );
@@ -48,9 +48,9 @@ class DnfClassStructureFactoryTest {
 
     @Test
     void testBuildComparison() {
-        final DnfOr<Object> or = FACTORY.build(SelectionsConstants.EQUAL1);
-        final DnfAnd<Object> and = or.getOperands().iterator().next();
-        final DnfComparison<Object> comparison = and.getOperands().iterator().next();
+        final DnfOr or = FACTORY.build(SelectionsConstants.EQUAL1);
+        final DnfAnd and = or.getOperands().iterator().next();
+        final DnfComparison comparison = and.getOperands().iterator().next();
         assertAll(//
                 () -> assertThat(or.getOperands().size(), equalTo(1)),
                 () -> assertThat(and.getOperands().size(), equalTo(1)),
@@ -62,8 +62,8 @@ class DnfClassStructureFactoryTest {
 
     @Test
     void testBuildNoPredicate() {
-        final NoPredicate<Object> noPredicate = new NoPredicate<>();
-        final DnfOr<Object> or = FACTORY.build(noPredicate);
+        final NoPredicate noPredicate = new NoPredicate();
+        final DnfOr or = FACTORY.build(noPredicate);
         assertAll(//
                 () -> assertThat(or.getOperands().size(), equalTo(0)),
                 () -> assertThat(or.asQueryPredicate(), equalTo(noPredicate))//
@@ -72,10 +72,10 @@ class DnfClassStructureFactoryTest {
 
     @Test
     void testBuildNot() {
-        final NotPredicate<Object> notPredicate = new NotPredicate<>(SelectionsConstants.EQUAL1);
-        final DnfOr<Object> or = FACTORY.build(notPredicate);
-        final DnfAnd<Object> and = or.getOperands().iterator().next();
-        final DnfComparison<Object> comparison = and.getOperands().iterator().next();
+        final NotPredicate notPredicate = new NotPredicate(SelectionsConstants.EQUAL1);
+        final DnfOr or = FACTORY.build(notPredicate);
+        final DnfAnd and = or.getOperands().iterator().next();
+        final DnfComparison comparison = and.getOperands().iterator().next();
         assertAll(//
                 () -> assertThat(comparison.isNegated(), equalTo(true)),
                 () -> assertThat(comparison.asQueryPredicate(), equalTo(notPredicate))//
@@ -84,10 +84,10 @@ class DnfClassStructureFactoryTest {
 
     @Test
     void testBuildNotNot() {
-        final NotPredicate<Object> notNotPredicate = new NotPredicate<>(new NotPredicate<>(SelectionsConstants.EQUAL1));
-        final DnfOr<Object> or = FACTORY.build(notNotPredicate);
-        final DnfAnd<Object> and = or.getOperands().iterator().next();
-        final DnfComparison<Object> comparison = and.getOperands().iterator().next();
+        final NotPredicate notNotPredicate = new NotPredicate(new NotPredicate(SelectionsConstants.EQUAL1));
+        final DnfOr or = FACTORY.build(notNotPredicate);
+        final DnfAnd and = or.getOperands().iterator().next();
+        final DnfComparison comparison = and.getOperands().iterator().next();
         assertThat(comparison.isNegated(), equalTo(false));
     }
 }

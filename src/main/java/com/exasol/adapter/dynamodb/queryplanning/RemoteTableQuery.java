@@ -11,26 +11,28 @@ import com.exasol.adapter.dynamodb.querypredicate.QueryPredicate;
 /**
  * This class represents the whole query inside of one document.
  */
-@java.lang.SuppressWarnings("squid:S119") // DocumentVisitorType does not fit naming conventions.
-public class RemoteTableQuery<DocumentVisitorType> implements SchemaMappingQuery, Serializable {
+public class RemoteTableQuery implements SchemaMappingQuery, Serializable {
 
-    private static final long serialVersionUID = 6851292744437631355L;
+    private static final long serialVersionUID = 131878909365046330L;
     private final TableMapping fromTable;
     private final List<ColumnMapping> selectList;
-    private final QueryPredicate<DocumentVisitorType> selection;
+    private transient final QueryPredicate pushDownSelection; // TODO refactor
+    private transient final QueryPredicate postSelection;
 
     /**
      * Create an instance of {@link RemoteTableQuery}.
      * 
-     * @param fromTable  remote table to query
-     * @param selectList in correct order
-     * @param selection  where clause
+     * @param fromTable         remote table to query
+     * @param selectList        in correct order
+     * @param pushDownSelection the selection that will get pushed down to the remote database
+     * @param postSelection     the selection that will be executed by the Exasol database
      */
     public RemoteTableQuery(final TableMapping fromTable, final List<ColumnMapping> selectList,
-            final QueryPredicate<DocumentVisitorType> selection) {
+            final QueryPredicate pushDownSelection, final QueryPredicate postSelection) {
         this.fromTable = fromTable;
         this.selectList = selectList;
-        this.selection = selection;
+        this.pushDownSelection = pushDownSelection;
+        this.postSelection = postSelection;
     }
 
     @Override
@@ -53,7 +55,16 @@ public class RemoteTableQuery<DocumentVisitorType> implements SchemaMappingQuery
      * 
      * @return Predicate representing the selection
      */
-    public QueryPredicate<DocumentVisitorType> getSelection() {
-        return this.selection;
+    public QueryPredicate getPushDownSelection() {
+        return this.pushDownSelection;
+    }
+
+    /**
+     * Get the selection that is Executed by the Exasol database.
+     * 
+     * @return Predicate representing the selection
+     */
+    public QueryPredicate getPostSelection() {
+        return this.postSelection;
     }
 }

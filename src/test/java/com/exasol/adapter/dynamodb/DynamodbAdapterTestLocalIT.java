@@ -221,9 +221,17 @@ class DynamodbAdapterTestLocalIT {
     void testSelectOnIndexColumn() throws SQLException, IOException {
         createDoubleNestedTableVirtualSchema();
         final List<String> figures = runQueryAndExtractColumn(
-                "SELECT NAME FROM " + TEST_SCHEMA + ".BOOKS_CHAPTERS_FIGURES " + "WHERE BOOKS_CHAPTERS_INDEX = 0;",
+                "SELECT NAME FROM " + TEST_SCHEMA + ".BOOKS_CHAPTERS " + "WHERE \"INDEX\" = 0;", "NAME");
+        assertThat(figures, containsInAnyOrder("Main Chapter", "chapter 1"));
+    }
+
+    @Test
+    void testSelectOnIndexAndOtherColumn() throws SQLException, IOException {
+        createDoubleNestedTableVirtualSchema();
+        final List<String> figures = runQueryAndExtractColumn("SELECT NAME FROM " + TEST_SCHEMA + ".BOOKS_CHAPTERS "
+                + "WHERE \"INDEX\" = 0 AND NAME = 'Main Chapter';",
                 "NAME");
-        assertThat(figures, containsInAnyOrder("Image of the Author", "figure 3", "Fancy Image"));
+        assertThat(figures, containsInAnyOrder("Main Chapter"));
     }
 
     private List<String> runQueryAndExtractColumn(final String query, final String columnName) throws SQLException {
@@ -282,7 +290,7 @@ class DynamodbAdapterTestLocalIT {
                         new KeySchemaElement("price", KeyType.RANGE))
                 .withAttributeDefinitions(new AttributeDefinition("publisher", ScalarAttributeType.S),
                         new AttributeDefinition("price", ScalarAttributeType.N))
-                .withProvisionedThroughput(new ProvisionedThroughput(1L, 1L));
+                .withProvisionedThroughput(new ProvisionedThroughput(100L, 100L));
         dynamodbTestInterface.createTable(request);
         dynamodbTestInterface.importData(DYNAMO_BOOKS_TABLE, TestDocuments.BOOKS);
     }

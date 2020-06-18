@@ -9,11 +9,11 @@ import com.exasol.adapter.dynamodb.querypredicate.NoPredicate;
 import com.exasol.adapter.dynamodb.querypredicate.QueryPredicate;
 
 class LogicngToQueryPredicateConverterTest {
-    private static final QueryPredicateToLogicngConverter<Object> CONVERTER = new QueryPredicateToLogicngConverter<>();
+    private static final QueryPredicateToLogicngConverter CONVERTER = new QueryPredicateToLogicngConverter();
 
     @Test
     void testConvertNoPredicate() {
-        testLoopConversion(new NoPredicate<>());
+        testLoopConversion(new NoPredicate());
     }
 
     @Test
@@ -41,9 +41,9 @@ class LogicngToQueryPredicateConverterTest {
         testLoopConversion(SelectionsConstants.NOT_EQUAL1);
     }
 
-    void testLoopConversion(final QueryPredicate<Object> predicate) {
-        final QueryPredicateToLogicngConverter.Result<Object> result = CONVERTER.convert(predicate);
-        final LogicngToQueryPredicateConverter<Object> backConverter = new LogicngToQueryPredicateConverter<>(
+    void testLoopConversion(final QueryPredicate predicate) {
+        final QueryPredicateToLogicngConverter.Result result = CONVERTER.convert(predicate);
+        final LogicngToQueryPredicateConverter backConverter = new LogicngToQueryPredicateConverter(
                 result.getVariablesMapping());
         assertThat(backConverter.convert(result.getLogicngFormula()), equalTo(predicate));
     }

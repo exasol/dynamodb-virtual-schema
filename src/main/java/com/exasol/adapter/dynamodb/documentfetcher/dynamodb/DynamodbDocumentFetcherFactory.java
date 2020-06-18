@@ -30,14 +30,14 @@ public class DynamodbDocumentFetcherFactory implements DocumentFetcherFactory<Dy
 
     @Override
     public List<DocumentFetcher<DynamodbNodeVisitor>> buildDocumentFetcherForQuery(
-            final RemoteTableQuery<DynamodbNodeVisitor> remoteTableQuery) {
+            final RemoteTableQuery remoteTableQuery) {
         final DynamodbTableMetadata tableMetadata = this.tableMetadataFactory
                 .buildMetadataForTable(remoteTableQuery.getFromTable().getRemoteName());
         return buildDocumentFetcherForQuery(remoteTableQuery, tableMetadata);
     }
 
     List<DocumentFetcher<DynamodbNodeVisitor>> buildDocumentFetcherForQuery(
-            final RemoteTableQuery<DynamodbNodeVisitor> remoteTableQuery, final DynamodbTableMetadata tableMetadata) {
+            final RemoteTableQuery remoteTableQuery, final DynamodbTableMetadata tableMetadata) {
         try {
             return new DynamodbQueryDocumentFetcherFactory().buildDocumentFetcherForQuery(remoteTableQuery,
                     tableMetadata);

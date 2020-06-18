@@ -6,7 +6,7 @@ import static org.hamcrest.Matchers.equalTo;
 import org.junit.jupiter.api.Test;
 
 class NoPredicateTest {
-    private static final NoPredicate<Object> TEST_PREDICATE = new NoPredicate<>();
+    private static final NoPredicate TEST_PREDICATE = new NoPredicate();
 
     @Test
     void testVisitor() {

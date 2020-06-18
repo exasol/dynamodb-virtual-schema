@@ -12,8 +12,6 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-import com.exasol.adapter.dynamodb.documentnode.DocumentValue;
-import com.exasol.adapter.dynamodb.literalconverter.SqlLiteralToDocumentValueConverter;
 import com.exasol.adapter.dynamodb.mapping.ColumnMapping;
 import com.exasol.adapter.dynamodb.mapping.SchemaMappingToSchemaMetadataConverter;
 import com.exasol.adapter.dynamodb.mapping.ToJsonPropertyToColumnMapping;
@@ -22,17 +20,15 @@ import com.exasol.adapter.sql.*;
 
 class QueryPredicateFactoryTest {
     private static final ColumnMapping COLUMN_MAPPING = new ToJsonPropertyToColumnMapping("name", null, null);
-    private static final DocumentValue<Object> LITERAL = (DocumentValue<Object>) visitor -> {
-    };
-    private static final SqlLiteralToDocumentValueConverter<Object> LITERAL_FACTORY = exasolLiteralNode -> LITERAL;
-    private static final QueryPredicateFactory<Object> FACTORY = new QueryPredicateFactory<>(LITERAL_FACTORY);
+    private static final SqlLiteralString LITERAL = new SqlLiteralString("test");
+    private static final QueryPredicateFactory FACTORY = new QueryPredicateFactory();
     private static ColumnMetadata columnMetadata;
     private static SqlNode validColumnLiteralEqualityPredicate;
 
     @BeforeAll
     static void setup() throws IOException {
         columnMetadata = new SchemaMappingToSchemaMetadataConverter().convertColumn(COLUMN_MAPPING);
-        validColumnLiteralEqualityPredicate = new SqlPredicateEqual(new SqlLiteralString("test"),
+        validColumnLiteralEqualityPredicate = new SqlPredicateEqual(LITERAL,
                 new SqlColumn(0, columnMetadata));
     }
 
@@ -43,7 +39,7 @@ class QueryPredicateFactoryTest {
 
     @Test
     void testBuildAndPredicate() {
-        final LogicalOperator<Object> logicalOperator = (LogicalOperator<Object>) FACTORY
+        final LogicalOperator logicalOperator = (LogicalOperator) FACTORY
                 .buildPredicateFor(new SqlPredicateAnd(List.of(validColumnLiteralEqualityPredicate)));
         assertAll(//
                 () -> assertThat(logicalOperator.getOperands().size(), equalTo(1)),
@@ -55,7 +51,7 @@ class QueryPredicateFactoryTest {
 
     @Test
     void testBuildOrPredicate() {
-        final LogicalOperator<Object> logicalOperator = (LogicalOperator<Object>) FACTORY
+        final LogicalOperator logicalOperator = (LogicalOperator) FACTORY
                 .buildPredicateFor(new SqlPredicateOr(List.of(validColumnLiteralEqualityPredicate)));
         assertAll(//
                 () -> assertThat(logicalOperator.getOperands().size(), equalTo(1)),
@@ -67,7 +63,7 @@ class QueryPredicateFactoryTest {
 
     @Test
     void testBuildColumnLiteralEqualityPredicate() {
-        final ColumnLiteralComparisonPredicate<Object> predicate = (ColumnLiteralComparisonPredicate<Object>) FACTORY
+        final ColumnLiteralComparisonPredicate predicate = (ColumnLiteralComparisonPredicate) FACTORY
                 .buildPredicateFor(validColumnLiteralEqualityPredicate);
         assertAll(//
                 () -> assertThat(predicate.getLiteral(), equalTo(LITERAL)),
@@ -79,9 +75,8 @@ class QueryPredicateFactoryTest {
 
     @Test
     void testBuildColumnLiteralEqualityPredicateWithSwappedParameters() {
-        final ColumnLiteralComparisonPredicate<Object> predicate = (ColumnLiteralComparisonPredicate<Object>) FACTORY
-                .buildPredicateFor(
-                        new SqlPredicateEqual(new SqlColumn(0, columnMetadata), new SqlLiteralString("test")));
+        final ColumnLiteralComparisonPredicate predicate = (ColumnLiteralComparisonPredicate) FACTORY
+                .buildPredicateFor(new SqlPredicateEqual(new SqlColumn(0, columnMetadata), LITERAL));
         assertAll(//
                 () -> assertThat(predicate.getLiteral(), equalTo(LITERAL)),
                 () -> assertThat(predicate.getColumn().getExasolColumnName(),
@@ -102,8 +97,7 @@ class QueryPredicateFactoryTest {
 
     @Test
     void testBuildColumnLiteralEqualityPredicateFailsForTwoLiterals() {
-        final SqlPredicateEqual predicate = new SqlPredicateEqual(new SqlLiteralString("test"),
-                new SqlLiteralString("test"));
+        final SqlPredicateEqual predicate = new SqlPredicateEqual(LITERAL, LITERAL);
         final UnsupportedOperationException exception = assertThrows(UnsupportedOperationException.class,
                 () -> FACTORY.buildPredicateFor(predicate));
         assertThat(exception.getMessage(),
@@ -112,9 +106,8 @@ class QueryPredicateFactoryTest {
 
     @Test
     void testBuildColumnLiteralLessPredicate() {
-        final ColumnLiteralComparisonPredicate<Object> predicate = (ColumnLiteralComparisonPredicate<Object>) FACTORY
-                .buildPredicateFor(
-                        new SqlPredicateLess(new SqlColumn(0, columnMetadata), new SqlLiteralString("test")));
+        final ColumnLiteralComparisonPredicate predicate = (ColumnLiteralComparisonPredicate) FACTORY
+                .buildPredicateFor(new SqlPredicateLess(new SqlColumn(0, columnMetadata), LITERAL));
         assertAll(//
                 () -> assertThat(predicate.getLiteral(), equalTo(LITERAL)),
                 () -> assertThat(predicate.getColumn().getExasolColumnName(),
@@ -125,9 +118,8 @@ class QueryPredicateFactoryTest {
 
     @Test
     void testBuildColumnLiteralLessPredicateWithSwappedParameters() {
-        final ColumnLiteralComparisonPredicate<Object> predicate = (ColumnLiteralComparisonPredicate<Object>) FACTORY
-                .buildPredicateFor(
-                        new SqlPredicateLess(new SqlLiteralString("test"), new SqlColumn(0, columnMetadata)));
+        final ColumnLiteralComparisonPredicate predicate = (ColumnLiteralComparisonPredicate) FACTORY
+                .buildPredicateFor(new SqlPredicateLess(LITERAL, new SqlColumn(0, columnMetadata)));
         assertAll(//
                 () -> assertThat(predicate.getLiteral(), equalTo(LITERAL)),
                 () -> assertThat(predicate.getColumn().getExasolColumnName(),
@@ -138,9 +130,8 @@ class QueryPredicateFactoryTest {
 
     @Test
     void testBuildColumnLiteralLessEqualPredicate() {
-        final ColumnLiteralComparisonPredicate<Object> predicate = (ColumnLiteralComparisonPredicate<Object>) FACTORY
-                .buildPredicateFor(
-                        new SqlPredicateLessEqual(new SqlColumn(0, columnMetadata), new SqlLiteralString("test")));
+        final ColumnLiteralComparisonPredicate predicate = (ColumnLiteralComparisonPredicate) FACTORY
+                .buildPredicateFor(new SqlPredicateLessEqual(new SqlColumn(0, columnMetadata), LITERAL));
         assertAll(//
                 () -> assertThat(predicate.getLiteral(), equalTo(LITERAL)),
                 () -> assertThat(predicate.getColumn().getExasolColumnName(),
@@ -151,9 +142,8 @@ class QueryPredicateFactoryTest {
 
     @Test
     void testBuildColumnLiteralLessEqualPredicateWithSwappedParameters() {
-        final ColumnLiteralComparisonPredicate<Object> predicate = (ColumnLiteralComparisonPredicate<Object>) FACTORY
-                .buildPredicateFor(
-                        new SqlPredicateLessEqual(new SqlLiteralString("test"), new SqlColumn(0, columnMetadata)));
+        final ColumnLiteralComparisonPredicate predicate = (ColumnLiteralComparisonPredicate) FACTORY
+                .buildPredicateFor(new SqlPredicateLessEqual(LITERAL, new SqlColumn(0, columnMetadata)));
         assertAll(//
                 () -> assertThat(predicate.getLiteral(), equalTo(LITERAL)),
                 () -> assertThat(predicate.getColumn().getExasolColumnName(),
@@ -165,7 +155,7 @@ class QueryPredicateFactoryTest {
     @Test
     void testBuildNot() {
         final SqlPredicateNot sqlNot = new SqlPredicateNot(validColumnLiteralEqualityPredicate);
-        final QueryPredicate<Object> queryPredicate = FACTORY.buildPredicateFor(sqlNot);
+        final QueryPredicate queryPredicate = FACTORY.buildPredicateFor(sqlNot);
         assertThat(queryPredicate, instanceOf(NotPredicate.class));
 
     }

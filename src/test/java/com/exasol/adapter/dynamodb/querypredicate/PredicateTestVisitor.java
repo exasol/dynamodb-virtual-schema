@@ -1,25 +1,25 @@
 package com.exasol.adapter.dynamodb.querypredicate;
 
-class PredicateTestVisitor implements QueryPredicateVisitor<Object> {
+class PredicateTestVisitor implements QueryPredicateVisitor {
     private Visited visited;
 
     @Override
-    public void visit(final ComparisonPredicate<Object> comparisonPredicate) {
+    public void visit(final ComparisonPredicate comparisonPredicate) {
         this.visited = Visited.COMPARISON;
     }
 
     @Override
-    public void visit(final LogicalOperator<Object> logicalOperator) {
+    public void visit(final LogicalOperator logicalOperator) {
         this.visited = Visited.BINARY_LOGICAL_OPERATOR;
     }
 
     @Override
-    public void visit(final NoPredicate<Object> noPredicate) {
+    public void visit(final NoPredicate noPredicate) {
         this.visited = Visited.NO;
     }
 
     @Override
-    public void visit(final NotPredicate<Object> notPredicate) {
+    public void visit(final NotPredicate notPredicate) {
         this.visited = Visited.NOT;
     }
 

@@ -41,7 +41,7 @@ abstract class AbstractUdf<DocumentVisitorType> {
      */
     public final void run(final ExaMetadata exaMetadata, final ExaIterator exaIterator) throws ClassNotFoundException,
             ExaIterationException, ExaDataTypeException, IOException, ExaConnectionAccessException {
-        final RemoteTableQuery<DocumentVisitorType> remoteTableQuery = deserializeRemoteTableQuery(exaIterator);
+        final RemoteTableQuery remoteTableQuery = deserializeRemoteTableQuery(exaIterator);
         final SchemaMapper<DocumentVisitorType> schemaMapper = new SchemaMapper<>(remoteTableQuery,
                 getValueExtractorFactory());
         do {
@@ -75,10 +75,10 @@ abstract class AbstractUdf<DocumentVisitorType> {
         return (DocumentFetcher<DocumentVisitorType>) StringSerializer.deserializeFromString(serialized);
     }
 
-    private RemoteTableQuery<DocumentVisitorType> deserializeRemoteTableQuery(final ExaIterator exaIterator)
+    private RemoteTableQuery deserializeRemoteTableQuery(final ExaIterator exaIterator)
             throws ExaIterationException, ExaDataTypeException, IOException, ClassNotFoundException {
         final String serialized = exaIterator.getString(PARAMETER_REMOTE_TABLE_QUERY);
-        return (RemoteTableQuery<DocumentVisitorType>) StringSerializer.deserializeFromString(serialized);
+        return (RemoteTableQuery) StringSerializer.deserializeFromString(serialized);
     }
 
     private void emitRow(final List<Object> row, final ExaIterator iterator) {

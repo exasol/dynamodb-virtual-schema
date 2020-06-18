@@ -26,7 +26,7 @@ public class SchemaMapper<DocumentVisitorType> {
      * @param propertyToColumnValueExtractorFactory factory for value mapper corresponding to
      *                                              {@link DocumentVisitorType}
      */
-    public SchemaMapper(final RemoteTableQuery<DocumentVisitorType> query,
+    public SchemaMapper(final RemoteTableQuery query,
             final PropertyToColumnValueExtractorFactory<DocumentVisitorType> propertyToColumnValueExtractorFactory) {
         this.query = query;
         this.columnValueExtractorFactory = new ColumnValueExtractorFactory<>(propertyToColumnValueExtractorFactory);

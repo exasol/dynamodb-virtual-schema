@@ -5,7 +5,6 @@ import java.util.Collections;
 import java.util.List;
 
 import com.exasol.adapter.AdapterException;
-import com.exasol.adapter.dynamodb.literalconverter.SqlLiteralToDocumentValueConverter;
 import com.exasol.adapter.dynamodb.mapping.ColumnMapping;
 import com.exasol.adapter.dynamodb.mapping.SchemaMappingToSchemaMetadataConverter;
 import com.exasol.adapter.dynamodb.mapping.TableMapping;
@@ -19,11 +18,13 @@ import com.exasol.adapter.sql.*;
  * Visitor for {@link com.exasol.adapter.sql.SqlStatementSelect} building a {@link RemoteTableQuery}
  */
 @java.lang.SuppressWarnings("squid:S119") // DocumentVisitorType does not fit naming conventions.
-public class RemoteTableQueryFactory<DocumentVisitorType> {
-    private final QueryPredicateFactory<DocumentVisitorType> predicateFactory;
+public class RemoteTableQueryFactory {
+    private final QueryPredicateFactory predicateFactory;
+    private final IndexColumnSelectionExtractor indexColumnSelectionExtractor;
 
-    public RemoteTableQueryFactory(final SqlLiteralToDocumentValueConverter<DocumentVisitorType> literalConverter) {
-        this.predicateFactory = new QueryPredicateFactory<>(literalConverter);
+    public RemoteTableQueryFactory() {
+        this.predicateFactory = new QueryPredicateFactory();
+        this.indexColumnSelectionExtractor = new IndexColumnSelectionExtractor();
     }
 
     /**
@@ -33,15 +34,18 @@ public class RemoteTableQueryFactory<DocumentVisitorType> {
      * @param schemaAdapterNotes adapter notes of the schema
      * @return {@link RemoteTableQuery}
      */
-    public RemoteTableQuery<DocumentVisitorType> build(final SqlStatement selectStatement,
-            final String schemaAdapterNotes) throws AdapterException {
+    public RemoteTableQuery build(final SqlStatement selectStatement, final String schemaAdapterNotes)
+            throws AdapterException {
         final Visitor visitor = new Visitor();
         selectStatement.accept(visitor);
         final SchemaMappingToSchemaMetadataConverter converter = new SchemaMappingToSchemaMetadataConverter();
         final TableMapping tableMapping = converter.convertBackTable(visitor.tableMetadata, schemaAdapterNotes);
-        final QueryPredicate<DocumentVisitorType> selection = this.predicateFactory
-                .buildPredicateFor(visitor.getWhereClause());
-        return new RemoteTableQuery<>(tableMapping, Collections.unmodifiableList(visitor.resultColumns), selection);
+        final QueryPredicate selection = this.predicateFactory.buildPredicateFor(visitor.getWhereClause());
+        final IndexColumnSelectionExtractor.Result indexColumnExtractionResult = this.indexColumnSelectionExtractor
+                .extractIndexColumnSelection(selection);
+        return new RemoteTableQuery(tableMapping, Collections.unmodifiableList(visitor.resultColumns),
+                indexColumnExtractionResult.getNonIndexSelection().asQueryPredicate(),
+                indexColumnExtractionResult.getIndexSelection().asQueryPredicate());
     }
 
     private static class Visitor extends VoidSqlNodeVisitor {

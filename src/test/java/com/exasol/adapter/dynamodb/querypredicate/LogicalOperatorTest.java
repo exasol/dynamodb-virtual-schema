@@ -11,9 +11,9 @@ import java.util.Set;
 import org.junit.jupiter.api.Test;
 
 class LogicalOperatorTest {
-    private static final NoPredicate<Object> NO_PREDICATE = new NoPredicate<>();
+    private static final NoPredicate NO_PREDICATE = new NoPredicate();
     private static final LogicalOperator.Operator OPERATOR = LogicalOperator.Operator.AND;
-    private static final LogicalOperator<Object> TEST_PREDICATE = new LogicalOperator<>(Set.of(NO_PREDICATE),
+    private static final LogicalOperator TEST_PREDICATE = new LogicalOperator(Set.of(NO_PREDICATE),
             OPERATOR);
 
     @Test
@@ -35,21 +35,21 @@ class LogicalOperatorTest {
 
     @Test
     void testNotEqual() {
-        final LogicalOperator<Object> otherPredicate = new LogicalOperator<>(Set.of(NO_PREDICATE),
+        final LogicalOperator otherPredicate = new LogicalOperator(Set.of(NO_PREDICATE),
                 LogicalOperator.Operator.OR);
         assertSymmetricNotEqualWithHashAndEquals(TEST_PREDICATE, otherPredicate);
     }
 
     @Test
     void testIdentical() {
-        final LogicalOperator<Object> otherPredicate = new LogicalOperator<>(Set.of(NO_PREDICATE),
+        final LogicalOperator otherPredicate = new LogicalOperator(Set.of(NO_PREDICATE),
                 LogicalOperator.Operator.OR);
         assertSymmetricEqualWithHashAndEquals(TEST_PREDICATE, TEST_PREDICATE);
     }
 
     @Test
     void testEqual() {
-        final LogicalOperator<Object> otherPredicate = new LogicalOperator<>(Set.of(NO_PREDICATE), OPERATOR);
+        final LogicalOperator otherPredicate = new LogicalOperator(Set.of(NO_PREDICATE), OPERATOR);
         assertSymmetricEqualWithHashAndEquals(TEST_PREDICATE, otherPredicate);
     }
 }

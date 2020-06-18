@@ -72,7 +72,7 @@ class DynamodbDocumentFetcherFactoryIT {
         NETWORK.close();
     }
 
-    private List<DocumentNode<DynamodbNodeVisitor>> runQuery(final RemoteTableQuery<DynamodbNodeVisitor> query) {
+    private List<DocumentNode<DynamodbNodeVisitor>> runQuery(final RemoteTableQuery query) {
         final DynamodbDocumentFetcherFactory fetcherFactory = new DynamodbDocumentFetcherFactory(
                 dynamodbTestInterface.getDynamodbLowLevelConnection());
         final List<DocumentFetcher<DynamodbNodeVisitor>> documentFetchers = fetcherFactory
@@ -85,7 +85,7 @@ class DynamodbDocumentFetcherFactoryIT {
 
     @Test
     void testSelectAll() {
-        final RemoteTableQuery<DynamodbNodeVisitor> remoteTableQuery = basicMappingSetup.getSelectAllQuery();
+        final RemoteTableQuery remoteTableQuery = basicMappingSetup.getSelectAllQuery();
         final List<DocumentNode<DynamodbNodeVisitor>> result = runQuery(remoteTableQuery);
         assertThat(result.size(), equalTo(3));
         final DocumentObject<DynamodbNodeVisitor> first = (DocumentObject<DynamodbNodeVisitor>) result.get(0);
@@ -95,7 +95,7 @@ class DynamodbDocumentFetcherFactoryIT {
     @Test
     void testRequestSingleItem() {
         final String isbn = "123567";
-        final RemoteTableQuery<DynamodbNodeVisitor> documentQuery = basicMappingSetup.getQueryForIsbn(isbn);
+        final RemoteTableQuery documentQuery = basicMappingSetup.getQueryForIsbn(isbn);
         final List<DocumentNode<DynamodbNodeVisitor>> result = runQuery(documentQuery);
         assertThat(result.size(), equalTo(1));
         final DocumentObject<DynamodbNodeVisitor> first = (DocumentObject<DynamodbNodeVisitor>) result.get(0);
@@ -104,7 +104,7 @@ class DynamodbDocumentFetcherFactoryIT {
 
     @Test
     void testSelectAllButASingleItem() {
-        final RemoteTableQuery<DynamodbNodeVisitor> documentQuery = basicMappingSetup.getQueryForNotIsbn("123567");
+        final RemoteTableQuery documentQuery = basicMappingSetup.getQueryForNotIsbn("123567");
         final List<DocumentNode<DynamodbNodeVisitor>> result = runQuery(documentQuery);
         final List<String> resultsIsbns = result.stream()
                 .map(x -> getItemsIsbn((DocumentObject<DynamodbNodeVisitor>) x)).collect(Collectors.toList());
@@ -114,7 +114,7 @@ class DynamodbDocumentFetcherFactoryIT {
     @Test
     void testSecondaryIndexQuery() {
         final String publisher = "jb books";
-        final RemoteTableQuery<DynamodbNodeVisitor> documentQuery = basicMappingSetup.getQueryForPublisher(publisher);
+        final RemoteTableQuery documentQuery = basicMappingSetup.getQueryForPublisher(publisher);
         final List<DocumentNode<DynamodbNodeVisitor>> result = runQuery(documentQuery);
         assertThat(result.size(), equalTo(2));
         final DocumentObject<DynamodbNodeVisitor> first = (DocumentObject<DynamodbNodeVisitor>) result.get(0);
@@ -125,7 +125,7 @@ class DynamodbDocumentFetcherFactoryIT {
     @Test
     void testSortKeyIndexQuery() {
         final String publisher = "jb books";
-        final RemoteTableQuery<DynamodbNodeVisitor> query = basicMappingSetup.getQueryForMinPriceAndPublisher(11,
+        final RemoteTableQuery query = basicMappingSetup.getQueryForMinPriceAndPublisher(11,
                 publisher);
         final List<DocumentNode<DynamodbNodeVisitor>> result = runQuery(query);
         assertThat(result.size(), equalTo(1));
@@ -136,7 +136,7 @@ class DynamodbDocumentFetcherFactoryIT {
     @Test
     void testSortKeyIndexQueryWithNot() {
         final String publisher = "jb books";
-        final RemoteTableQuery<DynamodbNodeVisitor> query = basicMappingSetup.getQueryForMaxPriceAndPublisher(11,
+        final RemoteTableQuery query = basicMappingSetup.getQueryForMaxPriceAndPublisher(11,
                 publisher);
         final List<DocumentNode<DynamodbNodeVisitor>> result = runQuery(query);
         assertThat(result.size(), equalTo(1));
@@ -148,7 +148,7 @@ class DynamodbDocumentFetcherFactoryIT {
     void testKeyAndNonKeyQuery() {
         final String publisher = "jb books";
         final String name = "bad book 1";
-        final RemoteTableQuery<DynamodbNodeVisitor> documentQuery = basicMappingSetup.getQueryForNameAndPublisher(name,
+        final RemoteTableQuery documentQuery = basicMappingSetup.getQueryForNameAndPublisher(name,
                 publisher);
         final List<DocumentNode<DynamodbNodeVisitor>> result = runQuery(documentQuery);
         assertThat(result.size(), equalTo(1));
@@ -166,7 +166,7 @@ class DynamodbDocumentFetcherFactoryIT {
         final String publisher = "jb books";
         final String name1 = "bad book 1";
         final String name2 = "bad book 2";
-        final RemoteTableQuery<DynamodbNodeVisitor> documentQuery = basicMappingSetup
+        final RemoteTableQuery documentQuery = basicMappingSetup
                 .getQueryForTwoNamesAndPublisher(name1, name2, publisher);
         final List<DocumentNode<DynamodbNodeVisitor>> result = runQuery(documentQuery);
         final DocumentObject<DynamodbNodeVisitor> first = (DocumentObject<DynamodbNodeVisitor>) result.get(0);
@@ -182,7 +182,7 @@ class DynamodbDocumentFetcherFactoryIT {
 
     @Test
     void testRangeQuery() {
-        final RemoteTableQuery<DynamodbNodeVisitor> documentQuery = basicMappingSetup.getQueryForMinPrice(16);
+        final RemoteTableQuery documentQuery = basicMappingSetup.getQueryForMinPrice(16);
         final List<DocumentNode<DynamodbNodeVisitor>> result = runQuery(documentQuery);
         assertThat(result.size(), equalTo(1));
         final DocumentObject<DynamodbNodeVisitor> first = (DocumentObject<DynamodbNodeVisitor>) result.get(0);
@@ -192,8 +192,8 @@ class DynamodbDocumentFetcherFactoryIT {
     @Test
     void testQueryOnIndexAndPrimaryKeyProperties() {
         final String isbn = "123567";
-        final RemoteTableQuery<DynamodbNodeVisitor> documentQuery = basicMappingSetup
-                .getQueryForPriceAndPublisherAndIsbn("15", "jb books", isbn);
+        final RemoteTableQuery documentQuery = basicMappingSetup.getQueryForPriceAndPublisherAndIsbn(15, "jb books",
+                isbn);
         final List<DocumentNode<DynamodbNodeVisitor>> result = runQuery(documentQuery);
         assertThat(result.size(), equalTo(1));
         final DocumentObject<DynamodbNodeVisitor> first = (DocumentObject<DynamodbNodeVisitor>) result.get(0);

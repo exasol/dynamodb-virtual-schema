@@ -15,7 +15,6 @@ import org.junit.jupiter.api.Test;
 
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.exasol.adapter.AdapterException;
-import com.exasol.adapter.dynamodb.documentnode.dynamodb.DynamodbNodeVisitor;
 import com.exasol.adapter.dynamodb.dynamodbmetadata.DynamodbPrimaryIndex;
 import com.exasol.adapter.dynamodb.dynamodbmetadata.DynamodbSecondaryIndex;
 import com.exasol.adapter.dynamodb.dynamodbmetadata.DynamodbTableMetadata;
@@ -35,7 +34,7 @@ class DynamodbDocumentFetcherFactoryTest {
 
     @Test
     void testSelectAll() {
-        final RemoteTableQuery<DynamodbNodeVisitor> documentQuery = basicMappingSetup.getSelectAllQuery();
+        final RemoteTableQuery documentQuery = basicMappingSetup.getSelectAllQuery();
         final DynamodbScanDocumentFetcher scanPlan = (DynamodbScanDocumentFetcher) new DynamodbDocumentFetcherFactory(
                 null).buildDocumentFetcherForQuery(documentQuery, tableMetadata).get(0);
         assertThat(scanPlan.getScanRequest().getTableName(), equalTo(basicMappingSetup.tableMapping.getRemoteName()));
@@ -44,7 +43,7 @@ class DynamodbDocumentFetcherFactoryTest {
     @Test
     void testSecondaryIndexQuery() {
         final String publisher = "jb books";
-        final RemoteTableQuery<DynamodbNodeVisitor> documentQuery = basicMappingSetup.getQueryForPublisher(publisher);
+        final RemoteTableQuery documentQuery = basicMappingSetup.getQueryForPublisher(publisher);
         final DynamodbQueryDocumentFetcher queryPlan = (DynamodbQueryDocumentFetcher) new DynamodbDocumentFetcherFactory(
                 null).buildDocumentFetcherForQuery(documentQuery, tableMetadata).get(0);
         assertAll(//
@@ -66,7 +65,7 @@ class DynamodbDocumentFetcherFactoryTest {
         final DynamodbTableMetadata tableMetadata = new DynamodbTableMetadata(
                 new DynamodbPrimaryIndex("publisher", Optional.of("price")), List.of(), List.of());
 
-        final RemoteTableQuery<DynamodbNodeVisitor> documentQuery = basicMappingSetup
+        final RemoteTableQuery documentQuery = basicMappingSetup
                 .getQueryForMinPriceAndPublisher(price, publisher);
         final DynamodbQueryDocumentFetcher queryPlan = (DynamodbQueryDocumentFetcher) new DynamodbDocumentFetcherFactory(
                 null).buildDocumentFetcherForQuery(documentQuery, tableMetadata).get(0);
@@ -89,7 +88,7 @@ class DynamodbDocumentFetcherFactoryTest {
         final DynamodbTableMetadata tableMetadata = new DynamodbTableMetadata(
                 new DynamodbPrimaryIndex("publisher", Optional.of("price")), List.of(), List.of());
 
-        final RemoteTableQuery<DynamodbNodeVisitor> documentQuery = basicMappingSetup
+        final RemoteTableQuery documentQuery = basicMappingSetup
                 .getQueryForMaxPriceAndPublisher(price, publisher);
         final DynamodbQueryDocumentFetcher queryPlan = (DynamodbQueryDocumentFetcher) new DynamodbDocumentFetcherFactory(
                 null).buildDocumentFetcherForQuery(documentQuery, tableMetadata).get(0);
@@ -108,7 +107,7 @@ class DynamodbDocumentFetcherFactoryTest {
     @Test
     void testRangeQueryWithoutPrimaryKey() {
         final double price = 10.1;
-        final RemoteTableQuery<DynamodbNodeVisitor> documentQuery = basicMappingSetup.getQueryForMinPrice(price);
+        final RemoteTableQuery documentQuery = basicMappingSetup.getQueryForMinPrice(price);
         final DynamodbScanDocumentFetcher scanPlan = (DynamodbScanDocumentFetcher) new DynamodbDocumentFetcherFactory(
                 null).buildDocumentFetcherForQuery(documentQuery, tableMetadata).get(0);
         assertAll(//
@@ -127,7 +126,7 @@ class DynamodbDocumentFetcherFactoryTest {
         final DynamodbTableMetadata tableMetadata = new DynamodbTableMetadata(
                 new DynamodbPrimaryIndex("publisher", Optional.empty()), List.of(), List.of());
 
-        final RemoteTableQuery<DynamodbNodeVisitor> documentQuery = basicMappingSetup.getQueryForNameAndPublisher(name,
+        final RemoteTableQuery documentQuery = basicMappingSetup.getQueryForNameAndPublisher(name,
                 publisher);
         final DynamodbQueryDocumentFetcher queryPlan = (DynamodbQueryDocumentFetcher) new DynamodbDocumentFetcherFactory(
                 null).buildDocumentFetcherForQuery(documentQuery, tableMetadata).get(0);
@@ -154,7 +153,7 @@ class DynamodbDocumentFetcherFactoryTest {
         final DynamodbTableMetadata tableMetadata = new DynamodbTableMetadata(
                 new DynamodbPrimaryIndex("publisher", Optional.empty()), List.of(), List.of());
 
-        final RemoteTableQuery<DynamodbNodeVisitor> documentQuery = basicMappingSetup
+        final RemoteTableQuery documentQuery = basicMappingSetup
                 .getQueryForTwoNamesAndPublisher(name1, name2, publisher);
         final DynamodbQueryDocumentFetcher queryPlan = (DynamodbQueryDocumentFetcher) new DynamodbDocumentFetcherFactory(
                 null).buildDocumentFetcherForQuery(documentQuery, tableMetadata).get(0);
@@ -177,10 +176,10 @@ class DynamodbDocumentFetcherFactoryTest {
 
     @Test
     void testQueryOnKeyAndIndexProperties() {
-        final String price = "10";
+        final int price = 10;
         final String publisher = "jb books";
         final String isbn = "1234";
-        final RemoteTableQuery<DynamodbNodeVisitor> documentQuery = basicMappingSetup
+        final RemoteTableQuery documentQuery = basicMappingSetup
                 .getQueryForPriceAndPublisherAndIsbn(price, publisher, isbn);
         final DynamodbQueryDocumentFetcher queryPlan = (DynamodbQueryDocumentFetcher) new DynamodbDocumentFetcherFactory(
                 null).buildDocumentFetcherForQuery(documentQuery, tableMetadata).get(0);
@@ -194,8 +193,8 @@ class DynamodbDocumentFetcherFactoryTest {
                 () -> assertThat(queryPlan.getQueryRequest().getTableName(),
                         equalTo(basicMappingSetup.tableMapping.getRemoteName())),
                 () -> assertThat(keyConditionExpression, equalTo("isbn = '1234'")),
-                () -> assertThat(filterExpression, anyOf(equalTo("(publisher = 'jb books' and (price = 10))"),
-                        equalTo("(price = 10 and (publisher = 'jb books'))")))//
+                () -> assertThat(filterExpression, anyOf(equalTo("(publisher = 'jb books' and (price = 10.0))"),
+                        equalTo("(price = 10.0 and (publisher = 'jb books'))")))//
         );
     }
 

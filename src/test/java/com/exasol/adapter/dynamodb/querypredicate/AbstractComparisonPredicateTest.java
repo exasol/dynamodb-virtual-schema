@@ -22,7 +22,7 @@ class AbstractComparisonPredicateTest {
         }
     }
 
-    private static class StubComparisonPredicate extends AbstractComparisonPredicate<Object> {
+    private static class StubComparisonPredicate extends AbstractComparisonPredicate {
         private static final long serialVersionUID = -952505391543051812L;
 
         public StubComparisonPredicate(final Operator operator) {
@@ -30,7 +30,7 @@ class AbstractComparisonPredicateTest {
         }
 
         @Override
-        public void accept(final ComparisonPredicateVisitor<Object> visitor) {
+        public void accept(final ComparisonPredicateVisitor visitor) {
 
         }
 
@@ -40,12 +40,12 @@ class AbstractComparisonPredicateTest {
         }
 
         @Override
-        public ComparisonPredicate<Object> negate() {
+        public ComparisonPredicate negate() {
             return new StubComparisonPredicate(negateOperator());
         }
 
         @Override
-        public void accept(final QueryPredicateVisitor<Object> visitor) {
+        public void accept(final QueryPredicateVisitor visitor) {
 
         }
     }

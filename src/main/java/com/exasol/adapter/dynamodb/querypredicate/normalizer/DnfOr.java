@@ -19,15 +19,15 @@ import com.exasol.adapter.dynamodb.querypredicate.QueryPredicate;
  * Invalid DNF: {@code A AND (B OR C)} (AND is not allowed at top level)
  */
 @java.lang.SuppressWarnings("squid:S119") // DocumentVisitorType does not fit naming conventions.
-public class DnfOr<DocumentVisitorType> {
-    private final Set<DnfAnd<DocumentVisitorType>> operands;
+public class DnfOr {
+    private final Set<DnfAnd> operands;
 
     /**
      * Create an instance of {@link DnfOr}
      * 
      * @param operands operands of the OR
      */
-    public DnfOr(final Set<DnfAnd<DocumentVisitorType>> operands) {
+    public DnfOr(final Set<DnfAnd> operands) {
         this.operands = operands;
     }
 
@@ -36,20 +36,20 @@ public class DnfOr<DocumentVisitorType> {
      * 
      * @return operands
      */
-    public Set<DnfAnd<DocumentVisitorType>> getOperands() {
+    public Set<DnfAnd> getOperands() {
         return this.operands;
     }
 
-    public QueryPredicate<DocumentVisitorType> asQueryPredicate() {
-        final Set<QueryPredicate<DocumentVisitorType>> convertedOperands = this.operands.stream()
+    public QueryPredicate asQueryPredicate() {
+        final Set<QueryPredicate> convertedOperands = this.operands.stream()
                 .map(DnfAnd::asQueryPredicate).filter(dnfAnd -> !(dnfAnd instanceof NoPredicate))
                 .collect(Collectors.toSet());
         if (convertedOperands.isEmpty()) {
-            return new NoPredicate<>();
+            return new NoPredicate();
         } else if (convertedOperands.size() == 1) {
             return convertedOperands.iterator().next();
         } else {
-            return new LogicalOperator<>(convertedOperands, LogicalOperator.Operator.OR);
+            return new LogicalOperator(convertedOperands, LogicalOperator.Operator.OR);
         }
     }
 
@@ -67,7 +67,7 @@ public class DnfOr<DocumentVisitorType> {
         if (!(other instanceof DnfOr)) {
             return false;
         }
-        final DnfOr<?> dnfOr = (DnfOr<?>) other;
+        final DnfOr dnfOr = (DnfOr) other;
         return this.operands.equals(dnfOr.operands);
     }
 

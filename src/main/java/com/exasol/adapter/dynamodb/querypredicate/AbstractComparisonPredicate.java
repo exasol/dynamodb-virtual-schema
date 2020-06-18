@@ -3,9 +3,7 @@ package com.exasol.adapter.dynamodb.querypredicate;
 /**
  * This class represents a comparison between two values.
  */
-@java.lang.SuppressWarnings("squid:S119") // DocumentVisitorType does not fit naming conventions.
-public abstract class AbstractComparisonPredicate<DocumentVisitorType>
-        implements ComparisonPredicate<DocumentVisitorType> {
+public abstract class AbstractComparisonPredicate implements ComparisonPredicate {
     private static final long serialVersionUID = 3143229347002333048L;
     private final Operator operator;
 
@@ -44,7 +42,7 @@ public abstract class AbstractComparisonPredicate<DocumentVisitorType>
     }
 
     @Override
-    public QueryPredicate<DocumentVisitorType> simplify() {
+    public QueryPredicate simplify() {
         return this;
     }
 

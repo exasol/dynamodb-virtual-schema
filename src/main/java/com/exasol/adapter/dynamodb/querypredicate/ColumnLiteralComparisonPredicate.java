@@ -2,17 +2,15 @@ package com.exasol.adapter.dynamodb.querypredicate;
 
 import java.util.List;
 
-import com.exasol.adapter.dynamodb.documentnode.DocumentValue;
 import com.exasol.adapter.dynamodb.mapping.ColumnMapping;
+import com.exasol.adapter.sql.SqlNode;
 
 /**
  * This class represents a comparison between a literal and a column of a table.
  */
-@java.lang.SuppressWarnings("squid:S119") // DocumentVisitorType does not fit naming conventions.
-public class ColumnLiteralComparisonPredicate<DocumentVisitorType>
-        extends AbstractComparisonPredicate<DocumentVisitorType> {
+public class ColumnLiteralComparisonPredicate extends AbstractComparisonPredicate {
     private static final long serialVersionUID = 4471077828317147591L;
-    private final DocumentValue<DocumentVisitorType> literal;
+    private final SqlNode literal;
     private final ColumnMapping column;
 
     /**
@@ -23,7 +21,7 @@ public class ColumnLiteralComparisonPredicate<DocumentVisitorType>
      * @param literal  literal to compare
      */
     public ColumnLiteralComparisonPredicate(final Operator operator, final ColumnMapping column,
-            final DocumentValue<DocumentVisitorType> literal) {
+            final SqlNode literal) {
         super(operator);
         this.literal = literal;
         this.column = column;
@@ -34,7 +32,7 @@ public class ColumnLiteralComparisonPredicate<DocumentVisitorType>
      * 
      * @return literal
      */
-    public DocumentValue<DocumentVisitorType> getLiteral() {
+    public SqlNode getLiteral() {
         return this.literal;
     }
 
@@ -55,7 +53,7 @@ public class ColumnLiteralComparisonPredicate<DocumentVisitorType>
         if (!(other instanceof ColumnLiteralComparisonPredicate)) {
             return false;
         }
-        final ColumnLiteralComparisonPredicate<?> that = (ColumnLiteralComparisonPredicate<?>) other;
+        final ColumnLiteralComparisonPredicate that = (ColumnLiteralComparisonPredicate) other;
         return this.literal.equals(that.literal) && this.column.equals(that.column);
     }
 
@@ -71,7 +69,7 @@ public class ColumnLiteralComparisonPredicate<DocumentVisitorType>
     }
 
     @Override
-    public void accept(final ComparisonPredicateVisitor<DocumentVisitorType> visitor) {
+    public void accept(final ComparisonPredicateVisitor visitor) {
         visitor.visit(this);
     }
 
@@ -81,7 +79,7 @@ public class ColumnLiteralComparisonPredicate<DocumentVisitorType>
     }
 
     @Override
-    public ColumnLiteralComparisonPredicate<DocumentVisitorType> negate() {
-        return new ColumnLiteralComparisonPredicate<>(negateOperator(), this.column, this.literal);
+    public ColumnLiteralComparisonPredicate negate() {
+        return new ColumnLiteralComparisonPredicate(negateOperator(), this.column, this.literal);
     }
 }

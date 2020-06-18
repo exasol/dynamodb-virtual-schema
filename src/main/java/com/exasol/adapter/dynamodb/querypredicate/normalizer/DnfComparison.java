@@ -10,9 +10,9 @@ import com.exasol.adapter.dynamodb.querypredicate.QueryPredicate;
  * This class represents a comparison predicate in a disjunctive normal form (DNF).
  */
 @java.lang.SuppressWarnings("squid:S119") // DocumentVisitorType does not fit naming conventions.
-public final class DnfComparison<DocumentVisitorType> {
+public final class DnfComparison {
     private final boolean isNegated;
-    private final ComparisonPredicate<DocumentVisitorType> comparisonPredicate;
+    private final ComparisonPredicate comparisonPredicate;
 
     /**
      * Create an instance of {@link DnfComparison}
@@ -20,7 +20,7 @@ public final class DnfComparison<DocumentVisitorType> {
      * @param isNegated           {@code true} if the predicate is negated
      * @param comparisonPredicate the comparison predicate
      */
-    public DnfComparison(final boolean isNegated, final ComparisonPredicate<DocumentVisitorType> comparisonPredicate) {
+    public DnfComparison(final boolean isNegated, final ComparisonPredicate comparisonPredicate) {
         this.isNegated = isNegated;
         this.comparisonPredicate = comparisonPredicate;
     }
@@ -39,15 +39,15 @@ public final class DnfComparison<DocumentVisitorType> {
      * 
      * @return comparison predicate
      */
-    public ComparisonPredicate<DocumentVisitorType> getComparisonPredicate() {
+    public ComparisonPredicate getComparisonPredicate() {
         return this.comparisonPredicate;
     }
 
-    public QueryPredicate<DocumentVisitorType> asQueryPredicate() {
+    public QueryPredicate asQueryPredicate() {
         if (!this.isNegated) {
             return this.comparisonPredicate;
         } else {
-            return new NotPredicate<>(this.comparisonPredicate);
+            return new NotPredicate(this.comparisonPredicate);
         }
     }
 
@@ -68,7 +68,7 @@ public final class DnfComparison<DocumentVisitorType> {
         if (!(other instanceof DnfComparison)) {
             return false;
         }
-        final DnfComparison<?> that = (DnfComparison<?>) other;
+        final DnfComparison that = (DnfComparison) other;
         return this.isNegated == that.isNegated && this.comparisonPredicate.equals(that.comparisonPredicate);
     }
 

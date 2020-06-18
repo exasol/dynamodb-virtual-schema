@@ -2,36 +2,36 @@ package com.exasol.adapter.dynamodb.querypredicate.normalizer;
 
 import java.util.Set;
 
-import com.exasol.adapter.dynamodb.documentnode.MockValueNode;
 import com.exasol.adapter.dynamodb.mapping.ToJsonPropertyToColumnMapping;
 import com.exasol.adapter.dynamodb.querypredicate.AbstractComparisonPredicate;
 import com.exasol.adapter.dynamodb.querypredicate.ColumnLiteralComparisonPredicate;
 import com.exasol.adapter.dynamodb.querypredicate.LogicalOperator;
 import com.exasol.adapter.dynamodb.querypredicate.NotPredicate;
+import com.exasol.adapter.sql.SqlLiteralString;
 
 class SelectionsConstants {
-    static final ColumnLiteralComparisonPredicate<Object> EQUAL1;
-    static final ColumnLiteralComparisonPredicate<Object> EQUAL2;
-    static final ColumnLiteralComparisonPredicate<Object> EQUAL3;
-    static final LogicalOperator<Object> AND_OF_TWO_DIFFERENT_PREDICATES;
-    static final LogicalOperator<Object> OR_OF_TWO_DIFFERENT_PREDICATES;
-    static final LogicalOperator<Object> NESTED_AND;
-    static final NotPredicate<Object> NOT_EQUAL1;
+    static final ColumnLiteralComparisonPredicate EQUAL1;
+    static final ColumnLiteralComparisonPredicate EQUAL2;
+    static final ColumnLiteralComparisonPredicate EQUAL3;
+    static final LogicalOperator AND_OF_TWO_DIFFERENT_PREDICATES;
+    static final LogicalOperator OR_OF_TWO_DIFFERENT_PREDICATES;
+    static final LogicalOperator NESTED_AND;
+    static final NotPredicate NOT_EQUAL1;
 
     static {
-        EQUAL1 = new ColumnLiteralComparisonPredicate<>(AbstractComparisonPredicate.Operator.EQUAL,
-                new ToJsonPropertyToColumnMapping("isbn", null, null), new MockValueNode("test"));
-        EQUAL2 = new ColumnLiteralComparisonPredicate<>(AbstractComparisonPredicate.Operator.EQUAL,
-                new ToJsonPropertyToColumnMapping("publisher", null, null), new MockValueNode("test"));
+        EQUAL1 = new ColumnLiteralComparisonPredicate(AbstractComparisonPredicate.Operator.EQUAL,
+                new ToJsonPropertyToColumnMapping("isbn", null, null), new SqlLiteralString("test"));
+        EQUAL2 = new ColumnLiteralComparisonPredicate(AbstractComparisonPredicate.Operator.EQUAL,
+                new ToJsonPropertyToColumnMapping("publisher", null, null), new SqlLiteralString("test"));
 
-        EQUAL3 = new ColumnLiteralComparisonPredicate<>(AbstractComparisonPredicate.Operator.EQUAL,
-                new ToJsonPropertyToColumnMapping("publisher", null, null), new MockValueNode("test2"));
+        EQUAL3 = new ColumnLiteralComparisonPredicate(AbstractComparisonPredicate.Operator.EQUAL,
+                new ToJsonPropertyToColumnMapping("publisher", null, null), new SqlLiteralString("test2"));
 
-        AND_OF_TWO_DIFFERENT_PREDICATES = new LogicalOperator<>(Set.of(EQUAL1, EQUAL2), LogicalOperator.Operator.AND);
-        OR_OF_TWO_DIFFERENT_PREDICATES = new LogicalOperator<>(Set.of(EQUAL1, EQUAL2), LogicalOperator.Operator.OR);
-        NESTED_AND = new LogicalOperator<>(
-                Set.of(EQUAL3, new LogicalOperator<>(Set.of(EQUAL1, EQUAL2), LogicalOperator.Operator.AND)),
+        AND_OF_TWO_DIFFERENT_PREDICATES = new LogicalOperator(Set.of(EQUAL1, EQUAL2), LogicalOperator.Operator.AND);
+        OR_OF_TWO_DIFFERENT_PREDICATES = new LogicalOperator(Set.of(EQUAL1, EQUAL2), LogicalOperator.Operator.OR);
+        NESTED_AND = new LogicalOperator(
+                Set.of(EQUAL3, new LogicalOperator(Set.of(EQUAL1, EQUAL2), LogicalOperator.Operator.AND)),
                 LogicalOperator.Operator.OR);
-        NOT_EQUAL1 = new NotPredicate<>(EQUAL1);
+        NOT_EQUAL1 = new NotPredicate(EQUAL1);
     }
 }

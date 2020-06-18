@@ -21,13 +21,13 @@ class DynamodbScanDocumentFetcherFactory {
      * @return list of {@link DynamodbScanDocumentFetcher}s
      */
     public List<DocumentFetcher<DynamodbNodeVisitor>> buildDocumentFetcherForQuery(
-            final RemoteTableQuery<DynamodbNodeVisitor> remoteTableQuery) {
+            final RemoteTableQuery remoteTableQuery) {
         final ScanRequest templateScanRequest = new ScanRequest()
                 .withTableName(remoteTableQuery.getFromTable().getRemoteName());
         final DynamodbAttributeNamePlaceholderMapBuilder namePlaceholderMapBuilder = new DynamodbAttributeNamePlaceholderMapBuilder();
         final DynamodbAttributeValuePlaceholderMapBuilder valuePlaceholderMapBuilder = new DynamodbAttributeValuePlaceholderMapBuilder();
         final String filterExpression = new DynamodbFilterExpressionFactory(namePlaceholderMapBuilder,
-                valuePlaceholderMapBuilder).buildFilterExpression(remoteTableQuery.getSelection());
+                valuePlaceholderMapBuilder).buildFilterExpression(remoteTableQuery.getPushDownSelection());
         if (!namePlaceholderMapBuilder.getPlaceholderMap().isEmpty()) {
             templateScanRequest.setExpressionAttributeNames(namePlaceholderMapBuilder.getPlaceholderMap());
         }

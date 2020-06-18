@@ -12,18 +12,17 @@ import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Test;
 
-import com.exasol.adapter.dynamodb.documentnode.dynamodb.DynamodbNodeVisitor;
-import com.exasol.adapter.dynamodb.documentnode.dynamodb.DynamodbString;
 import com.exasol.adapter.dynamodb.documentpath.DocumentPathExpression;
 import com.exasol.adapter.dynamodb.mapping.ToJsonPropertyToColumnMapping;
 import com.exasol.adapter.dynamodb.querypredicate.*;
+import com.exasol.adapter.sql.SqlLiteralString;
 
 class DynamodbFilterExpressionFactoryTest {
 
     @Test
     void testEqualityComparison() {
         final String literal = "test";
-        final ColumnLiteralComparisonPredicate<DynamodbNodeVisitor> predicate = getComparison(literal,
+        final ColumnLiteralComparisonPredicate predicate = getComparison(literal,
                 AbstractComparisonPredicate.Operator.EQUAL);
         assertFilterExpression(predicate, "#0 = :0", Map.of("#0", "key"), Map.of(":0", literal));
     }
@@ -31,7 +30,7 @@ class DynamodbFilterExpressionFactoryTest {
     @Test
     void testInequalityComparison() {
         final String literal = "test";
-        final ColumnLiteralComparisonPredicate<DynamodbNodeVisitor> predicate = getComparison(literal,
+        final ColumnLiteralComparisonPredicate predicate = getComparison(literal,
                 AbstractComparisonPredicate.Operator.NOT_EQUAL);
         assertFilterExpression(predicate, "#0 <> :0", Map.of("#0", "key"), Map.of(":0", literal));
     }
@@ -39,7 +38,7 @@ class DynamodbFilterExpressionFactoryTest {
     @Test
     void testNot() {
         final String literal = "test";
-        final NotPredicate<DynamodbNodeVisitor> predicate = new NotPredicate<>(
+        final NotPredicate predicate = new NotPredicate(
                 getComparison(literal, AbstractComparisonPredicate.Operator.EQUAL));
         assertFilterExpression(predicate, "NOT (#0 = :0)", Map.of("#0", "key"), Map.of(":0", literal));
     }
@@ -47,7 +46,7 @@ class DynamodbFilterExpressionFactoryTest {
     @Test
     void testLessComparison() {
         final String literal = "test";
-        final ColumnLiteralComparisonPredicate<DynamodbNodeVisitor> predicate = getComparison(literal,
+        final ColumnLiteralComparisonPredicate predicate = getComparison(literal,
                 AbstractComparisonPredicate.Operator.LESS);
         assertFilterExpression(predicate, "#0 < :0", Map.of("#0", "key"), Map.of(":0", literal));
     }
@@ -55,7 +54,7 @@ class DynamodbFilterExpressionFactoryTest {
     @Test
     void testLessEqualComparison() {
         final String literal = "test";
-        final ColumnLiteralComparisonPredicate<DynamodbNodeVisitor> predicate = getComparison(literal,
+        final ColumnLiteralComparisonPredicate predicate = getComparison(literal,
                 AbstractComparisonPredicate.Operator.LESS_EQUAL);
         assertFilterExpression(predicate, "#0 <= :0", Map.of("#0", "key"), Map.of(":0", literal));
     }
@@ -63,7 +62,7 @@ class DynamodbFilterExpressionFactoryTest {
     @Test
     void testGreaterComparison() {
         final String literal = "test";
-        final ColumnLiteralComparisonPredicate<DynamodbNodeVisitor> predicate = getComparison(literal,
+        final ColumnLiteralComparisonPredicate predicate = getComparison(literal,
                 AbstractComparisonPredicate.Operator.GREATER);
         assertFilterExpression(predicate, "#0 > :0", Map.of("#0", "key"), Map.of(":0", literal));
     }
@@ -71,7 +70,7 @@ class DynamodbFilterExpressionFactoryTest {
     @Test
     void testGreaterEqualComparison() {
         final String literal = "test";
-        final ColumnLiteralComparisonPredicate<DynamodbNodeVisitor> predicate = getComparison(literal,
+        final ColumnLiteralComparisonPredicate predicate = getComparison(literal,
                 AbstractComparisonPredicate.Operator.GREATER_EQUAL);
         assertFilterExpression(predicate, "#0 >= :0", Map.of("#0", "key"), Map.of(":0", literal));
     }
@@ -80,11 +79,11 @@ class DynamodbFilterExpressionFactoryTest {
     void testAndWithTwoOperands() {
         final String literal1 = "test1";
         final String literal2 = "test2";
-        final ColumnLiteralComparisonPredicate<DynamodbNodeVisitor> comparison1 = getComparison(literal1,
+        final ColumnLiteralComparisonPredicate comparison1 = getComparison(literal1,
                 AbstractComparisonPredicate.Operator.EQUAL);
-        final ColumnLiteralComparisonPredicate<DynamodbNodeVisitor> comparison2 = getComparison(literal2,
+        final ColumnLiteralComparisonPredicate comparison2 = getComparison(literal2,
                 AbstractComparisonPredicate.Operator.EQUAL);
-        final LogicalOperator<DynamodbNodeVisitor> and = new LogicalOperator<>(Set.of(comparison1, comparison2),
+        final LogicalOperator and = new LogicalOperator(Set.of(comparison1, comparison2),
                 LogicalOperator.Operator.AND);
 
         assertFilterExpression(and, "(#0 = :0 and (#0 = :1))", Set.of("key"), Set.of(literal1, literal2));
@@ -95,13 +94,13 @@ class DynamodbFilterExpressionFactoryTest {
         final String literal1 = "test1";
         final String literal2 = "test2";
         final String literal3 = "test3";
-        final ColumnLiteralComparisonPredicate<DynamodbNodeVisitor> comparison1 = getComparison(literal1,
+        final ColumnLiteralComparisonPredicate comparison1 = getComparison(literal1,
                 AbstractComparisonPredicate.Operator.EQUAL);
-        final ColumnLiteralComparisonPredicate<DynamodbNodeVisitor> comparison2 = getComparison(literal2,
+        final ColumnLiteralComparisonPredicate comparison2 = getComparison(literal2,
                 AbstractComparisonPredicate.Operator.EQUAL);
-        final ColumnLiteralComparisonPredicate<DynamodbNodeVisitor> comparison3 = getComparison(literal3,
+        final ColumnLiteralComparisonPredicate comparison3 = getComparison(literal3,
                 AbstractComparisonPredicate.Operator.EQUAL);
-        final LogicalOperator<DynamodbNodeVisitor> and = new LogicalOperator<>(
+        final LogicalOperator and = new LogicalOperator(
                 Set.of(comparison1, comparison2, comparison3), LogicalOperator.Operator.AND);
         assertFilterExpression(and, "(#0 = :0 and ((#0 = :1 and (#0 = :2))))", Set.of("key"),
                 Set.of(literal1, literal2, literal3));
@@ -109,17 +108,17 @@ class DynamodbFilterExpressionFactoryTest {
 
     @Test
     void testNoPredicate() {
-        assertFilterExpression(new NoPredicate<>(), "", Collections.emptyMap(), Collections.emptyMap());
+        assertFilterExpression(new NoPredicate(), "", Collections.emptyMap(), Collections.emptyMap());
     }
 
-    private ColumnLiteralComparisonPredicate<DynamodbNodeVisitor> getComparison(final String literal,
+    private ColumnLiteralComparisonPredicate getComparison(final String literal,
             final AbstractComparisonPredicate.Operator operator) {
         final DocumentPathExpression sourcePath = new DocumentPathExpression.Builder().addObjectLookup("key").build();
         final ToJsonPropertyToColumnMapping column = new ToJsonPropertyToColumnMapping("columnName", sourcePath, null);
-        return new ColumnLiteralComparisonPredicate<>(operator, column, new DynamodbString(literal));
+        return new ColumnLiteralComparisonPredicate(operator, column, new SqlLiteralString(literal));
     }
 
-    void assertFilterExpression(final QueryPredicate<DynamodbNodeVisitor> predicateToTest,
+    void assertFilterExpression(final QueryPredicate predicateToTest,
             final String expectedExpression, final Map<String, String> expectedAttributeNameMap,
             final Map<String, String> expectedValueMap) {
         final DynamodbAttributeNamePlaceholderMapBuilder namePlaceholderMapBuilder = new DynamodbAttributeNamePlaceholderMapBuilder();
@@ -135,7 +134,7 @@ class DynamodbFilterExpressionFactoryTest {
         );
     }
 
-    void assertFilterExpression(final QueryPredicate<DynamodbNodeVisitor> predicateToTest,
+    void assertFilterExpression(final QueryPredicate predicateToTest,
             final String expectedExpression, final Set<String> expectedAttributeNames,
             final Set<String> expectedValues) {
         final DynamodbAttributeNamePlaceholderMapBuilder namePlaceholderMapBuilder = new DynamodbAttributeNamePlaceholderMapBuilder();

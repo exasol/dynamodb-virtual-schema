@@ -8,7 +8,7 @@ import static org.hamcrest.Matchers.equalTo;
 import org.junit.jupiter.api.Test;
 
 class NotPredicateTest {
-    private static final NotPredicate<Object> TEST_PREDICATE = new NotPredicate<>(new NoPredicate<>());
+    private static final NotPredicate TEST_PREDICATE = new NotPredicate(new NoPredicate());
 
     @Test
     void testVisitor() {
@@ -29,19 +29,18 @@ class NotPredicateTest {
 
     @Test
     void testIdentical() {
-        final NotPredicate<Object> otherPredicate = new NotPredicate<>(TEST_PREDICATE);
         assertSymmetricEqualWithHashAndEquals(TEST_PREDICATE, TEST_PREDICATE);
     }
 
     @Test
     void testEqual() {
-        final NotPredicate<Object> otherPredicate = new NotPredicate<>(new NoPredicate<>());
+        final NotPredicate otherPredicate = new NotPredicate(new NoPredicate());
         assertSymmetricEqualWithHashAndEquals(TEST_PREDICATE, otherPredicate);
     }
 
     @Test
     void testNotEqual() {
-        final NotPredicate<Object> otherPredicate = new NotPredicate<>(TEST_PREDICATE);
+        final NotPredicate otherPredicate = new NotPredicate(TEST_PREDICATE);
         assertSymmetricNotEqualWithHashAndEquals(TEST_PREDICATE, otherPredicate);
     }
 }

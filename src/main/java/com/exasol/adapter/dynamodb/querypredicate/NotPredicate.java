@@ -6,11 +6,11 @@ import java.util.Objects;
  * This class represents a {@code NOT}.
  */
 @java.lang.SuppressWarnings("squid:S119") // DocumentVisitorType does not fit naming conventions.
-public final class NotPredicate<DocumentVisitorType> implements QueryPredicate<DocumentVisitorType> {
+public final class NotPredicate implements QueryPredicate {
     private static final long serialVersionUID = -1358113690298643292L;
-    private final QueryPredicate<DocumentVisitorType> predicate;
+    private final QueryPredicate predicate;
 
-    public NotPredicate(final QueryPredicate<DocumentVisitorType> predicate) {
+    public NotPredicate(final QueryPredicate predicate) {
         this.predicate = predicate;
     }
 
@@ -19,7 +19,7 @@ public final class NotPredicate<DocumentVisitorType> implements QueryPredicate<D
      * 
      * @return negated predicated
      */
-    public QueryPredicate<DocumentVisitorType> getPredicate() {
+    public QueryPredicate getPredicate() {
         return this.predicate;
     }
 
@@ -32,7 +32,7 @@ public final class NotPredicate<DocumentVisitorType> implements QueryPredicate<D
             return false;
         }
 
-        final NotPredicate<?> that = (NotPredicate<?>) other;
+        final NotPredicate that = (NotPredicate) other;
         return this.predicate.equals(that.predicate);
     }
 
@@ -47,12 +47,12 @@ public final class NotPredicate<DocumentVisitorType> implements QueryPredicate<D
     }
 
     @Override
-    public void accept(final QueryPredicateVisitor<DocumentVisitorType> visitor) {
+    public void accept(final QueryPredicateVisitor visitor) {
         visitor.visit(this);
     }
 
     @Override
-    public QueryPredicate<DocumentVisitorType> simplify() {
-        return new NotPredicate<>(this.predicate.simplify());
+    public QueryPredicate simplify() {
+        return new NotPredicate(this.predicate.simplify());
     }
 }

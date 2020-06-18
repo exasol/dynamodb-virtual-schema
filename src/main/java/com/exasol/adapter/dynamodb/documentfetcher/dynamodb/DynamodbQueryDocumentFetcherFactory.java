@@ -28,9 +28,8 @@ class DynamodbQueryDocumentFetcherFactory {
      * @return List of {@link DocumentFetcher}s
      */
     public List<DocumentFetcher<DynamodbNodeVisitor>> buildDocumentFetcherForQuery(
-            final RemoteTableQuery<DynamodbNodeVisitor> remoteTableQuery, final DynamodbTableMetadata tableMetadata) {
-        final DnfOr<DynamodbNodeVisitor> dnfOr = new DnfNormalizer<DynamodbNodeVisitor>()
-                .normalize(remoteTableQuery.getSelection());
+            final RemoteTableQuery remoteTableQuery, final DynamodbTableMetadata tableMetadata) {
+        final DnfOr dnfOr = new DnfNormalizer().normalize(remoteTableQuery.getPushDownSelection());
         final QueryOperationSelection bestQueryOperationSelection = findMostSelectiveIndexSelection(tableMetadata,
                 dnfOr);
 
@@ -40,7 +39,7 @@ class DynamodbQueryDocumentFetcherFactory {
     }
 
     private QueryOperationSelection findMostSelectiveIndexSelection(final DynamodbTableMetadata tableMetadata,
-            final DnfOr<DynamodbNodeVisitor> dnfOr) {
+            final DnfOr dnfOr) {
         QueryOperationSelection bestQueryOperationSelection = null;
         int bestRating = -1;
         final QueryOperationSelectionRater selectionRater = new QueryOperationSelectionRater();

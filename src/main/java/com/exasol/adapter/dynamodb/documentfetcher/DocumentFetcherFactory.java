@@ -2,7 +2,6 @@ package com.exasol.adapter.dynamodb.documentfetcher;
 
 import java.util.List;
 
-import com.exasol.adapter.dynamodb.documentnode.dynamodb.DynamodbNodeVisitor;
 import com.exasol.adapter.dynamodb.queryplanning.RemoteTableQuery;
 
 /**
@@ -20,5 +19,5 @@ public interface DocumentFetcherFactory<DocumentVisitorType> {
      * @return {@link DocumentFetcher}
      */
     public List<DocumentFetcher<DocumentVisitorType>> buildDocumentFetcherForQuery(
-            final RemoteTableQuery<DynamodbNodeVisitor> remoteTableQuery);
+            final RemoteTableQuery remoteTableQuery);
 }

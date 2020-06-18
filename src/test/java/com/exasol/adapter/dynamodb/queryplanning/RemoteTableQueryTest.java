@@ -20,13 +20,13 @@ class RemoteTableQueryTest {
         final MockPropertyToColumnMapping columnDefinition = new MockPropertyToColumnMapping("", null, null);
         final TableMapping tableDefinition = TableMapping.rootTableBuilder("", "")
                 .withColumnMappingDefinition(columnDefinition).build();
-        final QueryPredicate<Object> selection = new NoPredicate<>();
-        final RemoteTableQuery<Object> remoteTableQuery = new RemoteTableQuery<>(tableDefinition,
-                List.of(columnDefinition), selection);
+        final QueryPredicate selection = new NoPredicate();
+        final RemoteTableQuery remoteTableQuery = new RemoteTableQuery(tableDefinition, List.of(columnDefinition),
+                selection, new NoPredicate());
         assertAll(//
                 () -> assertThat(remoteTableQuery.getSelectList(), containsInAnyOrder(columnDefinition)),
                 () -> assertThat(remoteTableQuery.getFromTable(), equalTo(tableDefinition)),
-                () -> assertThat(remoteTableQuery.getSelection(), equalTo(selection))//
+                () -> assertThat(remoteTableQuery.getPushDownSelection(), equalTo(selection))//
         );
     }
 }

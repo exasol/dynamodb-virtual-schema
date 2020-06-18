@@ -32,8 +32,8 @@ class SchemaMapperTest {
 
         final TableMapping tableMapping = TableMapping.rootTableBuilder("table", "table")
                 .withColumnMappingDefinition(columnMapping).build();
-        final RemoteTableQuery<Object> remoteTableQuery = new RemoteTableQuery<>(tableMapping, List.of(columnMapping),
-                new NoPredicate<>());
+        final RemoteTableQuery remoteTableQuery = new RemoteTableQuery(tableMapping, List.of(columnMapping),
+                new NoPredicate(), new NoPredicate());
         final SchemaMapper<Object> schemaMapper = new SchemaMapper<>(remoteTableQuery,
                 new MockPropertyToColumnValueExtractorFactory());
         final List<List<ValueExpression>> result = schemaMapper
@@ -57,8 +57,8 @@ class SchemaMapperTest {
                 new DocumentPathExpression.Builder().addObjectLookup(nestedListKey).addArrayAll().build());
         final TableMapping tableMapping = TableMapping.nestedTableBuilder("table", "table", pathToNestedTable)
                 .withColumnMappingDefinition(columnMapping).withColumnMappingDefinition(indexColumn).build();
-        final RemoteTableQuery<Object> remoteTableQuery = new RemoteTableQuery<>(tableMapping,
-                List.of(columnMapping, indexColumn), new NoPredicate<>());
+        final RemoteTableQuery remoteTableQuery = new RemoteTableQuery(tableMapping,
+                List.of(columnMapping, indexColumn), new NoPredicate(), new NoPredicate());
         final SchemaMapper<Object> schemaMapper = new SchemaMapper<>(remoteTableQuery,
                 new MockPropertyToColumnValueExtractorFactory());
         final List<List<ValueExpression>> result = schemaMapper

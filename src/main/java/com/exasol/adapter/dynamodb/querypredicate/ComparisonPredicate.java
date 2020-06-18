@@ -8,7 +8,7 @@ import com.exasol.adapter.dynamodb.mapping.ColumnMapping;
  * This interface represents a comparison between a literal and a column of a table.
  */
 @java.lang.SuppressWarnings("squid:S119") // DocumentVisitorType does not fit naming conventions.
-public interface ComparisonPredicate<DocumentVisitorType> extends QueryPredicate<DocumentVisitorType> {
+public interface ComparisonPredicate extends QueryPredicate {
 
     /**
      * Get the comparison operator.
@@ -20,10 +20,10 @@ public interface ComparisonPredicate<DocumentVisitorType> extends QueryPredicate
     /**
      * Accept an {@link ComparisonPredicateVisitor}.
      */
-    public void accept(ComparisonPredicateVisitor<DocumentVisitorType> visitor);
+    public void accept(ComparisonPredicateVisitor visitor);
 
     @Override
-    public default void accept(final QueryPredicateVisitor<DocumentVisitorType> visitor) {
+    public default void accept(final QueryPredicateVisitor visitor) {
         visitor.visit(this);
     }
 
@@ -35,5 +35,5 @@ public interface ComparisonPredicate<DocumentVisitorType> extends QueryPredicate
     /**
      * Negates this operator. e.g. A = B --> A != B
      */
-    public ComparisonPredicate<DocumentVisitorType> negate();
+    public ComparisonPredicate negate();
 }

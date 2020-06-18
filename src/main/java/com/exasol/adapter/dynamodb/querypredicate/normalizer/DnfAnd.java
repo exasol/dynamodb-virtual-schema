@@ -12,15 +12,15 @@ import com.exasol.adapter.dynamodb.querypredicate.QueryPredicate;
  * part of an OR ({@link DnfOr}) and must not contain nested ANDs or ORs.
  */
 @java.lang.SuppressWarnings("squid:S119") // DocumentVisitorType does not fit naming conventions.
-public final class DnfAnd<DocumentVisitorType> {
-    private final Set<DnfComparison<DocumentVisitorType>> operands;
+public final class DnfAnd {
+    private final Set<DnfComparison> operands;
 
     /**
      * Create an instance of {@link DnfAnd}
      * 
      * @param operands operands of this AND
      */
-    public DnfAnd(final Set<DnfComparison<DocumentVisitorType>> operands) {
+    public DnfAnd(final Set<DnfComparison> operands) {
         this.operands = operands;
     }
 
@@ -29,20 +29,20 @@ public final class DnfAnd<DocumentVisitorType> {
      * 
      * @return operands
      */
-    public Set<DnfComparison<DocumentVisitorType>> getOperands() {
+    public Set<DnfComparison> getOperands() {
         return this.operands;
     }
 
-    public QueryPredicate<DocumentVisitorType> asQueryPredicate() {
-        final Set<QueryPredicate<DocumentVisitorType>> convertedOperands = this.operands.stream()
+    public QueryPredicate asQueryPredicate() {
+        final Set<QueryPredicate> convertedOperands = this.operands.stream()
                 .map(DnfComparison::asQueryPredicate).filter(comparison -> !(comparison instanceof NoPredicate))
                 .collect(Collectors.toSet());
         if (convertedOperands.isEmpty()) {
-            return new NoPredicate<>();
+            return new NoPredicate();
         } else if (convertedOperands.size() == 1) {
             return convertedOperands.iterator().next();
         } else {
-            return new LogicalOperator<>(convertedOperands, LogicalOperator.Operator.AND);
+            return new LogicalOperator(convertedOperands, LogicalOperator.Operator.AND);
         }
     }
 
@@ -60,7 +60,7 @@ public final class DnfAnd<DocumentVisitorType> {
         if (!(other instanceof DnfAnd)) {
             return false;
         }
-        final DnfAnd<?> dnfAnd = (DnfAnd<?>) other;
+        final DnfAnd dnfAnd = (DnfAnd) other;
         return this.operands.equals(dnfAnd.operands);
     }
 

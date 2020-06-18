@@ -15,7 +15,7 @@ import com.exasol.adapter.dynamodb.querypredicate.*;
  * This class converts a {@link QueryPredicate} structure into a LogicNG {@link Formula}.
  */
 @java.lang.SuppressWarnings("squid:S119") // DocumentVisitorType does not fit naming conventions.
-class QueryPredicateToLogicngConverter<DocumentVisitorType> {
+class QueryPredicateToLogicngConverter {
 
     /**
      * Converts a {@link QueryPredicate} structure into a LogicNG {@link Formula}.
@@ -23,28 +23,28 @@ class QueryPredicateToLogicngConverter<DocumentVisitorType> {
      * @param predicate {@link QueryPredicate} structure to convert
      * @return {@link Result} containing LogicNG {@link Formula} and variables mapping
      */
-    public Result<DocumentVisitorType> convert(final QueryPredicate<DocumentVisitorType> predicate) {
-        final VariablesMappingBuilder<DocumentVisitorType> variablesMappingBuilder = new VariablesMappingBuilder<>();
-        final Visitor<DocumentVisitorType> visitor = new Visitor<>(variablesMappingBuilder);
+    public Result convert(final QueryPredicate predicate) {
+        final VariablesMappingBuilder variablesMappingBuilder = new VariablesMappingBuilder();
+        final Visitor visitor = new Visitor(variablesMappingBuilder);
         predicate.accept(visitor);
-        return new Result<>(visitor.getFormula(), variablesMappingBuilder.getVariablesMapping());
+        return new Result(visitor.getFormula(), variablesMappingBuilder.getVariablesMapping());
     }
 
-    private static class Visitor<DocumentVisitorType> implements QueryPredicateVisitor<DocumentVisitorType> {
-        private final VariablesMappingBuilder<DocumentVisitorType> variablesMappingBuilder;
+    private static class Visitor implements QueryPredicateVisitor {
+        private final VariablesMappingBuilder variablesMappingBuilder;
         private Formula formula;
 
-        private Visitor(final VariablesMappingBuilder<DocumentVisitorType> variablesMappingBuilder) {
+        private Visitor(final VariablesMappingBuilder variablesMappingBuilder) {
             this.variablesMappingBuilder = variablesMappingBuilder;
         }
 
         @Override
-        public void visit(final ComparisonPredicate<DocumentVisitorType> comparisonPredicate) {
+        public void visit(final ComparisonPredicate comparisonPredicate) {
             this.formula = this.variablesMappingBuilder.add(comparisonPredicate);
         }
 
         @Override
-        public void visit(final LogicalOperator<DocumentVisitorType> logicalOperator) {
+        public void visit(final LogicalOperator logicalOperator) {
             final FormulaFactory formulaFactory = new FormulaFactory();
             final List<Formula> operandsFormulas = logicalOperator.getOperands().stream().map(this::callRecursive)
                     .collect(Collectors.toList());
@@ -56,17 +56,17 @@ class QueryPredicateToLogicngConverter<DocumentVisitorType> {
         }
 
         @Override
-        public void visit(final NoPredicate<DocumentVisitorType> noPredicate) {
+        public void visit(final NoPredicate noPredicate) {
             this.formula = new FormulaFactory().constant(true);
         }
 
         @Override
-        public void visit(final NotPredicate<DocumentVisitorType> notPredicate) {
+        public void visit(final NotPredicate notPredicate) {
             this.formula = new FormulaFactory().not(callRecursive(notPredicate.getPredicate()));
         }
 
-        private Formula callRecursive(final QueryPredicate<DocumentVisitorType> predicate) {
-            final Visitor<DocumentVisitorType> visitor = new Visitor<>(this.variablesMappingBuilder);
+        private Formula callRecursive(final QueryPredicate predicate) {
+            final Visitor visitor = new Visitor(this.variablesMappingBuilder);
             predicate.accept(visitor);
             return visitor.getFormula();
         }
@@ -76,9 +76,9 @@ class QueryPredicateToLogicngConverter<DocumentVisitorType> {
         }
     }
 
-    private static class VariablesMappingBuilder<DocumentVisitorType> {
-        private final Map<Variable, QueryPredicate<DocumentVisitorType>> variablesMapping;
-        private final Map<QueryPredicate<DocumentVisitorType>, Variable> inverseVariablesMapping;
+    private static class VariablesMappingBuilder {
+        private final Map<Variable, QueryPredicate> variablesMapping;
+        private final Map<QueryPredicate, Variable> inverseVariablesMapping;
         private final FormulaFactory formulaFactory;
         private int uniqueVariableNameCounter = 0;
 
@@ -88,7 +88,7 @@ class QueryPredicateToLogicngConverter<DocumentVisitorType> {
             this.formulaFactory = new FormulaFactory();
         }
 
-        public Variable add(final QueryPredicate<DocumentVisitorType> predicateToAdd) {
+        public Variable add(final QueryPredicate predicateToAdd) {
             if (this.inverseVariablesMapping.containsKey(predicateToAdd)) {
                 return this.inverseVariablesMapping.get(predicateToAdd);
             }
@@ -99,7 +99,7 @@ class QueryPredicateToLogicngConverter<DocumentVisitorType> {
             return variable;
         }
 
-        public Map<Variable, QueryPredicate<DocumentVisitorType>> getVariablesMapping() {
+        public Map<Variable, QueryPredicate> getVariablesMapping() {
             return this.variablesMapping;
         }
     }
@@ -107,12 +107,12 @@ class QueryPredicateToLogicngConverter<DocumentVisitorType> {
     /**
      * This class represents the result of {@link #convert(QueryPredicate)}.
      */
-    public static class Result<DocumentVisitorType> {
+    public static class Result {
         private final Formula logicngFormula;
-        private final Map<Variable, QueryPredicate<DocumentVisitorType>> variablesMapping;
+        private final Map<Variable, QueryPredicate> variablesMapping;
 
         private Result(final Formula logicngFormula,
-                final Map<Variable, QueryPredicate<DocumentVisitorType>> variablesMapping) {
+                final Map<Variable, QueryPredicate> variablesMapping) {
             this.logicngFormula = logicngFormula;
             this.variablesMapping = variablesMapping;
         }
@@ -131,7 +131,7 @@ class QueryPredicateToLogicngConverter<DocumentVisitorType> {
          * 
          * @return variable map
          */
-        public Map<Variable, QueryPredicate<DocumentVisitorType>> getVariablesMapping() {
+        public Map<Variable, QueryPredicate> getVariablesMapping() {
             return this.variablesMapping;
         }
     }
