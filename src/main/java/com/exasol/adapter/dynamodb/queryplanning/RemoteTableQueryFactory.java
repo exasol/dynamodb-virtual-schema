@@ -44,8 +44,8 @@ public class RemoteTableQueryFactory {
         final IndexColumnSelectionExtractor.Result indexColumnExtractionResult = this.indexColumnSelectionExtractor
                 .extractIndexColumnSelection(selection);
         return new RemoteTableQuery(tableMapping, Collections.unmodifiableList(visitor.resultColumns),
-                indexColumnExtractionResult.getNonIndexSelection().asQueryPredicate(),
-                indexColumnExtractionResult.getIndexSelection().asQueryPredicate());
+                indexColumnExtractionResult.getRemainingSelection().asQueryPredicate(),
+                indexColumnExtractionResult.getSelectedSelection().asQueryPredicate());
     }
 
     private static class Visitor extends VoidSqlNodeVisitor {

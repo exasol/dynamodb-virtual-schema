@@ -42,24 +42,24 @@ class IndexColumnSelectionExtractorTest {
     void testExtractWithNoIndexColumn() {
         final IndexColumnSelectionExtractor.Result result = EXTRACTOR
                 .extractIndexColumnSelection(NON_INDEX_COMPARISON);
-        assertAll(() -> assertThat(result.getIndexSelection().asQueryPredicate(), equalTo(new NoPredicate())),
-                () -> assertThat(result.getNonIndexSelection().asQueryPredicate(), equalTo(NON_INDEX_COMPARISON)));
+        assertAll(() -> assertThat(result.getSelectedSelection().asQueryPredicate(), equalTo(new NoPredicate())),
+                () -> assertThat(result.getRemainingSelection().asQueryPredicate(), equalTo(NON_INDEX_COMPARISON)));
     }
 
     @Test
     void testExtractOnlyIndexColumn() {
         final IndexColumnSelectionExtractor.Result result = EXTRACTOR
                 .extractIndexColumnSelection(INDEX_COMPARISON);
-        assertAll(() -> assertThat(result.getIndexSelection().asQueryPredicate(), equalTo(INDEX_COMPARISON)),
-                () -> assertThat(result.getNonIndexSelection().asQueryPredicate(), equalTo(new NoPredicate())));
+        assertAll(() -> assertThat(result.getSelectedSelection().asQueryPredicate(), equalTo(INDEX_COMPARISON)),
+                () -> assertThat(result.getRemainingSelection().asQueryPredicate(), equalTo(new NoPredicate())));
     }
 
     @Test
     void testExtractIndexAndNonIndexColumnFromAnd() {
         final IndexColumnSelectionExtractor.Result result = EXTRACTOR.extractIndexColumnSelection(
                 new LogicalOperator(Set.of(INDEX_COMPARISON, NON_INDEX_COMPARISON), LogicalOperator.Operator.AND));
-        assertAll(() -> assertThat(result.getIndexSelection().asQueryPredicate(), equalTo(INDEX_COMPARISON)),
-                () -> assertThat(result.getNonIndexSelection().asQueryPredicate(), equalTo(NON_INDEX_COMPARISON)));
+        assertAll(() -> assertThat(result.getSelectedSelection().asQueryPredicate(), equalTo(INDEX_COMPARISON)),
+                () -> assertThat(result.getRemainingSelection().asQueryPredicate(), equalTo(NON_INDEX_COMPARISON)));
     }
 
     @Test
@@ -68,7 +68,7 @@ class IndexColumnSelectionExtractorTest {
                 () -> EXTRACTOR.extractIndexColumnSelection(new LogicalOperator(
                         Set.of(INDEX_COMPARISON, NON_INDEX_COMPARISON), LogicalOperator.Operator.OR)));
         assertThat(exception.getMessage(), equalTo(
-                "This query combines comparisons on INDEX columns and other columns in a way, so that the selection can't be split up."));
+                "This query combines selections on columns in a way, so that the selection can't be split up."));
     }
 
     @Test
@@ -78,8 +78,8 @@ class IndexColumnSelectionExtractorTest {
                         Set.of(INDEX_COMPARISON, new LogicalOperator(
                                 Set.of(NON_INDEX_COMPARISON, NON_INDEX_COMPARISON_2), LogicalOperator.Operator.OR)),
                         LogicalOperator.Operator.AND));
-        assertAll(() -> assertThat(result.getIndexSelection().asQueryPredicate(), equalTo(INDEX_COMPARISON)),
-                () -> assertThat(result.getNonIndexSelection().asQueryPredicate(),
+        assertAll(() -> assertThat(result.getSelectedSelection().asQueryPredicate(), equalTo(INDEX_COMPARISON)),
+                () -> assertThat(result.getRemainingSelection().asQueryPredicate(),
                         equalTo(new LogicalOperator(Set.of(NON_INDEX_COMPARISON_2, NON_INDEX_COMPARISON),
                                 LogicalOperator.Operator.OR))));
     }
