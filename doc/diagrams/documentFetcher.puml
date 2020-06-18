@@ -21,8 +21,10 @@ scanRequest
 class DynamodbDocumentFetcherFactory{
 buildDocumentFetcherForQuery(query): DocumentFetcher
 }
-DocumentFetcher <|.. DynamodbQueryDocumentFetcher
-DocumentFetcher <|.. DynamodbScanDocumentFetcher
+DocumentFetcher <|.... DynamodbQueryDocumentFetcher
+DocumentFetcher <|.... DynamodbScanDocumentFetcher
 DocumentFetcherFactory <|.. DynamodbDocumentFetcherFactory
+DynamodbDocumentFetcherFactory ---> DynamodbQueryDocumentFetcher: <<create>>
+DynamodbDocumentFetcherFactory ---> DynamodbScanDocumentFetcher: <<create>>
 
 @enduml
