@@ -74,7 +74,7 @@ class DynamodbAdapterTestAwsIT {
     @Test
     void testCountAuthorsTable() throws SQLException {
         final ResultSet resultSet = exasolTestInterface.getStatement()
-                .executeQuery("SELECT COUNT(*) FROM OPENLIBRARY_AUTHORS");
+                .executeQuery("SELECT COUNT(\"KEY\") FROM OPENLIBRARY_AUTHORS");
         resultSet.next();
         final int count = resultSet.getInt(1);
         assertThat(count, equalTo(858180));
