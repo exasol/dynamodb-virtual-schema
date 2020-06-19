@@ -16,6 +16,18 @@
         "toStringMapping": {
           "overflow": "TRUNCATE"
         }
+      },
+      "authors": {
+        "toTableMapping": {
+          "mapping": {
+            "fields": {
+              "key": {
+                "toStringMapping": {
+                }
+              }
+            }
+          }
+        }
       }
     }
   }
