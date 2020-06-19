@@ -232,6 +232,9 @@
                     <argLine>-Djava.util.logging.config.file=src/test/resources/logging.properties
                         ${argLine}
                     </argLine>
+                    <excludes>
+                        <exclude>**IT.java</exclude>
+                    </excludes>
                 </configuration>
             </plugin>
             <plugin>

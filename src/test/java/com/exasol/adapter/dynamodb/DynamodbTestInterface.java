@@ -1,11 +1,9 @@
 package com.exasol.adapter.dynamodb;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.*;
-import java.util.function.Consumer;
 
 import javax.json.Json;
 import javax.json.JsonArray;
@@ -211,22 +209,6 @@ public class DynamodbTestInterface {
         }
     }
 
-    /**
-     * Imports data JSON lines files. A JSON lines file has a JSON document in each line.
-     *
-     * @param tableName name of the DynamoDB table
-     * @param file      line JSON file to import
-     * @throws IOException if file can't get opened
-     */
-    public void importDataFromJsonLines(final String tableName, final File file) throws IOException {
-        try (final BufferedReader reader = new BufferedReader(new FileReader(file))) {
-            final BatchWriter batchWriter = new BatchWriter(this.dynamoClient, tableName);
-            reader.lines().forEach(batchWriter);
-            batchWriter.flush();
-            LOGGER.info("Written items: " + batchWriter.getItemCounter());
-        }
-    }
-
     private String[] splitJsonArrayInArrayOfJsonStrings(final JsonArray jsonArray) {
         return jsonArray.stream()//
                 .map(JsonValue::toString)//
@@ -279,39 +261,4 @@ public class DynamodbTestInterface {
             super("no matching network was found");
         }
     }
-
-    private static class BatchWriter implements Consumer<String> {
-        private static final int BATCH_SIZE = 20;
-        private final DynamoDB dynamoClient;
-        final List<Item> batch = new ArrayList<>(BATCH_SIZE);
-        private final String tableName;
-        private int itemCounter;
-
-        private BatchWriter(final DynamoDB dynamoClient, final String tableName) {
-            this.dynamoClient = dynamoClient;
-            this.tableName = tableName;
-        }
-
-        @Override
-        public void accept(final String jsonString) {
-            final Item item = Item.fromJSON(jsonString);
-            this.itemCounter++;
-            this.batch.add(item);
-            if (this.batch.size() >= BATCH_SIZE) {
-                flush();
-            }
-        }
-
-        public void flush() {
-            final TableWriteItems writeRequest = new TableWriteItems(this.tableName).withItemsToPut(this.batch);
-            final BatchWriteItemOutcome batchWriteItemOutcome = this.dynamoClient.batchWriteItem(writeRequest);
-            LOGGER.info("# Unprocessed items: " + batchWriteItemOutcome.getUnprocessedItems().size());
-            this.batch.clear();
-        }
-
-        public int getItemCounter() {
-            return this.itemCounter;
-        }
-    }
-
 }

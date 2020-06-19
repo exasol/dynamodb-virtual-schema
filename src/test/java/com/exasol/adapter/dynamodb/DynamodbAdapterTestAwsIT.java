@@ -40,7 +40,6 @@ class DynamodbAdapterTestAwsIT {
             java.util.concurrent.TimeoutException, IOException, NoSuchAlgorithmException, KeyManagementException,
             XmlRpcException {
         final DynamodbTestInterface dynamodbTestInterface = new DynamodbTestInterface();
-        new OpenLibrary(dynamodbTestInterface);
         exasolTestInterface = new AwsExasolTestInterface();
         exasolTestInterface.uploadDynamodbAdapterJar();
         exasolTestInterface.uploadMapping(MappingTestFiles.OPEN_LIBRARY_MAPPING_FILE_NAME);
@@ -61,13 +60,13 @@ class DynamodbAdapterTestAwsIT {
         final ResultSet resultSet = exasolTestInterface.getStatement().executeQuery("SELECT COUNT(*) FROM OPENLIBRARY");
         resultSet.next();
         final int count = resultSet.getInt(1);
-        assertThat(count, equalTo(148163));
+        assertThat(count, equalTo(1998388));
     }
 
     @Test
     void testSelectSingleRow() throws SQLException {
         final ResultSet resultSet = exasolTestInterface.getStatement()
-                .executeQuery("SELECT COUNT(*) FROM OPENLIBRARY WHERE KEY = '/authors/OL7124039A' AND REVISION = 1");
+                .executeQuery("SELECT COUNT(*) FROM OPENLIBRARY WHERE KEY = '/authors/OL13141A' AND REVISION = 1");
         resultSet.next();
         final int count = resultSet.getInt(1);
         assertThat(count, equalTo(1));
