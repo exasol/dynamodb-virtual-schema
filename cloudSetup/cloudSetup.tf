@@ -2,14 +2,14 @@
 # Keys generated without the -m PEM will lead to login fails.
 
 provider "aws" {
-  region = "eu-central-1"
+  region  = "eu-central-1"
   profile = "default"
 }
 
 resource "aws_dynamodb_table" "open_library_test" {
-  name = "open_library_test"
-  hash_key = "key"
-  range_key = "revision"
+  name         = "open_library_test"
+  hash_key     = "key"
+  range_key    = "revision"
   billing_mode = "PAY_PER_REQUEST"
   tags = {
     "exa:owner" : var.owner,
@@ -44,7 +44,7 @@ resource "aws_vpc" "dynamodb_test_vpc" {
 }
 
 resource "aws_subnet" "dynamodb_test_subnet" {
-  vpc_id = aws_vpc.dynamodb_test_vpc.id
+  vpc_id     = aws_vpc.dynamodb_test_vpc.id
   cidr_block = "10.0.0.0/24"
 
   tags = {
@@ -75,59 +75,59 @@ resource "aws_default_route_table" "dynamodb_test_routing_table" {
 }
 
 resource "aws_security_group" "exasol_db_security_group" {
-  name = "allow_tls"
+  name        = "allow_tls"
   description = "Allow TLS inbound traffic"
-  vpc_id = aws_vpc.dynamodb_test_vpc.id
+  vpc_id      = aws_vpc.dynamodb_test_vpc.id
 
   ingress {
     description = "SSH from VPC"
-    from_port = 22
-    to_port = 22
-    protocol = "tcp"
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
     cidr_blocks = [
-      "0.0.0.0/0"]
+    "0.0.0.0/0"]
   }
 
   ingress {
     description = "HTTPS from VPC"
-    from_port = 443
-    to_port = 443
-    protocol = "tcp"
+    from_port   = 443
+    to_port     = 443
+    protocol    = "tcp"
     cidr_blocks = [
-      "0.0.0.0/0"]
+    "0.0.0.0/0"]
   }
 
   ingress {
     description = "SQL from VPC"
-    from_port = 8563
-    to_port = 8563
-    protocol = "tcp"
+    from_port   = 8563
+    to_port     = 8563
+    protocol    = "tcp"
     cidr_blocks = [
-      "0.0.0.0/0"]
+    "0.0.0.0/0"]
   }
 
   ingress {
     description = "BucketFS"
-    from_port = 2580
-    protocol = "tcp"
-    to_port = 2580
+    from_port   = 2580
+    protocol    = "tcp"
+    to_port     = 2580
     cidr_blocks = [
-      "0.0.0.0/0"]
+    "0.0.0.0/0"]
   }
 
   ingress {
     from_port = 0
-    protocol = "-1"
-    to_port = 0
-    self = true
+    protocol  = "-1"
+    to_port   = 0
+    self      = true
   }
 
   egress {
     from_port = 0
-    to_port = 0
-    protocol = "-1"
+    to_port   = 0
+    protocol  = "-1"
     cidr_blocks = [
-      "0.0.0.0/0"]
+    "0.0.0.0/0"]
   }
 
   tags = {
@@ -141,7 +141,7 @@ resource "aws_security_group" "exasol_db_security_group" {
 }
 
 resource "aws_key_pair" "test_pc_key_pair" {
-  key_name = "test-computer-key"
+  key_name   = "test-computer-key"
   public_key = file("~/.ssh/id_rsa.pub")
 }
 
@@ -159,13 +159,13 @@ resource "aws_internet_gateway" "gw" {
 }
 
 resource "random_password" "exasol_sys_password" {
-  length = 20
+  length  = 20
   special = false
 
 }
 
 resource "random_password" "exasol_admin_password" {
-  length = 16
+  length  = 16
   special = false
 }
 
@@ -174,28 +174,28 @@ module "exasol" {
   #version = "0.0.3"
   source = "../../terraform-aws-exasol"
 
-  cluster_name = "dynamodb-vs-test-cluster"
-  database_name = "exadb"
-  ami_image_name = "R6.2.3-BYOL"
-  sys_user_password = random_password.exasol_sys_password.result
-  admin_user_password = random_password.exasol_admin_password.result
+  cluster_name                    = "dynamodb-vs-test-cluster"
+  database_name                   = "exadb"
+  ami_image_name                  = "R6.2.3-BYOL"
+  sys_user_password               = random_password.exasol_sys_password.result
+  admin_user_password             = random_password.exasol_admin_password.result
   management_server_instance_type = "m5.xlarge"
-  datanode_instance_type = "m5.2xlarge"
-  datanode_count = "2"
-  standbynode_count = "0"
-  public_ip = true
+  datanode_instance_type          = "m5.2xlarge"
+  datanode_count                  = "2"
+  standbynode_count               = "0"
+  public_ip                       = true
 
   # These values can be obtained from other modules.
-  key_pair_name = aws_key_pair.test_pc_key_pair.key_name
-  subnet_id = aws_subnet.dynamodb_test_subnet.id
+  key_pair_name     = aws_key_pair.test_pc_key_pair.key_name
+  subnet_id         = aws_subnet.dynamodb_test_subnet.id
   security_group_id = aws_security_group.exasol_db_security_group.id
 
   # Variables used in tags.
-  project = var.project
+  project      = var.project
   project_name = var.project_name
-  owner = var.owner
-  environment = "dev"
-  license = "./exasolution.lic"
+  owner        = var.owner
+  environment  = "dev"
+  license      = "./exasolution.lic"
 }
 
 
@@ -205,43 +205,101 @@ data "aws_ami" "ubuntu" {
   filter {
     name = "name"
     values = [
-      "ubuntu/images/hvm-ssd/ubuntu-focal-20.04-amd64-server-*"]
+    "ubuntu/images/hvm-ssd/ubuntu-focal-20.04-amd64-server-*"]
   }
 
   filter {
     name = "virtualization-type"
     values = [
-      "hvm"]
+    "hvm"]
   }
 
   owners = [
-    "099720109477"]
+  "099720109477"]
   # Canonical
 }
 
-resource "aws_instance" "test_runner" {
-  ami = "${data.aws_ami.ubuntu.id}"
-  instance_type = "m5.large"
-  key_name = "${aws_key_pair.test_pc_key_pair.key_name}"
+
+resource "aws_iam_role" "ec2_dynamodb_role" {
+  name = "ec2_dynamodb_role"
+
+  assume_role_policy = <<EOF
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Action": "sts:AssumeRole",
+      "Principal": {
+        "Service": "ec2.amazonaws.com"
+      },
+      "Effect": "Allow",
+      "Sid": ""
+    }
+  ]
+}
+EOF
 
   tags = {
-    "exa:owner": var.owner,
-    "exa:deputy": var.deputy
-    "exa:project": var.project
-    "exa:project.name": var.project_name
-    "exa:stage": var.stage
-    "Name": "Test runner node for DynamoDB Virtual Schema performance test"
+    "exa:owner" : var.owner,
+    "exa:deputy" : var.deputy
+    "exa:project" : var.project
+    "exa:project.name" : var.project_name
+    "exa:stage" : var.stage
+    "Name" : "IAM Role for test runner for DynamoDB Virtual Schema performance test"
+  }
+}
+
+resource "aws_iam_instance_profile" "test_runner_instance_profile" {
+  name = "dynamodb_test_runner_instance_profile"
+  role = aws_iam_role.ec2_dynamodb_role.name
+}
+
+resource "aws_iam_role_policy" "dynamodb_policy" {
+  name = "test_runner_dynamodb_policy"
+  role = aws_iam_role.ec2_dynamodb_role.id
+
+  policy = <<EOF
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Action": [
+        "dynamodb:*"
+      ],
+      "Effect": "Allow",
+      "Resource": "*"
+    }
+  ]
+}
+EOF
+}
+
+
+resource "aws_instance" "test_runner" {
+  ami                  = data.aws_ami.ubuntu.id
+  instance_type        = "m5.large"
+  key_name             = aws_key_pair.test_pc_key_pair.key_name
+  iam_instance_profile = aws_iam_instance_profile.test_runner_instance_profile.name
+
+  tags = {
+    "exa:owner" : var.owner,
+    "exa:deputy" : var.deputy
+    "exa:project" : var.project
+    "exa:project.name" : var.project_name
+    "exa:stage" : var.stage
+    "Name" : "Test runner node for DynamoDB Virtual Schema performance test"
   }
 
   provisioner "remote-exec" {
     inline = [
-      "sudo apt install -y openjdk-11-jre-headless"
+      "sudo apt-update",
+      "sudo apt install -y openjdk-11-jre-headless maven"
     ]
 
     connection {
-      type = "ssh"
-      user = "ubuntu"
-      host = aws_instance.test_runner.public_ip
+      type        = "ssh"
+      user        = "ubuntu"
+      host        = aws_instance.test_runner.public_ip
       private_key = file("~/.ssh/id_rsa")
     }
   }
@@ -251,30 +309,30 @@ resource "aws_instance" "test_runner" {
 
 resource "aws_ebs_volume" "test_data_volume" {
   availability_zone = aws_instance.test_runner.availability_zone
-  size = 250
+  size              = 250
 
   tags = {
-    "exa:owner": var.owner,
-    "exa:deputy": var.deputy
-    "exa:project": var.project
-    "exa:project.name": var.project_name
-    "exa:stage": var.stage
-    "Name": "EBS volume for DynamoDB Virtual Schema performance test test data"
+    "exa:owner" : var.owner,
+    "exa:deputy" : var.deputy
+    "exa:project" : var.project
+    "exa:project.name" : var.project_name
+    "exa:stage" : var.stage
+    "Name" : "EBS volume for DynamoDB Virtual Schema performance test test data"
   }
 }
 
 resource "aws_volume_attachment" "test_data_volume_attachment" {
   device_name = "/dev/sdh"
-  volume_id = aws_ebs_volume.test_data_volume.id
+  volume_id   = aws_ebs_volume.test_data_volume.id
   instance_id = aws_instance.test_runner.id
 
   provisioner "remote-exec" {
     script = "mountEbsVolume.sh"
 
     connection {
-      type = "ssh"
-      user = "ubuntu"
-      host = aws_instance.test_runner.public_ip
+      type        = "ssh"
+      user        = "ubuntu"
+      host        = aws_instance.test_runner.public_ip
       private_key = file("~/.ssh/id_rsa")
     }
   }
