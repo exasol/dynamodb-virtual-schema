@@ -8,7 +8,7 @@ import com.exasol.adapter.dynamodb.documentnode.DocumentNode;
 import com.exasol.adapter.dynamodb.documentpath.DocumentPathExpression;
 import com.exasol.adapter.dynamodb.documentpath.DocumentPathIteratorFactory;
 import com.exasol.adapter.dynamodb.documentpath.PathIterationStateProvider;
-import com.exasol.adapter.dynamodb.remotetablequery.RemoteTableQuery;
+import com.exasol.adapter.dynamodb.queryplanning.RemoteTableQuery;
 import com.exasol.sql.expression.ValueExpression;
 
 /**
@@ -26,7 +26,7 @@ public class SchemaMapper<DocumentVisitorType> {
      * @param propertyToColumnValueExtractorFactory factory for value mapper corresponding to
      *                                              {@link DocumentVisitorType}
      */
-    public SchemaMapper(final RemoteTableQuery<DocumentVisitorType> query,
+    public SchemaMapper(final RemoteTableQuery query,
             final PropertyToColumnValueExtractorFactory<DocumentVisitorType> propertyToColumnValueExtractorFactory) {
         this.query = query;
         this.columnValueExtractorFactory = new ColumnValueExtractorFactory<>(propertyToColumnValueExtractorFactory);

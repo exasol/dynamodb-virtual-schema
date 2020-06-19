@@ -48,6 +48,7 @@ class DynamodbAdapterTestLocalIT {
     private static final String TEST_SCHEMA = "TEST";
     private static final String DYNAMODB_CONNECTION = "DYNAMODB_CONNECTION";
     private static final String DYNAMO_BOOKS_TABLE = "MY_BOOKS";
+    public static final String BUCKETFS_PATH = "/bfsdefault/default/mappings/";
     private static DynamodbTestInterface dynamodbTestInterface;
     private static TestcontainerExasolTestInterface exasolTestInterface;
 
@@ -63,6 +64,7 @@ class DynamodbAdapterTestLocalIT {
         exasolTestInterface.uploadMapping(MappingTestFiles.BASIC_MAPPING_FILE_NAME);
         exasolTestInterface.uploadMapping(MappingTestFiles.SINGLE_COLUMN_TO_TABLE_MAPPING_FILE_NAME);
         exasolTestInterface.uploadMapping(MappingTestFiles.DATA_TYPE_TEST_MAPPING_FILE_NAME);
+        exasolTestInterface.uploadMapping(MappingTestFiles.DOUBLE_NESTED_TO_TABLE_MAPPING_FILE_NAME);
         exasolTestInterface.createAdapterScript();
         exasolTestInterface.createUdf();
         LOGGER.info("created adapter script");
@@ -194,18 +196,51 @@ class DynamodbAdapterTestLocalIT {
         assertThat(topics, containsInAnyOrder("Exasol", "DynamoDB", "Virtual Schema", "Fantasy", "Birds", "Nature"));
     }
 
-    // TODO change test to filter on name when bug is fixed: https://github.com/exasol/dynamodb-virtual-schema/issues/55
     @Test
     void testJoinOnNestedTable() throws IOException, SQLException {
         createNestedTableVirtualSchema();
-        final ResultSet actualResultSet = exasolTestInterface.getStatement()
-                .executeQuery("SELECT BOOKS_TOPICS.NAME as TOPIC FROM " + TEST_SCHEMA + ".BOOKS JOIN " + TEST_SCHEMA
-                        + ".\"BOOKS_TOPICS\" ON ISBN = BOOKS_ISBN WHERE ISBN = '123567';");
+        final List<String> topics = runQueryAndExtractColumn(
+                "SELECT BOOKS_TOPICS.NAME as TOPIC FROM " + TEST_SCHEMA + ".BOOKS JOIN " + TEST_SCHEMA
+                        + ".\"BOOKS_TOPICS\" ON ISBN = BOOKS_ISBN WHERE BOOKS.NAME = 'bad book 1';",
+                "TOPIC");
+        assertThat(topics, containsInAnyOrder("Exasol", "DynamoDB", "Virtual Schema"));
+    }
+
+    @Test
+    void testJoinOnDoubleNestedTable() throws IOException, SQLException {
+        createDoubleNestedTableVirtualSchema();
+        final List<String> figures = runQueryAndExtractColumn("SELECT BOOKS_CHAPTERS_FIGURES.NAME as FIGURE FROM "
+                + TEST_SCHEMA + ".BOOKS JOIN " + TEST_SCHEMA
+                + ".\"BOOKS_CHAPTERS\" ON ISBN = BOOKS_CHAPTERS.BOOKS_ISBN " + "JOIN " + TEST_SCHEMA
+                + ".BOOKS_CHAPTERS_FIGURES ON BOOKS_CHAPTERS.INDEX = BOOKS_CHAPTERS_INDEX AND ISBN = BOOKS_CHAPTERS_FIGURES.BOOKS_ISBN "
+                + "WHERE BOOKS.NAME = 'bad book 1';", "FIGURE");
+        assertThat(figures, containsInAnyOrder("Image of the Author", "figure 2", "figure 3"));
+    }
+
+    @Test
+    void testSelectOnIndexColumn() throws SQLException, IOException {
+        createDoubleNestedTableVirtualSchema();
+        final List<String> figures = runQueryAndExtractColumn(
+                "SELECT NAME FROM " + TEST_SCHEMA + ".BOOKS_CHAPTERS " + "WHERE \"INDEX\" = 0;", "NAME");
+        assertThat(figures, containsInAnyOrder("Main Chapter", "chapter 1"));
+    }
+
+    // @Test //TODO reenable when fixed
+    void testSelectOnIndexAndOtherColumn() throws SQLException, IOException {
+        createDoubleNestedTableVirtualSchema();
+        final List<String> figures = runQueryAndExtractColumn("SELECT NAME FROM " + TEST_SCHEMA + ".BOOKS_CHAPTERS "
+                + "WHERE \"INDEX\" = 0 AND NAME = 'Main Chapter';",
+                "NAME");
+        assertThat(figures, containsInAnyOrder("Main Chapter"));
+    }
+
+    private List<String> runQueryAndExtractColumn(final String query, final String columnName) throws SQLException {
+        final ResultSet actualResultSet = exasolTestInterface.getStatement().executeQuery(query);
         final List<String> topics = new ArrayList<>();
         while (actualResultSet.next()) {
-            topics.add(actualResultSet.getString("TOPIC"));
+            topics.add(actualResultSet.getString(columnName));
         }
-        assertThat(topics, containsInAnyOrder("Exasol", "DynamoDB", "Virtual Schema"));
+        return topics;
     }
 
     @Test
@@ -255,7 +290,7 @@ class DynamodbAdapterTestLocalIT {
                         new KeySchemaElement("price", KeyType.RANGE))
                 .withAttributeDefinitions(new AttributeDefinition("publisher", ScalarAttributeType.S),
                         new AttributeDefinition("price", ScalarAttributeType.N))
-                .withProvisionedThroughput(new ProvisionedThroughput(1L, 1L));
+                .withProvisionedThroughput(new ProvisionedThroughput(100L, 100L));
         dynamodbTestInterface.createTable(request);
         dynamodbTestInterface.importData(DYNAMO_BOOKS_TABLE, TestDocuments.BOOKS);
     }
@@ -276,19 +311,27 @@ class DynamodbAdapterTestLocalIT {
 
     private void createNestedTableVirtualSchema() throws SQLException, IOException {
         exasolTestInterface.createDynamodbVirtualSchema(TEST_SCHEMA, DYNAMODB_CONNECTION,
-                "/bfsdefault/default/mappings/" + MappingTestFiles.SINGLE_COLUMN_TO_TABLE_MAPPING_FILE_NAME);
+                BUCKETFS_PATH + MappingTestFiles.SINGLE_COLUMN_TO_TABLE_MAPPING_FILE_NAME);
         dynamodbTestInterface.createTable(DYNAMO_BOOKS_TABLE, TestDocuments.BOOKS_ISBN_PROPERTY);
         dynamodbTestInterface.importData(DYNAMO_BOOKS_TABLE, TestDocuments.BOOKS);
     }
 
+    // TODO refactor to use static dynamodb tables
+    private void createDoubleNestedTableVirtualSchema() throws SQLException, IOException {
+        dynamodbTestInterface.createTable(DYNAMO_BOOKS_TABLE, TestDocuments.BOOKS_ISBN_PROPERTY);
+        dynamodbTestInterface.importData(DYNAMO_BOOKS_TABLE, TestDocuments.BOOKS);
+        exasolTestInterface.createDynamodbVirtualSchema(TEST_SCHEMA, DYNAMODB_CONNECTION,
+                BUCKETFS_PATH + MappingTestFiles.DOUBLE_NESTED_TO_TABLE_MAPPING_FILE_NAME);
+    }
+
     void createBasicMappingVirtualSchema() throws SQLException {
         exasolTestInterface.createDynamodbVirtualSchema(TEST_SCHEMA, DYNAMODB_CONNECTION,
-                "/bfsdefault/default/mappings/" + MappingTestFiles.BASIC_MAPPING_FILE_NAME);
+                BUCKETFS_PATH + MappingTestFiles.BASIC_MAPPING_FILE_NAME);
     }
 
     void createDataTypesVirtualSchema() throws SQLException, IOException {
         exasolTestInterface.createDynamodbVirtualSchema(TEST_SCHEMA, DYNAMODB_CONNECTION,
-                "/bfsdefault/default/mappings/" + MappingTestFiles.DATA_TYPE_TEST_MAPPING_FILE_NAME);
+                BUCKETFS_PATH + MappingTestFiles.DATA_TYPE_TEST_MAPPING_FILE_NAME);
         dynamodbTestInterface.createTable(MappingTestFiles.DATA_TYPE_TEST_SRC_TABLE_NAME,
                 TestDocuments.DATA_TYPE_TEST_STRING_VALUE);
         dynamodbTestInterface.importData(MappingTestFiles.DATA_TYPE_TEST_SRC_TABLE_NAME, TestDocuments.DATA_TYPE_TEST);

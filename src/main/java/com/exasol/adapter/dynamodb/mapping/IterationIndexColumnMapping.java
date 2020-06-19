@@ -21,7 +21,7 @@ public final class IterationIndexColumnMapping extends AbstractColumnMapping {
      * @param exasolColumnName name of the Exasol column
      * @param tablesPath       the path to the array that's row index is modeled using this column
      */
-    IterationIndexColumnMapping(final String exasolColumnName, final DocumentPathExpression tablesPath) {
+    public IterationIndexColumnMapping(final String exasolColumnName, final DocumentPathExpression tablesPath) {
         super(exasolColumnName);
         this.tablesPath = tablesPath;
     }

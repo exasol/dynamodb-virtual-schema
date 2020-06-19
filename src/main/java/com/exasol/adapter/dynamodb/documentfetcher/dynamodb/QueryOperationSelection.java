@@ -1,14 +1,13 @@
 package com.exasol.adapter.dynamodb.documentfetcher.dynamodb;
 
-import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
-import com.exasol.adapter.dynamodb.documentnode.dynamodb.DynamodbNodeVisitor;
 import com.exasol.adapter.dynamodb.dynamodbmetadata.DynamodbIndex;
-import com.exasol.adapter.dynamodb.remotetablequery.ColumnLiteralComparisonPredicate;
-import com.exasol.adapter.dynamodb.remotetablequery.LogicalOperator;
-import com.exasol.adapter.dynamodb.remotetablequery.QueryPredicate;
-import com.exasol.adapter.dynamodb.remotetablequery.normalizer.DnfOr;
+import com.exasol.adapter.dynamodb.querypredicate.ColumnLiteralComparisonPredicate;
+import com.exasol.adapter.dynamodb.querypredicate.LogicalOperator;
+import com.exasol.adapter.dynamodb.querypredicate.QueryPredicate;
+import com.exasol.adapter.dynamodb.querypredicate.normalizer.DnfOr;
 
 /**
  * This class represents the selection predicates of a DynamoDB query operation.
@@ -19,9 +18,9 @@ import com.exasol.adapter.dynamodb.remotetablequery.normalizer.DnfOr;
  * The index selection is again split into a partition key condition and a sort key condition.
  */
 class QueryOperationSelection {
-    private final ColumnLiteralComparisonPredicate<DynamodbNodeVisitor> partitionKeyCondition;
-    private final Optional<ColumnLiteralComparisonPredicate<DynamodbNodeVisitor>> sortKeyCondition;
-    private final DnfOr<DynamodbNodeVisitor> nonIndexSelection;
+    private final ColumnLiteralComparisonPredicate partitionKeyCondition;
+    private final Optional<ColumnLiteralComparisonPredicate> sortKeyCondition;
+    private final DnfOr nonIndexSelection;
     private final DynamodbIndex index;
 
     /**
@@ -32,9 +31,9 @@ class QueryOperationSelection {
      * @param nonIndexSelection     selection on all non index columns
      * @param index                 index that is used for the query
      */
-    QueryOperationSelection(final ColumnLiteralComparisonPredicate<DynamodbNodeVisitor> partitionKeyCondition,
-            final Optional<ColumnLiteralComparisonPredicate<DynamodbNodeVisitor>> sortKeyCondition,
-            final DnfOr<DynamodbNodeVisitor> nonIndexSelection, final DynamodbIndex index) {
+    QueryOperationSelection(final ColumnLiteralComparisonPredicate partitionKeyCondition,
+            final Optional<ColumnLiteralComparisonPredicate> sortKeyCondition, final DnfOr nonIndexSelection,
+            final DynamodbIndex index) {
         this.partitionKeyCondition = partitionKeyCondition;
         this.sortKeyCondition = sortKeyCondition;
         this.nonIndexSelection = nonIndexSelection;
@@ -46,7 +45,7 @@ class QueryOperationSelection {
      * 
      * @return sort key condition.
      */
-    public Optional<ColumnLiteralComparisonPredicate<DynamodbNodeVisitor>> getSortKeyCondition() {
+    public Optional<ColumnLiteralComparisonPredicate> getSortKeyCondition() {
         return this.sortKeyCondition;
     }
 
@@ -55,7 +54,7 @@ class QueryOperationSelection {
      *
      * @return non-index selection
      */
-    public DnfOr<DynamodbNodeVisitor> getNonIndexSelection() {
+    public DnfOr getNonIndexSelection() {
         return this.nonIndexSelection;
     }
 
@@ -64,11 +63,11 @@ class QueryOperationSelection {
      * 
      * @return index-selection predicate
      */
-    public QueryPredicate<DynamodbNodeVisitor> getIndexSelectionAsQueryPredicate() {
+    public QueryPredicate getIndexSelectionAsQueryPredicate() {
         if (this.sortKeyCondition.isEmpty()) {
             return this.partitionKeyCondition;
         } else {
-            return new LogicalOperator<>(List.of(this.partitionKeyCondition, this.sortKeyCondition.get()),
+            return new LogicalOperator(Set.of(this.partitionKeyCondition, this.sortKeyCondition.get()),
                     LogicalOperator.Operator.AND);
         }
     }
