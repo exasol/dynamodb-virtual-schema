@@ -8,7 +8,7 @@ import com.exasol.adapter.dynamodb.querypredicate.*;
 
 /**
  * This factory builds {@link DnfOr} class structures from {@link QueryPredicate} structures. The input predicate
- * structure must fulfil the DNF. A valid consists of disjunctions that contain conjunctions that then contain variables
+ * structure must fulfill the requirements of a valid DNF. A valid DNF consists of disjunctions that contain conjunctions that then contain variables
  * or negated variables.
  *
  * Valid DNFs are for example: {@code A and B}, {@code A or B}, {@code A or (B and C)}, {@code A or (B and !C)}
