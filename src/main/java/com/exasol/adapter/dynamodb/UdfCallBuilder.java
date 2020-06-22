@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.exasol.adapter.dynamodb.documentfetcher.DocumentFetcher;
+import com.exasol.adapter.dynamodb.mapping.ColumnMapping;
 import com.exasol.adapter.dynamodb.queryplanning.RemoteTableQuery;
 import com.exasol.adapter.dynamodb.querypredicate.QueryPredicate;
 import com.exasol.adapter.dynamodb.querypredicate.QueryPredicateToBooleanExpressionConverter;
@@ -44,7 +45,7 @@ public class UdfCallBuilder<DocumentVisitorType> {
         final StringRendererConfig config = StringRendererConfig.builder().quoteIdentifiers(true).build();
         final SelectRenderer renderer = new SelectRenderer(config);
         final Select select = StatementFactory.getInstance().select();
-        final List<Column> emitsColumns = query.getSelectList().stream().map(
+        final List<Column> emitsColumns = query.getRequiredColumns().stream().map(
                 column -> new Column(select, column.getExasolColumnName(), convertDataType(column.getExasolDataType())))
                 .collect(Collectors.toList());
         // TODO UDF name as parameter
@@ -56,9 +57,15 @@ public class UdfCallBuilder<DocumentVisitorType> {
         select.accept(renderer);
         // TODO refactor when https://github.com/exasol/sql-statement-builder/issues/76 is fixed
         final String whereClause = getWhereClause(query.getPostSelection(), config);
-        return "SELECT * FROM (" + renderer.render() + " AS T(" + DOCUMENT_FETCHER_PARAMETER + ", "
-                + REMOTE_TABLE_QUERY_PARAMETER + ", " + CONNECTION_NAME_PARAMETER + ", " + FRAGMENT_ID + ") GROUP BY "
-                + FRAGMENT_ID + " ) " + whereClause;
+        final String selectList = query.getSelectList().stream().map(ColumnMapping::getExasolColumnName)
+                .map(this::quote).collect(Collectors.joining(", "));
+        return "SELECT " + selectList + " FROM (SELECT * FROM (" + renderer.render() + " AS T("
+                + DOCUMENT_FETCHER_PARAMETER + ", " + REMOTE_TABLE_QUERY_PARAMETER + ", " + CONNECTION_NAME_PARAMETER
+                + ", " + FRAGMENT_ID + ") GROUP BY " + FRAGMENT_ID + " ) " + whereClause + ")";
+    }
+
+    private String quote(String identifier) {
+        return "\"" + identifier + "\"";
     }
 
     private String getWhereClause(final QueryPredicate selection, final StringRendererConfig config) {

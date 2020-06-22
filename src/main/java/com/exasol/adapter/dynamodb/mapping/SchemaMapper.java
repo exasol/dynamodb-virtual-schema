@@ -48,8 +48,8 @@ public class SchemaMapper<DocumentVisitorType> {
 
     private List<ValueExpression> mapColumns(final DocumentNode<DocumentVisitorType> document,
             final PathIterationStateProvider arrayAllIterationState) {
-        final List<ValueExpression> resultValues = new ArrayList<>(this.query.getSelectList().size());
-        for (final ColumnMapping resultColumn : this.query.getSelectList()) {
+        final List<ValueExpression> resultValues = new ArrayList<>(this.query.getRequiredColumns().size());
+        for (final ColumnMapping resultColumn : this.query.getRequiredColumns()) {
             final ColumnValueExtractor<DocumentVisitorType> columnValueExtractor = this.columnValueExtractorFactory
                     .getValueExtractorForColumn(resultColumn);
             final ValueExpression result = columnValueExtractor.extractColumnValue(document, arrayAllIterationState);

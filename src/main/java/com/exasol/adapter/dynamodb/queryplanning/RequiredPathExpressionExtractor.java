@@ -1,7 +1,5 @@
 package com.exasol.adapter.dynamodb.queryplanning;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -10,7 +8,6 @@ import com.exasol.adapter.dynamodb.mapping.ColumnMapping;
 import com.exasol.adapter.dynamodb.mapping.ColumnMappingVisitor;
 import com.exasol.adapter.dynamodb.mapping.IterationIndexColumnMapping;
 import com.exasol.adapter.dynamodb.mapping.PropertyToColumnMapping;
-import com.exasol.adapter.dynamodb.querypredicate.InvolvedColumnCollector;
 
 /**
  * This class extracts the required {@link DocumentPathExpression}s that must be fetched from the remote database for
@@ -24,10 +21,7 @@ public class RequiredPathExpressionExtractor {
      * @return set of required properties
      */
     public Set<DocumentPathExpression> getRequiredProperties(final RemoteTableQuery query) {
-        final List<ColumnMapping> requiredColumns = new ArrayList<>(
-                new InvolvedColumnCollector().collectInvolvedColumns(query.getPostSelection()));
-        requiredColumns.addAll(query.getSelectList());
-        return requiredColumns.stream().map(this::getRequiredProperty).collect(Collectors.toSet());
+        return query.getRequiredColumns().stream().map(this::getRequiredProperty).collect(Collectors.toSet());
     }
 
     private DocumentPathExpression getRequiredProperty(final ColumnMapping columnMapping) {

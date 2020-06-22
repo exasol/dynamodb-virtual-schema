@@ -1,11 +1,15 @@
 package com.exasol.adapter.dynamodb.queryplanning;
 
 import java.io.Serializable;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import com.exasol.adapter.dynamodb.mapping.ColumnMapping;
 import com.exasol.adapter.dynamodb.mapping.SchemaMappingQuery;
 import com.exasol.adapter.dynamodb.mapping.TableMapping;
+import com.exasol.adapter.dynamodb.querypredicate.InvolvedColumnCollector;
 import com.exasol.adapter.dynamodb.querypredicate.QueryPredicate;
 
 /**
@@ -15,7 +19,8 @@ public class RemoteTableQuery implements SchemaMappingQuery, Serializable {
     private static final long serialVersionUID = -721150997859918517L;
     private final TableMapping fromTable;
     private final List<ColumnMapping> selectList;
-    private final transient QueryPredicate pushDownSelection; // TODO refactor
+    private final List<ColumnMapping> postSelectionsColumns;
+    private final transient QueryPredicate pushDownSelection; // TODO refactor; transient and non transient part
     private final transient QueryPredicate postSelection;
 
     /**
@@ -32,6 +37,7 @@ public class RemoteTableQuery implements SchemaMappingQuery, Serializable {
         this.selectList = selectList;
         this.pushDownSelection = pushDownSelection;
         this.postSelection = postSelection;
+        this.postSelectionsColumns = new InvolvedColumnCollector().collectInvolvedColumns(getPostSelection());
     }
 
     @Override
@@ -41,10 +47,9 @@ public class RemoteTableQuery implements SchemaMappingQuery, Serializable {
 
     /**
      * Get the select list columns.
-     * 
+     *
      * @return select list columns
      */
-    @Override
     public List<ColumnMapping> getSelectList() {
         return this.selectList;
     }
@@ -65,5 +70,11 @@ public class RemoteTableQuery implements SchemaMappingQuery, Serializable {
      */
     public QueryPredicate getPostSelection() {
         return this.postSelection;
+    }
+
+    @Override
+    public List<ColumnMapping> getRequiredColumns() {
+        return Stream.concat(this.postSelectionsColumns.stream(), getSelectList().stream()).distinct()
+                .sorted(Comparator.comparing(ColumnMapping::getExasolColumnName)).collect(Collectors.toList());
     }
 }
