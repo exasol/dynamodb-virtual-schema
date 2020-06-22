@@ -9,7 +9,7 @@ import com.exasol.adapter.sql.SqlNode;
  * This class represents a comparison between a literal and a column of a table.
  */
 public class ColumnLiteralComparisonPredicate extends AbstractComparisonPredicate {
-    private static final long serialVersionUID = 4471077828317147591L;
+    private static final long serialVersionUID = 1747022926992293431L;
     private final SqlNode literal;
     private final ColumnMapping column;
 

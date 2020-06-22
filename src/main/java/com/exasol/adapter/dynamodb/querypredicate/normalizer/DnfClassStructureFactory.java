@@ -15,7 +15,6 @@ import com.exasol.adapter.dynamodb.querypredicate.*;
  * 
  * Examples for invalid DNFs: {@code A and (B or C)}, {@code !(A or B)}
  */
-@java.lang.SuppressWarnings("squid:S119") // DocumentVisitorType does not fit naming conventions.
 class DnfClassStructureFactory {
 
     /**

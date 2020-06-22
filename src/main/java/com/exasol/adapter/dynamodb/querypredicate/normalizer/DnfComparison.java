@@ -9,7 +9,6 @@ import com.exasol.adapter.dynamodb.querypredicate.QueryPredicate;
 /**
  * This class represents a comparison predicate in a disjunctive normal form (DNF).
  */
-@java.lang.SuppressWarnings("squid:S119") // DocumentVisitorType does not fit naming conventions.
 public final class DnfComparison {
     private final boolean isNegated;
     private final ComparisonPredicate comparisonPredicate;
@@ -43,6 +42,11 @@ public final class DnfComparison {
         return this.comparisonPredicate;
     }
 
+    /**
+     * Convert the predicate modeled by this class to an {@link QueryPredicate}.
+     *
+     * @return {@link QueryPredicate}
+     */
     public QueryPredicate asQueryPredicate() {
         if (!this.isNegated) {
             return this.comparisonPredicate;

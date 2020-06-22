@@ -8,7 +8,6 @@ import com.exasol.adapter.dynamodb.querypredicate.QueryPredicate;
 /**
  * This class normalizes a {@link QueryPredicate} structure to the disjunctive normal form.
  */
-@java.lang.SuppressWarnings("squid:S119") // DocumentVisitorType does not fit naming conventions.
 public class DnfNormalizer {
     private final QueryPredicateToLogicngConverter converter;
 

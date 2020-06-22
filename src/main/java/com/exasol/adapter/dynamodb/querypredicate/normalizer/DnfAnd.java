@@ -11,7 +11,6 @@ import com.exasol.adapter.dynamodb.querypredicate.QueryPredicate;
  * This class represents an AND in the disjunctive normal form (DNF). By the definition of the DNF, an AND is always
  * part of an OR ({@link DnfOr}) and must not contain nested ANDs or ORs.
  */
-@java.lang.SuppressWarnings("squid:S119") // DocumentVisitorType does not fit naming conventions.
 public final class DnfAnd {
     private final Set<DnfComparison> operands;
 
@@ -33,6 +32,11 @@ public final class DnfAnd {
         return this.operands;
     }
 
+    /**
+     * Convert the predicate modeled by this class to an {@link QueryPredicate}.
+     *
+     * @return {@link QueryPredicate}
+     */
     public QueryPredicate asQueryPredicate() {
         final Set<QueryPredicate> convertedOperands = this.operands.stream()
                 .map(DnfComparison::asQueryPredicate).filter(comparison -> !(comparison instanceof NoPredicate))

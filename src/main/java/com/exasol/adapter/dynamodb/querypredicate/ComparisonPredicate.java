@@ -7,7 +7,6 @@ import com.exasol.adapter.dynamodb.mapping.ColumnMapping;
 /**
  * This interface represents a comparison between a literal and a column of a table.
  */
-@java.lang.SuppressWarnings("squid:S119") // DocumentVisitorType does not fit naming conventions.
 public interface ComparisonPredicate extends QueryPredicate {
 
     /**

@@ -67,7 +67,7 @@ public class UdfCallBuilder<DocumentVisitorType> {
         final BooleanExpression whereClausPredicates = new QueryPredicateToBooleanExpressionConverter()
                 .convert(selection.simplify());
         new Select().where(whereClausPredicates).accept(whereRenderer);
-        return whereRenderer.render().replace("SELECT ", "").replace("INDEX", "\"INDEX\"");// TODO remove this ugly
+        return whereRenderer.render().replace("SELECT ", "").replace("INDEX", "\"INDEX\"");// TODO remove this
                                                                                            // bugfix
     }
 

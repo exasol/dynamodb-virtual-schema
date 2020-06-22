@@ -12,8 +12,7 @@ import com.exasol.adapter.dynamodb.querypredicate.QueryPredicate;
  * This class represents the whole query inside of one document.
  */
 public class RemoteTableQuery implements SchemaMappingQuery, Serializable {
-
-    private static final long serialVersionUID = 131878909365046330L;
+    private static final long serialVersionUID = -721150997859918517L;
     private final TableMapping fromTable;
     private final List<ColumnMapping> selectList;
     private final transient QueryPredicate pushDownSelection; // TODO refactor

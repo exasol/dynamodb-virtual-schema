@@ -17,7 +17,6 @@ import com.exasol.adapter.dynamodb.querypredicate.QueryPredicate;
 /**
  * This class converts LogicNG {@link Formula}s to {@link QueryPredicate} structures.
  */
-@java.lang.SuppressWarnings("squid:S119") // DocumentVisitorType does not fit naming conventions.
 class LogicngToQueryPredicateConverter {
     private final Map<Variable, QueryPredicate> variablesMapping;
 
