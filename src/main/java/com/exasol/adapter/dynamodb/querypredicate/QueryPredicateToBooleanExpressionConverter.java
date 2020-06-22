@@ -49,7 +49,7 @@ public class QueryPredicateToBooleanExpressionConverter {
 
         @Override
         public void visit(final ColumnLiteralComparisonPredicate columnLiteralComparisonPredicate) {
-            final ValueExpression literal = new SqlLiteralToValueExpressionConverter()
+            final ValueExpression literal = SqlLiteralToValueExpressionConverter.getInstance()
                     .convert(columnLiteralComparisonPredicate.getLiteral());
             this.result = new Comparison(ComparisonOperator.EQUAL,
                     column(columnLiteralComparisonPredicate.getColumn().getExasolColumnName()), literal);

@@ -8,6 +8,23 @@ import com.exasol.sql.expression.*;
  * This class converts a {@link SqlNode} literal into a {@link ValueExpression}.
  */
 public class SqlLiteralToValueExpressionConverter {
+    private static final SqlLiteralToValueExpressionConverter INSTANCE = new SqlLiteralToValueExpressionConverter();
+
+    /**
+     * Private constructor to hide the public default.
+     */
+    private SqlLiteralToValueExpressionConverter() {
+        // empty on purpose
+    }
+
+    /**
+     * Get singleton instance of the {@link SqlLiteralToValueExpressionConverter}.
+     *
+     * @return instance of the {@link SqlLiteralToValueExpressionConverter}
+     */
+    public static SqlLiteralToValueExpressionConverter getInstance() {
+        return INSTANCE;
+    }
 
     /**
      * Converts a {@link SqlNode} literal into a {@link ValueExpression}.
