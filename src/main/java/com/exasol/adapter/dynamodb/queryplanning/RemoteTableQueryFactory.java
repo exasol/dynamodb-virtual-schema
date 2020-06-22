@@ -70,18 +70,28 @@ public class RemoteTableQueryFactory {
             } else if (selectList.isSelectStar()) {
                 selectAllColumns();
             } else {
-                throw new UnsupportedOperationException(
-                        "The current version of DynamoDB Virtual Schema does not support projection.");
+                for (final SqlNode selectListExpression : selectList.getExpressions()) {
+                    if (!(selectListExpression instanceof SqlColumn)) {
+                        throw new UnsupportedOperationException(
+                                "The current version of Document Virtual Schema does not support SQL functions.");
+                    }
+                    final SqlColumn column = (SqlColumn) selectListExpression;
+                    addColumnToSelectList(column.getMetadata());
+                }
             }
             return null;
         }
 
         private void selectAllColumns() {
             for (final ColumnMetadata columnMetadata : this.tableMetadata.getColumns()) {
-                final ColumnMapping columnMapping = new SchemaMappingToSchemaMetadataConverter()
-                        .convertBackColumn(columnMetadata);
-                this.resultColumns.add(columnMapping);
+                addColumnToSelectList(columnMetadata);
             }
+        }
+
+        private void addColumnToSelectList(final ColumnMetadata columnMetadata) {
+            final ColumnMapping columnMapping = new SchemaMappingToSchemaMetadataConverter()
+                    .convertBackColumn(columnMetadata);
+            this.resultColumns.add(columnMapping);
         }
 
         @Override

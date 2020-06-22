@@ -56,16 +56,18 @@ class DynamodbAdapterTestAwsIT {
 
     @Test
     void testCountAllRows() throws SQLException {
-        final ResultSet resultSet = exasolTestInterface.getStatement().executeQuery("SELECT COUNT(*) FROM OPENLIBRARY");
+        final ResultSet resultSet = exasolTestInterface.getStatement()
+                .executeQuery("SELECT COUNT(\"KEY\") FROM OPENLIBRARY");
         resultSet.next();
         final int count = resultSet.getInt(1);
-        assertThat(count, equalTo(1998388));
+        assertThat(count, equalTo(2000000));
     }
 
     @Test
     void testSelectSingleRow() throws SQLException {
         final ResultSet resultSet = exasolTestInterface.getStatement()
-                .executeQuery("SELECT COUNT(*) FROM OPENLIBRARY WHERE KEY = '/authors/OL13141A' AND REVISION = 1");
+                .executeQuery(
+                        "SELECT COUNT(\"KEY\") FROM OPENLIBRARY WHERE KEY = '/authors/OL13141A' AND REVISION = 1");
         resultSet.next();
         final int count = resultSet.getInt(1);
         assertThat(count, equalTo(1));

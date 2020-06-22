@@ -83,7 +83,7 @@ public class DocumentPathExpression implements Serializable {
      *
      * @return index of the first {@link ArrayAllPathSegment}; {@code -1} if not found.
      */
-    int indexOfFirstArrayAllSegment() {
+    public int indexOfFirstArrayAllSegment() {
         int index = 0;
         for (final PathSegment pathSegment : this.segments) {
             if (pathSegment instanceof ArrayAllPathSegment) {

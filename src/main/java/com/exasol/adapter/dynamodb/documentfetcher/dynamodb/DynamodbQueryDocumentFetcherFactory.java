@@ -1,15 +1,18 @@
 package com.exasol.adapter.dynamodb.documentfetcher.dynamodb;
 
 import java.util.List;
+import java.util.Set;
 
 import com.amazonaws.services.dynamodbv2.model.QueryRequest;
 import com.exasol.adapter.dynamodb.documentfetcher.DocumentFetcher;
 import com.exasol.adapter.dynamodb.documentnode.dynamodb.DynamodbNodeVisitor;
+import com.exasol.adapter.dynamodb.documentpath.DocumentPathExpression;
 import com.exasol.adapter.dynamodb.dynamodbmetadata.DynamodbIndex;
 import com.exasol.adapter.dynamodb.dynamodbmetadata.DynamodbPrimaryIndex;
 import com.exasol.adapter.dynamodb.dynamodbmetadata.DynamodbSecondaryIndex;
 import com.exasol.adapter.dynamodb.dynamodbmetadata.DynamodbTableMetadata;
 import com.exasol.adapter.dynamodb.queryplanning.RemoteTableQuery;
+import com.exasol.adapter.dynamodb.queryplanning.RequiredPathExpressionExtractor;
 import com.exasol.adapter.dynamodb.querypredicate.normalizer.DnfNormalizer;
 import com.exasol.adapter.dynamodb.querypredicate.normalizer.DnfOr;
 
@@ -19,6 +22,14 @@ import com.exasol.adapter.dynamodb.querypredicate.normalizer.DnfOr;
  * a few, this factory generates multiple operations.
  */
 class DynamodbQueryDocumentFetcherFactory {
+    private final DynamodbProjectionExpressionFactory projectionExpressionFactory;
+
+    /**
+     * Create an instrance of {@link DynamodbQueryDocumentFetcherFactory}
+     */
+    DynamodbQueryDocumentFetcherFactory() {
+        this.projectionExpressionFactory = new DynamodbProjectionExpressionFactory();
+    }
 
     /**
      * Build {@link DynamodbQueryDocumentFetcher}s for a given query.
@@ -34,7 +45,7 @@ class DynamodbQueryDocumentFetcherFactory {
                 dnfOr);
 
         final QueryRequest queryRequest = new QueryRequest(remoteTableQuery.getFromTable().getRemoteName());
-        addSelectionToQuery(bestQueryOperationSelection, queryRequest);
+        addSelectionToQuery(bestQueryOperationSelection, queryRequest, remoteTableQuery);
         return List.of(new DynamodbQueryDocumentFetcher(queryRequest));
     }
 
@@ -63,7 +74,7 @@ class DynamodbQueryDocumentFetcherFactory {
     }
 
     private void addSelectionToQuery(final QueryOperationSelection bestQueryOperationSelection,
-            final QueryRequest queryRequest) {
+            final QueryRequest queryRequest, final RemoteTableQuery remoteTableQuery) {
         if (!(bestQueryOperationSelection.getIndex() instanceof DynamodbPrimaryIndex)) {
             final DynamodbSecondaryIndex secondaryIndex = (DynamodbSecondaryIndex) bestQueryOperationSelection
                     .getIndex();
@@ -80,6 +91,13 @@ class DynamodbQueryDocumentFetcherFactory {
                 bestQueryOperationSelection.getNonIndexSelection().asQueryPredicate().simplify());
         if (!nonKeyFilterExpression.isEmpty()) {
             queryRequest.setFilterExpression(nonKeyFilterExpression);
+        }
+        final Set<DocumentPathExpression> requiredProperties = new RequiredPathExpressionExtractor()
+                .getRequiredProperties(remoteTableQuery);
+        final String projectionExpression = this.projectionExpressionFactory.build(requiredProperties,
+                namePlaceholderMapBuilder);
+        if (!projectionExpression.isEmpty()) {
+            queryRequest.setProjectionExpression(projectionExpression);
         }
         queryRequest.setExpressionAttributeNames(namePlaceholderMapBuilder.getPlaceholderMap());
         queryRequest.setExpressionAttributeValues(valuePlaceholderMapBuilder.getPlaceholderMap());
