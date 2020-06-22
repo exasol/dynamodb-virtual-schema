@@ -41,7 +41,6 @@ public class UdfCallBuilder<DocumentVisitorType> {
      */
     public String getUdfCallSql(final List<DocumentFetcher<DocumentVisitorType>> documentFetchers,
             final RemoteTableQuery query, final String connectionName) throws IOException {
-
         final StringRendererConfig config = StringRendererConfig.builder().quoteIdentifiers(true).build();
         final SelectRenderer renderer = new SelectRenderer(config);
         final Select select = StatementFactory.getInstance().select();

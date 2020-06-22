@@ -21,7 +21,7 @@ import com.exasol.adapter.sql.*;
 class QueryPredicateFactoryTest {
     private static final ColumnMapping COLUMN_MAPPING = new ToJsonPropertyToColumnMapping("name", null, null);
     private static final SqlLiteralString LITERAL = new SqlLiteralString("test");
-    private static final QueryPredicateFactory FACTORY = new QueryPredicateFactory();
+    private static final QueryPredicateFactory FACTORY = QueryPredicateFactory.getInstance();
     private static ColumnMetadata columnMetadata;
     private static SqlNode validColumnLiteralEqualityPredicate;
 

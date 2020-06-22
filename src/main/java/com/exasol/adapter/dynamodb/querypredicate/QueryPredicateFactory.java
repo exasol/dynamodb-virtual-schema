@@ -15,11 +15,22 @@ import com.exasol.adapter.sql.*;
  * database and is serializable.
  */
 public class QueryPredicateFactory {
+    private static final QueryPredicateFactory INSTANCE = new QueryPredicateFactory();
 
     /**
-     * Create an instance of {@link QueryPredicateFactory}.
+     * Empty constructor to hide the public default.
      */
-    public QueryPredicateFactory() {
+    private QueryPredicateFactory() {
+        // empty on purpose.
+    }
+
+    /**
+     * Get a singleton instance of {@link QueryPredicateFactory}.
+     *
+     * @return instance of {@link QueryPredicateFactory}
+     */
+    public static QueryPredicateFactory getInstance() {
+        return INSTANCE;
     }
 
     /**
@@ -103,8 +114,8 @@ public class QueryPredicateFactory {
 
         void buildColumnLiteralComparision(final SqlColumn column, final SqlNode literal,
                 final AbstractComparisonPredicate.Operator operator) {
-                final ColumnMapping columnMapping = new SchemaMappingToSchemaMetadataConverter()
-                        .convertBackColumn(column.getMetadata());
+            final ColumnMapping columnMapping = new SchemaMappingToSchemaMetadataConverter()
+                    .convertBackColumn(column.getMetadata());
             this.predicate = new ColumnLiteralComparisonPredicate(operator, columnMapping, literal);
         }
 
@@ -125,8 +136,7 @@ public class QueryPredicateFactory {
         @Override
         public Void visit(final SqlPredicateNot sqlPredicateNot) {
             final QueryPredicateFactory queryPredicateFactory = new QueryPredicateFactory();
-            this.predicate = new NotPredicate(
-                    queryPredicateFactory.buildPredicateFor(sqlPredicateNot.getExpression()));
+            this.predicate = new NotPredicate(queryPredicateFactory.buildPredicateFor(sqlPredicateNot.getExpression()));
             return null;
         }
 

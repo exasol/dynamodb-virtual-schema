@@ -18,11 +18,9 @@ import com.exasol.adapter.sql.*;
  * Visitor for {@link com.exasol.adapter.sql.SqlStatementSelect} building a {@link RemoteTableQuery}
  */
 public class RemoteTableQueryFactory {
-    private final QueryPredicateFactory predicateFactory;
     private final IndexColumnSelectionExtractor indexColumnSelectionExtractor;
 
     public RemoteTableQueryFactory() {
-        this.predicateFactory = new QueryPredicateFactory();
         this.indexColumnSelectionExtractor = new IndexColumnSelectionExtractor();
     }
 
@@ -39,7 +37,8 @@ public class RemoteTableQueryFactory {
         selectStatement.accept(visitor);
         final SchemaMappingToSchemaMetadataConverter converter = new SchemaMappingToSchemaMetadataConverter();
         final TableMapping tableMapping = converter.convertBackTable(visitor.tableMetadata, schemaAdapterNotes);
-        final QueryPredicate selection = this.predicateFactory.buildPredicateFor(visitor.getWhereClause());
+        final QueryPredicate selection = QueryPredicateFactory.getInstance()
+                .buildPredicateFor(visitor.getWhereClause());
         final AbstractSelectionExtractor.Result indexColumnExtractionResult = this.indexColumnSelectionExtractor
                 .extractIndexColumnSelection(selection);
         return new RemoteTableQuery(tableMapping, Collections.unmodifiableList(visitor.resultColumns),

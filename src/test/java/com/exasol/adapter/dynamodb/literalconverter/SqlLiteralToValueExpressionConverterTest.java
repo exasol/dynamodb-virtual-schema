@@ -13,7 +13,8 @@ import com.exasol.sql.expression.*;
 
 class SqlLiteralToValueExpressionConverterTest {
 
-    private static final SqlLiteralToValueExpressionConverter CONVERTER = new SqlLiteralToValueExpressionConverter();
+    private static final SqlLiteralToValueExpressionConverter CONVERTER = SqlLiteralToValueExpressionConverter
+            .getInstance();
 
     @Test
     void testConvertString() {
