@@ -28,7 +28,7 @@ public abstract class AbstractSelectionExtractor {
     /**
      * Extract the predicates on {@link IterationIndexColumnMapping}s from a selection.
      *
-     * @param selection to spli
+     * @param selection to split
      * @return {@link Result} containing one selection with the predicates on {@link IterationIndexColumnMapping}s and
      *         another on the other columns.
      */
