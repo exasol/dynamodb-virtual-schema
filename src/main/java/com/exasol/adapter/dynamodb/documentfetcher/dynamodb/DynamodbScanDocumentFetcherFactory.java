@@ -6,7 +6,7 @@ import java.util.List;
 import com.amazonaws.services.dynamodbv2.model.ScanRequest;
 import com.exasol.adapter.dynamodb.documentfetcher.DocumentFetcher;
 import com.exasol.adapter.dynamodb.documentnode.dynamodb.DynamodbNodeVisitor;
-import com.exasol.adapter.dynamodb.remotetablequery.RemoteTableQuery;
+import com.exasol.adapter.dynamodb.queryplanning.RemoteTableQuery;
 
 /**
  * This factory builds {@link DynamodbScanDocumentFetcher}s for a given query. It returns multiple
@@ -21,13 +21,13 @@ class DynamodbScanDocumentFetcherFactory {
      * @return list of {@link DynamodbScanDocumentFetcher}s
      */
     public List<DocumentFetcher<DynamodbNodeVisitor>> buildDocumentFetcherForQuery(
-            final RemoteTableQuery<DynamodbNodeVisitor> remoteTableQuery) {
+            final RemoteTableQuery remoteTableQuery) {
         final ScanRequest templateScanRequest = new ScanRequest()
                 .withTableName(remoteTableQuery.getFromTable().getRemoteName());
         final DynamodbAttributeNamePlaceholderMapBuilder namePlaceholderMapBuilder = new DynamodbAttributeNamePlaceholderMapBuilder();
         final DynamodbAttributeValuePlaceholderMapBuilder valuePlaceholderMapBuilder = new DynamodbAttributeValuePlaceholderMapBuilder();
         final String filterExpression = new DynamodbFilterExpressionFactory(namePlaceholderMapBuilder,
-                valuePlaceholderMapBuilder).buildFilterExpression(remoteTableQuery.getSelection());
+                valuePlaceholderMapBuilder).buildFilterExpression(remoteTableQuery.getPushDownSelection());
         if (!namePlaceholderMapBuilder.getPlaceholderMap().isEmpty()) {
             templateScanRequest.setExpressionAttributeNames(namePlaceholderMapBuilder.getPlaceholderMap());
         }

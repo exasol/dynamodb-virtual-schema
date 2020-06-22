@@ -2,8 +2,7 @@ package com.exasol.adapter.dynamodb.documentfetcher.dynamodb;
 
 import java.util.Optional;
 
-import com.exasol.adapter.dynamodb.documentnode.dynamodb.DynamodbNodeVisitor;
-import com.exasol.adapter.dynamodb.remotetablequery.ColumnLiteralComparisonPredicate;
+import com.exasol.adapter.dynamodb.querypredicate.ColumnLiteralComparisonPredicate;
 
 /**
  * This class rates the selectivity of a {@link QueryOperationSelection}.
@@ -16,7 +15,7 @@ public class QueryOperationSelectionRater {
      * @return selectivity rating. High value means high selectivity.
      */
     public int rate(final QueryOperationSelection selection) {
-        final Optional<ColumnLiteralComparisonPredicate<DynamodbNodeVisitor>> sortKeyCondition = selection
+        final Optional<ColumnLiteralComparisonPredicate> sortKeyCondition = selection
                 .getSortKeyCondition();
         if (sortKeyCondition.isEmpty()) {
             if (selection.getIndex().hasSortKey()) {

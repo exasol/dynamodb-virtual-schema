@@ -7,13 +7,16 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.exasol.adapter.dynamodb.documentfetcher.DocumentFetcher;
-import com.exasol.adapter.dynamodb.remotetablequery.RemoteTableQuery;
+import com.exasol.adapter.dynamodb.queryplanning.RemoteTableQuery;
+import com.exasol.adapter.dynamodb.querypredicate.QueryPredicate;
+import com.exasol.adapter.dynamodb.querypredicate.QueryPredicateToBooleanExpressionConverter;
 import com.exasol.adapter.metadata.DataType;
 import com.exasol.datatype.type.*;
 import com.exasol.datatype.type.Boolean;
 import com.exasol.sql.*;
 import com.exasol.sql.dql.select.Select;
 import com.exasol.sql.dql.select.rendering.SelectRenderer;
+import com.exasol.sql.expression.BooleanExpression;
 import com.exasol.sql.rendering.StringRendererConfig;
 import com.exasol.utils.StringSerializer;
 
@@ -37,8 +40,7 @@ public class UdfCallBuilder<DocumentVisitorType> {
      * @throws IOException if serialization of a documentFetcher or the query fails
      */
     public String getUdfCallSql(final List<DocumentFetcher<DocumentVisitorType>> documentFetchers,
-            final RemoteTableQuery<DocumentVisitorType> query, final String connectionName) throws IOException {
-
+            final RemoteTableQuery query, final String connectionName) throws IOException {
         final StringRendererConfig config = StringRendererConfig.builder().quoteIdentifiers(true).build();
         final SelectRenderer renderer = new SelectRenderer(config);
         final Select select = StatementFactory.getInstance().select();
@@ -53,13 +55,23 @@ public class UdfCallBuilder<DocumentVisitorType> {
         select.from().valueTable(valueTable);
         select.accept(renderer);
         // TODO refactor when https://github.com/exasol/sql-statement-builder/issues/76 is fixed
-        return renderer.render() + " AS T(" + DOCUMENT_FETCHER_PARAMETER + ", " + REMOTE_TABLE_QUERY_PARAMETER + ", "
-                + CONNECTION_NAME_PARAMETER + ", " + FRAGMENT_ID + ") GROUP BY " + FRAGMENT_ID;
+        final String whereClause = getWhereClause(query.getPostSelection(), config);
+        return "SELECT * FROM (" + renderer.render() + " AS T(" + DOCUMENT_FETCHER_PARAMETER + ", "
+                + REMOTE_TABLE_QUERY_PARAMETER + ", " + CONNECTION_NAME_PARAMETER + ", " + FRAGMENT_ID + ") GROUP BY "
+                + FRAGMENT_ID + " ) " + whereClause;
+    }
+
+    private String getWhereClause(final QueryPredicate selection, final StringRendererConfig config) {
+        final SelectRenderer whereRenderer = new SelectRenderer(config);
+        final BooleanExpression whereClausPredicates = new QueryPredicateToBooleanExpressionConverter()
+                .convert(selection.simplify());
+        new Select().where(whereClausPredicates).accept(whereRenderer);
+        return whereRenderer.render().replace("SELECT ", "").replace("INDEX", "\"INDEX\"");// TODO remove this
+                                                                                           // bugfix
     }
 
     private ValueTable buildValueTable(final List<DocumentFetcher<DocumentVisitorType>> documentFetchers,
-            final RemoteTableQuery<DocumentVisitorType> query, final String connectionName, final Select select)
-            throws IOException {
+            final RemoteTableQuery query, final String connectionName, final Select select) throws IOException {
         final ValueTable valueTable = new ValueTable(select);
         int rowCounter = 0;
         for (final DocumentFetcher<DocumentVisitorType> documentFetcher : documentFetchers) {

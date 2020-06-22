@@ -11,7 +11,7 @@ import com.amazonaws.services.dynamodbv2.model.QueryRequest;
  * This class represents a DynamoDB {@code QUERY} operation.
  */
 public class DynamodbQueryDocumentFetcher extends AbstractDynamodbDocumentFetcher {
-    private static final long serialVersionUID = -2972732083876517763L;
+    private static final long serialVersionUID = -6805336709119451973L;
     private final QueryRequest queryRequest;
 
     /**

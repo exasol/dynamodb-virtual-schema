@@ -177,6 +177,8 @@ class JsonSchemaMappingReaderTest {
                 .filter(table -> table.getExasolName().equals("BOOKS_CHAPTERS_FIGURES")).findAny().get();
         final TableMapping nestedTable = tables.stream().filter(table -> table.getExasolName().equals("BOOKS_CHAPTERS"))
                 .findAny().get();
+        final TableMapping rootTable = tables.stream().filter(table -> table.getExasolName().equals("BOOKS")).findAny()
+                .get();
         final PropertyToColumnMapping foreignKey1 = (PropertyToColumnMapping) getColumnByExasolName(nestedTable,
                 "BOOKS_ISBN");
         final IterationIndexColumnMapping indexColumn = (IterationIndexColumnMapping) getColumnByExasolName(nestedTable,
@@ -185,11 +187,13 @@ class JsonSchemaMappingReaderTest {
                 doubleNestedTable, "NAME");
         assertAll(//
                 () -> assertThat(tables.size(), equalTo(3)),
-                () -> assertThat(getColumnNames(nestedTable.getColumns()), containsInAnyOrder("BOOKS_ISBN", "INDEX")),
+                () -> assertThat(getColumnNames(rootTable.getColumns()), containsInAnyOrder("ISBN", "NAME")),
+                () -> assertThat(getColumnNames(nestedTable.getColumns()),
+                        containsInAnyOrder("BOOKS_ISBN", "INDEX", "NAME")),
                 () -> assertThat(getColumnNames(doubleNestedTable.getColumns()),
                         containsInAnyOrder("BOOKS_ISBN", "BOOKS_CHAPTERS_INDEX", "NAME")),
                 () -> assertThat(figureNameColumn.getPathToSourceProperty().toString(),
-                        equalTo("/chapters[*]/figures[*]")),
+                        equalTo("/chapters[*]/figures[*]/name")),
                 () -> assertThat(foreignKey1.getPathToSourceProperty().toString(), equalTo("/isbn")), //
                 () -> assertThat(indexColumn.getTablesPath().toString(), equalTo("/chapters[*]")));
     }

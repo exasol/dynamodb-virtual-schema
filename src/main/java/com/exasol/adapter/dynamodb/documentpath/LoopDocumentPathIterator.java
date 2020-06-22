@@ -33,9 +33,18 @@ public class LoopDocumentPathIterator<VisitorType> implements Iterator<PathItera
         this.pathOfThisIterator = path.getSubPath(0, indexOfFirstArrayAllSegment + 1);
         this.pathOfNextIterator = path.getSubPath(indexOfFirstArrayAllSegment + 1, path.size());
         final DocumentPathExpression pathToThisArray = path.getSubPath(0, indexOfFirstArrayAllSegment);
-        this.arrayToIterate = (DocumentArray<VisitorType>) new LinearDocumentPathWalker<VisitorType>(pathToThisArray)
-                .walkThroughDocument(document);
-        this.arraySize = this.arrayToIterate.size();
+        this.arrayToIterate = getArrayToIterate(document, pathToThisArray);
+        this.arraySize = this.arrayToIterate == null ? 0 : this.arrayToIterate.size();
+    }
+
+    private DocumentArray<VisitorType> getArrayToIterate(final DocumentNode<VisitorType> document,
+            final DocumentPathExpression pathToThisArray) {
+        try {
+            return (DocumentArray<VisitorType>) new LinearDocumentPathWalker<VisitorType>(pathToThisArray)
+                    .walkThroughDocument(document);
+        } catch (final DocumentPathWalkerException exception) {
+            return null;
+        }
     }
 
     @Override

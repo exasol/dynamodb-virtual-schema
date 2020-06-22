@@ -41,8 +41,6 @@ public class TestCdataConnectorIT {
     private static final String ADAPTER_SCHEMA = "ADAPTER";
     private static final String CONNECTION_NAME = "MY_CONNECTION";
     private static AwsExasolTestInterface exasolTestInterface;
-    private static String RTK;
-    private static String AWS_;
 
     @BeforeAll
     static void beforeAll()

@@ -11,7 +11,28 @@
       "Virtual Schema"
     ],
     "publisher": "jb books",
-    "price": 15
+    "price": 15,
+    "chapters": [
+      {
+        "name": "chapter 1",
+        "figures": [
+          {
+            "name": "Image of the Author"
+          },
+          {
+            "name": "figure 2"
+          }
+        ]
+      },
+      {
+        "name": "chapter 2",
+        "figures": [
+          {
+            "name": "figure 3"
+          }
+        ]
+      }
+    ]
   },
   {
     "isbn": "123254545",
@@ -23,6 +44,16 @@
     "price": 10,
     "topics": [
       "Fantasy"
+    ],
+    "chapters": [
+      {
+        "name": "Main Chapter",
+        "figures": [
+          {
+            "name": "Fancy Image"
+          }
+        ]
+      }
     ]
   },
   {
