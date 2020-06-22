@@ -85,7 +85,6 @@ class DynamodbFilterExpressionFactoryTest {
                 AbstractComparisonPredicate.Operator.EQUAL);
         final LogicalOperator and = new LogicalOperator(Set.of(comparison1, comparison2),
                 LogicalOperator.Operator.AND);
-
         assertFilterExpression(and, "(#0 = :0 and (#0 = :1))", Set.of("key"), Set.of(literal1, literal2));
     }
 

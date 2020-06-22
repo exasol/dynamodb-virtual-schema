@@ -74,10 +74,10 @@ public abstract class AbstractSelectionExtractor {
     }
 
     /**
-     * Separate the comparisons in two groups. The matched and the unmatched group.
+     * Separate the comparisons in two groups: matched and unmatched groups.
      * 
      * @param comparison comparison to test
-     * @return {@code true} if comparison shall be included the {@link Result#selectedSelection}.
+     * @return {@code true} if comparison should be included in the {@link Result#selectedSelection}.
      */
     protected abstract boolean matchComparison(DnfComparison comparison);
 
