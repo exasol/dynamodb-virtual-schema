@@ -6,7 +6,6 @@ import java.util.stream.Collectors;
 /**
  * This class represents a {@code AND} or {@code OR} logical operator.
  */
-@java.lang.SuppressWarnings("squid:S119") // DocumentVisitorType does not fit naming conventions.
 public final class LogicalOperator implements QueryPredicate {
     private static final long serialVersionUID = -8351558984178219419L;
     private final Set<QueryPredicate> operands;

@@ -17,7 +17,6 @@ import com.exasol.adapter.sql.*;
 /**
  * Visitor for {@link com.exasol.adapter.sql.SqlStatementSelect} building a {@link RemoteTableQuery}
  */
-@java.lang.SuppressWarnings("squid:S119") // DocumentVisitorType does not fit naming conventions.
 public class RemoteTableQueryFactory {
     private final QueryPredicateFactory predicateFactory;
     private final IndexColumnSelectionExtractor indexColumnSelectionExtractor;

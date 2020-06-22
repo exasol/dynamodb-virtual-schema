@@ -71,16 +71,16 @@ public class DynamodbFilterExpressionFactory {
                 throw new IllegalArgumentException(
                         "Empty logic expressions must be removed before converting to FilterExpression.");
             } else if (operands.size() == 1) {
-                this.filterExpression = callRecursive(operands.iterator().next());
+                this.filterExpression = convertPredicateRecursively(operands.iterator().next());
             } else {
                 final QueryPredicate firstPredicate = operands.iterator().next();
                 final Set<QueryPredicate> remainingOperands = getRemainingOperands(operands,
                         firstPredicate);
-                final String firstOperandsExpression = callRecursive(firstPredicate);
+                final String firstOperandsExpression = convertPredicateRecursively(firstPredicate);
                 final LogicalOperator.Operator operator = logicalOperator.getOperator();
                 this.filterExpression = "(" + firstOperandsExpression + " "
                         + getComparisionOperatorsExpression(operator) + " "
-                        + getSecondOperandsExpression(remainingOperands, operator) + ")";
+                        + getRemainingOperandsExpression(remainingOperands, operator) + ")";
             }
         }
 
@@ -91,11 +91,11 @@ public class DynamodbFilterExpressionFactory {
             return remainingPredicates;
         }
 
-        private String getSecondOperandsExpression(final Set<QueryPredicate> remainingOperands,
+        private String getRemainingOperandsExpression(final Set<QueryPredicate> remainingOperands,
                 final LogicalOperator.Operator operator) {
             final LogicalOperator logicalOperatorForRemaining = new LogicalOperator(
                     remainingOperands, operator);
-            return "(" + callRecursive(logicalOperatorForRemaining) + ")";
+            return "(" + convertPredicateRecursively(logicalOperatorForRemaining) + ")";
         }
 
         private String getComparisionOperatorsExpression(final LogicalOperator.Operator operator) {
@@ -113,10 +113,10 @@ public class DynamodbFilterExpressionFactory {
 
         @Override
         public void visit(final NotPredicate notPredicate) {
-            this.filterExpression = "NOT (" + callRecursive(notPredicate.getPredicate()) + ")";
+            this.filterExpression = "NOT (" + convertPredicateRecursively(notPredicate.getPredicate()) + ")";
         }
 
-        private String callRecursive(final QueryPredicate predicate) {
+        private String convertPredicateRecursively(final QueryPredicate predicate) {
             return new DynamodbFilterExpressionFactory(this.namePlaceholderMapBuilder, this.valuePlaceholderMapBuilder)
                     .buildFilterExpression(predicate);
         }

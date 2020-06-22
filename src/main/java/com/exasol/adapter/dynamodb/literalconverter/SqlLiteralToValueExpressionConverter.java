@@ -26,7 +26,7 @@ public class SqlLiteralToValueExpressionConverter {
     }
 
     private static class Visitor extends VoidSqlNodeVisitor {
-        ValueExpression result;
+        private ValueExpression result;
 
         @Override
         public Void visit(final SqlLiteralBool sqlLiteralBool) {

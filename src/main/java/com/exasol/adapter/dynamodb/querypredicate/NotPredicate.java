@@ -5,7 +5,6 @@ import java.util.Objects;
 /**
  * This class represents a {@code NOT}.
  */
-@java.lang.SuppressWarnings("squid:S119") // DocumentVisitorType does not fit naming conventions.
 public final class NotPredicate implements QueryPredicate {
     private static final long serialVersionUID = -1358113690298643292L;
     private final QueryPredicate predicate;

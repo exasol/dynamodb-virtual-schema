@@ -18,7 +18,6 @@ import com.exasol.adapter.dynamodb.querypredicate.QueryPredicate;
  *
  * Invalid DNF: {@code A AND (B OR C)} (AND is not allowed at top level)
  */
-@java.lang.SuppressWarnings("squid:S119") // DocumentVisitorType does not fit naming conventions.
 public class DnfOr {
     private final Set<DnfAnd> operands;
 
@@ -40,6 +39,11 @@ public class DnfOr {
         return this.operands;
     }
 
+    /**
+     * Convert the predicate modeled by this class to an {@link QueryPredicate}.
+     *
+     * @return {@link QueryPredicate}
+     */
     public QueryPredicate asQueryPredicate() {
         final Set<QueryPredicate> convertedOperands = this.operands.stream()
                 .map(DnfAnd::asQueryPredicate).filter(dnfAnd -> !(dnfAnd instanceof NoPredicate))

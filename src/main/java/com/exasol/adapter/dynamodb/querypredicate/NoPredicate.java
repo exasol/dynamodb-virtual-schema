@@ -3,7 +3,6 @@ package com.exasol.adapter.dynamodb.querypredicate;
 /**
  * This class represents the absence of a selection predicate.
  */
-@java.lang.SuppressWarnings("squid:S119") // DocumentVisitorType does not fit naming conventions.
 public final class NoPredicate implements QueryPredicate {
     private static final long serialVersionUID = -7964488054466482230L;
 

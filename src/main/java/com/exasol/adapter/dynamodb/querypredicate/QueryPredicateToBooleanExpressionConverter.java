@@ -7,10 +7,9 @@ import com.exasol.adapter.dynamodb.literalconverter.SqlLiteralToValueExpressionC
 import com.exasol.sql.expression.*;
 
 /**
- * This class converts a {@link QueryPredicate} class structure a {@link BooleanExpression} for the
+ * This class converts a {@link QueryPredicate} class structure to a {@link BooleanExpression} for the
  * sql-statement-builder
  */
-@java.lang.SuppressWarnings("squid:S119") // DocumentVisitorType does not fit naming conventions.
 public class QueryPredicateToBooleanExpressionConverter {
 
     public BooleanExpression convert(final QueryPredicate queryPredicate) {
@@ -20,7 +19,7 @@ public class QueryPredicateToBooleanExpressionConverter {
     }
 
     private static class Visitor implements QueryPredicateVisitor, ComparisonPredicateVisitor {
-        BooleanExpression result;
+        private BooleanExpression result;
 
         @Override
         public void visit(final ComparisonPredicate comparisonPredicate) {

@@ -13,10 +13,12 @@
 [![Lines of Code](https://sonarcloud.io/api/project_badges/measure?project=com.exasol%3Adynamodb-virtual-schema&metric=ncloc)](https://sonarcloud.io/dashboard?id=com.exasol%3Adynamodb-virtual-schema)
 
 ## Overview
+
 Using this Virtual Schema you can access to [Amazon DynamoDB](https://aws.amazon.com/dynamodb/) from Exasol.
 SonarCloud results:
 
  ## Installation
+ 
 Upload the latest available release of this adapter to BucketFS.
 
 Then create a schema to hold the adapter script.
@@ -83,15 +85,19 @@ CREATE VIRTUAL SCHEMA DYNAMODB_TEST USING ADAPTER.DYNAMODB_ADAPTER WITH
  
 
 ## First Steps
+
 Start with the [mapping definition example](doc/gettingStartedWithSchemaMappingLanguage.md).
 
 # Documentation
+
 * [Schema mapping language reference](https://exasol.github.io/dynamodb-virtual-schema/schema_doc/index.html)
 * [Schema mapping software architecture](doc/schemaMappingArchitecture.md)
 
 # Limitations
+
 * In this version the adapter does not support comparisons between two columns
 
 # Logging & Debugging
+
 * [Logging for Virtual Schemas](https://github.com/exasol/virtual-schemas/blob/master/doc/development/remote_logging.md)
 * [Remote debugging Virtual Schemas](https://github.com/exasol/virtual-schemas/blob/master/doc/development/remote_debugging.md)

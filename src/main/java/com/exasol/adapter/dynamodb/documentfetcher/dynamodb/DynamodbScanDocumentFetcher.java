@@ -14,7 +14,7 @@ import com.amazonaws.services.dynamodbv2.model.ScanResult;
  * This class represents a DynamoDB {@code SCAN} operation.
  */
 class DynamodbScanDocumentFetcher extends AbstractDynamodbDocumentFetcher {
-    private static final long serialVersionUID = -2402720048900542839L;
+    private static final long serialVersionUID = 8061635540586030441L;
     private final ScanRequest scanRequest;
 
     /**

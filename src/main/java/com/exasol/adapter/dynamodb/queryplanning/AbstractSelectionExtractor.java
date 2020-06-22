@@ -21,6 +21,9 @@ import com.exasol.adapter.dynamodb.querypredicate.normalizer.DnfOr;
 public abstract class AbstractSelectionExtractor {
     protected final DnfNormalizer dnfNormalizer;
 
+    /**
+     * Create an instance of {@link AbstractSelectionExtractor}
+     */
     public AbstractSelectionExtractor() {
         this.dnfNormalizer = new DnfNormalizer();
     }
@@ -28,7 +31,7 @@ public abstract class AbstractSelectionExtractor {
     /**
      * Extract the predicates on {@link IterationIndexColumnMapping}s from a selection.
      *
-     * @param selection to spli
+     * @param selection to split
      * @return {@link Result} containing one selection with the predicates on {@link IterationIndexColumnMapping}s and
      *         another on the other columns.
      */
@@ -78,6 +81,9 @@ public abstract class AbstractSelectionExtractor {
      */
     protected abstract boolean matchComparison(DnfComparison comparison);
 
+    /**
+     * This class stores the result of {@link #extractIndexColumnSelection(QueryPredicate)}.
+     */
     public static class Result {
         private final DnfOr selectedSelection;
         private final DnfOr remainingSelection;
@@ -87,10 +93,20 @@ public abstract class AbstractSelectionExtractor {
             this.remainingSelection = remainingSelection;
         }
 
+        /**
+         * Get the selection with the predicates that were matched.
+         * 
+         * @return DNF normalized predicate structure
+         */
         public DnfOr getSelectedSelection() {
             return this.selectedSelection;
         }
 
+        /**
+         * Get the selection with the predicates that were not matched.
+         *
+         * @return DNF normalized predicate structure
+         */
         public DnfOr getRemainingSelection() {
             return this.remainingSelection;
         }
