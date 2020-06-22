@@ -9,7 +9,8 @@ import org.junit.jupiter.api.Test;
 import com.exasol.adapter.dynamodb.documentpath.DocumentPathExpression;
 
 class DocumentPathToDynamodbExpressionConverterTest {
-    private static final DocumentPathToDynamodbExpressionConverter CONVERTER = new DocumentPathToDynamodbExpressionConverter();
+    private static final DocumentPathToDynamodbExpressionConverter CONVERTER = DocumentPathToDynamodbExpressionConverter
+            .getInstance();
 
     @Test
     void testConvertPath() {

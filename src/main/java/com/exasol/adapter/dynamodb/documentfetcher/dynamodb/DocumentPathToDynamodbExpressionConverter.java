@@ -8,6 +8,23 @@ import com.exasol.adapter.dynamodb.documentpath.*;
  * from a {@link DocumentPathExpression}.
  */
 public class DocumentPathToDynamodbExpressionConverter {
+    private static final DocumentPathToDynamodbExpressionConverter INSTANCE = new DocumentPathToDynamodbExpressionConverter();
+
+    /**
+     * Empty constructor to hide the public default.
+     */
+    private DocumentPathToDynamodbExpressionConverter() {
+        // empty on purpose.
+    }
+
+    /**
+     * Get a singleton instance of {@link DocumentPathToDynamodbExpressionConverter}.
+     *
+     * @return instance of {@link DocumentPathToDynamodbExpressionConverter}
+     */
+    public static DocumentPathToDynamodbExpressionConverter getInstance() {
+        return INSTANCE;
+    }
 
     /**
      * Converts the given {@link DocumentPathExpression} into a DynamoDB path expression.

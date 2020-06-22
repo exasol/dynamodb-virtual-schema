@@ -14,6 +14,14 @@ import com.exasol.adapter.dynamodb.documentpath.DocumentPathExpression;
 
 class DynamodbProjectionExpressionFactoryTest {
     private static final DynamodbProjectionExpressionFactory FACTORY = new DynamodbProjectionExpressionFactory();
+    public static final DocumentPathExpression ISBN_PATH = new DocumentPathExpression.Builder().addObjectLookup("isbn")
+            .build();
+    public static final DocumentPathExpression PUBLISHER_PATH = new DocumentPathExpression.Builder()
+            .addObjectLookup("publisher").build();
+    public static final DocumentPathExpression PUBLISHER_NAME_PATH = new DocumentPathExpression.Builder()
+            .addObjectLookup("publisher").addObjectLookup("name").build();
+    public static final DocumentPathExpression AUTHORS_NAME_PATH = new DocumentPathExpression.Builder()
+            .addObjectLookup("authors").addArrayAll().addObjectLookup("name").build();
 
     @Test
     void testEmpty() {
@@ -28,9 +36,7 @@ class DynamodbProjectionExpressionFactoryTest {
     @Test
     void testSingleEntry() {
         final DynamodbAttributeNamePlaceholderMapBuilder namePlaceholderMapBuilder = new DynamodbAttributeNamePlaceholderMapBuilder();
-        final String result = FACTORY.build(
-                List.of(new DocumentPathExpression.Builder().addObjectLookup("isbn").build()),
-                namePlaceholderMapBuilder);
+        final String result = FACTORY.build(List.of(ISBN_PATH), namePlaceholderMapBuilder);
         assertAll(//
                 () -> assertThat(result, equalTo("#0")),
                 () -> assertThat(namePlaceholderMapBuilder.getPlaceholderMap(), equalTo(Map.of("#0", "isbn")))//
@@ -40,15 +46,38 @@ class DynamodbProjectionExpressionFactoryTest {
     @Test
     void testTwoEntries() {
         final DynamodbAttributeNamePlaceholderMapBuilder namePlaceholderMapBuilder = new DynamodbAttributeNamePlaceholderMapBuilder();
-        final String result = FACTORY
-                .build(List.of(new DocumentPathExpression.Builder().addObjectLookup("isbn").build(),
-                        new DocumentPathExpression.Builder().addObjectLookup("authors").addArrayAll()
-                                .addObjectLookup("name").build()),
-                        namePlaceholderMapBuilder);
+        final String result = FACTORY.build(List.of(ISBN_PATH, AUTHORS_NAME_PATH), namePlaceholderMapBuilder);
         assertAll(//
                 () -> assertThat(result, equalTo("#0, #1")),
                 () -> assertThat(namePlaceholderMapBuilder.getPlaceholderMap(),
-                        equalTo(Map.of("#0", "isbn", "#1", "authors")))//
+                        equalTo(Map.of("#0", "authors", "#1", "isbn")))//
+        );
+    }
+
+    @Test
+    void testTwoEqualPathsGetSimplified() {
+        final DynamodbAttributeNamePlaceholderMapBuilder namePlaceholderMapBuilder = new DynamodbAttributeNamePlaceholderMapBuilder();
+        final String result = FACTORY.build(List.of(ISBN_PATH, ISBN_PATH), namePlaceholderMapBuilder);
+        assertThat(result, equalTo("#0"));
+    }
+
+    @Test
+    void testPathAndSubpathGetSimplified() {
+        final DynamodbAttributeNamePlaceholderMapBuilder namePlaceholderMapBuilder = new DynamodbAttributeNamePlaceholderMapBuilder();
+        final String result = FACTORY.build(List.of(PUBLISHER_NAME_PATH, PUBLISHER_PATH), namePlaceholderMapBuilder);
+        assertAll(//
+                () -> assertThat(result, equalTo("#0")),
+                () -> assertThat(namePlaceholderMapBuilder.getPlaceholderMap(), equalTo(Map.of("#0", "publisher")))//
+        );
+    }
+
+    @Test
+    void testPathAndSubpathGetSimplifiedSymmetric() {
+        final DynamodbAttributeNamePlaceholderMapBuilder namePlaceholderMapBuilder = new DynamodbAttributeNamePlaceholderMapBuilder();
+        final String result = FACTORY.build(List.of(PUBLISHER_PATH, PUBLISHER_NAME_PATH), namePlaceholderMapBuilder);
+        assertAll(//
+                () -> assertThat(result, equalTo("#0")),
+                () -> assertThat(namePlaceholderMapBuilder.getPlaceholderMap(), equalTo(Map.of("#0", "publisher")))//
         );
     }
 }

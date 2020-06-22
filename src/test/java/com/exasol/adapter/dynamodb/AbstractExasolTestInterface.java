@@ -122,7 +122,7 @@ public abstract class AbstractExasolTestInterface {
                 + "." + ImportDocumentData.UDF_NAME + "(" + AbstractUdf.PARAMETER_DOCUMENT_FETCHER
                 + " VARCHAR(2000000), " + AbstractUdf.PARAMETER_REMOTE_TABLE_QUERY + " VARCHAR(2000000), "
                 + AbstractUdf.PARAMETER_CONNECTION_NAME + " VARCHAR(500)) EMITS(...) AS\n");
-        addDebuggerOptions(statementBuilder);
+        // addDebuggerOptions(statementBuilder);
         statementBuilder.append("    %scriptclass " + ImportDocumentData.class.getName() + ";\n");
         statementBuilder.append("    %jar /buckets/bfsdefault/default/" + VIRTUAL_SCHEMAS_JAR_NAME_AND_VERSION + ";\n");
         statementBuilder.append("/");

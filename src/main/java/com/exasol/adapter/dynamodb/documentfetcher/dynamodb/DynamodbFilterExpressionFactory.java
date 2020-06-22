@@ -144,7 +144,7 @@ public class DynamodbFilterExpressionFactory {
             if (column instanceof PropertyToColumnMapping) {
                 final PropertyToColumnMapping columnMapping = (PropertyToColumnMapping) column;
                 final DocumentPathExpression columnsPath = columnMapping.getPathToSourceProperty();
-                final String columnPathExpression = new DocumentPathToDynamodbExpressionConverter()
+                final String columnPathExpression = DocumentPathToDynamodbExpressionConverter.getInstance()
                         .convert(columnsPath);
                 final String namePlaceholder = this.namePlaceholderMapBuilder.addValue(columnPathExpression);
                 final DocumentValue<DynamodbNodeVisitor> literal = getLiteral(columnLiteralComparisonPredicate);

@@ -159,24 +159,6 @@ class DynamodbAdapterTestLocalIT {
         assertThat(result, containsInAnyOrder("123567", "123254545", "1235673"));
     }
 
-    /**
-     * Tests a {@code SELECT *} from a large DynamoDB table.
-     */
-    @Test
-    void testBigScan() throws SQLException {
-        createBasicMappingVirtualSchema();
-        dynamodbTestInterface.createTable(DYNAMO_BOOKS_TABLE, TestDocuments.BOOKS_ISBN_PROPERTY);
-        final int numBooks = 1000;
-        final List<String> actualBookNames = new ArrayList<>(numBooks);
-        for (int i = 0; i < numBooks; i++) {
-            final String booksName = String.valueOf(i);
-            dynamodbTestInterface.putItem(DYNAMO_BOOKS_TABLE, booksName, "name equal for all books");
-            actualBookNames.add(booksName);
-        }
-        final SelectStringArrayResult result = selectStringArray();
-        assertThat(result.rows, containsInAnyOrder(actualBookNames.toArray()));
-    }
-
     @Test
     void testSelectNestedTableSchema() throws SQLException, IOException {
         createNestedTableVirtualSchema();
