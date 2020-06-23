@@ -43,13 +43,12 @@ public class RedundantPathEliminator {
      * 
      * @param paths collection of paths
      * @return Set with redundancy free paths
+     * 
+     * @implNote The basic idea of this algorithm is to iterate over the paths with an increasing path length. In the
+     *           first iteration only the paths with a length of 0 are considered. In each iteration the algorithm
+     *           removes all paths that are already included in the result from allPaths.
      */
     public Set<DocumentPathExpression> removeRedundantPaths(final Stream<DocumentPathExpression> paths) {
-        /*
-         * The basic idea of this algorithm is to iterate over the paths with an increasing path length. In the first
-         * iteration only the paths with a length of 0 are considered. In each iteration the algorithm removes all paths
-         * that are already included in the result from allPaths.
-         */
         final List<DocumentPathExpression> allPaths = paths.collect(Collectors.toCollection(LinkedList::new));
         final Set<DocumentPathExpression> redundancyFreePaths = new HashSet<>(allPaths.size() * 2);
         int currentPathLength = 0;
