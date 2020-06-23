@@ -28,6 +28,21 @@
             }
           }
         }
+      },
+      "title": {
+        "toStringMapping": {
+          "maxLength": 2000,
+          "overflow": "TRUNCATE"
+        }
+      },
+      "title_prefix": {
+        "toStringMapping": {
+        }
+      },
+      "publisher": {
+        "toJsonMapping": {
+          "maxLength": 200000
+        }
       }
     }
   }
