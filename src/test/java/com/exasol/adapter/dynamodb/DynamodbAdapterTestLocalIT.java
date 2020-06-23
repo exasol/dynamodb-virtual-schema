@@ -207,6 +207,14 @@ class DynamodbAdapterTestLocalIT {
         assertThat(figures, containsInAnyOrder("Main Chapter", "chapter 1"));
     }
 
+    @Test
+    void testProjectionOnPropertyInList() throws SQLException, IOException {
+        createDoubleNestedTableVirtualSchema();
+        final List<String> figures = runQueryAndExtractColumn(
+                "SELECT NAME FROM " + TEST_SCHEMA + ".BOOKS_CHAPTERS", "NAME");
+        assertThat(figures, containsInAnyOrder("Main Chapter", "chapter 1", "chapter 2"));
+    }
+
     // @Test //TODO reenable when fixed
     void testSelectOnIndexAndOtherColumn() throws SQLException, IOException {
         createDoubleNestedTableVirtualSchema();
