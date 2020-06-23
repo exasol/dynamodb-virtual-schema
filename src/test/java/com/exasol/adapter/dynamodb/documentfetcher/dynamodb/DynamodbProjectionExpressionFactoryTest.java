@@ -36,10 +36,11 @@ class DynamodbProjectionExpressionFactoryTest {
     @Test
     void testSingleEntry() {
         final DynamodbAttributeNamePlaceholderMapBuilder namePlaceholderMapBuilder = new DynamodbAttributeNamePlaceholderMapBuilder();
-        final String result = FACTORY.build(List.of(ISBN_PATH), namePlaceholderMapBuilder);
+        final String result = FACTORY.build(List.of(PUBLISHER_NAME_PATH), namePlaceholderMapBuilder);
         assertAll(//
-                () -> assertThat(result, equalTo("#0")),
-                () -> assertThat(namePlaceholderMapBuilder.getPlaceholderMap(), equalTo(Map.of("#0", "isbn")))//
+                () -> assertThat(result, equalTo("#0.#1")),
+                () -> assertThat(namePlaceholderMapBuilder.getPlaceholderMap(),
+                        equalTo(Map.of("#0", "publisher", "#1", "name")))//
         );
     }
 
@@ -50,34 +51,7 @@ class DynamodbProjectionExpressionFactoryTest {
         assertAll(//
                 () -> assertThat(result, equalTo("#0, #1")),
                 () -> assertThat(namePlaceholderMapBuilder.getPlaceholderMap(),
-                        equalTo(Map.of("#0", "authors", "#1", "isbn")))//
-        );
-    }
-
-    @Test
-    void testTwoEqualPathsGetSimplified() {
-        final DynamodbAttributeNamePlaceholderMapBuilder namePlaceholderMapBuilder = new DynamodbAttributeNamePlaceholderMapBuilder();
-        final String result = FACTORY.build(List.of(ISBN_PATH, ISBN_PATH), namePlaceholderMapBuilder);
-        assertThat(result, equalTo("#0"));
-    }
-
-    @Test
-    void testPathAndSubpathGetSimplified() {
-        final DynamodbAttributeNamePlaceholderMapBuilder namePlaceholderMapBuilder = new DynamodbAttributeNamePlaceholderMapBuilder();
-        final String result = FACTORY.build(List.of(PUBLISHER_NAME_PATH, PUBLISHER_PATH), namePlaceholderMapBuilder);
-        assertAll(//
-                () -> assertThat(result, equalTo("#0")),
-                () -> assertThat(namePlaceholderMapBuilder.getPlaceholderMap(), equalTo(Map.of("#0", "publisher")))//
-        );
-    }
-
-    @Test
-    void testPathAndSubpathGetSimplifiedSymmetric() {
-        final DynamodbAttributeNamePlaceholderMapBuilder namePlaceholderMapBuilder = new DynamodbAttributeNamePlaceholderMapBuilder();
-        final String result = FACTORY.build(List.of(PUBLISHER_PATH, PUBLISHER_NAME_PATH), namePlaceholderMapBuilder);
-        assertAll(//
-                () -> assertThat(result, equalTo("#0")),
-                () -> assertThat(namePlaceholderMapBuilder.getPlaceholderMap(), equalTo(Map.of("#0", "publisher")))//
+                        equalTo(Map.of("#0", "isbn", "#1", "authors")))//
         );
     }
 }

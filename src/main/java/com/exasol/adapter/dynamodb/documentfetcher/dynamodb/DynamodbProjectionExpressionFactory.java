@@ -1,10 +1,12 @@
 package com.exasol.adapter.dynamodb.documentfetcher.dynamodb;
 
 import java.util.Collection;
-import java.util.function.Predicate;
+import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import com.exasol.adapter.dynamodb.documentpath.DocumentPathExpression;
+import com.exasol.adapter.dynamodb.documentpath.RedundantPathEliminator;
 
 /**
  * This class builds a DynamoDB projection expression for a list of requested properties.
@@ -37,10 +39,12 @@ public class DynamodbProjectionExpressionFactory {
      */
     public String build(final Collection<DocumentPathExpression> requestedProperties,
             final DynamodbAttributeNamePlaceholderMapBuilder namePlaceholderMapBuilder) {
-        return requestedProperties.stream().map(this::truncateAtArrayAllPathSegment)
-                .map(DocumentPathToDynamodbExpressionConverter.getInstance()::convert).sorted()
-                .filter(new RedundantPathRemover()).map(namePlaceholderMapBuilder::addValue)
-                .collect(Collectors.joining(", "));
+        final Stream<DocumentPathExpression> paths = requestedProperties.stream()
+                .map(this::truncateAtArrayAllPathSegment);
+        final Set<DocumentPathExpression> redundancyFreePaths = RedundantPathEliminator.getInstance()
+                .removeRedundantPaths(paths);
+        return redundancyFreePaths.stream().map(path -> DocumentPathToDynamodbExpressionConverter.getInstance()
+                .convert(path, namePlaceholderMapBuilder)).collect(Collectors.joining(", "));
     }
 
     private DocumentPathExpression truncateAtArrayAllPathSegment(final DocumentPathExpression expression) {
@@ -49,27 +53,6 @@ public class DynamodbProjectionExpressionFactory {
             return expression;
         } else {
             return expression.getSubPath(0, index);
-        }
-    }
-
-    /**
-     * This class removes redundant projection expressions. For example it reduces {@code publisher.name} and
-     * {@code publisher} to {@code publisher}, as {@code publisher} includes {@code publisher.name} anyway. DynamoDB
-     * requires this reduction, as no overlapping projection expressions are allowed.
-     * 
-     * This class requires that the stream is sorted ascending.
-     */
-    private static class RedundantPathRemover implements Predicate<String> {
-        private String previousPath = null;
-
-        @Override
-        public boolean test(final String path) {
-            if (this.previousPath != null && path.startsWith(this.previousPath)) {
-                return false;
-            } else {
-                this.previousPath = path;
-                return true;
-            }
         }
     }
 }

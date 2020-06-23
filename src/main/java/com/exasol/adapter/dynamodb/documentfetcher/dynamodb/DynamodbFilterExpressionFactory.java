@@ -145,13 +145,12 @@ public class DynamodbFilterExpressionFactory {
                 final PropertyToColumnMapping columnMapping = (PropertyToColumnMapping) column;
                 final DocumentPathExpression columnsPath = columnMapping.getPathToSourceProperty();
                 final String columnPathExpression = DocumentPathToDynamodbExpressionConverter.getInstance()
-                        .convert(columnsPath);
-                final String namePlaceholder = this.namePlaceholderMapBuilder.addValue(columnPathExpression);
+                        .convert(columnsPath, this.namePlaceholderMapBuilder);
                 final DocumentValue<DynamodbNodeVisitor> literal = getLiteral(columnLiteralComparisonPredicate);
                 final AttributeValue attributeValue = new DynamodbNodeToAttributeValueConverter()
                         .convertToAttributeValue(literal);
                 final String valuePlaceholder = this.valuePlaceholderMapBuilder.addValue(attributeValue);
-                this.filterExpression = namePlaceholder + " "
+                this.filterExpression = columnPathExpression + " "
                         + convertComparisonOperator(columnLiteralComparisonPredicate.getOperator()) + " "
                         + valuePlaceholder;
             } else {

@@ -32,11 +32,12 @@ public class DocumentPathToDynamodbExpressionConverter {
      * @param pathToConvert path to be converted
      * @return DynamoDB path expression
      */
-    public String convert(final DocumentPathExpression pathToConvert) {
+    public String convert(final DocumentPathExpression pathToConvert,
+            final DynamodbAttributeNamePlaceholderMapBuilder namePlaceholderMapBuilder) {
         final StringBuilder dynamodbPathExpressionBuilder = new StringBuilder();
         boolean isFirst = true;
         for (final PathSegment segment : pathToConvert.getSegments()) {
-            final SegmentConvertVisitor visitor = new SegmentConvertVisitor(isFirst);
+            final SegmentConvertVisitor visitor = new SegmentConvertVisitor(isFirst, namePlaceholderMapBuilder);
             segment.accept(visitor);
             dynamodbPathExpressionBuilder.append(visitor.getPathExpression());
             isFirst = false;
@@ -47,14 +48,18 @@ public class DocumentPathToDynamodbExpressionConverter {
     private static class SegmentConvertVisitor implements PathSegmentVisitor {
         private final boolean isFirstSegment;
         private String pathExpression;
+        private final DynamodbAttributeNamePlaceholderMapBuilder namePlaceholderMapBuilder;
 
-        private SegmentConvertVisitor(final boolean isFirstSegment) {
+        private SegmentConvertVisitor(final boolean isFirstSegment,
+                final DynamodbAttributeNamePlaceholderMapBuilder namePlaceholderMapBuilder) {
             this.isFirstSegment = isFirstSegment;
+            this.namePlaceholderMapBuilder = namePlaceholderMapBuilder;
         }
 
         @Override
         public void visit(final ObjectLookupPathSegment objectLookupPathSegment) {
-            this.pathExpression = (this.isFirstSegment ? "" : ".") + objectLookupPathSegment.getLookupKey();
+            this.pathExpression = (this.isFirstSegment ? "" : ".")
+                    + this.namePlaceholderMapBuilder.addValue(objectLookupPathSegment.getLookupKey());
         }
 
         @Override
