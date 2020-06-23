@@ -83,7 +83,7 @@ public class DocumentPathExpression implements Serializable {
      *
      * @return index of the first {@link ArrayAllPathSegment}; {@code -1} if not found.
      */
-    int indexOfFirstArrayAllSegment() {
+    public int indexOfFirstArrayAllSegment() {
         int index = 0;
         for (final PathSegment pathSegment : this.segments) {
             if (pathSegment instanceof ArrayAllPathSegment) {
@@ -131,7 +131,7 @@ public class DocumentPathExpression implements Serializable {
         }
 
         /**
-         * Appends a {@link PathSegment} to the current path.
+         * Append a {@link PathSegment} to the current path.
          * 
          * @param segment path segment to append
          * @return {@code this} instance for fluent programming
@@ -142,7 +142,7 @@ public class DocumentPathExpression implements Serializable {
         }
 
         /**
-         * Appends an {@link ObjectLookupPathSegment} to the current path.
+         * Append an {@link ObjectLookupPathSegment} to the current path.
          * 
          * @param lookupKey lookup key for the {@link ObjectLookupPathSegment}
          * @return {@code this} instance for fluent programming
@@ -152,7 +152,7 @@ public class DocumentPathExpression implements Serializable {
         }
 
         /**
-         * Appends an {@link ArrayLookupPathSegment} to the current path.
+         * Append an {@link ArrayLookupPathSegment} to the current path.
          * 
          * @param lookupIndex lookup index for {@link ArrayLookupPathSegment}
          * @return {@code this} instance for fluent programming
@@ -162,7 +162,7 @@ public class DocumentPathExpression implements Serializable {
         }
 
         /**
-         * Appends an {@link ArrayAllPathSegment} to the current path.
+         * Append an {@link ArrayAllPathSegment} to the current path.
          *
          * @return {@code this} instance for fluent programming
          */
@@ -171,7 +171,7 @@ public class DocumentPathExpression implements Serializable {
         }
 
         /**
-         * Finishes the build process of {@link DocumentPathExpression}.
+         * Finish the build process of {@link DocumentPathExpression}.
          * 
          * @return a new instance of {@link DocumentPathExpression}
          */

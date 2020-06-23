@@ -67,9 +67,9 @@ class SchemaMapperTest {
                 .collect(Collectors.toList());
         assertAll(//
                 () -> assertThat(result.size(), equalTo(2)),
-                () -> assertThat(result.get(0).get(0), equalTo(STRING_LITERAL)), //
-                () -> assertThat(((IntegerLiteral) result.get(0).get(1)).getValue(), equalTo(0)),
-                () -> assertThat(((IntegerLiteral) result.get(1).get(1)).getValue(), equalTo(1))//
+                () -> assertThat(result.get(0).get(1), equalTo(STRING_LITERAL)), //
+                () -> assertThat(((IntegerLiteral) result.get(0).get(0)).getValue(), equalTo(0)),
+                () -> assertThat(((IntegerLiteral) result.get(1).get(0)).getValue(), equalTo(1))//
         );
     }
 

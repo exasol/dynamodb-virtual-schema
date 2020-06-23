@@ -1,7 +1,5 @@
 package com.exasol.adapter.dynamodb;
 
-import static com.exasol.adapter.capabilities.MainCapability.FILTER_EXPRESSIONS;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
@@ -15,6 +13,7 @@ import com.exasol.adapter.AdapterProperties;
 import com.exasol.adapter.VirtualSchemaAdapter;
 import com.exasol.adapter.capabilities.Capabilities;
 import com.exasol.adapter.capabilities.LiteralCapability;
+import com.exasol.adapter.capabilities.MainCapability;
 import com.exasol.adapter.capabilities.PredicateCapability;
 import com.exasol.adapter.dynamodb.documentfetcher.DocumentFetcher;
 import com.exasol.adapter.dynamodb.documentfetcher.dynamodb.DynamodbDocumentFetcherFactory;
@@ -37,7 +36,8 @@ import com.exasol.dynamodb.DynamodbConnectionFactory;
  * DynamoDB Virtual Schema adapter.
  */
 public class DynamodbAdapter implements VirtualSchemaAdapter {
-    private static final Capabilities CAPABILITIES = Capabilities.builder().addMain(FILTER_EXPRESSIONS)
+    private static final Capabilities CAPABILITIES = Capabilities.builder()
+            .addMain(MainCapability.FILTER_EXPRESSIONS, MainCapability.SELECTLIST_PROJECTION)
             .addPredicate(PredicateCapability.EQUAL, PredicateCapability.LESS, PredicateCapability.LESSEQUAL)
             .addLiteral(LiteralCapability.STRING, LiteralCapability.NULL, LiteralCapability.BOOL,
                     LiteralCapability.DOUBLE, LiteralCapability.EXACTNUMERIC)
@@ -130,7 +130,7 @@ public class DynamodbAdapter implements VirtualSchemaAdapter {
     private PushDownResponse runPushdown(final ExaMetadata exaMetadata, final PushDownRequest request)
             throws AdapterException, ExaConnectionAccessException, IOException {
         final RemoteTableQuery remoteTableQuery = new RemoteTableQueryFactory().build(request.getSelect(),
-                        request.getSchemaMetadataInfo().getAdapterNotes());
+                request.getSchemaMetadataInfo().getAdapterNotes());
         final String selectFromValuesStatement = runQuery(exaMetadata, request, remoteTableQuery);
         return PushDownResponse.builder()//
                 .pushDownSql(selectFromValuesStatement)//
@@ -138,8 +138,7 @@ public class DynamodbAdapter implements VirtualSchemaAdapter {
     }
 
     private String runQuery(final ExaMetadata exaMetadata, final PushDownRequest request,
-            final RemoteTableQuery remoteTableQuery)
-            throws ExaConnectionAccessException, IOException {
+            final RemoteTableQuery remoteTableQuery) throws ExaConnectionAccessException, IOException {
         final AmazonDynamoDB dynamodbClient = getDynamoDBClient(exaMetadata, request);
         final DynamodbDocumentFetcherFactory documentFetcherFactory = new DynamodbDocumentFetcherFactory(
                 dynamodbClient);

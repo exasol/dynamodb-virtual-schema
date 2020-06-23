@@ -1,6 +1,7 @@
 package com.exasol.adapter.dynamodb.documentfetcher.dynamodb;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Set;
 
 import com.exasol.adapter.AdapterException;
@@ -41,6 +42,10 @@ public class BasicMappingSetup {
     public RemoteTableQuery getSelectAllQuery() {
         return new RemoteTableQuery(this.tableMapping, this.tableMapping.getColumns(), new NoPredicate(),
                 new NoPredicate());
+    }
+
+    public RemoteTableQuery getSelectAllQueryWithNameColumnProjected() {
+        return new RemoteTableQuery(this.tableMapping, List.of(this.nameColumn), new NoPredicate(), new NoPredicate());
     }
 
     /**

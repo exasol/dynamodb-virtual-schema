@@ -125,6 +125,15 @@ public class TestCdataConnectorIT {
     }
 
     @Test
+    void testCountAuthorsTable() throws SQLException {
+        final ResultSet resultSet = exasolTestInterface.getStatement().executeQuery(
+                "SELECT COUNT(*) FROM (IMPORT INTO (c1 VARCHAR(255) UTF8) FROM JDBC AT MY_CONNECTION STATEMENT 'SELECT \"key\" FROM \"open_library_test.authors\";');");
+        resultSet.next();
+        final int count = resultSet.getInt(1);
+        assertThat(count, equalTo(858180));
+    }
+
+    @Test
     void testSelectSingleRow() throws SQLException {
         final ResultSet resultSet = exasolTestInterface.getStatement().executeQuery(
                 "SELECT COUNT(*) FROM TEST.\"open_library_test\" WHERE \"key\" = '/authors/OL7124039A' AND \"revision\" = 1");

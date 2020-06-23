@@ -10,7 +10,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import org.apache.xmlrpc.XmlRpcException;
-import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -57,24 +56,29 @@ class DynamodbAdapterTestAwsIT {
 
     @Test
     void testCountAllRows() throws SQLException {
-        final ResultSet resultSet = exasolTestInterface.getStatement().executeQuery("SELECT COUNT(*) FROM OPENLIBRARY");
+        final ResultSet resultSet = exasolTestInterface.getStatement()
+                .executeQuery("SELECT COUNT(\"KEY\") FROM OPENLIBRARY");
         resultSet.next();
         final int count = resultSet.getInt(1);
-        assertThat(count, equalTo(1998388));
+        assertThat(count, equalTo(2000000));
     }
 
     @Test
     void testSelectSingleRow() throws SQLException {
         final ResultSet resultSet = exasolTestInterface.getStatement()
-                .executeQuery("SELECT COUNT(*) FROM OPENLIBRARY WHERE KEY = '/authors/OL13141A' AND REVISION = 1");
+                .executeQuery(
+                        "SELECT COUNT(\"KEY\") FROM OPENLIBRARY WHERE KEY = '/authors/OL13141A' AND REVISION = 1");
         resultSet.next();
         final int count = resultSet.getInt(1);
         assertThat(count, equalTo(1));
     }
 
-    @AfterAll
-    static void afterAll() throws SQLException {
-        exasolTestInterface.dropConnection(DYNAMODB_CONNECTION);
-        exasolTestInterface.dropVirtualSchema(TEST_SCHEMA);
+    @Test
+    void testCountAuthorsTable() throws SQLException {
+        final ResultSet resultSet = exasolTestInterface.getStatement()
+                .executeQuery("SELECT COUNT(\"KEY\") FROM OPENLIBRARY_AUTHORS");
+        resultSet.next();
+        final int count = resultSet.getInt(1);
+        assertThat(count, equalTo(858180));
     }
 }
