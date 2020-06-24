@@ -139,7 +139,7 @@ public class TestCdataConnectorIT {
     @Test
     void testToJson() throws SQLException {
         final ResultSet resultSet = exasolTestInterface.getStatement().executeQuery(
-                "SELECT * FROM (IMPORT INTO (c1 VARCHAR(200000) UTF8) FROM JDBC AT MY_CONNECTION STATEMENT 'SELECT \"publisher\" FROM \"open_library_test\"')");
+                "SELECT * FROM (IMPORT INTO (c1 VARCHAR(200000) UTF8) FROM JDBC AT MY_CONNECTION STATEMENT 'SELECT \"publishers\" FROM \"open_library_test\"')");
     }
 
     @Test

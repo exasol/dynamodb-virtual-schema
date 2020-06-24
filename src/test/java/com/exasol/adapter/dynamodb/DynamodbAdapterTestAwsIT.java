@@ -78,7 +78,7 @@ class DynamodbAdapterTestAwsIT {
     @Test
     void testToJson() throws SQLException {
         final ResultSet resultSet = exasolTestInterface.getStatement()
-                .executeQuery("SELECT \"PUBLISHER\" FROM OPENLIBRARY");
+                .executeQuery("SELECT \"PUBLISHERS\" FROM OPENLIBRARY");
         resultSet.next();
     }
 

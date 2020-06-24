@@ -39,7 +39,7 @@
         "toStringMapping": {
         }
       },
-      "publisher": {
+      "publishers": {
         "toJsonMapping": {
           "maxLength": 200000
         }
