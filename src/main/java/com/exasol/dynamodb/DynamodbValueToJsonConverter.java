@@ -16,6 +16,24 @@ import com.exasol.adapter.dynamodb.documentnode.dynamodb.*;
  * the JSON format.
  */
 public class DynamodbValueToJsonConverter {
+    private static final DynamodbValueToJsonConverter INSTANCE = new DynamodbValueToJsonConverter();
+
+    /**
+     * Private constructor to hide the public default.
+     */
+    private DynamodbValueToJsonConverter() {
+        // empty on purpose
+    }
+
+    /**
+     * Get a singleton instance of {@link DynamodbValueToJsonConverter}.
+     *
+     * @return instance of {@link DynamodbValueToJsonConverter}
+     */
+    public static DynamodbValueToJsonConverter getInstance() {
+        return INSTANCE;
+    }
+
     // This is an performance optimization as JsonProvider.provider() is quite slow
     private static final JsonProvider JSON = JsonProvider.provider();
 
@@ -53,7 +71,7 @@ public class DynamodbValueToJsonConverter {
             final JsonObjectBuilder objectBuilder = JSON.createObjectBuilder();
             for (final Map.Entry<String, DocumentNode<DynamodbNodeVisitor>> mapEntry : map.getKeyValueMap()
                     .entrySet()) {
-                objectBuilder.add(mapEntry.getKey(), new DynamodbValueToJsonConverter().convert(mapEntry.getValue()));
+                objectBuilder.add(mapEntry.getKey(), getInstance().convert(mapEntry.getValue()));
             }
             this.jsonValue = objectBuilder.build();
         }
@@ -86,7 +104,7 @@ public class DynamodbValueToJsonConverter {
         private JsonValue convertList(final DocumentArray<DynamodbNodeVisitor> list) {
             final JsonArrayBuilder arrayBuilder = JSON.createArrayBuilder();
             for (final DocumentNode<DynamodbNodeVisitor> attributeValue : list.getValuesList()) {
-                arrayBuilder.add(new DynamodbValueToJsonConverter().convert(attributeValue));
+                arrayBuilder.add(getInstance().convert(attributeValue));
             }
             return arrayBuilder.build();
         }

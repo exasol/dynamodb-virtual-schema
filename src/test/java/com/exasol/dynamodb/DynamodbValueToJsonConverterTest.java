@@ -17,8 +17,7 @@ import com.exasol.adapter.dynamodb.documentnode.dynamodb.*;
 import com.exasol.dynamodb.attributevalue.AttributeValueQuickCreator;
 
 class DynamodbValueToJsonConverterTest {
-
-    private static final DynamodbValueToJsonConverter CONVERTER = new DynamodbValueToJsonConverter();
+    private static final DynamodbValueToJsonConverter CONVERTER = DynamodbValueToJsonConverter.getInstance();
 
     @Test
     void testConvertString() {
