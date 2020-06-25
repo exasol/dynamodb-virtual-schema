@@ -12,7 +12,6 @@ import com.exasol.adapter.dynamodb.documentnode.DocumentNode;
 import com.exasol.adapter.dynamodb.documentnode.DocumentObject;
 import com.exasol.adapter.dynamodb.documentnode.DocumentValue;
 import com.exasol.adapter.dynamodb.documentpath.DocumentPathExpression;
-import com.exasol.adapter.dynamodb.documentpath.DocumentPathWalkerException;
 import com.exasol.adapter.dynamodb.documentpath.StaticDocumentPathIterator;
 import com.exasol.sql.expression.ValueExpression;
 
@@ -51,7 +50,7 @@ class AbstractPropertyToColumnValueExtractorTest {
                 LookupFailBehaviour.EXCEPTION);
         final ValueMapperStub valueMapper = new ValueMapperStub(columnMappingDefinition);
         final StaticDocumentPathIterator pathIterator = new StaticDocumentPathIterator();
-        assertThrows(DocumentPathWalkerException.class,
+        assertThrows(SchemaMappingException.class,
                 () -> valueMapper.extractColumnValue(STUB_DOCUMENT, pathIterator));
     }
 

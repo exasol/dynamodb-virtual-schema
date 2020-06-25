@@ -18,7 +18,7 @@ class LinearDocumentPathWalkerTest {
     private static final MockObjectNode TEST_OBJECT_NODE = new MockObjectNode(Map.of("key", NESTED_VALUE));
 
     @Test
-    void testWalk() throws DocumentPathWalkerException {
+    void testWalk() {
         final DocumentPathExpression pathExpression = new DocumentPathExpression.Builder().addObjectLookup("key")
                 .build();
         final DocumentNode<Object> result = new LinearDocumentPathWalker<Object>(pathExpression)
@@ -29,7 +29,7 @@ class LinearDocumentPathWalkerTest {
     @Test
     void testNonLinearPath() {
         final DocumentPathExpression pathExpression = new DocumentPathExpression.Builder().addArrayAll().build();
-        final DocumentPathWalkerException exception = assertThrows(DocumentPathWalkerException.class,
+        final IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
                 () -> new LinearDocumentPathWalker<Object>(pathExpression));
         assertThat(exception.getMessage(), equalTo(
                 "The given path is not a linear path. You can either remove the ArrayAllSegments from path or use a DocumentPathWalker."));

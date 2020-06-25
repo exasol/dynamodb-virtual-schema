@@ -56,6 +56,8 @@ public abstract class ToStringPropertyToColumnValueExtractor<DocumentVisitorType
      * Exception thrown if the size of the string from DynamoDB is longer than the configured size.
      */
     public static class OverflowException extends ColumnValueExtractorException {
+        private static final long serialVersionUID = 3544045333431038655L;
+
         public OverflowException(final String message, final ToStringPropertyToColumnMapping column) {
             super(message, column);
         }

@@ -1,7 +1,6 @@
 package com.exasol.adapter.dynamodb.mapping;
 
 import com.exasol.adapter.dynamodb.documentnode.DocumentNode;
-import com.exasol.adapter.dynamodb.documentpath.DocumentPathWalkerException;
 import com.exasol.adapter.dynamodb.documentpath.PathIterationStateProvider;
 import com.exasol.sql.expression.ValueExpression;
 

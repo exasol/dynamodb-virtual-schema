@@ -39,12 +39,8 @@ public class LoopDocumentPathIterator<VisitorType> implements Iterator<PathItera
 
     private DocumentArray<VisitorType> getArrayToIterate(final DocumentNode<VisitorType> document,
             final DocumentPathExpression pathToThisArray) {
-        try {
             return (DocumentArray<VisitorType>) new LinearDocumentPathWalker<VisitorType>(pathToThisArray)
                     .walkThroughDocument(document);
-        } catch (final DocumentPathWalkerException exception) {
-            return null;
-        }
     }
 
     @Override
