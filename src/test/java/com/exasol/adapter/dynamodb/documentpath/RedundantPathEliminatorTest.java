@@ -68,4 +68,22 @@ class RedundantPathEliminatorTest {
         assertThat(RedundantPathEliminator.getInstance().removeRedundantPaths(List.of(ABC, D)),
                 containsInAnyOrder(ABC, D));
     }
+
+    @Test
+    void testA_ABC_D() {
+        assertThat(RedundantPathEliminator.getInstance().removeRedundantPaths(List.of(A, ABC, D)),
+                containsInAnyOrder(A, D));
+    }
+
+    @Test
+    void testA_AB_D() {
+        assertThat(RedundantPathEliminator.getInstance().removeRedundantPaths(List.of(A, AB, D)),
+                containsInAnyOrder(A, D));
+    }
+
+    @Test
+    void testD_A_AB() {
+        assertThat(RedundantPathEliminator.getInstance().removeRedundantPaths(List.of(D, A, AB)),
+                containsInAnyOrder(A, D));
+    }
 }
