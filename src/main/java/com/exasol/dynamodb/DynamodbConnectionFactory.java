@@ -49,6 +49,7 @@ public class DynamodbConnectionFactory {
         return clientBuilder.build();
     }
 
+
     private AWSCredentials getAwsCredentials(final String user, final String key, final Optional<String> sessionToken) {
         if (sessionToken.isEmpty()) {
             if (key.contains(TOKEN_SEPARATOR)) {

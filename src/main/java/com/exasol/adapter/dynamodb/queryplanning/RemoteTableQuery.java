@@ -19,7 +19,7 @@ public class RemoteTableQuery implements SchemaMappingQuery, Serializable {
     private static final long serialVersionUID = -721150997859918517L;
     private final TableMapping fromTable;
     private final List<ColumnMapping> selectList;
-    private final List<ColumnMapping> postSelectionsColumns;
+    private final List<ColumnMapping> requiredColumns;
     private final transient QueryPredicate pushDownSelection; // TODO refactor; transient and non transient part
     private final transient QueryPredicate postSelection;
 
@@ -37,12 +37,25 @@ public class RemoteTableQuery implements SchemaMappingQuery, Serializable {
         this.selectList = selectList;
         this.pushDownSelection = pushDownSelection;
         this.postSelection = postSelection;
-        this.postSelectionsColumns = new InvolvedColumnCollector().collectInvolvedColumns(getPostSelection());
+        this.requiredColumns = calculateRequiredColumns();
+
     }
 
     @Override
     public TableMapping getFromTable() {
         return this.fromTable;
+    }
+
+    public List<ColumnMapping> calculateRequiredColumns() {
+        final List<ColumnMapping> postSelectionsColumns = new InvolvedColumnCollector()
+                .collectInvolvedColumns(getPostSelection());
+        return Stream.concat(postSelectionsColumns.stream(), getSelectList().stream()).distinct()
+                .sorted(Comparator.comparing(ColumnMapping::getExasolColumnName)).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<ColumnMapping> getRequiredColumns() {
+        return this.requiredColumns;
     }
 
     /**
@@ -70,11 +83,5 @@ public class RemoteTableQuery implements SchemaMappingQuery, Serializable {
      */
     public QueryPredicate getPostSelection() {
         return this.postSelection;
-    }
-
-    @Override
-    public List<ColumnMapping> getRequiredColumns() {
-        return Stream.concat(this.postSelectionsColumns.stream(), getSelectList().stream()).distinct()
-                .sorted(Comparator.comparing(ColumnMapping::getExasolColumnName)).collect(Collectors.toList());
     }
 }
