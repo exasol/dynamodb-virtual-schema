@@ -97,7 +97,5 @@ class DynamodbAdapterTestAwsIT {
         final ResultSet resultSet = exasolTestInterface.getStatement()
                 .executeQuery("SELECT \"KEY\" FROM OPENLIBRARY_AUTHORS");
         resultSet.next();
-        // final int count = resultSet.getInt(1);
-        // assertThat(count, equalTo(858180));
     }
 }

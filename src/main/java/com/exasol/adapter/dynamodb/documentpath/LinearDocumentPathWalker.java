@@ -1,5 +1,7 @@
 package com.exasol.adapter.dynamodb.documentpath;
 
+import java.util.Optional;
+
 import com.exasol.adapter.dynamodb.documentnode.DocumentNode;
 
 /**
@@ -27,10 +29,10 @@ public class LinearDocumentPathWalker<VisitorType> {
      * {@link DocumentPathWalker#walkThroughDocument(DocumentNode)}, this method returns one single value.
      *
      * @param rootNode document to walk through
-     * @return documents attribute described in {@link DocumentPathExpression} or null if the path does not exist in the
-     *         given document
+     * @return documents attribute described in {@link DocumentPathExpression} or an empty {@link Optional} if the path
+     *         does not exist in the given document
      */
-    public DocumentNode<VisitorType> walkThroughDocument(final DocumentNode<VisitorType> rootNode) {
+    public Optional<DocumentNode<VisitorType>> walkThroughDocument(final DocumentNode<VisitorType> rootNode) {
         return this.documentPathWalker.walkThroughDocument(rootNode);
     }
 

@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
 
@@ -29,27 +30,27 @@ class DocumentPathWalkerTest {
     @Test
     void testWalkEmptyPath() {
         final DocumentPathExpression pathExpression = DocumentPathExpression.empty();
-        final DocumentNode<Object> result = new DocumentPathWalker<Object>(pathExpression,
+        final Optional<DocumentNode<Object>> result = new DocumentPathWalker<Object>(pathExpression,
                 new StaticDocumentPathIterator()).walkThroughDocument(TEST_OBJECT_NODE);
-        assertThat(result, equalTo(TEST_OBJECT_NODE));
+        assertThat(result.orElse(null), equalTo(TEST_OBJECT_NODE));
     }
 
     @Test
     void testWalkObjectPath() {
         final DocumentPathExpression pathExpression = new DocumentPathExpression.Builder().addObjectLookup("key")
                 .build();
-        final DocumentNode<Object> result = new DocumentPathWalker<Object>(pathExpression,
+        final Optional<DocumentNode<Object>> result = new DocumentPathWalker<Object>(pathExpression,
                 new StaticDocumentPathIterator()).walkThroughDocument(TEST_OBJECT_NODE);
-        assertThat(result, equalTo(NESTED_VALUE1));
+        assertThat(result.orElse(null), equalTo(NESTED_VALUE1));
     }
 
     @Test
     void testNestedObject() {
         final DocumentPathExpression pathExpression = new DocumentPathExpression.Builder().addObjectLookup(OBJECT_KEY)
                 .addObjectLookup("key").build();
-        final DocumentNode<Object> result = new DocumentPathWalker<Object>(pathExpression,
+        final Optional<DocumentNode<Object>> result = new DocumentPathWalker<>(pathExpression,
                 new StaticDocumentPathIterator()).walkThroughDocument(TEST_NESTED_OBJECT_NODE);
-        assertThat(result, equalTo(NESTED_VALUE1));
+        assertThat(result.orElse(null), equalTo(NESTED_VALUE1));
     }
 
     @Test
@@ -58,8 +59,8 @@ class DocumentPathWalkerTest {
                 .addObjectLookup("key2").build();
         final DocumentPathWalker<Object> pathWalker = new DocumentPathWalker<>(pathExpression,
                 new StaticDocumentPathIterator());
-        final DocumentNode<Object> result = pathWalker.walkThroughDocument(TEST_OBJECT_NODE);
-        assertThat(result, is(nullValue()));
+        final Optional<DocumentNode<Object>> result = pathWalker.walkThroughDocument(TEST_OBJECT_NODE);
+        assertThat(result.orElse(null), is(nullValue()));
     }
 
     @Test
@@ -68,16 +69,16 @@ class DocumentPathWalkerTest {
                 .build();
         final DocumentPathWalker<Object> pathWalker = new DocumentPathWalker<>(pathExpression,
                 new StaticDocumentPathIterator());
-        final DocumentNode<Object> result = pathWalker.walkThroughDocument(TEST_OBJECT_NODE);
-        assertThat(result, is(nullValue()));
+        final Optional<DocumentNode<Object>> result = pathWalker.walkThroughDocument(TEST_OBJECT_NODE);
+        assertThat(result.orElse(null), is(nullValue()));
     }
 
     @Test
     void testArrayLookup() {
         final DocumentPathExpression pathExpression = new DocumentPathExpression.Builder().addArrayLookup(0).build();
-        final DocumentNode<Object> result = new DocumentPathWalker<Object>(pathExpression,
+        final Optional<DocumentNode<Object>> result = new DocumentPathWalker<Object>(pathExpression,
                 new StaticDocumentPathIterator()).walkThroughDocument(TEST_ARRAY_NODE);
-        assertThat(result, equalTo(NESTED_VALUE1));
+        assertThat(result.orElse(null), equalTo(NESTED_VALUE1));
     }
 
     @Test
@@ -85,8 +86,8 @@ class DocumentPathWalkerTest {
         final DocumentPathExpression pathExpression = new DocumentPathExpression.Builder().addArrayLookup(10).build();
         final DocumentPathWalker<Object> pathWalker = new DocumentPathWalker<>(pathExpression,
                 new StaticDocumentPathIterator());
-        final DocumentNode<Object> result = pathWalker.walkThroughDocument(TEST_ARRAY_NODE);
-        assertThat(result, is(nullValue()));
+        final Optional<DocumentNode<Object>> result = pathWalker.walkThroughDocument(TEST_ARRAY_NODE);
+        assertThat(result.orElse(null), is(nullValue()));
     }
 
     @Test
@@ -94,30 +95,32 @@ class DocumentPathWalkerTest {
         final DocumentPathExpression pathExpression = new DocumentPathExpression.Builder().addArrayLookup(10).build();
         final DocumentPathWalker<Object> pathWalker = new DocumentPathWalker<>(pathExpression,
                 new StaticDocumentPathIterator());
-        final DocumentNode<Object> result = pathWalker.walkThroughDocument(TEST_OBJECT_NODE);
-        assertThat(result, is(nullValue()));
+        final Optional<DocumentNode<Object>> result = pathWalker.walkThroughDocument(TEST_OBJECT_NODE);
+        assertThat(result.orElse(null), is(nullValue()));
 
     }
 
     @Test
     void testArrayAll() {
         final DocumentPathExpression pathExpression = new DocumentPathExpression.Builder().addArrayAll().build();
-        final DocumentNode<Object> result1 = new DocumentPathWalker<Object>(pathExpression,
+        final Optional<DocumentNode<Object>> result1 = new DocumentPathWalker<Object>(pathExpression,
                 new PathIterationStateProviderStub(0)).walkThroughDocument(TEST_ARRAY_NODE);
-        final DocumentNode<Object> result2 = new DocumentPathWalker<Object>(pathExpression,
+        final Optional<DocumentNode<Object>> result2 = new DocumentPathWalker<Object>(pathExpression,
                 new PathIterationStateProviderStub(1)).walkThroughDocument(TEST_ARRAY_NODE);
-        assertAll(() -> assertThat(result1, equalTo(NESTED_VALUE1)), () -> assertThat(result2, equalTo(NESTED_VALUE2)));
+        assertAll(() -> assertThat(result1.orElse(null), equalTo(NESTED_VALUE1)),
+                () -> assertThat(result2.orElse(null), equalTo(NESTED_VALUE2)));
     }
 
     @Test
     void testNestedArrayAll() {
         final DocumentPathExpression pathExpression = new DocumentPathExpression.Builder().addObjectLookup(OBJECT_KEY)
                 .addArrayAll().build();
-        final DocumentNode<Object> result1 = new DocumentPathWalker<Object>(pathExpression,
+        final Optional<DocumentNode<Object>> result1 = new DocumentPathWalker<Object>(pathExpression,
                 new PathIterationStateProviderStub(0)).walkThroughDocument(TEST_OBJECT_NODE);
-        final DocumentNode<Object> result2 = new DocumentPathWalker<Object>(pathExpression,
+        final Optional<DocumentNode<Object>> result2 = new DocumentPathWalker<Object>(pathExpression,
                 new PathIterationStateProviderStub(1)).walkThroughDocument(TEST_OBJECT_NODE);
-        assertAll(() -> assertThat(result1, equalTo(NESTED_VALUE1)), () -> assertThat(result2, equalTo(NESTED_VALUE2)));
+        assertAll(() -> assertThat(result1.orElse(null), equalTo(NESTED_VALUE1)),
+                () -> assertThat(result2.orElse(null), equalTo(NESTED_VALUE2)));
     }
 
     private static class PathIterationStateProviderStub implements PathIterationStateProvider {

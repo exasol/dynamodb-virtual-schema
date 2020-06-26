@@ -38,7 +38,6 @@ public class RemoteTableQuery implements SchemaMappingQuery, Serializable {
         this.pushDownSelection = pushDownSelection;
         this.postSelection = postSelection;
         this.requiredColumns = calculateRequiredColumns();
-
     }
 
     @Override
