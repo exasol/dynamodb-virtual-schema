@@ -74,14 +74,14 @@ public class TestCdataConnectorIT {
     @Test
     void testCountAllWithIncreasedLimitsWith3Columns() throws SQLException {
         final ResultSet resultSet = exasolTestInterface.getStatement().executeQuery(
-                "SELECT * FROM (IMPORT INTO (c1 VARCHAR(255) UTF8, c2 VARCHAR(255) UTF8, c3 VARCHAR(2000) UTF8) FROM JDBC AT MY_CONNECTION STATEMENT 'SELECT \"key\", \"revision\", \"title\" FROM \"open_library_test\"')");
+                "SELECT * FROM (IMPORT INTO (c1 VARCHAR(255) UTF8, c2 VARCHAR(255) UTF8, c3 VARCHAR(200000) UTF8) FROM JDBC AT MY_CONNECTION STATEMENT 'SELECT \"key\", \"revision\", \"title\" FROM \"open_library_test\"')");
         resultSet.next();
     }
 
     @Test
     void testCountAllWithIncreasedLimitsWith4Columns() throws SQLException {
         final ResultSet resultSet = exasolTestInterface.getStatement().executeQuery(
-                "SELECT * FROM (IMPORT INTO (c1 VARCHAR(255) UTF8, c2 VARCHAR(255) UTF8, c3 VARCHAR(2000) UTF8, c4 VARCHAR(254) UTF8) FROM JDBC AT MY_CONNECTION STATEMENT 'SELECT \"key\", \"revision\", \"title\", \"title_prefix\" FROM \"open_library_test\"')");
+                "SELECT * FROM (IMPORT INTO (c1 VARCHAR(255) UTF8, c2 VARCHAR(255) UTF8, c3 VARCHAR(200000) UTF8, c4 VARCHAR(2000) UTF8) FROM JDBC AT MY_CONNECTION STATEMENT 'SELECT \"key\", \"revision\", \"title\", \"title_prefix\" FROM \"open_library_test\"')");
         resultSet.next();
     }
 

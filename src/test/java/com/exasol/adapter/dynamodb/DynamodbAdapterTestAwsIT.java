@@ -55,7 +55,7 @@ class DynamodbAdapterTestAwsIT {
     }
 
     @Test
-    void testCountAllRows() throws SQLException {
+    void testCountAllRowsWith2Columns() throws SQLException {
         final ResultSet resultSet = exasolTestInterface.getStatement()
                 .executeQuery("SELECT \"KEY\", \"REVISION\" FROM OPENLIBRARY");
         resultSet.next();
