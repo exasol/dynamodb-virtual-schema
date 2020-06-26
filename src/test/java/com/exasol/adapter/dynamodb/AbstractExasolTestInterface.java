@@ -94,7 +94,7 @@ public abstract class AbstractExasolTestInterface {
         createSchema(ADAPTER_SCHEMA);
         final StringBuilder statementBuilder = new StringBuilder(
                 "CREATE OR REPLACE JAVA ADAPTER SCRIPT " + ADAPTER_SCHEMA + "." + DYNAMODB_ADAPTER + " AS\n");
-        addDebuggerOptions(statementBuilder);
+        addDebuggerOptions(statementBuilder, false);
         // noinspection SpellCheckingInspection
         statementBuilder.append("    %scriptclass com.exasol.adapter.RequestDispatcher;\n");
         statementBuilder.append("    %jar /buckets/bfsdefault/default/" + VIRTUAL_SCHEMAS_JAR_NAME_AND_VERSION + ";\n");
@@ -104,13 +104,13 @@ public abstract class AbstractExasolTestInterface {
         this.statement.execute(sql);
     }
 
-    private void addDebuggerOptions(final StringBuilder statementBuilder) {
+    private void addDebuggerOptions(final StringBuilder statementBuilder, final boolean isUdf) {
         final String hostIp = getTestHostIpAddress();
         final StringBuilder jvmOptions = new StringBuilder();
         if (hostIp != null) {
             jvmOptions.append("-javaagent:/buckets/bfsdefault/default/").append(JACOCO_JAR_NAME)
                     .append("=output=tcpclient,address=").append(hostIp).append(",port=3002");
-            if (!isNoDebugSystemPropertySet()) {
+            if ((isUdf && isUdfDebuggingEnabled()) || (!isUdf && isVirtualSchemaDebuggingEnabled())) {
                 // noinspection SpellCheckingInspection
                 jvmOptions.append(" -agentlib:jdwp=transport=dt_socket,server=n,address=").append(hostIp).append(":")
                         .append(DEBUGGER_PORT).append(",suspend=y");
@@ -131,7 +131,7 @@ public abstract class AbstractExasolTestInterface {
                 .append(AbstractUdf.PARAMETER_DOCUMENT_FETCHER).append(" VARCHAR(2000000), ")
                 .append(AbstractUdf.PARAMETER_REMOTE_TABLE_QUERY).append(" VARCHAR(2000000), ")
                 .append(AbstractUdf.PARAMETER_CONNECTION_NAME).append(" VARCHAR(500)) EMITS(...) AS\n");
-        addDebuggerOptions(statementBuilder);
+        addDebuggerOptions(statementBuilder, true);
         statementBuilder.append("    %scriptclass ").append(ImportDocumentData.class.getName()).append(";\n");
         statementBuilder.append("    %jar /buckets/bfsdefault/default/").append(VIRTUAL_SCHEMAS_JAR_NAME_AND_VERSION)
                 .append(";\n");
@@ -151,14 +151,27 @@ public abstract class AbstractExasolTestInterface {
     }
 
     /**
-     * This property is set by fail safe plugin, configured in the pom.xml file.
+     * Get if Virtual Schema debugging was enabled by the user.
      *
-     * @return {@code <true>} if set property {@code tests.noDebug} is equal to "true"
+     * Therefore add to the jvm options {@code -Dtests.debug="virtualSchema"}
+     *
+     * @return {@code <true>} if set property is equal to "all"
      */
-    private boolean isNoDebugSystemPropertySet() {
-        final String noDebugProperty = System.getProperty("tests.noDebug");// if you want to debug set in your ide jvm
-        // parameter -Dtests.noDebug="false"
-        return noDebugProperty != null && noDebugProperty.equals("true");
+    private boolean isVirtualSchemaDebuggingEnabled() {
+        final String noDebugProperty = System.getProperty("tests.debug");
+        return noDebugProperty != null && (noDebugProperty.equals("all") || noDebugProperty.equals("virtualSchema"));
+    }
+
+    /**
+     * Get if UDF debugging was enabled by the user.
+     * 
+     * Therefore add to the jvm options {@code -Dtests.debug="all"}
+     *
+     * @return {@code <true>} if set property is equal to "all"
+     */
+    private boolean isUdfDebuggingEnabled() {
+        final String noDebugProperty = System.getProperty("tests.debug");
+        return noDebugProperty != null && noDebugProperty.equals("all");
     }
 
     private boolean isProfilingEnabled() {
