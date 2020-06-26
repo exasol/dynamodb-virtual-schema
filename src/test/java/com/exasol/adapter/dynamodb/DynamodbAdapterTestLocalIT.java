@@ -160,6 +160,19 @@ class DynamodbAdapterTestLocalIT {
         assertThat(result, containsInAnyOrder("123567", "123254545", "1235673"));
     }
 
+    /**
+     * Tests a {@code SELECT * LIMIT 2} from a DynamoDB table
+     */
+    @Test
+    void testSelectWithLimit() throws IOException, SQLException {
+        createBasicMappingVirtualSchema();
+        dynamodbTestInterface.createTable(DYNAMO_BOOKS_TABLE, TestDocuments.BOOKS_ISBN_PROPERTY);
+        dynamodbTestInterface.importData(DYNAMO_BOOKS_TABLE, TestDocuments.BOOKS);
+        final List<String> result = runQueryAndExtractColumn("SELECT ISBN  FROM " + TEST_SCHEMA + ".BOOKS LIMIT 2;",
+                "ISBN");
+        assertThat(result.size(), equalTo(2));
+    }
+
     @Test
     void testSelectNestedTableSchema() throws SQLException, IOException {
         createNestedTableVirtualSchema();

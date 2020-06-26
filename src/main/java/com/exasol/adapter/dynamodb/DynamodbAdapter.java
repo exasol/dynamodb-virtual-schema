@@ -37,7 +37,7 @@ import com.exasol.dynamodb.DynamodbConnectionFactory;
  */
 public class DynamodbAdapter implements VirtualSchemaAdapter {
     private static final Capabilities CAPABILITIES = Capabilities.builder()
-            .addMain(MainCapability.FILTER_EXPRESSIONS, MainCapability.SELECTLIST_PROJECTION)
+            .addMain(MainCapability.FILTER_EXPRESSIONS, MainCapability.SELECTLIST_PROJECTION, MainCapability.LIMIT)
             .addPredicate(PredicateCapability.EQUAL, PredicateCapability.LESS, PredicateCapability.LESSEQUAL)
             .addLiteral(LiteralCapability.STRING, LiteralCapability.NULL, LiteralCapability.BOOL,
                     LiteralCapability.DOUBLE, LiteralCapability.EXACTNUMERIC)
