@@ -16,7 +16,7 @@ class ColumnLiteralComparisonPredicateTest {
     private static final AbstractComparisonPredicate.Operator OPERATOR = AbstractComparisonPredicate.Operator.EQUAL;
     private static final SqlLiteralString LITERAL = new SqlLiteralString("test");
     private static final ColumnMapping COLUMN = new ToJsonPropertyToColumnMapping("", DocumentPathExpression.empty(),
-            LookupFailBehaviour.EXCEPTION);
+            LookupFailBehaviour.EXCEPTION, 0, ToJsonPropertyToColumnMapping.OverflowBehaviour.EXCEPTION);
     private static final ColumnLiteralComparisonPredicate TEST_PREDICATE = new ColumnLiteralComparisonPredicate(
             OPERATOR, COLUMN, LITERAL);
 

@@ -23,7 +23,8 @@ class DynamodbAbstractPropertyToColumnValueExtractorFactoryTest {
 
     @Test
     void testToJsonMapping() {
-        final ToJsonPropertyToColumnMapping mappingDefinition = new ToJsonPropertyToColumnMapping("", null, null);
+        final ToJsonPropertyToColumnMapping mappingDefinition = new ToJsonPropertyToColumnMapping("", null, null, 0,
+                null);
         final ColumnValueExtractor<DynamodbNodeVisitor> columnValueExtractor = new DynamodbPropertyToColumnValueExtractorFactory()
                 .getValueExtractorForColumn(mappingDefinition);
         assertThat(columnValueExtractor.getClass(), equalTo(DynamodbToJsonPropertyToColumnValueExtractor.class));

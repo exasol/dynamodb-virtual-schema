@@ -21,7 +21,8 @@ class DynamodbToJsonPropertyToColumnValueExtractorTest {
     @Test
     void testConvertRowBasic() {
         final ToJsonPropertyToColumnMapping toStringColumnMappingDefinition = new ToJsonPropertyToColumnMapping(
-                DEST_COLUMN, DocumentPathExpression.empty(), LookupFailBehaviour.EXCEPTION);
+                DEST_COLUMN, DocumentPathExpression.empty(), LookupFailBehaviour.EXCEPTION, 100,
+                ToJsonPropertyToColumnMapping.OverflowBehaviour.EXCEPTION);
         final DynamodbMap testData = new DynamodbMap(Map.of("key", AttributeValueQuickCreator.forString("value")));
         final ValueExpression exasolCellValue = new DynamodbToJsonPropertyToColumnValueExtractor(
                 toStringColumnMappingDefinition).extractColumnValue(testData, new StaticDocumentPathIterator());

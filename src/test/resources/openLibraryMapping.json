@@ -23,6 +23,7 @@
             "fields": {
               "key": {
                 "toStringMapping": {
+                  "maxLength": 200000
                 }
               }
             }
@@ -31,17 +32,19 @@
       },
       "title": {
         "toStringMapping": {
-          "maxLength": 2000,
+          "maxLength": 200000,
           "overflow": "TRUNCATE"
         }
       },
       "title_prefix": {
         "toStringMapping": {
+          "maxLength": 2000
         }
       },
       "publishers": {
         "toJsonMapping": {
-          "maxLength": 200000
+          "maxLength": 200000,
+          "overflow": "NULL"
         }
       }
     }

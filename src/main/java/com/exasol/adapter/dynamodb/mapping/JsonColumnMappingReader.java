@@ -11,6 +11,7 @@ class JsonColumnMappingReader {
     private static final String MAX_LENGTH_KEY = "maxLength";
     private static final int DEFAULT_MAX_LENGTH = 254;
     private static final String OVERFLOW_KEY = "overflow";
+    private static final String OVERFLOW_ABORT = "ABORT";
     private static final String DEST_NAME_KEY = "destName";
     private static final String REQUIRED_KEY = "required";
     private static final ToStringPropertyToColumnMapping.OverflowBehaviour DEFAULT_TO_STRING_OVERFLOW = ToStringPropertyToColumnMapping.OverflowBehaviour.TRUNCATE;
@@ -38,7 +39,7 @@ class JsonColumnMappingReader {
     }
 
     private ToStringPropertyToColumnMapping.OverflowBehaviour readStringOverflowBehaviour(final JsonObject definition) {
-        if (definition.containsKey(OVERFLOW_KEY) && definition.getString(OVERFLOW_KEY).equals("ABORT")) {
+        if (definition.containsKey(OVERFLOW_KEY) && definition.getString(OVERFLOW_KEY).equals(OVERFLOW_ABORT)) {
             return ToStringPropertyToColumnMapping.OverflowBehaviour.EXCEPTION;
         } else {
             return DEFAULT_TO_STRING_OVERFLOW;
@@ -66,6 +67,10 @@ class JsonColumnMappingReader {
             final DocumentPathExpression.Builder sourcePath, final String dynamodbPropertyName) {
         final String exasolColumnName = readExasolColumnName(definition, dynamodbPropertyName);
         final LookupFailBehaviour lookupFailBehaviour = readLookupFailBehaviour(definition);
-        return new ToJsonPropertyToColumnMapping(exasolColumnName, sourcePath.build(), lookupFailBehaviour);
+        final ToJsonPropertyToColumnMapping.OverflowBehaviour overflowBehaviour = definition.getString(OVERFLOW_KEY, "")
+                .equalsIgnoreCase(OVERFLOW_ABORT) ? ToJsonPropertyToColumnMapping.OverflowBehaviour.EXCEPTION
+                        : ToJsonPropertyToColumnMapping.OverflowBehaviour.NULL;
+        return new ToJsonPropertyToColumnMapping(exasolColumnName, sourcePath.build(), lookupFailBehaviour,
+                definition.getInt(MAX_LENGTH_KEY, DEFAULT_MAX_LENGTH), overflowBehaviour);
     }
 }

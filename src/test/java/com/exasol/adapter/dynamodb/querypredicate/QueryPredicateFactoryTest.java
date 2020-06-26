@@ -19,7 +19,8 @@ import com.exasol.adapter.metadata.ColumnMetadata;
 import com.exasol.adapter.sql.*;
 
 class QueryPredicateFactoryTest {
-    private static final ColumnMapping COLUMN_MAPPING = new ToJsonPropertyToColumnMapping("name", null, null);
+    private static final ColumnMapping COLUMN_MAPPING = new ToJsonPropertyToColumnMapping("name", null, null, 0,
+            ToJsonPropertyToColumnMapping.OverflowBehaviour.NULL);
     private static final SqlLiteralString LITERAL = new SqlLiteralString("test");
     private static final QueryPredicateFactory FACTORY = QueryPredicateFactory.getInstance();
     private static ColumnMetadata columnMetadata;
@@ -28,8 +29,7 @@ class QueryPredicateFactoryTest {
     @BeforeAll
     static void setup() throws IOException {
         columnMetadata = new SchemaMappingToSchemaMetadataConverter().convertColumn(COLUMN_MAPPING);
-        validColumnLiteralEqualityPredicate = new SqlPredicateEqual(LITERAL,
-                new SqlColumn(0, columnMetadata));
+        validColumnLiteralEqualityPredicate = new SqlPredicateEqual(LITERAL, new SqlColumn(0, columnMetadata));
     }
 
     @Test
