@@ -2,6 +2,7 @@ package com.exasol.adapter.dynamodb.documentpath;
 
 import java.util.Iterator;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 
 import com.exasol.adapter.dynamodb.documentnode.DocumentArray;
 import com.exasol.adapter.dynamodb.documentnode.DocumentNode;
@@ -39,8 +40,13 @@ public class LoopDocumentPathIterator<VisitorType> implements Iterator<PathItera
 
     private DocumentArray<VisitorType> getArrayToIterate(final DocumentNode<VisitorType> document,
             final DocumentPathExpression pathToThisArray) {
-            return (DocumentArray<VisitorType>) new LinearDocumentPathWalker<VisitorType>(pathToThisArray)
-                    .walkThroughDocument(document);
+        final Optional<DocumentNode<VisitorType>> documentArray = new LinearDocumentPathWalker<VisitorType>(
+                pathToThisArray).walkThroughDocument(document);
+        if (documentArray.isEmpty()) {
+            return null;
+        } else {
+            return (DocumentArray<VisitorType>) documentArray.get();
+        }
     }
 
     @Override

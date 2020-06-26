@@ -17,6 +17,8 @@ import com.exasol.adapter.dynamodb.documentnode.dynamodb.*;
  */
 public class DynamodbValueToJsonConverter {
     private static final DynamodbValueToJsonConverter INSTANCE = new DynamodbValueToJsonConverter();
+    // This is an performance optimization as JsonProvider.provider() is quite slow
+    private static final JsonProvider JSON = JsonProvider.provider();
 
     /**
      * Private constructor to hide the public default.
@@ -33,9 +35,6 @@ public class DynamodbValueToJsonConverter {
     public static DynamodbValueToJsonConverter getInstance() {
         return INSTANCE;
     }
-
-    // This is an performance optimization as JsonProvider.provider() is quite slow
-    private static final JsonProvider JSON = JsonProvider.provider();
 
     /**
      * Converts a DynamoDB document node to JSON.

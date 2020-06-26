@@ -1,5 +1,7 @@
 package com.exasol.adapter.dynamodb.mapping;
 
+import java.util.Optional;
+
 import com.exasol.adapter.dynamodb.documentnode.DocumentNode;
 import com.exasol.adapter.dynamodb.documentpath.DocumentPathWalker;
 import com.exasol.adapter.dynamodb.documentpath.PathIterationStateProvider;
@@ -30,8 +32,8 @@ public abstract class AbstractPropertyToColumnValueExtractor<DocumentVisitorType
             final PathIterationStateProvider arrayAllIterationState) {
         final DocumentPathWalker<DocumentVisitorType> walker = new DocumentPathWalker<>(
                 this.column.getPathToSourceProperty(), arrayAllIterationState);
-        final DocumentNode<DocumentVisitorType> dynamodbProperty = walker.walkThroughDocument(document);
-        if (dynamodbProperty == null) {
+        final Optional<DocumentNode<DocumentVisitorType>> dynamodbProperty = walker.walkThroughDocument(document);
+        if (dynamodbProperty.isEmpty()) {
             if (this.column.getLookupFailBehaviour() == LookupFailBehaviour.DEFAULT_VALUE) {
                 return this.column.getExasolDefaultValue();
             } else {
@@ -39,7 +41,7 @@ public abstract class AbstractPropertyToColumnValueExtractor<DocumentVisitorType
                         + this.column.getPathToSourceProperty() + ") in the source document.");
             }
         } else {
-            return mapValue(dynamodbProperty);
+            return mapValue(dynamodbProperty.get());
         }
     }
 
