@@ -3,7 +3,8 @@ package com.exasol.adapter.dynamodb.mapping;
 /**
  * Exception on failures in column mapping
  */
-public class ColumnValueExtractorException extends RuntimeException {
+public class ColumnValueExtractorException extends SchemaMappingException {
+    private static final long serialVersionUID = -5796834611894355986L;
     private final ColumnMapping causingColumn;
 
     /**

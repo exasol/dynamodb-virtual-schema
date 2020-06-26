@@ -25,7 +25,7 @@ public class DynamodbToJsonPropertyToColumnValueExtractor
 
     @Override
     protected String mapJsonValue(final DocumentNode<DynamodbNodeVisitor> dynamodbProperty) {
-        final JsonValue json = new DynamodbValueToJsonConverter().convert(dynamodbProperty);
+        final JsonValue json = DynamodbValueToJsonConverter.getInstance().convert(dynamodbProperty);
         return json.toString();
     }
 }

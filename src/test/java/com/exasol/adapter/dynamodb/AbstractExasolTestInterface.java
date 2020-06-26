@@ -29,6 +29,7 @@ public abstract class AbstractExasolTestInterface {
     private static final String LOGGER_PORT = "3000";
     private static final int SCRIPT_OUTPUT_PORT = 3001;
     private static final String DEBUGGER_PORT = "8000";
+    public static final String PROFILING_AGENT_FILE_NAME = "liblagent.so";
     private final Statement statement;
 
     public AbstractExasolTestInterface(final Connection connection) throws SQLException {
@@ -105,26 +106,35 @@ public abstract class AbstractExasolTestInterface {
 
     private void addDebuggerOptions(final StringBuilder statementBuilder) {
         final String hostIp = getTestHostIpAddress();
+        final StringBuilder jvmOptions = new StringBuilder();
         if (hostIp != null) {
-            final StringBuilder jvmOptions = new StringBuilder("-javaagent:/buckets/bfsdefault/default/"
-                    + JACOCO_JAR_NAME + "=output=tcpclient,address=" + hostIp + ",port=3002");
+            jvmOptions.append("-javaagent:/buckets/bfsdefault/default/").append(JACOCO_JAR_NAME)
+                    .append("=output=tcpclient,address=").append(hostIp).append(",port=3002");
             if (!isNoDebugSystemPropertySet()) {
                 // noinspection SpellCheckingInspection
                 jvmOptions.append(" -agentlib:jdwp=transport=dt_socket,server=n,address=").append(hostIp).append(":")
                         .append(DEBUGGER_PORT).append(",suspend=y");
             }
+        }
+        if (isProfilingEnabled()) {
+            jvmOptions.append(" -agentpath:/buckets/bfsdefault/default/" + PROFILING_AGENT_FILE_NAME
+                    + "=interval=7,logPath=/tmp/profile.hpl");
+        }
+        if (!jvmOptions.toString().isEmpty()) {
             statementBuilder.append("  %jvmoption ").append(jvmOptions).append(";\n");
         }
     }
 
     public void createUdf() throws SQLException {
-        final StringBuilder statementBuilder = new StringBuilder("CREATE OR REPLACE JAVA SET SCRIPT " + ADAPTER_SCHEMA
-                + "." + ImportDocumentData.UDF_NAME + "(" + AbstractUdf.PARAMETER_DOCUMENT_FETCHER
-                + " VARCHAR(2000000), " + AbstractUdf.PARAMETER_REMOTE_TABLE_QUERY + " VARCHAR(2000000), "
-                + AbstractUdf.PARAMETER_CONNECTION_NAME + " VARCHAR(500)) EMITS(...) AS\n");
-        // addDebuggerOptions(statementBuilder);
-        statementBuilder.append("    %scriptclass " + ImportDocumentData.class.getName() + ";\n");
-        statementBuilder.append("    %jar /buckets/bfsdefault/default/" + VIRTUAL_SCHEMAS_JAR_NAME_AND_VERSION + ";\n");
+        final StringBuilder statementBuilder = new StringBuilder("CREATE OR REPLACE JAVA SET SCRIPT ")
+                .append(ADAPTER_SCHEMA).append(".").append(ImportDocumentData.UDF_NAME).append("(")
+                .append(AbstractUdf.PARAMETER_DOCUMENT_FETCHER).append(" VARCHAR(2000000), ")
+                .append(AbstractUdf.PARAMETER_REMOTE_TABLE_QUERY).append(" VARCHAR(2000000), ")
+                .append(AbstractUdf.PARAMETER_CONNECTION_NAME).append(" VARCHAR(500)) EMITS(...) AS\n");
+        addDebuggerOptions(statementBuilder);
+        statementBuilder.append("    %scriptclass ").append(ImportDocumentData.class.getName()).append(";\n");
+        statementBuilder.append("    %jar /buckets/bfsdefault/default/").append(VIRTUAL_SCHEMAS_JAR_NAME_AND_VERSION)
+                .append(";\n");
         statementBuilder.append("/");
         final String sql = statementBuilder.toString();
         LOGGER.info(sql);
@@ -151,6 +161,11 @@ public abstract class AbstractExasolTestInterface {
         return noDebugProperty != null && noDebugProperty.equals("true");
     }
 
+    private boolean isProfilingEnabled() {
+        final String profilingProperty = System.getProperty("tests.profiling");// enable profiling by setting
+        // -Dtests.profiling="true"
+        return profilingProperty != null && profilingProperty.equals("true");
+    }
 
     /**
      * Runs {@code CREATE VIRTUAL SCHEMA} on Exasol test container.
@@ -238,7 +253,16 @@ public abstract class AbstractExasolTestInterface {
     public void uploadDynamodbAdapterJar() throws InterruptedException, BucketAccessException, TimeoutException {
         uploadFileToBucketfs(PATH_TO_VIRTUAL_SCHEMAS_JAR, VIRTUAL_SCHEMAS_JAR_NAME_AND_VERSION);
         uploadFileToBucketfs(PATH_TO_JACOCO_JAR, JACOCO_JAR_NAME);
-
+        if (isProfilingEnabled()) {
+            final Path agentPath = Path.of("../", PROFILING_AGENT_FILE_NAME);
+            if (!agentPath.toFile().exists()) {
+                throw new IllegalStateException(
+                        "Profiling was turned on using -Dtests.profiling=true but no profiling agent was provided. \n"
+                                + "Please download the honest-profiler form https://github.com/jvm-profiling-tools/honest-profiler/ and place the "
+                                + PROFILING_AGENT_FILE_NAME + " in thew directory above this project.");
+            }
+            uploadFileToBucketfs(agentPath, PROFILING_AGENT_FILE_NAME);
+        }
     }
 
     public void uploadMapping(final String name) throws InterruptedException, BucketAccessException, TimeoutException {

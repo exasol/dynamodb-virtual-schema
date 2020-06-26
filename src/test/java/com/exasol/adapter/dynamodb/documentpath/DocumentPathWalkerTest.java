@@ -1,12 +1,12 @@
 package com.exasol.adapter.dynamodb.documentpath;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
 
@@ -28,29 +28,29 @@ class DocumentPathWalkerTest {
             Map.of(OBJECT_KEY, TEST_OBJECT_NODE));
 
     @Test
-    void testWalkEmptyPath() throws DocumentPathWalkerException {
+    void testWalkEmptyPath() {
         final DocumentPathExpression pathExpression = DocumentPathExpression.empty();
-        final DocumentNode<Object> result = new DocumentPathWalker<Object>(pathExpression,
+        final Optional<DocumentNode<Object>> result = new DocumentPathWalker<Object>(pathExpression,
                 new StaticDocumentPathIterator()).walkThroughDocument(TEST_OBJECT_NODE);
-        assertThat(result, equalTo(TEST_OBJECT_NODE));
+        assertThat(result.orElse(null), equalTo(TEST_OBJECT_NODE));
     }
 
     @Test
-    void testWalkObjectPath() throws DocumentPathWalkerException {
+    void testWalkObjectPath() {
         final DocumentPathExpression pathExpression = new DocumentPathExpression.Builder().addObjectLookup("key")
                 .build();
-        final DocumentNode<Object> result = new DocumentPathWalker<Object>(pathExpression,
+        final Optional<DocumentNode<Object>> result = new DocumentPathWalker<Object>(pathExpression,
                 new StaticDocumentPathIterator()).walkThroughDocument(TEST_OBJECT_NODE);
-        assertThat(result, equalTo(NESTED_VALUE1));
+        assertThat(result.orElse(null), equalTo(NESTED_VALUE1));
     }
 
     @Test
     void testNestedObject() {
         final DocumentPathExpression pathExpression = new DocumentPathExpression.Builder().addObjectLookup(OBJECT_KEY)
                 .addObjectLookup("key").build();
-        final DocumentNode<Object> result = new DocumentPathWalker<Object>(pathExpression,
+        final Optional<DocumentNode<Object>> result = new DocumentPathWalker<>(pathExpression,
                 new StaticDocumentPathIterator()).walkThroughDocument(TEST_NESTED_OBJECT_NODE);
-        assertThat(result, equalTo(NESTED_VALUE1));
+        assertThat(result.orElse(null), equalTo(NESTED_VALUE1));
     }
 
     @Test
@@ -59,11 +59,8 @@ class DocumentPathWalkerTest {
                 .addObjectLookup("key2").build();
         final DocumentPathWalker<Object> pathWalker = new DocumentPathWalker<>(pathExpression,
                 new StaticDocumentPathIterator());
-        final DocumentPathWalkerException exception = assertThrows(DocumentPathWalkerException.class,
-                () -> pathWalker.walkThroughDocument(TEST_OBJECT_NODE));
-        assertAll(() -> assertThat(exception.getCurrentPath(), equalTo("/key")),
-                () -> assertThat(exception.getMessage(),
-                        equalTo("Can't perform key lookup on non object. (requested key= key2) (current path= /key)")));
+        final Optional<DocumentNode<Object>> result = pathWalker.walkThroughDocument(TEST_OBJECT_NODE);
+        assertThat(result.orElse(null), is(nullValue()));
     }
 
     @Test
@@ -72,18 +69,16 @@ class DocumentPathWalkerTest {
                 .build();
         final DocumentPathWalker<Object> pathWalker = new DocumentPathWalker<>(pathExpression,
                 new StaticDocumentPathIterator());
-        final DocumentPathWalkerException exception = assertThrows(DocumentPathWalkerException.class,
-                () -> pathWalker.walkThroughDocument(TEST_OBJECT_NODE));
-        assertAll(() -> assertThat(exception.getCurrentPath(), equalTo("/")), () -> assertThat(exception.getMessage(),
-                equalTo("The requested lookup key (unknownKey) is not present in this object. (current path= /)")));
+        final Optional<DocumentNode<Object>> result = pathWalker.walkThroughDocument(TEST_OBJECT_NODE);
+        assertThat(result.orElse(null), is(nullValue()));
     }
 
     @Test
-    void testArrayLookup() throws DocumentPathWalkerException {
+    void testArrayLookup() {
         final DocumentPathExpression pathExpression = new DocumentPathExpression.Builder().addArrayLookup(0).build();
-        final DocumentNode<Object> result = new DocumentPathWalker<Object>(pathExpression,
+        final Optional<DocumentNode<Object>> result = new DocumentPathWalker<Object>(pathExpression,
                 new StaticDocumentPathIterator()).walkThroughDocument(TEST_ARRAY_NODE);
-        assertThat(result, equalTo(NESTED_VALUE1));
+        assertThat(result.orElse(null), equalTo(NESTED_VALUE1));
     }
 
     @Test
@@ -91,9 +86,8 @@ class DocumentPathWalkerTest {
         final DocumentPathExpression pathExpression = new DocumentPathExpression.Builder().addArrayLookup(10).build();
         final DocumentPathWalker<Object> pathWalker = new DocumentPathWalker<>(pathExpression,
                 new StaticDocumentPathIterator());
-        final DocumentPathWalkerException exception = assertThrows(DocumentPathWalkerException.class,
-                () -> pathWalker.walkThroughDocument(TEST_ARRAY_NODE));
-        assertThat(exception.getMessage(), equalTo("Can't perform array lookup: Index: 10 Size: 2 (current path= /)"));
+        final Optional<DocumentNode<Object>> result = pathWalker.walkThroughDocument(TEST_ARRAY_NODE);
+        assertThat(result.orElse(null), is(nullValue()));
     }
 
     @Test
@@ -101,30 +95,32 @@ class DocumentPathWalkerTest {
         final DocumentPathExpression pathExpression = new DocumentPathExpression.Builder().addArrayLookup(10).build();
         final DocumentPathWalker<Object> pathWalker = new DocumentPathWalker<>(pathExpression,
                 new StaticDocumentPathIterator());
-        final DocumentPathWalkerException exception = assertThrows(DocumentPathWalkerException.class,
-                () -> pathWalker.walkThroughDocument(TEST_OBJECT_NODE));
-        assertThat(exception.getMessage(), equalTo("Can't perform array lookup on non array. (current path= /)"));
+        final Optional<DocumentNode<Object>> result = pathWalker.walkThroughDocument(TEST_OBJECT_NODE);
+        assertThat(result.orElse(null), is(nullValue()));
+
     }
 
     @Test
-    void testArrayAll() throws DocumentPathWalkerException {
+    void testArrayAll() {
         final DocumentPathExpression pathExpression = new DocumentPathExpression.Builder().addArrayAll().build();
-        final DocumentNode<Object> result1 = new DocumentPathWalker<Object>(pathExpression,
+        final Optional<DocumentNode<Object>> result1 = new DocumentPathWalker<Object>(pathExpression,
                 new PathIterationStateProviderStub(0)).walkThroughDocument(TEST_ARRAY_NODE);
-        final DocumentNode<Object> result2 = new DocumentPathWalker<Object>(pathExpression,
+        final Optional<DocumentNode<Object>> result2 = new DocumentPathWalker<Object>(pathExpression,
                 new PathIterationStateProviderStub(1)).walkThroughDocument(TEST_ARRAY_NODE);
-        assertAll(() -> assertThat(result1, equalTo(NESTED_VALUE1)), () -> assertThat(result2, equalTo(NESTED_VALUE2)));
+        assertAll(() -> assertThat(result1.orElse(null), equalTo(NESTED_VALUE1)),
+                () -> assertThat(result2.orElse(null), equalTo(NESTED_VALUE2)));
     }
 
     @Test
-    void testNestedArrayAll() throws DocumentPathWalkerException {
+    void testNestedArrayAll() {
         final DocumentPathExpression pathExpression = new DocumentPathExpression.Builder().addObjectLookup(OBJECT_KEY)
                 .addArrayAll().build();
-        final DocumentNode<Object> result1 = new DocumentPathWalker<Object>(pathExpression,
+        final Optional<DocumentNode<Object>> result1 = new DocumentPathWalker<Object>(pathExpression,
                 new PathIterationStateProviderStub(0)).walkThroughDocument(TEST_OBJECT_NODE);
-        final DocumentNode<Object> result2 = new DocumentPathWalker<Object>(pathExpression,
+        final Optional<DocumentNode<Object>> result2 = new DocumentPathWalker<Object>(pathExpression,
                 new PathIterationStateProviderStub(1)).walkThroughDocument(TEST_OBJECT_NODE);
-        assertAll(() -> assertThat(result1, equalTo(NESTED_VALUE1)), () -> assertThat(result2, equalTo(NESTED_VALUE2)));
+        assertAll(() -> assertThat(result1.orElse(null), equalTo(NESTED_VALUE1)),
+                () -> assertThat(result2.orElse(null), equalTo(NESTED_VALUE2)));
     }
 
     private static class PathIterationStateProviderStub implements PathIterationStateProvider {

@@ -1,8 +1,9 @@
 package com.exasol.adapter.dynamodb.mapping;
 
+import java.util.Optional;
+
 import com.exasol.adapter.dynamodb.documentnode.DocumentNode;
 import com.exasol.adapter.dynamodb.documentpath.DocumentPathWalker;
-import com.exasol.adapter.dynamodb.documentpath.DocumentPathWalkerException;
 import com.exasol.adapter.dynamodb.documentpath.PathIterationStateProvider;
 import com.exasol.sql.expression.ValueExpression;
 
@@ -29,17 +30,18 @@ public abstract class AbstractPropertyToColumnValueExtractor<DocumentVisitorType
     @Override
     public ValueExpression extractColumnValue(final DocumentNode<DocumentVisitorType> document,
             final PathIterationStateProvider arrayAllIterationState) {
-        try {
-            final DocumentPathWalker<DocumentVisitorType> walker = new DocumentPathWalker<>(
-                    this.column.getPathToSourceProperty(), arrayAllIterationState);
-            final DocumentNode<DocumentVisitorType> dynamodbProperty = walker.walkThroughDocument(document);
-            return mapValue(dynamodbProperty);
-        } catch (final DocumentPathWalkerException | ColumnValueExtractorLookupException exception) {
+        final DocumentPathWalker<DocumentVisitorType> walker = new DocumentPathWalker<>(
+                this.column.getPathToSourceProperty(), arrayAllIterationState);
+        final Optional<DocumentNode<DocumentVisitorType>> dynamodbProperty = walker.walkThroughDocument(document);
+        if (dynamodbProperty.isEmpty()) {
             if (this.column.getLookupFailBehaviour() == LookupFailBehaviour.DEFAULT_VALUE) {
                 return this.column.getExasolDefaultValue();
             } else {
-                throw exception;
+                throw new SchemaMappingException("Could not find required property ("
+                        + this.column.getPathToSourceProperty() + ") in the source document.");
             }
+        } else {
+            return mapValue(dynamodbProperty.get());
         }
     }
 

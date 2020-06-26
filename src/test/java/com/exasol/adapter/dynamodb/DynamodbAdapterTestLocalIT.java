@@ -65,6 +65,7 @@ class DynamodbAdapterTestLocalIT {
         exasolTestInterface.uploadMapping(MappingTestFiles.SINGLE_COLUMN_TO_TABLE_MAPPING_FILE_NAME);
         exasolTestInterface.uploadMapping(MappingTestFiles.DATA_TYPE_TEST_MAPPING_FILE_NAME);
         exasolTestInterface.uploadMapping(MappingTestFiles.DOUBLE_NESTED_TO_TABLE_MAPPING_FILE_NAME);
+        exasolTestInterface.uploadMapping(MappingTestFiles.TO_JSON_MAPPING_FILE_NAME);
         exasolTestInterface.createAdapterScript();
         exasolTestInterface.createUdf();
         LOGGER.info("created adapter script");
@@ -274,6 +275,16 @@ class DynamodbAdapterTestLocalIT {
         assertThat(isbns, containsInAnyOrder("123254545"));
     }
 
+    @Test
+    void testToJsonMapping() throws IOException, SQLException {
+        createToJsonMappingVirtualSchema();
+        dynamodbTestInterface.createTable(DYNAMO_BOOKS_TABLE, TestDocuments.BOOKS_ISBN_PROPERTY);
+        dynamodbTestInterface.importData(DYNAMO_BOOKS_TABLE, TestDocuments.BOOKS);
+        final List<String> result = runQueryAndExtractColumn("SELECT TOPICS FROM " + TEST_SCHEMA + ".BOOKS", "TOPICS");
+        assertThat(result, containsInAnyOrder("[\"Exasol\",\"DynamoDB\",\"Virtual Schema\"]", "[\"Fantasy\"]",
+                "[\"Birds\",\"Nature\"]"));
+    }
+
     private void createTableBooksTableWithPublisherPriceKey() throws IOException {
         final CreateTableRequest request = new CreateTableRequest().withTableName(DYNAMO_BOOKS_TABLE)
                 .withKeySchema(new KeySchemaElement("publisher", KeyType.HASH),
@@ -325,6 +336,11 @@ class DynamodbAdapterTestLocalIT {
         dynamodbTestInterface.createTable(MappingTestFiles.DATA_TYPE_TEST_SRC_TABLE_NAME,
                 TestDocuments.DATA_TYPE_TEST_STRING_VALUE);
         dynamodbTestInterface.importData(MappingTestFiles.DATA_TYPE_TEST_SRC_TABLE_NAME, TestDocuments.DATA_TYPE_TEST);
+    }
+
+    void createToJsonMappingVirtualSchema() throws SQLException {
+        exasolTestInterface.createDynamodbVirtualSchema(TEST_SCHEMA, DYNAMODB_CONNECTION,
+                BUCKETFS_PATH + MappingTestFiles.TO_JSON_MAPPING_FILE_NAME);
     }
 
     private static final class SelectStringArrayResult {

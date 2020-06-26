@@ -49,7 +49,7 @@ public class OpenLibrary {
     void importTestData() throws IOException {
         try (final FileInputStream fileInputStream = new FileInputStream(new File(LOCAL_DATASET_PATH));
                 final GZIPInputStream unzipedInputStream = new GZIPInputStream(fileInputStream)) {
-            importDataFromJsonLines(TABLE_NAME, unzipedInputStream, 2000000);
+            importDataFromJsonLines(TABLE_NAME, unzipedInputStream, 8000000);
         }
     }
 

@@ -57,10 +57,29 @@ class DynamodbAdapterTestAwsIT {
     @Test
     void testCountAllRows() throws SQLException {
         final ResultSet resultSet = exasolTestInterface.getStatement()
-                .executeQuery("SELECT COUNT(\"KEY\") FROM OPENLIBRARY");
+                .executeQuery("SELECT \"KEY\", \"REVISION\" FROM OPENLIBRARY");
         resultSet.next();
-        final int count = resultSet.getInt(1);
-        assertThat(count, equalTo(2000000));
+    }
+
+    @Test
+    void testCountAllRowsWith3Columns() throws SQLException {
+        final ResultSet resultSet = exasolTestInterface.getStatement()
+                .executeQuery("SELECT \"KEY\", \"REVISION\", \"TITLE\" FROM OPENLIBRARY");
+        resultSet.next();
+    }
+
+    @Test
+    void testCountAllRowsWith4Columns() throws SQLException {
+        final ResultSet resultSet = exasolTestInterface.getStatement()
+                .executeQuery("SELECT \"KEY\", \"REVISION\", \"TITLE\", \"TITLE_PREFIX\" FROM OPENLIBRARY");
+        resultSet.next();
+    }
+
+    @Test
+    void testToJson() throws SQLException {
+        final ResultSet resultSet = exasolTestInterface.getStatement()
+                .executeQuery("SELECT \"PUBLISHERS\" FROM OPENLIBRARY");
+        resultSet.next();
     }
 
     @Test
@@ -76,9 +95,7 @@ class DynamodbAdapterTestAwsIT {
     @Test
     void testCountAuthorsTable() throws SQLException {
         final ResultSet resultSet = exasolTestInterface.getStatement()
-                .executeQuery("SELECT COUNT(\"KEY\") FROM OPENLIBRARY_AUTHORS");
+                .executeQuery("SELECT \"KEY\" FROM OPENLIBRARY_AUTHORS");
         resultSet.next();
-        final int count = resultSet.getInt(1);
-        assertThat(count, equalTo(858180));
     }
 }

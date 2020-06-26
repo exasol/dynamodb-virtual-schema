@@ -5,6 +5,7 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.Map;
+import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
 
@@ -18,19 +19,19 @@ class LinearDocumentPathWalkerTest {
     private static final MockObjectNode TEST_OBJECT_NODE = new MockObjectNode(Map.of("key", NESTED_VALUE));
 
     @Test
-    void testWalk() throws DocumentPathWalkerException {
+    void testWalk() {
         final DocumentPathExpression pathExpression = new DocumentPathExpression.Builder().addObjectLookup("key")
                 .build();
-        final DocumentNode<Object> result = new LinearDocumentPathWalker<Object>(pathExpression)
+        final Optional<DocumentNode<Object>> result = new LinearDocumentPathWalker<>(pathExpression)
                 .walkThroughDocument(TEST_OBJECT_NODE);
-        assertThat(result, equalTo(NESTED_VALUE));
+        assertThat(result.orElse(null), equalTo(NESTED_VALUE));
     }
 
     @Test
     void testNonLinearPath() {
         final DocumentPathExpression pathExpression = new DocumentPathExpression.Builder().addArrayAll().build();
-        final DocumentPathWalkerException exception = assertThrows(DocumentPathWalkerException.class,
-                () -> new LinearDocumentPathWalker<Object>(pathExpression));
+        final IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+                () -> new LinearDocumentPathWalker<>(pathExpression));
         assertThat(exception.getMessage(), equalTo(
                 "The given path is not a linear path. You can either remove the ArrayAllSegments from path or use a DocumentPathWalker."));
     }
