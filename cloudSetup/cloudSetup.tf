@@ -181,7 +181,7 @@ module "exasol" {
   admin_user_password             = random_password.exasol_admin_password.result
   management_server_instance_type = "m5.xlarge"
   datanode_instance_type          = "m5.2xlarge"
-  datanode_count                  = "2"
+  datanode_count                  = var.exasol_nodes
   standbynode_count               = "0"
   public_ip                       = true
 
