@@ -64,7 +64,7 @@ class DynamodbQueryDocumentFetcherFactory {
                     bestQueryOperationSelection = queryOperationSelection;
                 }
             } catch (final PlanDoesNotFitException exception) {
-                continue;
+                // in that case we just don't add the plan
             }
         }
         if (bestQueryOperationSelection == null) {
