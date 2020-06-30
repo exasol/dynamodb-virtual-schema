@@ -10,7 +10,7 @@ public class OverflowException extends ColumnValueExtractorException {
      * Create an instance of {@link OverflowException}.
      * 
      * @param message message
-     * @param column  column that cased the exception
+     * @param column  column that caused the exception
      */
     public OverflowException(final String message, final PropertyToColumnMapping column) {
         super(message, column);

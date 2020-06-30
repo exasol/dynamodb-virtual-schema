@@ -105,7 +105,7 @@ The following links explain logging and debugging for the Virtual Schema in gene
 * [Remote debugging Virtual Schemas](https://github.com/exasol/virtual-schemas/blob/master/doc/development/remote_debugging.md)
 
 For logging and debugging in the test code, things are easier, 
-as most of the setup code is already includes in the AbstractExasolTestInterface.
+as most of the setup code is already included in the AbstractExasolTestInterface.
 
 The tests automatically redirect the logs from the Virtual Schema to the tests command line output.
 
@@ -120,6 +120,5 @@ To use it, download the binaries from the project homepage
 and place the `liblagent.so` in the directory above this projects root.
 Then enable profiling by adding `-Dtests.profiling="true"` to your jvm parameters.
       
-
 
 

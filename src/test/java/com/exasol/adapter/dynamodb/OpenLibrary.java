@@ -136,7 +136,6 @@ public class OpenLibrary {
             final TableWriteItems writeRequest = new TableWriteItems(this.tableName).withItemsToPut(this.batch);
             try {
                 final BatchWriteItemOutcome batchWriteItemOutcome = this.dynamoClient.batchWriteItem(writeRequest);
-
                 LOGGER.info("# Writte items: " + this.itemCounter);
             } catch (final AmazonDynamoDBException exception) {
                 LOGGER.error(exception.getMessage());

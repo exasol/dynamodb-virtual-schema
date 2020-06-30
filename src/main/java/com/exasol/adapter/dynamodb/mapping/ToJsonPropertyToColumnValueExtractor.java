@@ -29,7 +29,7 @@ public abstract class ToJsonPropertyToColumnValueExtractor<DocumentVisitorType>
         if (jsonValue.length() > this.column.getMaxLength()) {
             if (this.column.getOverflowBehaviour().equals(ToJsonPropertyToColumnMapping.OverflowBehaviour.EXCEPTION)) {
                 throw new OverflowException(
-                        "The generated JSON did exceed the configured maximum size. You can either increase the column size if this column or set the overflow behaviour to NULL.",
+                        "The generated JSON did exceed the configured maximum size. You can either increase the column size of this column or set the overflow behaviour to NULL.",
                         this.column);
             } else {
                 return NullLiteral.nullLiteral();
