@@ -253,9 +253,6 @@
                         </exclude><!-- automatic run makes no sense as cloud setup is needed -->
                     </excludes>
                     <failIfNoTests>true</failIfNoTests>
-                    <systemPropertyVariables>
-                        <tests.noDebug>true</tests.noDebug>
-                    </systemPropertyVariables>
                 </configuration>
                 <executions>
                     <execution>

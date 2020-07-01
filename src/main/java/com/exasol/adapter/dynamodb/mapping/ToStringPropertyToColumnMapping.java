@@ -108,7 +108,7 @@ public final class ToStringPropertyToColumnMapping extends AbstractPropertyToCol
         TRUNCATE,
 
         /**
-         * throw an {@link ToStringPropertyToColumnValueExtractor.OverflowException}.
+         * throw an {@link OverflowException}.
          */
         EXCEPTION
     }

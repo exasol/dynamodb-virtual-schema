@@ -113,7 +113,8 @@ class DynamodbFilterExpressionFactoryTest {
     private ColumnLiteralComparisonPredicate getComparison(final String literal,
             final AbstractComparisonPredicate.Operator operator) {
         final DocumentPathExpression sourcePath = new DocumentPathExpression.Builder().addObjectLookup("key").build();
-        final ToJsonPropertyToColumnMapping column = new ToJsonPropertyToColumnMapping("columnName", sourcePath, null);
+        final ToJsonPropertyToColumnMapping column = new ToJsonPropertyToColumnMapping("columnName", sourcePath, null,
+                0, null);
         return new ColumnLiteralComparisonPredicate(operator, column, new SqlLiteralString(literal));
     }
 

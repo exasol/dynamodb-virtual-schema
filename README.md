@@ -99,5 +99,26 @@ Start with the [mapping definition example](doc/gettingStartedWithSchemaMappingL
 
 # Logging & Debugging
 
+The following links explain logging and debugging for the Virtual Schema in general:
+
 * [Logging for Virtual Schemas](https://github.com/exasol/virtual-schemas/blob/master/doc/development/remote_logging.md)
 * [Remote debugging Virtual Schemas](https://github.com/exasol/virtual-schemas/blob/master/doc/development/remote_debugging.md)
+
+For logging and debugging in the test code, things are easier, 
+as most of the setup code is already included in the AbstractExasolTestInterface.
+
+The tests automatically redirect the logs from the Virtual Schema to the tests command line output.
+
+For debugging start a debugger on your development machine listening on port `8000` and 
+start the tests with: `-Dtests.debug="virtualSchema"` or `-Dtests.debug="all"`. 
+The last option also starts the debugger for the UDF calls. This will however typically fail,
+ as the UDFs run in parallel and therefore only one can connect to the debugger.
+ 
+Additionally the test setup can run the VirtualSchema and the UDFs with a profiler. 
+Therefore we use the [Hones Profiler](https://github.com/jvm-profiling-tools/honest-profiler).
+To use it, download the binaries from the project homepage 
+and place the `liblagent.so` in the directory above this projects root.
+Then enable profiling by adding `-Dtests.profiling="true"` to your jvm parameters.
+      
+
+

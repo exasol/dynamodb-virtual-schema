@@ -181,7 +181,7 @@ module "exasol" {
   admin_user_password             = random_password.exasol_admin_password.result
   management_server_instance_type = "m5.xlarge"
   datanode_instance_type          = "m5.2xlarge"
-  datanode_count                  = "2"
+  datanode_count                  = var.exasol_nodes
   standbynode_count               = "0"
   public_ip                       = true
 
@@ -205,7 +205,7 @@ data "aws_ami" "ubuntu" {
   filter {
     name = "name"
     values = [
-    "ubuntu/images/hvm-ssd/ubuntu-focal-20.04-amd64-server-*"]
+    "ubuntu/images/hvm-ssd/ubuntu-focal-20.04-amd64-server-20200609"]
   }
 
   filter {

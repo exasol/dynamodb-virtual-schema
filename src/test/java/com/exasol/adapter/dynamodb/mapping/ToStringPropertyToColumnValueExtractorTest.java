@@ -40,7 +40,7 @@ class ToStringPropertyToColumnValueExtractorTest {
         final ToStringPropertyToColumnMapping toStringColumnMappingDefinition = new ToStringPropertyToColumnMapping("",
                 DocumentPathExpression.empty(), LookupFailBehaviour.DEFAULT_VALUE, TEST_STRING.length() - 1,
                 ToStringPropertyToColumnMapping.OverflowBehaviour.EXCEPTION);
-        assertThrows(ToStringPropertyToColumnValueExtractor.OverflowException.class,
+        assertThrows(OverflowException.class,
                 () -> new ToStringValueMapperStub(toStringColumnMappingDefinition).mapValue(null));
     }
 

@@ -33,13 +33,14 @@ class TestSetup {
 
     static ColumnMapping columnForAttribute(final String attributeName) {
         final DocumentPathExpression path = new DocumentPathExpression.Builder().addObjectLookup(attributeName).build();
-        return new ToJsonPropertyToColumnMapping(attributeName, path, null);
+        return new ToJsonPropertyToColumnMapping(attributeName, path, null, 0, null);
     }
 
     public static ColumnLiteralComparisonPredicate getCompareForColumn(final String propertyName) {
         final DocumentPathExpression sourcePath = new DocumentPathExpression.Builder().addObjectLookup(propertyName)
                 .build();
-        final ToJsonPropertyToColumnMapping column = new ToJsonPropertyToColumnMapping("columnName", sourcePath, null);
+        final ToJsonPropertyToColumnMapping column = new ToJsonPropertyToColumnMapping("columnName", sourcePath, null,
+                0, ToJsonPropertyToColumnMapping.OverflowBehaviour.NULL);
         return new ColumnLiteralComparisonPredicate(AbstractComparisonPredicate.Operator.EQUAL, column,
                 new SqlLiteralString(""));
     }

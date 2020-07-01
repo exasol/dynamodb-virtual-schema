@@ -16,6 +16,7 @@ import com.amazonaws.services.dynamodbv2.document.BatchWriteItemOutcome;
 import com.amazonaws.services.dynamodbv2.document.DynamoDB;
 import com.amazonaws.services.dynamodbv2.document.Item;
 import com.amazonaws.services.dynamodbv2.document.TableWriteItems;
+import com.amazonaws.services.dynamodbv2.model.AmazonDynamoDBException;
 
 /**
  * This class imports the open library dataset into a DynamoDB table.
@@ -49,7 +50,7 @@ public class OpenLibrary {
     void importTestData() throws IOException {
         try (final FileInputStream fileInputStream = new FileInputStream(new File(LOCAL_DATASET_PATH));
                 final GZIPInputStream unzipedInputStream = new GZIPInputStream(fileInputStream)) {
-            importDataFromJsonLines(TABLE_NAME, unzipedInputStream, 8000000);
+            importDataFromJsonLines(TABLE_NAME, unzipedInputStream, -1);
         }
     }
 
@@ -90,6 +91,7 @@ public class OpenLibrary {
             }
             batchWriter.flush();
             LOGGER.info("Written items: " + batchWriter.getItemCounter());
+            LOGGER.info("Errors: " + batchWriter.getErrorCounter());
         }
     }
 
@@ -104,6 +106,7 @@ public class OpenLibrary {
         private final String tableName;
         private final long itemLimit;
         private long itemCounter;
+        private long errorCounter = 0;
 
         private BatchWriter(final DynamoDB dynamoClient, final String tableName, final long itemLimit) {
             this.dynamoClient = dynamoClient;
@@ -131,13 +134,22 @@ public class OpenLibrary {
                 return;
             }
             final TableWriteItems writeRequest = new TableWriteItems(this.tableName).withItemsToPut(this.batch);
-            final BatchWriteItemOutcome batchWriteItemOutcome = this.dynamoClient.batchWriteItem(writeRequest);
-            LOGGER.info("# Unprocessed items: " + batchWriteItemOutcome.getUnprocessedItems().size());
+            try {
+                final BatchWriteItemOutcome batchWriteItemOutcome = this.dynamoClient.batchWriteItem(writeRequest);
+                LOGGER.info("# Writte items: " + this.itemCounter);
+            } catch (final AmazonDynamoDBException exception) {
+                LOGGER.error(exception.getMessage());
+                this.errorCounter++;
+            }
             this.batch.clear();
         }
 
         public long getItemCounter() {
             return this.itemCounter;
+        }
+
+        public long getErrorCounter() {
+            return this.errorCounter;
         }
     }
 }
