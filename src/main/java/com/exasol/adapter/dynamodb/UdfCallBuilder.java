@@ -27,16 +27,14 @@ import com.exasol.utils.StringSerializer;
  * @implNote the push down statement consists of three cascaded statements.
  * 
  *           Consider the following example:
+ *
  * 
  *           SELECT COL1 FROM (
  * 
- *           SELECT * FROM (
- * 
  *           SELECT UDF(PARAMS) EMITS (COL1, COL2) FROM VALUES ((v1, 1), (v2, 2), (v3, 3)) AS P1, C GROUP BY C
  * 
- *           ) WHERE COL = X
- * 
- *           )
+ *           ) WHERE COL2 = X
+ *
  */
 @java.lang.SuppressWarnings("squid:S119") // DocumentVisitorType does not fit naming conventions.
 public class UdfCallBuilder<DocumentVisitorType> {
@@ -57,38 +55,27 @@ public class UdfCallBuilder<DocumentVisitorType> {
     public String getUdfCallSql(final List<DocumentFetcher<DocumentVisitorType>> documentFetchers,
             final RemoteTableQuery query, final String connectionName) throws IOException {
         final Select udfCallStatement = buildUdfCallStatement(documentFetchers, query, connectionName);
-        final Select udfCallAndPostSelection = wrapStatementInStatementWithPostSelection(query.getPostSelection(),
-                udfCallStatement);
-        final Select pushDownSelect = wrapStatementInStatementWithProjection(query.getSelectList(),
-                udfCallAndPostSelection);
+        final Select pushDownSelect = wrapStatementInStatementWithPostSelectionAndProjection(query.getSelectList(),
+                query.getPostSelection(), udfCallStatement);
         return renderStatement(pushDownSelect);
     }
 
     /**
-     * Wrap the given {@code SELECT} statement in a new SELECT statement that adds the projection.
-     */
-    private Select wrapStatementInStatementWithProjection(final List<ColumnMapping> selectList,
-            final Select innerSelect) {
-        final String[] selectListStrings = selectList.stream().map(ColumnMapping::getExasolColumnName)
-                .toArray(String[]::new);
-        final Select outerSelect = StatementFactory.getInstance().select().field(selectListStrings);
-        outerSelect.from().select(innerSelect);
-        return outerSelect;
-    }
-
-    /**
-     * Wrap the given {@code SELECT} statement in a new SELECT statement that adds the post selection as WHERE clause.
-     * 
-     * @implNote The post selection can't be applied directly to statement containing the UDF calls as exasol does not
+     * Wrap the given {@code SELECT} statement in a new {@code SELECT} statement that adds the post selection as
+     * {@code WHERE} clause and the projection as select {@code SELECT} clause.
+     *
+     * @implNote The post selection can't be applied directly to statement containing the UDF calls as Exasol does not
      *           recognize the column names correctly in the same statement.
      */
-    private Select wrapStatementInStatementWithPostSelection(final QueryPredicate postSelection,
-            final Select doubleNestedSelect) {
-        final Select innerSelect = StatementFactory.getInstance().select().all();
-        innerSelect.from().select(doubleNestedSelect);
+    private Select wrapStatementInStatementWithPostSelectionAndProjection(final List<ColumnMapping> selectList,
+            final QueryPredicate postSelection, final Select doubleNestedSelect) {
+        final String[] selectListStrings = selectList.stream().map(ColumnMapping::getExasolColumnName)
+                .toArray(String[]::new);
+        final Select statement = StatementFactory.getInstance().select().field(selectListStrings);
+        statement.from().select(doubleNestedSelect);
         final BooleanExpression whereClause = new QueryPredicateToBooleanExpressionConverter().convert(postSelection);
-        innerSelect.where(whereClause);
-        return innerSelect;
+        statement.where(whereClause);
+        return statement;
     }
 
     /**
