@@ -24,6 +24,7 @@ import com.exasol.dynamodb.DynamodbConnectionFactory;
  * Tests using the AWS DynamoDB. Setup credentials on your machine using: {@code aws configure}.
  */
 @Tag("integration")
+@SuppressWarnings("java:S2699") // tests in this class do not contains assertions because they are performance tests
 class DynamodbAdapterTestAwsIT {
     private static final Logger LOGGER = LoggerFactory.getLogger(DynamodbAdapterTestAwsIT.class);
 

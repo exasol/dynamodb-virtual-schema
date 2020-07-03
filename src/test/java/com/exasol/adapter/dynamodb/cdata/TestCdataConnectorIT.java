@@ -24,13 +24,12 @@ import com.exasol.bucketfs.BucketAccessException;
  * Preparations:
  * - Get CData JDBC connector jar
  * - place jar one folder above this repo
- * - upload driver jar to EXAOperation
- * - disable security manager for driver
  * - ask CDATA support for RTK key
  * - create ~/cdata_credentials.json
  * - define aws_access_key, aws_secret_key, rtk in the JSON file
  */
 @Tag("integration")
+@SuppressWarnings("java:S2699") // tests in this class do not contains assertions because they are performance tests
 public class TestCdataConnectorIT {
     private static final String JDBC_ADAPTER_JAR_NAME = "cdata.jdbc.amazondynamodb.jar";
     private static final Path PATH_TO_JDBC_ADAPTER_JAR = Path.of("../", JDBC_ADAPTER_JAR_NAME);
@@ -61,8 +60,6 @@ public class TestCdataConnectorIT {
                         + cdataCredentialProvider.getRtk() + ";Other = DefaultColumnSize = 200000;",
                 "not used", "anyway");
     }
-
-
 
     @Test
     void testCountAllWithIncreasedLimitsAndProjection() throws SQLException {
