@@ -5,39 +5,32 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
+import java.io.IOException;
+
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.Tag;
-import org.testcontainers.containers.GenericContainer;
-import org.testcontainers.containers.Network;
-import org.testcontainers.junit.jupiter.Container;
-import org.testcontainers.junit.jupiter.Testcontainers;
 
 import com.amazonaws.services.dynamodbv2.model.*;
 import com.exasol.adapter.dynamodb.DynamodbTestInterface;
+import com.exasol.adapter.dynamodb.IntegrationTestSetup;
 
 @Tag("integration")
 @Tag("quick")
-@Testcontainers
 class DynamodbTableMetadataFactoryTestIT {
-    private static final Network NETWORK = Network.newNetwork();
-    @Container
-    public static final GenericContainer LOCAL_DYNAMO = new GenericContainer<>("amazon/dynamodb-local")
-            .withNetwork(NETWORK).withExposedPorts(8000).withNetworkAliases("dynamo")
-            .withCommand("-jar DynamoDBLocal.jar -sharedDb -dbPath .");
     private static final String TABLE_NAME = "test";
     private static DynamodbTestInterface dynamodbTestInterface;
     private static DynamodbTableMetadataFactory tableMetadataFactory;
 
     @BeforeAll
-    static void beforeAll() throws DynamodbTestInterface.NoNetworkFoundException {
-        dynamodbTestInterface = new DynamodbTestInterface(LOCAL_DYNAMO, NETWORK);
+    static void beforeAll() throws DynamodbTestInterface.NoNetworkFoundException, IOException {
+        dynamodbTestInterface = new IntegrationTestSetup().getDynamodbTestInterface();
         tableMetadataFactory = new BaseDynamodbTableMetadataFactory(
                 dynamodbTestInterface.getDynamodbLowLevelConnection());
     }
 
     @AfterAll
     static void afterAll() {
-        NETWORK.close();
+        dynamodbTestInterface.teardown();
     }
 
     @AfterEach

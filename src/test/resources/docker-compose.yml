@@ -1,0 +1,21 @@
+version: "3"
+services:
+  exasol:
+    image: exasol/docker-db:latest
+    privileged: true
+    ports:
+      - "8888:8888"
+      - "6583:6583"
+    networks:
+      testnet:
+        aliases:
+          - dynamo
+  dynamodb:
+    image: amazon/dynamodb-local
+    networks:
+      - testnet
+    entrypoint: "java -jar DynamoDBLocal.jar -sharedDb -dbPath ."
+networks:
+  testnet:
+    
+        
