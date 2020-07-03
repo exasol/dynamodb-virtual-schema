@@ -99,7 +99,7 @@ class DynamodbAdapterRefreshTestLocalIT {
         exasolTestInterface.createDynamodbVirtualSchema(TEST_SCHEMA, DYNAMODB_CONNECTION, BUCKETFS_MAPPING_FULL_PATH);
         final Map<String, String> columnsBefore = exasolTestInterface.describeTable(TEST_SCHEMA, BOOKS_TABLE);
         exasolTestInterface.uploadMapping(MappingTestFiles.TO_JSON_MAPPING_FILE_NAME, BUCKETFS_MAPPING_FILE_NAME);
-        Thread.sleep(5000);// Wait for bucketfs to sync; Quick fix for
+        // Thread.sleep(5000);// Wait for bucketfs to sync; Quick fix for
                            // https://github.com/exasol/exasol-testcontainers/issues/54
         exasolTestInterface.refreshVirtualSchema(TEST_SCHEMA);
         final Map<String, String> columnsAfter = exasolTestInterface.describeTable(TEST_SCHEMA, BOOKS_TABLE);

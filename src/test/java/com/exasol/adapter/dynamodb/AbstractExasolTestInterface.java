@@ -108,8 +108,10 @@ public abstract class AbstractExasolTestInterface {
         final String hostIp = getTestHostIpAddress();
         final StringBuilder jvmOptions = new StringBuilder();
         if (hostIp != null) {
-            jvmOptions.append("-javaagent:/buckets/bfsdefault/default/").append(JACOCO_JAR_NAME)
-                    .append("=output=tcpclient,address=").append(hostIp).append(",port=3002");
+            /*
+             * jvmOptions.append("-javaagent:/buckets/bfsdefault/default/").append(JACOCO_JAR_NAME)
+             * .append("=output=tcpclient,address=").append(hostIp).append(",port=3002");
+             */
             if ((isUdf && isUdfDebuggingEnabled()) || (!isUdf && isVirtualSchemaDebuggingEnabled())) {
                 // noinspection SpellCheckingInspection
                 jvmOptions.append(" -agentlib:jdwp=transport=dt_socket,server=n,address=").append(hostIp).append(":")
