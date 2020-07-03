@@ -18,6 +18,9 @@ import org.slf4j.LoggerFactory;
 
 import com.exasol.bucketfs.BucketAccessException;
 
+/**
+ * Exasol test interface using an Exasol cluster running on AWS, created via the terraform file in cloudSetup/.
+ */
 public abstract class AbstractExasolTestInterface implements ExasolTestInterface {
     private static final Logger LOGGER = LoggerFactory.getLogger(AbstractExasolTestInterface.class);
     private static final String BUCKET_NAME = "default";

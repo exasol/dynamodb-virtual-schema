@@ -6,6 +6,9 @@ import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.auth.AWSSessionCredentials;
 import com.amazonaws.auth.DefaultAWSCredentialsProviderChain;
 
+/**
+ * DynamoDB test interface using a DynamoDB running on AWS.
+ */
 public class AwsDynamodbTestInterface extends DynamodbTestInterface {
 
     private AwsDynamodbTestInterface(final String dynamoUrl, final String user, final String pass,
