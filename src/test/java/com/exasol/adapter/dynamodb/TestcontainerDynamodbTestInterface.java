@@ -26,7 +26,6 @@ public class TestcontainerDynamodbTestInterface extends DynamodbTestInterface {
         super(getDockerNetworkUrlForLocalDynamodb(dynamodbContainer, network), LOCAL_DYNAMO_USER, LOCAL_DYNAMO_PASS,
                 Optional.empty());
         this.LOCAL_DYNAMO = dynamodbContainer;
-        this.LOCAL_DYNAMO.start();
     }
 
     private static String getDockerNetworkUrlForLocalDynamodb(final GenericContainer localDynamo,
@@ -52,6 +51,7 @@ public class TestcontainerDynamodbTestInterface extends DynamodbTestInterface {
             final GenericContainer container = new GenericContainer<>("amazon/dynamodb-local").withExposedPorts(8000)
                     .withNetwork(TestcontainerNetworkProvider.getNetwork()).withNetworkAliases("dynamo")
                     .withCommand("-jar DynamoDBLocal.jar -sharedDb -dbPath .");
+            container.start();
             return new TestcontainerDynamodbTestInterface(container, network);
         }
     }
