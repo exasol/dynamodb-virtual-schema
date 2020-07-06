@@ -30,19 +30,21 @@ public class DynamodbDocumentFetcherFactory implements DocumentFetcherFactory<Dy
 
     @Override
     public List<DocumentFetcher<DynamodbNodeVisitor>> buildDocumentFetcherForQuery(
-            final RemoteTableQuery remoteTableQuery) {
+            final RemoteTableQuery remoteTableQuery, final int maxNumberOfParallelFetchers) {
         final DynamodbTableMetadata tableMetadata = this.tableMetadataFactory
                 .buildMetadataForTable(remoteTableQuery.getFromTable().getRemoteName());
-        return buildDocumentFetcherForQuery(remoteTableQuery, tableMetadata);
+        return buildDocumentFetcherForQuery(remoteTableQuery, tableMetadata, maxNumberOfParallelFetchers);
     }
 
     List<DocumentFetcher<DynamodbNodeVisitor>> buildDocumentFetcherForQuery(
-            final RemoteTableQuery remoteTableQuery, final DynamodbTableMetadata tableMetadata) {
+            final RemoteTableQuery remoteTableQuery, final DynamodbTableMetadata tableMetadata,
+            final int maxNumberOfParallelFetchers) {
         try {
             return new DynamodbQueryDocumentFetcherFactory().buildDocumentFetcherForQuery(remoteTableQuery,
                     tableMetadata);
         } catch (final PlanDoesNotFitException exception) {
-            return new DynamodbScanDocumentFetcherFactory().buildDocumentFetcherForQuery(remoteTableQuery);
+            return new DynamodbScanDocumentFetcherFactory().buildDocumentFetcherForQuery(remoteTableQuery,
+                    maxNumberOfParallelFetchers);
         }
     }
 }

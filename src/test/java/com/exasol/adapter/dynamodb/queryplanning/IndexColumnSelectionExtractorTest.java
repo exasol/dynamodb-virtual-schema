@@ -64,9 +64,10 @@ class IndexColumnSelectionExtractorTest {
 
     @Test
     void testExtractIndexAndNonIndexColumnFromOr() {
+        final LogicalOperator predicate = new LogicalOperator(Set.of(INDEX_COMPARISON, NON_INDEX_COMPARISON),
+                LogicalOperator.Operator.OR);
         final UnsupportedOperationException exception = assertThrows(UnsupportedOperationException.class,
-                () -> EXTRACTOR.extractIndexColumnSelection(new LogicalOperator(
-                        Set.of(INDEX_COMPARISON, NON_INDEX_COMPARISON), LogicalOperator.Operator.OR)));
+                () -> EXTRACTOR.extractIndexColumnSelection(predicate));
         assertThat(exception.getMessage(), equalTo(
                 "This query combines selections on columns in a way, so that the selection can't be split up."));
     }
