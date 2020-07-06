@@ -6,8 +6,6 @@ import java.io.InputStreamReader;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import org.junit.jupiter.api.Test;
-
 /**
  * DynamoDB test interface for a local DynamoDB created with the docker-compose file from test/java/resources.
  */
@@ -27,7 +25,6 @@ public class LocalDynamodbTestInterface extends DynamodbTestInterface {
             return new LocalDynamodbTestInterface(getContainersIp());
         }
 
-        @Test
         private String getContainersIp() throws IOException {
             final Runtime runtime = Runtime.getRuntime();
             final String[] command = { "docker", "inspect", "-f",
