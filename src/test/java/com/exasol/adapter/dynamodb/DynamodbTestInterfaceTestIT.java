@@ -5,35 +5,28 @@ import static org.hamcrest.Matchers.equalTo;
 
 import java.io.IOException;
 
-import org.junit.jupiter.api.*;
-import org.testcontainers.containers.GenericContainer;
-import org.testcontainers.containers.Network;
-import org.testcontainers.junit.jupiter.Container;
-import org.testcontainers.junit.jupiter.Testcontainers;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import com.exasol.adapter.dynamodb.mapping.TestDocuments;
 
 /**
  * Tests the {@link DynamodbTestInterface}.
  */
-@Tag("integration")
-@Testcontainers
 class DynamodbTestInterfaceTestIT {
-    private static final Network NETWORK = Network.newNetwork();
-    @Container
-    public static final GenericContainer LOCAL_DYNAMO = new GenericContainer<>("amazon/dynamodb-local")
-            .withExposedPorts(8000).withNetwork(NETWORK).withCommand("-jar DynamoDBLocal.jar -sharedDb -dbPath .");
     private static final String TABLE_NAME = "TEST";
     private static DynamodbTestInterface dynamodbTestInterface;
 
     @BeforeAll
-    static void beforeAll() throws DynamodbTestInterface.NoNetworkFoundException {
-        dynamodbTestInterface = new DynamodbTestInterface(LOCAL_DYNAMO, NETWORK);
+    static void beforeAll() throws DynamodbTestInterface.NoNetworkFoundException, IOException {
+        dynamodbTestInterface = new IntegrationTestSetup().getDynamodbTestInterface();
     }
 
     @AfterAll
     static void afterAll() {
-        NETWORK.close();
+        dynamodbTestInterface.teardown();
     }
 
     @AfterEach

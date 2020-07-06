@@ -11,11 +11,14 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import org.apache.xmlrpc.XmlRpcException;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 import com.exasol.adapter.dynamodb.AwsExasolTestInterface;
+import com.exasol.adapter.dynamodb.ExasolTestDatabaseBuilder;
+import com.exasol.adapter.dynamodb.IntegrationTestSetup;
 import com.exasol.bucketfs.BucketAccessException;
 
 /*
@@ -35,15 +38,17 @@ public class TestCdataConnectorIT {
     private static final Path PATH_TO_JDBC_ADAPTER_JAR = Path.of("../", JDBC_ADAPTER_JAR_NAME);
     private static final String CONNECTION_NAME = "MY_CONNECTION";
     private static AwsExasolTestInterface exasolTestInterface;
+    private static ExasolTestDatabaseBuilder exasolTestSetup;
 
     @BeforeAll
     static void beforeAll()
             throws SQLException, BucketAccessException, InterruptedException, java.util.concurrent.TimeoutException,
             IOException, NoSuchAlgorithmException, KeyManagementException, XmlRpcException {
         final CdataCredentialProvider cdataCredentialProvider = new CdataCredentialProvider();
-
-        exasolTestInterface = new AwsExasolTestInterface();
-        exasolTestInterface.dropConnection(CONNECTION_NAME);
+        final IntegrationTestSetup integrationTestSetup = new IntegrationTestSetup();
+        exasolTestInterface = (AwsExasolTestInterface) integrationTestSetup.getExasolTestInterface();
+        exasolTestSetup = new ExasolTestDatabaseBuilder(exasolTestInterface);
+        exasolTestSetup.dropConnection(CONNECTION_NAME);
         try {
             exasolTestInterface.getExaOperationInterface().createAndUploadJdbcDriver("cdata",
                     "cdata.jdbc.amazondynamodb.AmazonDynamoDBDriver", "jdbc:amazondynamodb:", true,
@@ -53,7 +58,7 @@ public class TestCdataConnectorIT {
                 throw exception;
             }
         }
-        exasolTestInterface.createConnection(CONNECTION_NAME,
+        exasolTestSetup.createConnection(CONNECTION_NAME,
                 "jdbc:amazondynamodb:Access Key=" + cdataCredentialProvider.getAwsAccessKey() + ";Secret Key="
                         + cdataCredentialProvider.getAwsSecretKey()
                         + ";Domain=amazonaws.com;Region=frankfurt;Verbosity=3;Cache Location=/tmp/;RTK="
@@ -61,36 +66,41 @@ public class TestCdataConnectorIT {
                 "not used", "anyway");
     }
 
+    @AfterAll
+    static void afterAll() {
+        exasolTestInterface.teardown();
+    }
+
     @Test
     void testCountAllWithIncreasedLimitsAndProjection() throws SQLException {
-        final ResultSet resultSet = exasolTestInterface.getStatement().executeQuery(
+        final ResultSet resultSet = exasolTestSetup.getStatement().executeQuery(
                 "SELECT * FROM (IMPORT INTO (c1 VARCHAR(255) UTF8, c2 VARCHAR(255) UTF8) FROM JDBC AT MY_CONNECTION STATEMENT 'SELECT \"key\", \"revision\" FROM \"open_library_test\"')");
         resultSet.next();
     }
 
     @Test
     void testCountAllWithIncreasedLimitsWith3Columns() throws SQLException {
-        final ResultSet resultSet = exasolTestInterface.getStatement().executeQuery(
+        final ResultSet resultSet = exasolTestSetup.getStatement().executeQuery(
                 "SELECT * FROM (IMPORT INTO (c1 VARCHAR(255) UTF8, c2 VARCHAR(255) UTF8, c3 VARCHAR(200000) UTF8) FROM JDBC AT MY_CONNECTION STATEMENT 'SELECT \"key\", \"revision\", \"title\" FROM \"open_library_test\"')");
         resultSet.next();
     }
 
     @Test
     void testCountAllWithIncreasedLimitsWith4Columns() throws SQLException {
-        final ResultSet resultSet = exasolTestInterface.getStatement().executeQuery(
+        final ResultSet resultSet = exasolTestSetup.getStatement().executeQuery(
                 "SELECT * FROM (IMPORT INTO (c1 VARCHAR(255) UTF8, c2 VARCHAR(255) UTF8, c3 VARCHAR(200000) UTF8, c4 VARCHAR(2000) UTF8) FROM JDBC AT MY_CONNECTION STATEMENT 'SELECT \"key\", \"revision\", \"title\", \"title_prefix\" FROM \"open_library_test\"')");
         resultSet.next();
     }
 
     @Test
     void testToJson() throws SQLException {
-        final ResultSet resultSet = exasolTestInterface.getStatement().executeQuery(
+        final ResultSet resultSet = exasolTestSetup.getStatement().executeQuery(
                 "SELECT * FROM (IMPORT INTO (c1 VARCHAR(200000) UTF8) FROM JDBC AT MY_CONNECTION STATEMENT 'SELECT \"publishers\" FROM \"open_library_test\"')");
     }
 
     @Test
     void testCountAuthorsTable() throws SQLException {
-        final ResultSet resultSet = exasolTestInterface.getStatement().executeQuery(
+        final ResultSet resultSet = exasolTestSetup.getStatement().executeQuery(
                 "SELECT * FROM (IMPORT INTO (c1 VARCHAR(255) UTF8) FROM JDBC AT MY_CONNECTION STATEMENT 'SELECT \"key\" FROM \"open_library_test.authors\";');");
         resultSet.next();
         // final int count = resultSet.getInt(1);
@@ -99,7 +109,7 @@ public class TestCdataConnectorIT {
 
     @Test
     void testSelectSingleRow() throws SQLException {
-        final ResultSet resultSet = exasolTestInterface.getStatement().executeQuery(
+        final ResultSet resultSet = exasolTestSetup.getStatement().executeQuery(
                 "SELECT COUNT(*) FROM TEST.\"open_library_test\" WHERE \"key\" = '/authors/OL7124039A' AND \"revision\" = 1");
         resultSet.next();
         final int count = resultSet.getInt(1);

@@ -3,7 +3,10 @@ package com.exasol.adapter.dynamodb;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.*;
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Optional;
 
 import javax.json.Json;
 import javax.json.JsonArray;
@@ -12,30 +15,19 @@ import javax.json.JsonValue;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.testcontainers.containers.GenericContainer;
-import org.testcontainers.containers.Network;
 
-import com.amazonaws.auth.AWSCredentials;
-import com.amazonaws.auth.AWSSessionCredentials;
-import com.amazonaws.auth.DefaultAWSCredentialsProviderChain;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.document.*;
 import com.amazonaws.services.dynamodbv2.model.*;
 import com.exasol.ExaConnectionInformation;
 import com.exasol.dynamodb.DynamodbConnectionFactory;
-import com.github.dockerjava.api.model.ContainerNetwork;
 
-/*
-    Using this class test data can be put to DynamoDB.
+/**
+ * Using is the abstract basis for DynamoDB test interfaces. The test interfaces offers convenience methods for creating
+ * test setups for a DynamoDB.
  */
-public class DynamodbTestInterface {
-    // Default credentials for dynamodb docker
-    private static final String LOCAL_DYNAMO_USER = "fakeMyKeyId";
-    private static final String LOCAL_DYNAMO_PASS = "fakeSecretAccessKey";
-    private static final String LOCAL_DYNAMO_PORT = "8000";
-    private static final String AWS_LOCAL_URL = "aws:eu-central-1";
+public abstract class DynamodbTestInterface {
     private static final Logger LOGGER = LoggerFactory.getLogger(DynamodbTestInterface.class);
-
     private final DynamoDB dynamoClient;
     private final String dynamoUrl;
     private final String dynamoUser;
@@ -44,36 +36,9 @@ public class DynamodbTestInterface {
     private final List<String> tableNames = new LinkedList<>();
 
     /**
-     * Constructor for DynamoDB at AWS with credentials from system AWS configuration.
-     * <p>
-     * Use {@code aws configure} to set up.
-     * </p>
-     */
-    public DynamodbTestInterface() {
-        this(DefaultAWSCredentialsProviderChain.getInstance().getCredentials());
-    }
-
-    /**
-     * Constructor using DynamoDB at AWS with given AWS credentials.
-     */
-    private DynamodbTestInterface(final AWSCredentials awsCredentials) {
-        this(AWS_LOCAL_URL, awsCredentials.getAWSAccessKeyId(), awsCredentials.getAWSSecretKey(),
-                getSessionTokenIfPossible(awsCredentials));
-    }
-
-    /**
-     * Constructor using default login credentials for the local dynamodb docker instance.
-     */
-    public DynamodbTestInterface(final GenericContainer localDynamo, final Network dockerNetwork)
-            throws NoNetworkFoundException {
-        this(getDockerNetworkUrlForLocalDynamodb(localDynamo, dockerNetwork), LOCAL_DYNAMO_USER, LOCAL_DYNAMO_PASS,
-                Optional.empty());
-    }
-
-    /**
      * Constructor called by all other constructors.
      */
-    private DynamodbTestInterface(final String dynamoUrl, final String user, final String pass,
+    protected DynamodbTestInterface(final String dynamoUrl, final String user, final String pass,
             final Optional<String> sessionToken) {
         this.dynamoUrl = dynamoUrl;
         this.dynamoUser = user;
@@ -82,26 +47,7 @@ public class DynamodbTestInterface {
         this.dynamoClient = new DynamodbConnectionFactory().getDocumentConnection(dynamoUrl, user, pass, sessionToken);
     }
 
-    private static Optional<String> getSessionTokenIfPossible(final AWSCredentials awsCredentials) {
-        if (awsCredentials instanceof AWSSessionCredentials) {
-            final AWSSessionCredentials sessionCredentials = (AWSSessionCredentials) awsCredentials;
-            return Optional.of(((AWSSessionCredentials) awsCredentials).getSessionToken());
-        } else {
-            return Optional.empty();
-        }
-    }
-
-    private static String getDockerNetworkUrlForLocalDynamodb(final GenericContainer localDynamo,
-            final Network thisNetwork) throws NoNetworkFoundException {
-        final Map<String, ContainerNetwork> networks = localDynamo.getContainerInfo().getNetworkSettings()
-                .getNetworks();
-        for (final ContainerNetwork network : networks.values()) {
-            if (thisNetwork.getId().equals(network.getNetworkID())) {
-                return "http://" + network.getIpAddress() + ":" + LOCAL_DYNAMO_PORT;
-            }
-        }
-        throw new NoNetworkFoundException();
-    }
+    public abstract void teardown();
 
     public AmazonDynamoDB getDynamodbLowLevelConnection() {
         return new DynamodbConnectionFactory().getLowLevelConnection(this.getDynamoUrl(), this.getDynamoUser(),
