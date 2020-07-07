@@ -152,7 +152,7 @@ public class DynamodbAdapter implements VirtualSchemaAdapter {
     }
 
     /**
-     * Get the total number of cores that are available in the cluster. This methods assumes that all cluster node have
+     * Get the total number of cores that are available in the cluster. This method assumes that all cluster nodes have
      * an equal number of cores.
      *
      * @param exaMetadata {@link ExaMetadata}
