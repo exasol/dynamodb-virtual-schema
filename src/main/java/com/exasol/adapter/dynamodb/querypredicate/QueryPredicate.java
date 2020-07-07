@@ -1,12 +1,10 @@
 package com.exasol.adapter.dynamodb.querypredicate;
 
-import java.io.Serializable;
-
 /**
  * This interface represents a selection predicate. Using the classes implementing this interface a where clause is
  * modeled.
  */
-public interface QueryPredicate extends Serializable {
+public interface QueryPredicate {
     public void accept(QueryPredicateVisitor visitor);
 
     /**

@@ -15,9 +15,10 @@ public interface DocumentFetcherFactory<DocumentVisitorType> {
     /**
      * Builds a {@link DocumentFetcher} for a given query
      *
-     * @param remoteTableQuery the document query build the {@link DocumentFetcher} for
+     * @param remoteTableQuery            the document query build the {@link DocumentFetcher} for
+     * @param maxNumberOfParallelFetchers the maximum amount of {@link DocumentFetcher}s that can be used in parallel
      * @return {@link DocumentFetcher}
      */
     public List<DocumentFetcher<DocumentVisitorType>> buildDocumentFetcherForQuery(
-            final RemoteTableQuery remoteTableQuery);
+            final RemoteTableQuery remoteTableQuery, int maxNumberOfParallelFetchers);
 }

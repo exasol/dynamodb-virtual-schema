@@ -68,7 +68,7 @@ class DynamodbDocumentFetcherFactoryIT {
         final DynamodbDocumentFetcherFactory fetcherFactory = new DynamodbDocumentFetcherFactory(
                 dynamodbTestInterface.getDynamodbLowLevelConnection());
         final List<DocumentFetcher<DynamodbNodeVisitor>> documentFetchers = fetcherFactory
-                .buildDocumentFetcherForQuery(query);
+                .buildDocumentFetcherForQuery(query, 2);
         return documentFetchers.stream()
                 .flatMap((DocumentFetcher<DynamodbNodeVisitor> documentFetcher) -> documentFetcher
                         .run(dynamodbTestInterface.getExaConnectionInformationForDynamodb()))

@@ -33,7 +33,7 @@ import com.exasol.bucketfs.BucketAccessException;
  */
 @Tag("integration")
 @SuppressWarnings("java:S2699") // tests in this class do not contains assertions because they are performance tests
-public class TestCdataConnectorIT {
+class TestCdataConnectorIT {
     private static final String JDBC_ADAPTER_JAR_NAME = "cdata.jdbc.amazondynamodb.jar";
     private static final Path PATH_TO_JDBC_ADAPTER_JAR = Path.of("../", JDBC_ADAPTER_JAR_NAME);
     private static final String CONNECTION_NAME = "MY_CONNECTION";

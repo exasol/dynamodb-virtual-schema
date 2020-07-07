@@ -32,7 +32,7 @@ class DynamodbScanDocumentFetcherFactory {
      * @return list of {@link DynamodbScanDocumentFetcher}s
      */
     public List<DocumentFetcher<DynamodbNodeVisitor>> buildDocumentFetcherForQuery(
-            final RemoteTableQuery remoteTableQuery) {
+            final RemoteTableQuery remoteTableQuery, final int maxNumberOfParallelFetchers) {
         final ScanRequest templateScanRequest = new ScanRequest()
                 .withTableName(remoteTableQuery.getFromTable().getRemoteName());
         final DynamodbAttributeNamePlaceholderMapBuilder namePlaceholderMapBuilder = new DynamodbAttributeNamePlaceholderMapBuilder();
@@ -55,14 +55,15 @@ class DynamodbScanDocumentFetcherFactory {
         if (!projectionExpression.isEmpty()) {
             templateScanRequest.setProjectionExpression(projectionExpression);
         }
-        return parallelizeScan(templateScanRequest);
+        return parallelizeScan(templateScanRequest, maxNumberOfParallelFetchers);
     }
 
-    private List<DocumentFetcher<DynamodbNodeVisitor>> parallelizeScan(final ScanRequest templateScanRequest) {
-        final int numberOfSegments = 8; // TODO replace by calculated number
-        templateScanRequest.withTotalSegments(numberOfSegments);
-        final List<DocumentFetcher<DynamodbNodeVisitor>> documentFetchers = new ArrayList<>(numberOfSegments);
-        for (int segmentCounter = 0; segmentCounter < numberOfSegments; segmentCounter++) {
+    private List<DocumentFetcher<DynamodbNodeVisitor>> parallelizeScan(final ScanRequest templateScanRequest,
+            final int maxNumberOfParallelFetchers) {
+        templateScanRequest.withTotalSegments(maxNumberOfParallelFetchers);
+        final List<DocumentFetcher<DynamodbNodeVisitor>> documentFetchers = new ArrayList<>(
+                maxNumberOfParallelFetchers);
+        for (int segmentCounter = 0; segmentCounter < maxNumberOfParallelFetchers; segmentCounter++) {
             final ScanRequest scanRequest = templateScanRequest.clone();
             scanRequest.withSegment(segmentCounter);
             documentFetchers.add(new DynamodbScanDocumentFetcher(scanRequest));

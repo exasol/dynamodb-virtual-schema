@@ -131,9 +131,9 @@ public class DynamodbAdapter implements VirtualSchemaAdapter {
             throws AdapterException, ExaConnectionAccessException, IOException {
         final RemoteTableQuery remoteTableQuery = new RemoteTableQueryFactory().build(request.getSelect(),
                 request.getSchemaMetadataInfo().getAdapterNotes());
-        final String selectFromValuesStatement = runQuery(exaMetadata, request, remoteTableQuery);
+        final String responseStatement = runQuery(exaMetadata, request, remoteTableQuery);
         return PushDownResponse.builder()//
-                .pushDownSql(selectFromValuesStatement)//
+                .pushDownSql(responseStatement)//
                 .build();
     }
 
@@ -142,11 +142,25 @@ public class DynamodbAdapter implements VirtualSchemaAdapter {
         final AmazonDynamoDB dynamodbClient = getDynamoDBClient(exaMetadata, request);
         final DynamodbDocumentFetcherFactory documentFetcherFactory = new DynamodbDocumentFetcherFactory(
                 dynamodbClient);
+
+        final int availableClusterCores = getAvailableClusterCores(exaMetadata);
         final List<DocumentFetcher<DynamodbNodeVisitor>> documentFetchers = documentFetcherFactory
-                .buildDocumentFetcherForQuery(remoteTableQuery);
+                .buildDocumentFetcherForQuery(remoteTableQuery, availableClusterCores);
         final String connectionName = getPropertiesFromRequest(request).getConnectionName();
         return new UdfCallBuilder<DynamodbNodeVisitor>().getUdfCallSql(documentFetchers, remoteTableQuery,
                 connectionName);
+    }
+
+    /**
+     * Get the total number of cores that are available in the cluster. This method assumes that all cluster nodes have
+     * an equal number of cores.
+     *
+     * @param exaMetadata {@link ExaMetadata}
+     * @return total number of cores that are available in the cluster
+     */
+    private int getAvailableClusterCores(final ExaMetadata exaMetadata) {
+        final int cores = Runtime.getRuntime().availableProcessors();
+        return (int) (exaMetadata.getNodeCount() * cores);
     }
 
     private AmazonDynamoDB getDynamoDBClient(final ExaMetadata exaMetadata, final AbstractAdapterRequest request)
