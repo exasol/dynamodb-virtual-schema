@@ -1,6 +1,6 @@
 {
   "$schema": "../../main/resources/mappingLanguageSchema.json",
-  "srcTable": "open_library_test",
+  "srcTable": "open_library_small_test",
   "destTable": "OPENLIBRARY",
   "description": "Maps MY_BOOKS to BOOKS",
   "mapping": {

@@ -31,6 +31,32 @@ resource "aws_dynamodb_table" "open_library_test" {
   }
 }
 
+
+resource "aws_dynamodb_table" "open_library_small_test" {
+  name         = "open_library_small_test"
+  hash_key     = "key"
+  range_key    = "revision"
+  billing_mode = "PAY_PER_REQUEST"
+  tags = {
+    "exa:owner" : var.owner,
+    "exa:deputy" : var.deputy
+    "exa:project" : var.project
+    "exa:project.name" : var.project_name
+    "exa:stage" : var.stage
+    "Name" : "Small DynamoDB Test Table for Virtual Schemas for Dynamodb"
+  }
+
+  attribute {
+    name = "key"
+    type = "S"
+  }
+
+  attribute {
+    name = "revision"
+    type = "N"
+  }
+}
+
 resource "aws_vpc" "dynamodb_test_vpc" {
   cidr_block = "10.0.0.0/16"
   tags = {

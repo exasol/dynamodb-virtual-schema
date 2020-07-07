@@ -32,7 +32,7 @@ public class OpenLibrary {
     private static final Logger LOGGER = LoggerFactory.getLogger(OpenLibrary.class);
     private static final String DATASET_URL = "http://openlibrary.org/data/ol_cdump_latest.txt.gz";
     private static final String LOCAL_DATASET_PATH = "/data/dataset.txt.gz";
-    private static final String TABLE_NAME = "open_library_test";
+    private static final String TABLE_NAME = "open_library_small_test";
     private final DynamoDB documentClient;
 
     private OpenLibrary() throws IOException {
@@ -50,7 +50,7 @@ public class OpenLibrary {
     void importTestData() throws IOException {
         try (final FileInputStream fileInputStream = new FileInputStream(new File(LOCAL_DATASET_PATH));
                 final GZIPInputStream unzipedInputStream = new GZIPInputStream(fileInputStream)) {
-            importDataFromJsonLines(TABLE_NAME, unzipedInputStream, -1);
+            importDataFromJsonLines(TABLE_NAME, unzipedInputStream, 2000000);
         }
     }
 
