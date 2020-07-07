@@ -22,7 +22,7 @@ public class ExasolTestDatabaseBuilder {
     public static final String DYNAMODB_ADAPTER = "DYNAMODB_ADAPTER";
     public static final String PROFILING_AGENT_FILE_NAME = "liblagent.so";
     private static final Logger LOGGER = LoggerFactory.getLogger(TestcontainerExasolTestInterface.class);
-    private static final String VIRTUAL_SCHEMAS_JAR_NAME_AND_VERSION = "dynamodb-virtual-schemas-adapter-dist-0.2.1.jar";
+    private static final String VIRTUAL_SCHEMAS_JAR_NAME_AND_VERSION = "dynamodb-virtual-schemas-adapter-dist-0.3.0.jar";
     private static final Path PATH_TO_VIRTUAL_SCHEMAS_JAR = Path.of("target", VIRTUAL_SCHEMAS_JAR_NAME_AND_VERSION);
     private static final String JACOCO_JAR_NAME = "org.jacoco.agent-runtime.jar";
     private static final Path PATH_TO_JACOCO_JAR = Path.of("target", "jacoco-agent", JACOCO_JAR_NAME);
