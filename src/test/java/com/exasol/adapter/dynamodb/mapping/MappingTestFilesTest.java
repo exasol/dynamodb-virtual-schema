@@ -8,7 +8,7 @@ import java.io.IOException;
 
 import org.junit.jupiter.api.Test;
 
-public class MappingTestFilesTest {
+class MappingTestFilesTest {
 
     @Test
     void testCreateAndDelete() throws IOException {

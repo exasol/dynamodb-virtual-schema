@@ -1,0 +1,47 @@
+{
+  "$schema": "../../main/resources/mappingLanguageSchema.json",
+  "srcTable": "MY_BOOKS",
+  "destTable": "BOOKS",
+  "description": "Maps MY_BOOKS to BOOKS",
+  "mapping": {
+    "fields": {
+      "chapters": {
+        "toTableMapping": {
+          "mapping": {
+            "fields": {
+              "name": {
+                "toStringMapping": {
+                }
+              },
+              "figures": {
+                "toTableMapping": {
+                  "mapping": {
+                    "fields": {
+                      "name": {
+                        "toStringMapping": {
+                          "destName": "NAME"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "isbn": {
+        "toStringMapping": {
+          "maxLength": 20,
+          "overflow": "ABORT",
+          "required": true
+        }
+      },
+      "name": {
+        "toStringMapping": {
+          "required": true
+        }
+      }
+    }
+  }
+}

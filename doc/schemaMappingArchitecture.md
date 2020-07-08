@@ -1,22 +1,28 @@
 # Schema Mapping Software Architecture
 
-The `JsonMappingFactory` reads the schema mapping from a [schema mapping file](https://exasol.github.io/dynamodb-virtual-schema/schema_doc/index.html) 
-. It builds a mapping representation using the following class structure:
+The `JsonMappingFactory` reads the schema mapping from a [schema mapping file](https://exasol.github.io/dynamodb-virtual-schema/schema_doc/index.html).
+It builds a mapping representation using the following class structure:
 
 ![Class diagram](diagrams/mappingDefinition.png)
 
+The following classes implement the `ColumnMapping` and `PropertyToColumnMapping` interfaces:  
+
+![Class diagram](diagrams/mappingDefinitionImplementation.png)
+
 This structure is used:
-* By the `SchemaMappingDefinitionToSchemaMetadataConverter` for generating `SchemaMetadata` that is send to Exasol at `CREATE VIRTUAL SCHEMA` or `REFRESH`. 
+* By the `SchemaMappingToSchemaMetadataConverter` for generating `SchemaMetadata` that is send to Exasol at `CREATE VIRTUAL SCHEMA` or `REFRESH`. 
 * For Mapping the remote attribute values to Exasol values according to this definition.
+* For building the remote query
 
 ## Mapping Remote Attributes
 
-Remote values are mapped to Exasols `ValueExpression`s using a `ValueMapper`:
+The `ColumnValueExtractor` extracts the value of a column from a document. 
+As the extraction depends on the type of the column, the hierarchy of `ColumnValueExtractor` 
+is similar to that of the column.
+![Class diagram](diagrams/valueExtractors.png)
 
-![Class diagram](diagrams/valueMapper.png)
+The `ColumnValueExtractor`s are built by a `ColumnValueExtractorFactory`. This factory uses an implementation of `PropertyToColumnValueExtractorFactory` to build the 
+specific factory implementation for a remote database.
 
-A `ValueMapper` corresponding to a specific `AbstractColumnMappingDefinition` is built using a `ValueMapperFactory`:
-
-![Class diagram](diagrams/valueMapperFactory.png)
-
+![Class diagram](diagrams/valueExtractorFactory.png)
 

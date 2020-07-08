@@ -10,7 +10,7 @@ public class DynamodbBoolean implements DocumentValue<DynamodbNodeVisitor> {
     private final boolean value;
 
     /**
-     * Creates an instance of {@link DynamodbBoolean}.
+     * Create an instance of {@link DynamodbBoolean}.
      *
      * @param value value to hold
      */
@@ -19,7 +19,7 @@ public class DynamodbBoolean implements DocumentValue<DynamodbNodeVisitor> {
     }
 
     /**
-     * Gives the boolean value.
+     * Get the boolean value.
      *
      * @return boolean value
      */

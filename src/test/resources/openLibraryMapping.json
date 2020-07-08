@@ -1,0 +1,52 @@
+{
+  "$schema": "../../main/resources/mappingLanguageSchema.json",
+  "srcTable": "open_library_test",
+  "destTable": "OPENLIBRARY",
+  "description": "Maps MY_BOOKS to BOOKS",
+  "mapping": {
+    "fields": {
+      "key": {
+        "toStringMapping": {
+          "overflow": "TRUNCATE",
+          "required": true,
+          "key": "global"
+        }
+      },
+      "revision": {
+        "toStringMapping": {
+          "overflow": "TRUNCATE"
+        }
+      },
+      "authors": {
+        "toTableMapping": {
+          "mapping": {
+            "fields": {
+              "key": {
+                "toStringMapping": {
+                  "maxLength": 200000
+                }
+              }
+            }
+          }
+        }
+      },
+      "title": {
+        "toStringMapping": {
+          "maxLength": 200000,
+          "overflow": "TRUNCATE"
+        }
+      },
+      "title_prefix": {
+        "toStringMapping": {
+          "maxLength": 2000
+        }
+      },
+      "publishers": {
+        "toJsonMapping": {
+          "maxLength": 200000,
+          "overflow": "NULL"
+        }
+      }
+    }
+  }
+}

@@ -15,7 +15,7 @@ public class DynamodbBinarySet implements DocumentArray<DynamodbNodeVisitor> {
     private final List<DynamodbBinary> value;
 
     /**
-     * Creates an instance of {@link DynamodbBinarySet}.
+     * Create an instance of {@link DynamodbBinarySet}.
      *
      * @param value value to hold
      */
@@ -31,6 +31,11 @@ public class DynamodbBinarySet implements DocumentArray<DynamodbNodeVisitor> {
     @Override
     public DynamodbBinary getValue(final int index) {
         return this.getValuesList().get(index);
+    }
+
+    @Override
+    public int size() {
+        return this.value.size();
     }
 
     @Override

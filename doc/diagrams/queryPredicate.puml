@@ -1,0 +1,46 @@
+@startuml
+
+interface QueryPredicate{
+{abstract}accept(QueryPredicateVisitor)
+}
+
+class LogicalOperator{
+operator
+accept(QueryPredicateVisitor)
+}
+
+class NotPredicate{
+accept(QueryPredicateVisitor)
+}
+
+interface ComparisonPredicate{
+{abstract} getOperator()
+accept(QueryPredicateVisitor)
+{abstract}accept(ComparisonPredicateVisitor)
+}
+
+class NoPredicate{
+accept(QueryPredicateVisitor)
+}
+
+abstract class AbstractComparisonPredicate{
+operator
+getOperator()
+}
+
+class ColumnLiteralComparisonPredicate{
+column
+literal
+accept(ComparisonPredicateVisitor)
+}
+
+QueryPredicate <|.. LogicalOperator
+LogicalOperator "1" -- "*" QueryPredicate: > operands
+QueryPredicate <|.. NotPredicate
+QueryPredicate "1"--"1" NotPredicate : < operand
+QueryPredicate <|.. NoPredicate
+QueryPredicate <|.. ComparisonPredicate
+ComparisonPredicate <|..AbstractComparisonPredicate
+AbstractComparisonPredicate <|-- ColumnLiteralComparisonPredicate
+
+@enduml

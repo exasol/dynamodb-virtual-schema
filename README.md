@@ -13,10 +13,12 @@
 [![Lines of Code](https://sonarcloud.io/api/project_badges/measure?project=com.exasol%3Adynamodb-virtual-schema&metric=ncloc)](https://sonarcloud.io/dashboard?id=com.exasol%3Adynamodb-virtual-schema)
 
 ## Overview
+
 Using this Virtual Schema you can access to [Amazon DynamoDB](https://aws.amazon.com/dynamodb/) from Exasol.
 SonarCloud results:
 
  ## Installation
+ 
 Upload the latest available release of this adapter to BucketFS.
 
 Then create a schema to hold the adapter script.
@@ -29,7 +31,19 @@ Next create the Adapter Script:
  ```
 CREATE OR REPLACE JAVA ADAPTER SCRIPT ADAPTER.DYNAMODB_ADAPTER AS
     %scriptclass com.exasol.adapter.RequestDispatcher;
-    %jar /buckets/bfsdefault/default/dynamodb-virtual-schemas-adapter-dist-0.2.1.jar;
+    %jar /buckets/bfsdefault/default/dynamodb-virtual-schemas-adapter-dist-0.3.0.jar;
+/
+```
+
+In addition to the adapter script we must create a UDF function that will handle the loading of the data:
+```
+CREATE OR REPLACE JAVA SET SCRIPT ADAPTER.IMPORT_DOCUMENT_DATA(
+  DOCUMENT_FETCHER VARCHAR(2000000),
+  REMOTE_TABLE_QUERY VARCHAR(2000000),
+  CONNECTION_NAME VARCHAR(500))
+  EMITS(...) AS
+    %scriptclass com.exasol.adapter.dynamodb.ImportDocumentData;
+    %jar /buckets/bfsdefault/default/dynamodb-virtual-schemas-adapter-dist-0.3.0.jar;
 /
 ```
 
@@ -71,12 +85,40 @@ CREATE VIRTUAL SCHEMA DYNAMODB_TEST USING ADAPTER.DYNAMODB_ADAPTER WITH
  
 
 ## First Steps
+
 Start with the [mapping definition example](doc/gettingStartedWithSchemaMappingLanguage.md).
 
 # Documentation
+
 * [Schema mapping language reference](https://exasol.github.io/dynamodb-virtual-schema/schema_doc/index.html)
 * [Schema mapping software architecture](doc/schemaMappingArchitecture.md)
 
+# Limitations
+
+* In this version the adapter does not support comparisons between two columns
+
 # Logging & Debugging
+
+The following links explain logging and debugging for the Virtual Schema in general:
+
 * [Logging for Virtual Schemas](https://github.com/exasol/virtual-schemas/blob/master/doc/development/remote_logging.md)
 * [Remote debugging Virtual Schemas](https://github.com/exasol/virtual-schemas/blob/master/doc/development/remote_debugging.md)
+
+For logging and debugging in the test code, things are easier, 
+as most of the setup code is already included in the AbstractExasolTestInterface.
+
+The tests automatically redirect the logs from the Virtual Schema to the tests command line output.
+
+For debugging start a debugger on your development machine listening on port `8000` and 
+start the tests with: `-Dtests.debug="virtualSchema"` or `-Dtests.debug="all"`. 
+The last option also starts the debugger for the UDF calls. This will however typically fail,
+ as the UDFs run in parallel and therefore only one can connect to the debugger.
+ 
+Additionally the test setup can run the VirtualSchema and the UDFs with a profiler. 
+Therefore we use the [Hones Profiler](https://github.com/jvm-profiling-tools/honest-profiler).
+To use it, download the binaries from the project homepage 
+and place the `liblagent.so` in the directory above this projects root.
+Then enable profiling by adding `-Dtests.profiling="true"` to your jvm parameters.
+      
+
+

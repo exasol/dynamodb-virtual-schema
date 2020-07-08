@@ -1,8 +1,0 @@
-@startuml
-
-class ValueMapperFactory{
-+getValueMapperForColumn(final AbstractColumnMappingDefinition column): AbstractValueMapper
-}
-
-
-@enduml

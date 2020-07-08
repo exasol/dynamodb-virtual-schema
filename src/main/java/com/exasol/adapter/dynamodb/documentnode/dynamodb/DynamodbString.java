@@ -10,7 +10,7 @@ public class DynamodbString implements DocumentValue<DynamodbNodeVisitor> {
     private final String value;
 
     /**
-     * Creates an instance of {@link DynamodbString}.
+     * Create an instance of {@link DynamodbString}.
      * 
      * @param value value to hold
      */
@@ -19,7 +19,7 @@ public class DynamodbString implements DocumentValue<DynamodbNodeVisitor> {
     }
 
     /**
-     * Gives the string value.
+     * Get the string value.
      * 
      * @return value of the string
      */
@@ -30,5 +30,10 @@ public class DynamodbString implements DocumentValue<DynamodbNodeVisitor> {
     @Override
     public void accept(final DynamodbNodeVisitor visitor) {
         visitor.visit(this);
+    }
+
+    @Override
+    public String toString() {
+        return "DynamodbString{" + "value='" + this.value + "'" + "}";
     }
 }

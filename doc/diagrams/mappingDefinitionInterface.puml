@@ -1,0 +1,19 @@
+@startuml
+
+interface ColumnMapping{
++{abstract} getExasolColumnName()
++{abstract} getExasolDataType()
++{abstract} getExasolDefaultValue()
++{abstract} isExasolColumnNullable()
++{abstract} accept(ColumnMappingVisitor)
+}
+
+
+interface PropertyToColumnMapping{
++{abstract} pathToSourceProperty()
++{abstract} lookupFailBehaviour()
++accept(ColumnMappingVisitor)
+}
+
+ColumnMapping <|-- PropertyToColumnMapping
+@enduml

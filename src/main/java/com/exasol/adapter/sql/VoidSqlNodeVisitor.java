@@ -1,7 +1,7 @@
 package com.exasol.adapter.sql;
 
 import com.exasol.adapter.AdapterException;
-import com.exasol.adapter.dynamodb.remotetablequery.RemoteTableQueryFactory;
+import com.exasol.adapter.dynamodb.queryplanning.RemoteTableQueryFactory;
 
 /**
  * Facade for the {@link SqlNodeVisitor} interface implementing all methods with unsupported exception. This class is
@@ -136,7 +136,7 @@ public abstract class VoidSqlNodeVisitor implements SqlNodeVisitor<Void> {
     }
 
     @Override
-    public Void visit(final SqlPredicateAnd sqlPredicateAnd) throws AdapterException {
+    public Void visit(final SqlPredicateAnd sqlPredicateAnd) {
         visitUnimplemented();
         return null;
     }

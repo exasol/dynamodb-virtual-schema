@@ -10,7 +10,8 @@
           "maxLength": 20,
           "description": "The isbn is mapped to a string with max length of 20",
           "overflow": "ABORT",
-          "required": true
+          "required": true,
+          "key": "global"
         }
       },
       "name": {
@@ -18,6 +19,19 @@
           "maxLength": 100,
           "description": "The name is mapped to a string with max length of 100",
           "overflow": "TRUNCATE"
+        }
+      },
+      "publisher": {
+        "toStringMapping": {
+          "maxLength": 100,
+          "description": "The name is mapped to a string with max length of 100",
+          "overflow": "TRUNCATE"
+        }
+      },
+      "price": {
+        "toStringMapping": {
+          "maxLength": 10,
+          "overflow": "ABORT"
         }
       },
       "author": {

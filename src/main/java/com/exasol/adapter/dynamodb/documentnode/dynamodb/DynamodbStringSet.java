@@ -14,7 +14,7 @@ public class DynamodbStringSet implements DocumentArray<DynamodbNodeVisitor> {
     private final Collection<String> value;
 
     /**
-     * Creates an instance of {@link DynamodbStringSet}.
+     * Create an instance of {@link DynamodbStringSet}.
      *
      * @param value value to hold
      */
@@ -30,6 +30,11 @@ public class DynamodbStringSet implements DocumentArray<DynamodbNodeVisitor> {
     @Override
     public DynamodbString getValue(final int index) {
         return this.getValuesList().get(index);
+    }
+
+    @Override
+    public int size() {
+        return this.value.size();
     }
 
     @Override

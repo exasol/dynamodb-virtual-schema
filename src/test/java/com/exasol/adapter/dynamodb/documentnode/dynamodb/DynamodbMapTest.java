@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.exasol.dynamodb.attributevalue.AttributeValueQuickCreator;
 
-public class DynamodbMapTest {
+class DynamodbMapTest {
     private static final String KEY = "key";
     private static final String VALUE = "value";
     private static final AttributeValue NESTED = AttributeValueQuickCreator.forString(VALUE);

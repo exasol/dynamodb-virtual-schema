@@ -1,0 +1,9 @@
+@startuml
+
+class RemoteTableQuery{
+fromTable: TableMapping
+selectList: List<ColumnMapping>
+selection: QueryPredicate
+}
+
+@enduml

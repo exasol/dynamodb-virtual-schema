@@ -9,9 +9,21 @@
         "toTableMapping": {
           "mapping": {
             "toStringMapping": {
-              "destName": "topicName"
+              "destName": "NAME"
             }
           }
+        }
+      },
+      "isbn": {
+        "toStringMapping": {
+          "maxLength": 20,
+          "overflow": "ABORT",
+          "required": true,
+          "key": "global"
+        }
+      },
+      "name": {
+        "toStringMapping": {
         }
       }
     }

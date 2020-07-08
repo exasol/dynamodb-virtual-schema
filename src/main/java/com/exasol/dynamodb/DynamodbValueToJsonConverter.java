@@ -2,10 +2,10 @@ package com.exasol.dynamodb;
 
 import java.util.Map;
 
-import javax.json.Json;
 import javax.json.JsonArrayBuilder;
 import javax.json.JsonObjectBuilder;
 import javax.json.JsonValue;
+import javax.json.spi.JsonProvider;
 
 import com.exasol.adapter.dynamodb.documentnode.DocumentArray;
 import com.exasol.adapter.dynamodb.documentnode.DocumentNode;
@@ -16,6 +16,25 @@ import com.exasol.adapter.dynamodb.documentnode.dynamodb.*;
  * the JSON format.
  */
 public class DynamodbValueToJsonConverter {
+    private static final DynamodbValueToJsonConverter INSTANCE = new DynamodbValueToJsonConverter();
+    // This is an performance optimization as JsonProvider.provider() is quite slow
+    private static final JsonProvider JSON = JsonProvider.provider();
+
+    /**
+     * Private constructor to hide the public default.
+     */
+    private DynamodbValueToJsonConverter() {
+        // empty on purpose
+    }
+
+    /**
+     * Get a singleton instance of {@link DynamodbValueToJsonConverter}.
+     *
+     * @return instance of {@link DynamodbValueToJsonConverter}
+     */
+    public static DynamodbValueToJsonConverter getInstance() {
+        return INSTANCE;
+    }
 
     /**
      * Converts a DynamoDB document node to JSON.
@@ -48,17 +67,17 @@ public class DynamodbValueToJsonConverter {
 
         @Override
         public void visit(final DynamodbMap map) {
-            final JsonObjectBuilder objectBuilder = Json.createObjectBuilder();
+            final JsonObjectBuilder objectBuilder = JSON.createObjectBuilder();
             for (final Map.Entry<String, DocumentNode<DynamodbNodeVisitor>> mapEntry : map.getKeyValueMap()
                     .entrySet()) {
-                objectBuilder.add(mapEntry.getKey(), new DynamodbValueToJsonConverter().convert(mapEntry.getValue()));
+                objectBuilder.add(mapEntry.getKey(), getInstance().convert(mapEntry.getValue()));
             }
             this.jsonValue = objectBuilder.build();
         }
 
         @Override
         public void visit(final DynamodbString string) {
-            this.jsonValue = Json.createValue(string.getValue());
+            this.jsonValue = JSON.createValue(string.getValue());
         }
 
         @Override
@@ -69,10 +88,10 @@ public class DynamodbValueToJsonConverter {
         private JsonValue convertNumber(final String value) {
             if (value.contains(".")) {
                 final double number = Double.parseDouble(value);
-                return Json.createValue(number);
+                return JSON.createValue(number);
             } else {
                 final long number = Long.parseLong(value);
-                return Json.createValue(number);
+                return JSON.createValue(number);
             }
         }
 
@@ -82,9 +101,9 @@ public class DynamodbValueToJsonConverter {
         }
 
         private JsonValue convertList(final DocumentArray<DynamodbNodeVisitor> list) {
-            final JsonArrayBuilder arrayBuilder = Json.createArrayBuilder();
+            final JsonArrayBuilder arrayBuilder = JSON.createArrayBuilder();
             for (final DocumentNode<DynamodbNodeVisitor> attributeValue : list.getValuesList()) {
-                arrayBuilder.add(new DynamodbValueToJsonConverter().convert(attributeValue));
+                arrayBuilder.add(getInstance().convert(attributeValue));
             }
             return arrayBuilder.build();
         }

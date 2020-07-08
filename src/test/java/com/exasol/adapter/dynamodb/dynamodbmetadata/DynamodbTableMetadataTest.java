@@ -12,15 +12,15 @@ import org.junit.jupiter.api.Test;
 import com.exasol.utils.StringSerializer;
 
 class DynamodbTableMetadataTest {
-    private static final DynamodbKey PRIMARY_KEY = new DynamodbKey(null, Optional.empty());
-    private static final DynamodbKey GLOBAL_INDEX = new DynamodbKey(null, Optional.empty());
-    private static final DynamodbKey LOCAL_INDEX = new DynamodbKey(null, Optional.empty());
+    private static final DynamodbPrimaryIndex PRIMARY_KEY = new DynamodbPrimaryIndex(null, Optional.empty());
+    private static final DynamodbSecondaryIndex GLOBAL_INDEX = new DynamodbSecondaryIndex(null, Optional.empty(), "");
+    private static final DynamodbSecondaryIndex LOCAL_INDEX = new DynamodbSecondaryIndex(null, Optional.empty(), "");
     private static final DynamodbTableMetadata TABLE_METADATA = new DynamodbTableMetadata(PRIMARY_KEY,
             List.of(LOCAL_INDEX), List.of(GLOBAL_INDEX));
 
     @Test
     void testGetPrimaryKey() {
-        assertThat(TABLE_METADATA.getPrimaryKey(), equalTo(PRIMARY_KEY));
+        assertThat(TABLE_METADATA.getPrimaryIndex(), equalTo(PRIMARY_KEY));
     }
 
     @Test
@@ -35,13 +35,18 @@ class DynamodbTableMetadataTest {
 
     @Test
     void tesGetAllIndexes() {
-        assertThat(TABLE_METADATA.getAllIndexes(), containsInAnyOrder(GLOBAL_INDEX, LOCAL_INDEX));
+        assertThat(TABLE_METADATA.getSecondaryIndexes(), containsInAnyOrder(GLOBAL_INDEX, LOCAL_INDEX));
+    }
+
+    @Test
+    void tesGetAllKeys() {
+        assertThat(TABLE_METADATA.getAllIndexes(), containsInAnyOrder(GLOBAL_INDEX, LOCAL_INDEX, PRIMARY_KEY));
     }
 
     @Test
     void testSerialization() throws IOException, ClassNotFoundException {
         final String serialized = StringSerializer.serializeToString(TABLE_METADATA);
         final DynamodbTableMetadata result = (DynamodbTableMetadata) StringSerializer.deserializeFromString(serialized);
-        assertThat(result.getPrimaryKey(), not(equalTo(null)));
+        assertThat(result.getPrimaryIndex(), not(equalTo(null)));
     }
 }

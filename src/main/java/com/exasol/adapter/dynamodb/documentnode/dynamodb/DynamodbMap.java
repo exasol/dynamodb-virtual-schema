@@ -15,7 +15,7 @@ public class DynamodbMap implements DocumentObject<DynamodbNodeVisitor> {
     private final Map<String, AttributeValue> value;
 
     /**
-     * Creates an instance of {@link DynamodbMap}.
+     * Create an instance of {@link DynamodbMap}.
      *
      * @param value value to hold
      */

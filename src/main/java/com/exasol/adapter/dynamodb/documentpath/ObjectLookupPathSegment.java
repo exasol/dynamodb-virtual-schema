@@ -8,7 +8,7 @@ public class ObjectLookupPathSegment implements PathSegment {
     private final String lookupKey;
 
     /**
-     * Creates an instance of {@link ObjectLookupPathSegment}.
+     * Create an instance of {@link ObjectLookupPathSegment}.
      * 
      * @param lookupKey key to look up
      */
@@ -17,7 +17,7 @@ public class ObjectLookupPathSegment implements PathSegment {
     }
 
     /**
-     * Gives the lookup key of this segment.
+     * Get the lookup key of this segment.
      * 
      * @return lookup key
      */
@@ -35,12 +35,10 @@ public class ObjectLookupPathSegment implements PathSegment {
         if (this == other) {
             return true;
         }
-        if (other == null || getClass() != other.getClass()) {
+        if (!(other instanceof ObjectLookupPathSegment)) {
             return false;
         }
-
         final ObjectLookupPathSegment that = (ObjectLookupPathSegment) other;
-
         return this.lookupKey.equals(that.lookupKey);
     }
 

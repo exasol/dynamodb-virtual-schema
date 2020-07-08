@@ -1,0 +1,28 @@
+@startuml
+
+interface ColumnValueExtractor{
++ {abstract} extractColumnValue(document, arrayAllIterationState): ValueExpression
+}
+
+abstract class AbstractPropertyToColumnValueExtractor{
++ extractColumnValue(document, arrayAllIterationState): ValueExpression
+# {abstract} mapValue(documentValue): ValueExpression
+}
+
+class IterationIndexColumnValueExtractor{
++ extractColumnValue(document, arrayAllIterationState): ValueExpression
+}
+
+class ToStringPropertyToColumnMapping{
+#mapValue(documentValue): ValueExpression
+}
+
+class "..." as more{
+}
+
+
+ColumnValueExtractor <|.. AbstractPropertyToColumnValueExtractor
+ColumnValueExtractor <|.. IterationIndexColumnValueExtractor
+AbstractPropertyToColumnValueExtractor <|-- ToStringPropertyToColumnMapping
+AbstractPropertyToColumnValueExtractor <|-- more
+@enduml

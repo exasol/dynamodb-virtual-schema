@@ -44,7 +44,8 @@ To achieve this we create the following mapping definition:
       "isbn": {
         "toStringMapping": {
           "maxLength": 20,
-          "overflow": "ABORT"
+          "overflow": "ABORT",
+          "key": "global"
         }
       },
       "name": {
@@ -57,7 +58,7 @@ To achieve this we create the following mapping definition:
         "toTableMapping": {
           "mapping": {
             "toStringMapping": {
-              "destName": "TOPIC_NAME"
+              "destName": "NAME"
             }
           }
         }
@@ -66,3 +67,8 @@ To achieve this we create the following mapping definition:
   }
 }
 ```
+
+The Virtual Schema adapter automatically adds a foreign key to the table. In the example above, it adds
+ the column `BOOKS_ISBN` to the `BOOKS_TOPICS` table. It did pick the `ISBN` column, because we marked 
+ it as a key column.
+ 

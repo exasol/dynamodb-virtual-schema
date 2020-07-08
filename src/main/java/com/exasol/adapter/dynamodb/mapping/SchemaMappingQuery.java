@@ -8,16 +8,17 @@ import java.util.List;
 public interface SchemaMappingQuery {
 
     /**
-     * Gives the table defined in the {@code FROM} clause of the statement.
+     * Get the table defined in the {@code FROM} clause of the statement.
      *
-     * @return {{@link TableMappingDefinition}}
+     * @return {{@link TableMapping}}
      */
-    public TableMappingDefinition getFromTable();
+    public TableMapping getFromTable();
 
     /**
-     * Gives the select list columns.
+     * Get all columns that must be fetched from the remote database. These are the columns that are selected and the
+     * columns that are compared in the post selection.
      *
-     * @return select list columns
+     * @return set {@link ColumnMapping}s.
      */
-    public List<AbstractColumnMappingDefinition> getSelectList();
+    public List<ColumnMapping> getRequiredColumns();
 }

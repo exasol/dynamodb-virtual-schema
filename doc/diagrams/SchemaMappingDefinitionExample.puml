@@ -1,0 +1,20 @@
+@startuml
+
+object ":SchemaMapping" as schema{
+
+}
+
+object "books :TableMapping" as books{
+exasolName: "BOOKS"
+remoteName: "books"
+pathInRemoteTable: /
+}
+object "booksTopics :TableMapping" as tableTopics{
+exasolName: "BOOKS_TOPICS"
+remoteName: "books"
+pathInRemoteTable: /topics
+}
+
+schema --> books
+schema --> tableTopics
+@enduml
