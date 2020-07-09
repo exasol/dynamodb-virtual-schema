@@ -86,13 +86,10 @@ class DynamodbAdapterRefreshIT {
     void testSchemaDefinitionChangesOnRefresh()
             throws SQLException, InterruptedException, BucketAccessException, TimeoutException {
         exasolTestDatabaseBuilder.uploadMapping(MappingTestFiles.BASIC_MAPPING_FILE_NAME, BUCKETFS_MAPPING_FILE_NAME);
-        Thread.sleep(5000);
         exasolTestDatabaseBuilder.createDynamodbVirtualSchema(TEST_SCHEMA, DYNAMODB_CONNECTION,
                 BUCKETFS_MAPPING_FULL_PATH);
         final Map<String, String> columnsBefore = exasolTestDatabaseBuilder.describeTable(TEST_SCHEMA, BOOKS_TABLE);
         exasolTestDatabaseBuilder.uploadMapping(MappingTestFiles.TO_JSON_MAPPING_FILE_NAME, BUCKETFS_MAPPING_FILE_NAME);
-        Thread.sleep(5000);// Wait for bucketfs to sync; Quick fix for
-                           // https://github.com/exasol/exasol-testcontainers/issues/54
         exasolTestDatabaseBuilder.refreshVirtualSchema(TEST_SCHEMA);
         final Map<String, String> columnsAfter = exasolTestDatabaseBuilder.describeTable(TEST_SCHEMA, BOOKS_TABLE);
         assertThat(columnsBefore, not(equalTo(columnsAfter)));
