@@ -1,10 +1,10 @@
 @startuml
 
-interface ColumnValueExtractor{
+interface  ColumnValueExtractor <<interface>> {
 + {abstract} extractColumnValue(document, arrayAllIterationState): ValueExpression
 }
 
-abstract class AbstractPropertyToColumnValueExtractor{
+abstract class AbstractPropertyToColumnValueExtractor <<abstract>>{
 + extractColumnValue(document, arrayAllIterationState): ValueExpression
 # {abstract} mapValue(documentValue): ValueExpression
 }

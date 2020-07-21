@@ -14,12 +14,12 @@ class IterationIndexColumnMapping{
 ...
 }
 
-abstract class AbstractColumnMapping{
+abstract class AbstractColumnMapping <<abstract>>{
 -exasolColumnName
 +getExasolColumnName()
 }
 
-abstract class AbstractPropertyToColumnMapping{
+abstract class AbstractPropertyToColumnMapping <<abstract>>{
 -pathToSourceProperty
 -lookupFailBehaviour
 +pathToSourceProperty()
