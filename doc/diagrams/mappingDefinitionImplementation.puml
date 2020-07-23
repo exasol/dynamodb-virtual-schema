@@ -6,8 +6,6 @@ propertyExtraction
 ...
 }
 
-class "..." as other {
-}
 
 class IterationIndexColumnMapping{
 +accept(ColumnMappingVisitor)
@@ -32,6 +30,5 @@ AbstractColumnMapping <|-- IterationIndexColumnMapping
 AbstractColumnMapping <|-- AbstractPropertyToColumnMapping
 PropertyToColumnMapping <|. AbstractPropertyToColumnMapping
 AbstractPropertyToColumnMapping <|-- ToStringPropertyToColumnMapping
-AbstractPropertyToColumnMapping <|-- other
 @enduml 
 
