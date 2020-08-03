@@ -2,9 +2,9 @@ package com.exasol.adapter.dynamodb;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.List;
 
-import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.exasol.ExaConnectionAccessException;
 import com.exasol.ExaConnectionInformation;
 import com.exasol.ExaMetadata;
@@ -32,6 +32,8 @@ import com.exasol.adapter.response.*;
 import com.exasol.bucketfs.BucketfsFileFactory;
 import com.exasol.dynamodb.DynamodbConnectionFactory;
 
+import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
+
 /**
  * DynamoDB Virtual Schema adapter.
  */
@@ -48,7 +50,7 @@ public class DynamodbAdapter implements VirtualSchemaAdapter {
             final CreateVirtualSchemaRequest request) throws AdapterException {
         try {
             return runCreateVirtualSchema(exaMetadata, request);
-        } catch (final IOException | ExaConnectionAccessException exception) {
+        } catch (final IOException | ExaConnectionAccessException | URISyntaxException exception) {
             throw new AdapterException("Unable to create Virtual Schema \"" + request.getVirtualSchemaName() + "\". "
                     + "Cause: " + exception.getMessage(), exception);
         }
@@ -56,19 +58,19 @@ public class DynamodbAdapter implements VirtualSchemaAdapter {
 
     private CreateVirtualSchemaResponse runCreateVirtualSchema(final ExaMetadata exaMetadata,
             final CreateVirtualSchemaRequest request)
-            throws IOException, AdapterException, ExaConnectionAccessException {
-        final AmazonDynamoDB dynamodbClient = getDynamoDBClient(exaMetadata, request);
+            throws IOException, AdapterException, ExaConnectionAccessException, URISyntaxException {
+        final DynamoDbClient dynamodbClient = getDynamoDBClient(exaMetadata, request);
         final SchemaMetadata schemaMetadata = createSchemaMetadata(request, dynamodbClient);
         return CreateVirtualSchemaResponse.builder().schemaMetadata(schemaMetadata).build();
     }
 
-    private SchemaMetadata createSchemaMetadata(final AdapterRequest request, final AmazonDynamoDB dynamodbClient)
+    private SchemaMetadata createSchemaMetadata(final AdapterRequest request, final DynamoDbClient dynamodbClient)
             throws IOException, AdapterException {
         final SchemaMapping schemaMapping = getSchemaMappingDefinition(request, dynamodbClient);
         return new SchemaMappingToSchemaMetadataConverter().convert(schemaMapping);
     }
 
-    private SchemaMapping getSchemaMappingDefinition(final AdapterRequest request, final AmazonDynamoDB dynamodbClient)
+    private SchemaMapping getSchemaMappingDefinition(final AdapterRequest request, final DynamoDbClient dynamodbClient)
             throws AdapterException, IOException {
         final AdapterProperties adapterProperties = new AdapterProperties(
                 request.getSchemaMetadataInfo().getProperties());
@@ -121,14 +123,14 @@ public class DynamodbAdapter implements VirtualSchemaAdapter {
             throws AdapterException {
         try {
             return runPushdown(exaMetadata, request);
-        } catch (final ExaConnectionAccessException | IOException exception) {
+        } catch (final ExaConnectionAccessException | IOException | URISyntaxException exception) {
             throw new AdapterException("Unable to create Virtual Schema \"" + request.getVirtualSchemaName() + "\". "
                     + "Cause: " + exception.getMessage(), exception);
         }
     }
 
     private PushDownResponse runPushdown(final ExaMetadata exaMetadata, final PushDownRequest request)
-            throws AdapterException, ExaConnectionAccessException, IOException {
+            throws AdapterException, ExaConnectionAccessException, IOException, URISyntaxException {
         final RemoteTableQuery remoteTableQuery = new RemoteTableQueryFactory().build(request.getSelect(),
                 request.getSchemaMetadataInfo().getAdapterNotes());
         final String responseStatement = runQuery(exaMetadata, request, remoteTableQuery);
@@ -138,8 +140,9 @@ public class DynamodbAdapter implements VirtualSchemaAdapter {
     }
 
     private String runQuery(final ExaMetadata exaMetadata, final PushDownRequest request,
-            final RemoteTableQuery remoteTableQuery) throws ExaConnectionAccessException, IOException {
-        final AmazonDynamoDB dynamodbClient = getDynamoDBClient(exaMetadata, request);
+            final RemoteTableQuery remoteTableQuery)
+            throws ExaConnectionAccessException, IOException, URISyntaxException {
+        final DynamoDbClient dynamodbClient = getDynamoDBClient(exaMetadata, request);
         final DynamodbDocumentFetcherFactory documentFetcherFactory = new DynamodbDocumentFetcherFactory(
                 dynamodbClient);
 
@@ -163,9 +166,9 @@ public class DynamodbAdapter implements VirtualSchemaAdapter {
         return (int) (exaMetadata.getNodeCount() * cores);
     }
 
-    private AmazonDynamoDB getDynamoDBClient(final ExaMetadata exaMetadata, final AbstractAdapterRequest request)
-            throws ExaConnectionAccessException {
-        return new DynamodbConnectionFactory().getLowLevelConnection(getConnectionInformation(exaMetadata, request));
+    private DynamoDbClient getDynamoDBClient(final ExaMetadata exaMetadata, final AbstractAdapterRequest request)
+            throws ExaConnectionAccessException, URISyntaxException {
+        return new DynamodbConnectionFactory().getConnection(getConnectionInformation(exaMetadata, request));
     }
 
     private ExaConnectionInformation getConnectionInformation(final ExaMetadata exaMetadata,
@@ -179,16 +182,16 @@ public class DynamodbAdapter implements VirtualSchemaAdapter {
             throws AdapterException {
         try {
             return runRefresh(exaMetadata, refreshRequest);
-        } catch (final IOException | ExaConnectionAccessException exception) {
+        } catch (final IOException | ExaConnectionAccessException | URISyntaxException exception) {
             throw new AdapterException("Unable to update Virtual Schema \"" + refreshRequest.getVirtualSchemaName()
                     + "\". Cause: " + exception.getMessage(), exception);
         }
     }
 
     private RefreshResponse runRefresh(final ExaMetadata exaMetadata, final RefreshRequest refreshRequest)
-            throws IOException, AdapterException, ExaConnectionAccessException {
-        final AmazonDynamoDB dynamodbClient = new DynamodbConnectionFactory()
-                .getLowLevelConnection(getConnectionInformation(exaMetadata, refreshRequest));
+            throws IOException, AdapterException, ExaConnectionAccessException, URISyntaxException {
+        final DynamoDbClient dynamodbClient = new DynamodbConnectionFactory()
+                .getConnection(getConnectionInformation(exaMetadata, refreshRequest));
         final SchemaMetadata schemaMetadata = createSchemaMetadata(refreshRequest, dynamodbClient);
         return RefreshResponse.builder().schemaMetadata(schemaMetadata).build();
     }

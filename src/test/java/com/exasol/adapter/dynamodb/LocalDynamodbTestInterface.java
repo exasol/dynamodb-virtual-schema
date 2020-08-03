@@ -3,6 +3,7 @@ package com.exasol.adapter.dynamodb;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.URISyntaxException;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -11,8 +12,9 @@ import java.util.stream.Collectors;
  */
 public class LocalDynamodbTestInterface extends DynamodbTestInterface {
 
-    private LocalDynamodbTestInterface(final String containerIp) {
+    private LocalDynamodbTestInterface(final String containerIp) throws URISyntaxException {
         super("http://" + containerIp + ":8000", "fake", "fake", Optional.empty());
+        dropAllTables();
     }
 
     @Override
@@ -21,7 +23,7 @@ public class LocalDynamodbTestInterface extends DynamodbTestInterface {
     }
 
     public static class Builder {
-        LocalDynamodbTestInterface build() throws IOException {
+        LocalDynamodbTestInterface build() throws IOException, URISyntaxException {
             return new LocalDynamodbTestInterface(getContainersIp());
         }
 

@@ -4,7 +4,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import java.nio.ByteBuffer;
 import java.util.List;
 import java.util.Map;
 
@@ -12,9 +11,11 @@ import javax.json.JsonValue;
 
 import org.junit.jupiter.api.Test;
 
-import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.exasol.adapter.dynamodb.documentnode.dynamodb.*;
 import com.exasol.dynamodb.attributevalue.AttributeValueQuickCreator;
+
+import software.amazon.awssdk.core.SdkBytes;
+import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 
 class DynamodbValueToJsonConverterTest {
     private static final DynamodbValueToJsonConverter CONVERTER = DynamodbValueToJsonConverter.getInstance();
@@ -83,13 +84,13 @@ class DynamodbValueToJsonConverterTest {
 
     @Test
     void testBinaryException() {
-        final DynamodbBinary dynamodbBinary = new DynamodbBinary(ByteBuffer.wrap("".getBytes()));
+        final DynamodbBinary dynamodbBinary = new DynamodbBinary(SdkBytes.fromByteArray("".getBytes()));
         assertThrows(UnsupportedOperationException.class, () -> CONVERTER.convert(dynamodbBinary));
     }
 
     @Test
     void testBinarySetException() {
-        final DynamodbBinarySet binarySet = new DynamodbBinarySet(List.of(ByteBuffer.wrap("".getBytes())));
+        final DynamodbBinarySet binarySet = new DynamodbBinarySet(List.of(SdkBytes.fromByteArray("".getBytes())));
         assertThrows(UnsupportedOperationException.class, () -> CONVERTER.convert(binarySet));
     }
 

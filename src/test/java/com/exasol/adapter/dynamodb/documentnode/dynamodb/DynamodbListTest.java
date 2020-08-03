@@ -8,8 +8,9 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
-import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.exasol.dynamodb.attributevalue.AttributeValueQuickCreator;
+
+import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 
 class DynamodbListTest {
     private static final AttributeValue NESTED_1 = AttributeValueQuickCreator.forString("test1");
@@ -20,7 +21,7 @@ class DynamodbListTest {
     void testGetValue() {
         final DynamodbList dynamodbList = (DynamodbList) new DynamodbDocumentNodeFactory().buildDocumentNode(LIST);
         final DynamodbString result = (DynamodbString) dynamodbList.getValue(0);
-        assertThat(result.getValue(), equalTo(NESTED_1.getS()));
+        assertThat(result.getValue(), equalTo(NESTED_1.s()));
     }
 
     @Test
@@ -29,7 +30,7 @@ class DynamodbListTest {
         final DynamodbString result1 = (DynamodbString) dynamodbList.getValuesList().get(0);
         final DynamodbString result2 = (DynamodbString) dynamodbList.getValuesList().get(1);
         assertThat(List.of(result1.getValue(), result2.getValue()),
-                containsInRelativeOrder(NESTED_1.getS(), NESTED_2.getS()));
+                containsInRelativeOrder(NESTED_1.s(), NESTED_2.s()));
     }
 
     @Test

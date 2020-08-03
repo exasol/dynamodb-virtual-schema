@@ -4,23 +4,23 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
 
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 
 import com.exasol.adapter.dynamodb.mapping.TestDocuments;
 
 /**
  * Tests the {@link DynamodbTestInterface}.
  */
+@Tag("integration")
+@Tag("quick")
 class DynamodbTestInterfaceTestIT {
     private static final String TABLE_NAME = "TEST";
     private static DynamodbTestInterface dynamodbTestInterface;
 
     @BeforeAll
-    static void beforeAll() throws DynamodbTestInterface.NoNetworkFoundException, IOException {
+    static void beforeAll() throws DynamodbTestInterface.NoNetworkFoundException, IOException, URISyntaxException {
         dynamodbTestInterface = new IntegrationTestSetup().getDynamodbTestInterface();
     }
 

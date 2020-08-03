@@ -3,7 +3,6 @@ package com.exasol.adapter.dynamodb.documentfetcher.dynamodb;
 import java.util.List;
 import java.util.Set;
 
-import com.amazonaws.services.dynamodbv2.model.QueryRequest;
 import com.exasol.adapter.dynamodb.documentfetcher.DocumentFetcher;
 import com.exasol.adapter.dynamodb.documentnode.dynamodb.DynamodbNodeVisitor;
 import com.exasol.adapter.dynamodb.documentpath.DocumentPathExpression;
@@ -25,7 +24,7 @@ class DynamodbQueryDocumentFetcherFactory {
     private final DynamodbProjectionExpressionFactory projectionExpressionFactory;
 
     /**
-     * Create an instrance of {@link DynamodbQueryDocumentFetcherFactory}
+     * Create an instance of {@link DynamodbQueryDocumentFetcherFactory}
      */
     DynamodbQueryDocumentFetcherFactory() {
         this.projectionExpressionFactory = new DynamodbProjectionExpressionFactory();
@@ -44,9 +43,10 @@ class DynamodbQueryDocumentFetcherFactory {
         final QueryOperationSelection bestQueryOperationSelection = findMostSelectiveIndexSelection(tableMetadata,
                 dnfOr);
 
-        final QueryRequest queryRequest = new QueryRequest(remoteTableQuery.getFromTable().getRemoteName());
-        addSelectionToQuery(bestQueryOperationSelection, queryRequest, remoteTableQuery);
-        return List.of(new DynamodbQueryDocumentFetcher(queryRequest));
+        final DynamodbQueryDocumentFetcher.Builder documentFetcherBuilder = DynamodbQueryDocumentFetcher.builder();
+        documentFetcherBuilder.tableName(remoteTableQuery.getFromTable().getRemoteName());
+        addSelectionToQuery(bestQueryOperationSelection, documentFetcherBuilder, remoteTableQuery);
+        return List.of(documentFetcherBuilder.build());
     }
 
     private QueryOperationSelection findMostSelectiveIndexSelection(final DynamodbTableMetadata tableMetadata,
@@ -74,11 +74,12 @@ class DynamodbQueryDocumentFetcherFactory {
     }
 
     private void addSelectionToQuery(final QueryOperationSelection bestQueryOperationSelection,
-            final QueryRequest queryRequest, final RemoteTableQuery remoteTableQuery) {
+            final DynamodbQueryDocumentFetcher.Builder documentFetcherBuilder,
+            final RemoteTableQuery remoteTableQuery) {
         if (!(bestQueryOperationSelection.getIndex() instanceof DynamodbPrimaryIndex)) {
             final DynamodbSecondaryIndex secondaryIndex = (DynamodbSecondaryIndex) bestQueryOperationSelection
                     .getIndex();
-            queryRequest.setIndexName(secondaryIndex.getIndexName());
+            documentFetcherBuilder.indexName(secondaryIndex.getIndexName());
         }
         final DynamodbAttributeNamePlaceholderMapBuilder namePlaceholderMapBuilder = new DynamodbAttributeNamePlaceholderMapBuilder();
         final DynamodbAttributeValuePlaceholderMapBuilder valuePlaceholderMapBuilder = new DynamodbAttributeValuePlaceholderMapBuilder();
@@ -86,20 +87,16 @@ class DynamodbQueryDocumentFetcherFactory {
                 namePlaceholderMapBuilder, valuePlaceholderMapBuilder);
         final String keyFilterExpression = filterExpressionFactory
                 .buildFilterExpression(bestQueryOperationSelection.getIndexSelectionAsQueryPredicate());
-        queryRequest.setKeyConditionExpression(keyFilterExpression);
+        documentFetcherBuilder.keyConditionExpression(keyFilterExpression);
         final String nonKeyFilterExpression = filterExpressionFactory.buildFilterExpression(
                 bestQueryOperationSelection.getNonIndexSelection().asQueryPredicate().simplify());
-        if (!nonKeyFilterExpression.isEmpty()) {
-            queryRequest.setFilterExpression(nonKeyFilterExpression);
-        }
+        documentFetcherBuilder.filterExpression(nonKeyFilterExpression);
         final Set<DocumentPathExpression> requiredProperties = new RequiredPathExpressionExtractor()
                 .getRequiredProperties(remoteTableQuery);
         final String projectionExpression = this.projectionExpressionFactory.build(requiredProperties,
                 namePlaceholderMapBuilder);
-        if (!projectionExpression.isEmpty()) {
-            queryRequest.setProjectionExpression(projectionExpression);
-        }
-        queryRequest.setExpressionAttributeNames(namePlaceholderMapBuilder.getPlaceholderMap());
-        queryRequest.setExpressionAttributeValues(valuePlaceholderMapBuilder.getPlaceholderMap());
+        documentFetcherBuilder.projectionExpression(projectionExpression);
+        documentFetcherBuilder.expressionAttributeNames(namePlaceholderMapBuilder.getPlaceholderMap());
+        documentFetcherBuilder.expressionAttributeValues(valuePlaceholderMapBuilder.getPlaceholderMap());
     }
 }

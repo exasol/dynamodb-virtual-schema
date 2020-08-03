@@ -3,32 +3,176 @@ package com.exasol.adapter.dynamodb.documentfetcher.dynamodb;
 import java.util.Map;
 import java.util.stream.Stream;
 
-import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
-import com.amazonaws.services.dynamodbv2.model.AttributeValue;
-import com.amazonaws.services.dynamodbv2.model.QueryRequest;
+import com.exasol.adapter.dynamodb.documentnode.DocumentValue;
+import com.exasol.adapter.dynamodb.documentnode.dynamodb.DynamodbNodeVisitor;
+
+import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
+import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
+import software.amazon.awssdk.services.dynamodb.model.QueryRequest;
 
 /**
  * This class represents a DynamoDB {@code QUERY} operation.
  */
 public class DynamodbQueryDocumentFetcher extends AbstractDynamodbDocumentFetcher {
-    private static final long serialVersionUID = -6805336709119451973L;
-    private final QueryRequest queryRequest;
+    private static final long serialVersionUID = -7275323307086366189L;
+
+    private final GenericTableAccessParameters genericParameters;
+    private final String indexName;
+    private final String keyConditionExpression;
 
     /**
      * Create an a {@link DynamodbQueryDocumentFetcher}.
      *
-     * @param queryRequest DynamoDB request
+     * @param genericParameters      generic parameters (not query specific)
+     * @param indexName              name of the index to scan
+     * @param keyConditionExpression condition expression for key columns
      */
-    DynamodbQueryDocumentFetcher(final QueryRequest queryRequest) {
-        this.queryRequest = queryRequest;
+    private DynamodbQueryDocumentFetcher(final GenericTableAccessParameters genericParameters, final String indexName,
+            final String keyConditionExpression) {
+        this.genericParameters = genericParameters;
+        this.indexName = indexName;
+        this.keyConditionExpression = keyConditionExpression;
+    }
+
+    static Builder builder() {
+        return new Builder();
     }
 
     QueryRequest getQueryRequest() {
-        return this.queryRequest;
+        final QueryRequest.Builder templateQueryRequest = QueryRequest.builder();
+        templateQueryRequest.tableName(this.genericParameters.getTableName());
+        if (!this.genericParameters.getExpressionAttributeNames().isEmpty()) {
+            templateQueryRequest.expressionAttributeNames(this.genericParameters.getExpressionAttributeNames());
+        }
+        if (!this.genericParameters.getFilterExpression().isEmpty()) {
+            templateQueryRequest.filterExpression(this.genericParameters.getFilterExpression());
+        }
+        if (!this.genericParameters.getExpressionAttributeValues().isEmpty()) {
+            templateQueryRequest.expressionAttributeValues(this.genericParameters.getExpressionAttributeValues());
+        }
+        if (!this.genericParameters.getProjectionExpression().isEmpty()) {
+            templateQueryRequest.projectionExpression(this.genericParameters.getProjectionExpression());
+        }
+        if (this.indexName != null) {
+            templateQueryRequest.indexName(this.indexName);
+        }
+        templateQueryRequest.keyConditionExpression(this.keyConditionExpression);
+        return templateQueryRequest.build();
     }
 
     @Override
-    public Stream<Map<String, AttributeValue>> run(final AmazonDynamoDB client) {
-        return client.query(this.queryRequest).getItems().stream();
+    public Stream<Map<String, AttributeValue>> run(final DynamoDbClient client) {
+        return client.query(this.getQueryRequest()).items().stream();
+    }
+
+    /**
+     * Builder for {@link DynamodbQueryDocumentFetcher}.
+     */
+    public static final class Builder {
+        private String tableName;
+        private Map<String, String> expressionAttributeNames;
+        private Map<String, DocumentValue<DynamodbNodeVisitor>> expressionAttributeValues;
+        private String filterExpression;
+        private String projectionExpression;
+        private String indexName;
+        private String keyConditionExpression;
+
+        private Builder() {
+        }
+
+        public static Builder aDynamodbScanDocumentFetcher() {
+            return new Builder();
+        }
+
+        /**
+         * Set the name of the table to scan.
+         *
+         * @param tableName name of the table
+         * @return self
+         */
+        public Builder tableName(final String tableName) {
+            this.tableName = tableName;
+            return this;
+        }
+
+        /**
+         * Set the placeholder map for attribute names.
+         *
+         * @param expressionAttributeNames placeholder map for attribute names
+         * @return self
+         */
+        public Builder expressionAttributeNames(final Map<String, String> expressionAttributeNames) {
+            this.expressionAttributeNames = expressionAttributeNames;
+            return this;
+        }
+
+        /**
+         * Set the placeholder map for attribute values.
+         *
+         * @param expressionAttributeValues placeholder map for attribute values
+         * @return self
+         */
+        public Builder expressionAttributeValues(
+                final Map<String, DocumentValue<DynamodbNodeVisitor>> expressionAttributeValues) {
+            this.expressionAttributeValues = expressionAttributeValues;
+            return this;
+        }
+
+        /**
+         * Set the filter expression
+         *
+         * @param filterExpression filter expression
+         * @return self
+         */
+        public Builder filterExpression(final String filterExpression) {
+            this.filterExpression = filterExpression;
+            return this;
+        }
+
+        /**
+         * Set the projection expression.
+         *
+         * @param projectionExpression projection expression
+         * @return self
+         */
+        public Builder projectionExpression(final String projectionExpression) {
+            this.projectionExpression = projectionExpression;
+            return this;
+        }
+
+        /**
+         * Set the name of the index to query.
+         *
+         * @param indexName name of the index
+         * @return self
+         */
+        public Builder indexName(final String indexName) {
+            this.indexName = indexName;
+            return this;
+        }
+
+        /**
+         * Set the condition expression for key columns.
+         *
+         * @param keyConditionExpression condition expression string
+         * @return self
+         */
+        public Builder keyConditionExpression(final String keyConditionExpression) {
+            this.keyConditionExpression = keyConditionExpression;
+            return this;
+        }
+
+        /**
+         * Build the {@link DynamodbQueryDocumentFetcher}.
+         *
+         * @return {@link DynamodbQueryDocumentFetcher}
+         */
+        public DynamodbQueryDocumentFetcher build() {
+            final GenericTableAccessParameters genericTableAccessParameters = new GenericTableAccessParameters(
+                    this.tableName, this.expressionAttributeNames, this.expressionAttributeValues,
+                    this.filterExpression, this.projectionExpression);
+            return new DynamodbQueryDocumentFetcher(genericTableAccessParameters, this.indexName,
+                    this.keyConditionExpression);
+        }
     }
 }

@@ -3,15 +3,15 @@ package com.exasol.adapter.dynamodb.documentnode.dynamodb;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 
-import java.nio.ByteBuffer;
-
 import org.junit.jupiter.api.Test;
 
-import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.exasol.dynamodb.attributevalue.AttributeValueQuickCreator;
 
+import software.amazon.awssdk.core.SdkBytes;
+import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
+
 class DynamodbBinaryTest {
-    private static final ByteBuffer TEST_VALUE = ByteBuffer.wrap("test".getBytes());
+    private static final SdkBytes TEST_VALUE = SdkBytes.fromUtf8String("test");
     private static final AttributeValue ATTRIBUTE_VALUE = AttributeValueQuickCreator.forBinary(TEST_VALUE);
 
     @Test

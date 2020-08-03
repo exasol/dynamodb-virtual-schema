@@ -1,5 +1,6 @@
 package com.exasol.adapter.dynamodb;
 
+import java.net.URISyntaxException;
 import java.util.Map;
 import java.util.Optional;
 
@@ -22,7 +23,7 @@ public class TestcontainerDynamodbTestInterface extends DynamodbTestInterface {
      * Constructor using default login credentials for the local dynamodb docker instance.
      */
     private TestcontainerDynamodbTestInterface(final GenericContainer dynamodbContainer, final Network network)
-            throws NoNetworkFoundException {
+            throws NoNetworkFoundException, URISyntaxException {
         super(getDockerNetworkUrlForLocalDynamodb(dynamodbContainer, network), LOCAL_DYNAMO_USER, LOCAL_DYNAMO_PASS,
                 Optional.empty());
         this.LOCAL_DYNAMO = dynamodbContainer;
@@ -46,7 +47,7 @@ public class TestcontainerDynamodbTestInterface extends DynamodbTestInterface {
     }
 
     public static class Builder {
-        public TestcontainerDynamodbTestInterface build() throws NoNetworkFoundException {
+        public TestcontainerDynamodbTestInterface build() throws NoNetworkFoundException, URISyntaxException {
             final Network network = TestcontainerNetworkProvider.getNetwork();
             final GenericContainer container = new GenericContainer<>("amazon/dynamodb-local").withExposedPorts(8000)
                     .withNetwork(TestcontainerNetworkProvider.getNetwork()).withNetworkAliases("dynamo")

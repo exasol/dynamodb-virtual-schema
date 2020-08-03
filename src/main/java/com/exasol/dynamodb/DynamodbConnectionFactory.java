@@ -1,23 +1,24 @@
 package com.exasol.dynamodb;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Optional;
 
-import com.amazonaws.auth.AWSCredentials;
-import com.amazonaws.auth.AWSStaticCredentialsProvider;
-import com.amazonaws.auth.BasicAWSCredentials;
-import com.amazonaws.auth.BasicSessionCredentials;
-import com.amazonaws.client.builder.AwsClientBuilder;
-import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
-import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
-import com.amazonaws.services.dynamodbv2.document.DynamoDB;
 import com.exasol.ExaConnectionInformation;
+
+import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
+import software.amazon.awssdk.auth.credentials.AwsCredentials;
+import software.amazon.awssdk.auth.credentials.AwsSessionCredentials;
+import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
+import software.amazon.awssdk.regions.Region;
+import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
+import software.amazon.awssdk.services.dynamodb.DynamoDbClientBuilder;
 
 /**
  * This class represents a factory that creates connections to DynamoDB.
  */
 public class DynamodbConnectionFactory {
     private static final String AWS_PREFIX = "aws:";
-    private static final String AWS_LOCAL_REGION = "eu-central-1";
     private static final String TOKEN_SEPARATOR = "##TOKEN##";
 
     public static String buildPassWithTokenSeparator(final String key, final Optional<String> token) {
@@ -34,22 +35,24 @@ public class DynamodbConnectionFactory {
      * @param uri  either aws:<REGION> or the address of a local DynamoDB server (e.g. http://localhost:8000)
      * @param user aws credential id
      * @param key  aws credential key
-     * @return {@link AmazonDynamoDB} (low level api client)
+     * @return {@link DynamoDbClient}
      */
-    public AmazonDynamoDB getLowLevelConnection(final String uri, final String user, final String key,
-            final Optional<String> sessionToken) {
-        final AWSCredentials awsCredentials = getAwsCredentials(user, key, sessionToken);
-        final AmazonDynamoDBClientBuilder clientBuilder = AmazonDynamoDBClientBuilder.standard()
-                .withCredentials(new AWSStaticCredentialsProvider(awsCredentials));
+    public DynamoDbClient getConnection(final String uri, final String user, final String key,
+            final Optional<String> sessionToken) throws URISyntaxException {
+
+        final DynamoDbClientBuilder clientBuilder = DynamoDbClient.builder();
         if (uri.startsWith(AWS_PREFIX)) {
-            clientBuilder.withRegion(uri.replace(AWS_PREFIX, ""));
+            clientBuilder.region(Region.of(uri.replace(AWS_PREFIX, "")));
         } else {
-            clientBuilder.withEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration(uri, AWS_LOCAL_REGION));
+            clientBuilder.region(Region.EU_CENTRAL_1);// for a local DynamoDB region does not matter anyway
+            clientBuilder.endpointOverride(new URI(uri));
         }
+        final AwsCredentials awsCredentials = getAwsCredentials(user, key, sessionToken);
+        clientBuilder.credentialsProvider(StaticCredentialsProvider.create(awsCredentials));
         return clientBuilder.build();
     }
 
-    private AWSCredentials getAwsCredentials(final String user, final String key, final Optional<String> sessionToken) {
+    private AwsCredentials getAwsCredentials(final String user, final String key, final Optional<String> sessionToken) {
         if (sessionToken.isEmpty()) {
             if (key.contains(TOKEN_SEPARATOR)) {
                 final String[] parts = key.split(TOKEN_SEPARATOR);
@@ -59,9 +62,9 @@ public class DynamodbConnectionFactory {
                 }
                 return getAwsCredentials(user, parts[0], Optional.of(parts[1]));
             }
-            return new BasicAWSCredentials(user, key);
+            return AwsBasicCredentials.create(user, key);
         } else {
-            return new BasicSessionCredentials(user, key, sessionToken.get());
+            return AwsSessionCredentials.create(user, key, sessionToken.get());
         }
     }
 
@@ -70,21 +73,11 @@ public class DynamodbConnectionFactory {
      * {@link ExaConnectionInformation} object.
      *
      * @param exaConnectionInformation connection settings
-     * @return {@link AmazonDynamoDB} (low level api client)
+     * @return {@link DynamoDbClient} (low level api client)
      */
-    public AmazonDynamoDB getLowLevelConnection(final ExaConnectionInformation exaConnectionInformation) {
-        return getLowLevelConnection(exaConnectionInformation.getAddress(), exaConnectionInformation.getUser(),
+    public DynamoDbClient getConnection(final ExaConnectionInformation exaConnectionInformation)
+            throws URISyntaxException {
+        return getConnection(exaConnectionInformation.getAddress(), exaConnectionInformation.getUser(),
                 exaConnectionInformation.getPassword(), Optional.empty());
-    }
-
-    /**
-     * Create a DynamoDB (document api client) for a given uri, user and key. for details see
-     * {@link #getLowLevelConnection(String, String, String, Optional)}.
-     *
-     * @return DynamoDB (document api client)
-     */
-    public DynamoDB getDocumentConnection(final String uri, final String user, final String key,
-            final Optional<String> sessionToken) {
-        return new DynamoDB(getLowLevelConnection(uri, user, key, sessionToken));
     }
 }

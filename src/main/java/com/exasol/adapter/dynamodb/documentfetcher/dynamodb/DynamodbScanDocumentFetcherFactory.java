@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import com.amazonaws.services.dynamodbv2.model.ScanRequest;
 import com.exasol.adapter.dynamodb.documentfetcher.DocumentFetcher;
 import com.exasol.adapter.dynamodb.documentnode.dynamodb.DynamodbNodeVisitor;
 import com.exasol.adapter.dynamodb.documentpath.DocumentPathExpression;
@@ -33,8 +32,8 @@ class DynamodbScanDocumentFetcherFactory {
      */
     public List<DocumentFetcher<DynamodbNodeVisitor>> buildDocumentFetcherForQuery(
             final RemoteTableQuery remoteTableQuery, final int maxNumberOfParallelFetchers) {
-        final ScanRequest templateScanRequest = new ScanRequest()
-                .withTableName(remoteTableQuery.getFromTable().getRemoteName());
+        final DynamodbScanDocumentFetcher.Builder scanDocumentFetcherBuilder = DynamodbScanDocumentFetcher.builder();
+        scanDocumentFetcherBuilder.tableName(remoteTableQuery.getFromTable().getRemoteName());
         final DynamodbAttributeNamePlaceholderMapBuilder namePlaceholderMapBuilder = new DynamodbAttributeNamePlaceholderMapBuilder();
         final DynamodbAttributeValuePlaceholderMapBuilder valuePlaceholderMapBuilder = new DynamodbAttributeValuePlaceholderMapBuilder();
         final String filterExpression = new DynamodbFilterExpressionFactory(namePlaceholderMapBuilder,
@@ -43,30 +42,22 @@ class DynamodbScanDocumentFetcherFactory {
                 .getRequiredProperties(remoteTableQuery);
         final String projectionExpression = this.projectionExpressionFactory.build(requiredProperties,
                 namePlaceholderMapBuilder);
-        if (!namePlaceholderMapBuilder.getPlaceholderMap().isEmpty()) {
-            templateScanRequest.setExpressionAttributeNames(namePlaceholderMapBuilder.getPlaceholderMap());
-        }
-        if (!filterExpression.isEmpty()) {
-            templateScanRequest.setFilterExpression(filterExpression);
-        }
-        if (!valuePlaceholderMapBuilder.getPlaceholderMap().isEmpty()) {
-            templateScanRequest.setExpressionAttributeValues(valuePlaceholderMapBuilder.getPlaceholderMap());
-        }
-        if (!projectionExpression.isEmpty()) {
-            templateScanRequest.setProjectionExpression(projectionExpression);
-        }
-        return parallelizeScan(templateScanRequest, maxNumberOfParallelFetchers);
+        scanDocumentFetcherBuilder.expressionAttributeNames(namePlaceholderMapBuilder.getPlaceholderMap());
+        scanDocumentFetcherBuilder.expressionAttributeValues(valuePlaceholderMapBuilder.getPlaceholderMap());
+        scanDocumentFetcherBuilder.filterExpression(filterExpression);
+        scanDocumentFetcherBuilder.projectionExpression(projectionExpression);
+        return parallelizeScan(scanDocumentFetcherBuilder, maxNumberOfParallelFetchers);
     }
 
-    private List<DocumentFetcher<DynamodbNodeVisitor>> parallelizeScan(final ScanRequest templateScanRequest,
+    private List<DocumentFetcher<DynamodbNodeVisitor>> parallelizeScan(
+            final DynamodbScanDocumentFetcher.Builder templateScanBuilder,
             final int maxNumberOfParallelFetchers) {
-        templateScanRequest.withTotalSegments(maxNumberOfParallelFetchers);
+        templateScanBuilder.totalSegments(maxNumberOfParallelFetchers);
         final List<DocumentFetcher<DynamodbNodeVisitor>> documentFetchers = new ArrayList<>(
                 maxNumberOfParallelFetchers);
         for (int segmentCounter = 0; segmentCounter < maxNumberOfParallelFetchers; segmentCounter++) {
-            final ScanRequest scanRequest = templateScanRequest.clone();
-            scanRequest.withSegment(segmentCounter);
-            documentFetchers.add(new DynamodbScanDocumentFetcher(scanRequest));
+            templateScanBuilder.segment(segmentCounter);
+            documentFetchers.add(templateScanBuilder.build());
         }
         return documentFetchers;
     }

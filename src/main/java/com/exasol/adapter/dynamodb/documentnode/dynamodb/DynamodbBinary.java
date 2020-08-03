@@ -1,8 +1,8 @@
 package com.exasol.adapter.dynamodb.documentnode.dynamodb;
 
-import java.nio.ByteBuffer;
-
 import com.exasol.adapter.dynamodb.documentnode.DocumentValue;
+
+import software.amazon.awssdk.core.SdkBytes;
 
 /**
  * This class represents a DynamoDB binary value.
@@ -16,8 +16,8 @@ public class DynamodbBinary implements DocumentValue<DynamodbNodeVisitor> {
      *
      * @param value value to hold
      */
-    public DynamodbBinary(final ByteBuffer value) {
-        this.value = value.array();
+    public DynamodbBinary(final SdkBytes value) {
+        this.value = value.asByteArray();
     }
 
     /**
@@ -25,8 +25,8 @@ public class DynamodbBinary implements DocumentValue<DynamodbNodeVisitor> {
      *
      * @return value of the string
      */
-    public ByteBuffer getValue() {
-        return ByteBuffer.wrap(this.value);
+    public SdkBytes getValue() {
+        return SdkBytes.fromByteArray(this.value);
     }
 
     @Override

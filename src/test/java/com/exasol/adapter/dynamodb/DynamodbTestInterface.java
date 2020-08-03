@@ -3,10 +3,8 @@ package com.exasol.adapter.dynamodb;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Optional;
+import java.net.URISyntaxException;
+import java.util.*;
 
 import javax.json.Json;
 import javax.json.JsonArray;
@@ -16,11 +14,12 @@ import javax.json.JsonValue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
-import com.amazonaws.services.dynamodbv2.document.*;
-import com.amazonaws.services.dynamodbv2.model.*;
 import com.exasol.ExaConnectionInformation;
 import com.exasol.dynamodb.DynamodbConnectionFactory;
+import com.exasol.dynamodb.attributevalue.AttributeValueQuickCreator;
+
+import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
+import software.amazon.awssdk.services.dynamodb.model.*;
 
 /**
  * Using is the abstract basis for DynamoDB test interfaces. The test interfaces offers convenience methods for creating
@@ -28,7 +27,7 @@ import com.exasol.dynamodb.DynamodbConnectionFactory;
  */
 public abstract class DynamodbTestInterface {
     private static final Logger LOGGER = LoggerFactory.getLogger(DynamodbTestInterface.class);
-    private final DynamoDB dynamoClient;
+    private final DynamoDbClient dynamoClient;
     private final String dynamoUrl;
     private final String dynamoUser;
     private final String dynamoPass;
@@ -39,18 +38,18 @@ public abstract class DynamodbTestInterface {
      * Constructor called by all other constructors.
      */
     protected DynamodbTestInterface(final String dynamoUrl, final String user, final String pass,
-            final Optional<String> sessionToken) {
+            final Optional<String> sessionToken) throws URISyntaxException {
         this.dynamoUrl = dynamoUrl;
         this.dynamoUser = user;
         this.dynamoPass = pass;
         this.sessionToken = sessionToken;
-        this.dynamoClient = new DynamodbConnectionFactory().getDocumentConnection(dynamoUrl, user, pass, sessionToken);
+        this.dynamoClient = new DynamodbConnectionFactory().getConnection(dynamoUrl, user, pass, sessionToken);
     }
 
     public abstract void teardown();
 
-    public AmazonDynamoDB getDynamodbLowLevelConnection() {
-        return new DynamodbConnectionFactory().getLowLevelConnection(this.getDynamoUrl(), this.getDynamoUser(),
+    public DynamoDbClient getDynamodbLowLevelConnection() throws URISyntaxException {
+        return new DynamodbConnectionFactory().getConnection(this.getDynamoUrl(), this.getDynamoUser(),
                 this.getDynamoPass(), this.sessionToken);
     }
 
@@ -58,8 +57,9 @@ public abstract class DynamodbTestInterface {
      * Puts an item to a given table.
      */
     public void putItem(final String tableName, final String isbn, final String name) {
-        final Table table = this.dynamoClient.getTable(tableName);
-        table.putItem(new Item().withPrimaryKey("isbn", isbn).withString("name", name));
+        this.dynamoClient.putItem(PutItemRequest.builder().tableName(tableName).item(Map.of("isbn",
+                AttributeValueQuickCreator.forString(isbn), "name", AttributeValueQuickCreator.forString(name)))
+                .build());
     }
 
     /**
@@ -69,9 +69,9 @@ public abstract class DynamodbTestInterface {
      * @param itemsJson json definitions of the items
      */
     public void putJson(final String tableName, final String... itemsJson) {
-        final TableWriteItems writeRequest = new TableWriteItems(tableName)
-                .withItemsToPut(Arrays.stream(itemsJson).map(Item::fromJSON).toArray(Item[]::new));
-        this.dynamoClient.batchWriteItem(writeRequest);
+        final DynamodbBatchWriter dynamodbBatchWriter = new DynamodbBatchWriter(this.dynamoClient, tableName);
+        Arrays.asList(itemsJson).forEach(dynamodbBatchWriter);
+        dynamodbBatchWriter.flush();
     }
 
     /**
@@ -81,22 +81,9 @@ public abstract class DynamodbTestInterface {
      * @return number of scanned items
      */
     public int scan(final String tableName) {
-        final Table table = this.dynamoClient.getTable(tableName);
-        final ItemCollection<ScanOutcome> scanResult = table.scan();
-        return logAndCountItems(scanResult);
-    }
-
-    private int logAndCountItems(final Iterable<Item> items) {
-        int counter = 0;
-        for (final Item item : items) {
-            LOGGER.trace("scanned item: {}", item);
-            counter++;
-        }
-        return counter;
-    }
-
-    public boolean isTableEmpty(final String tableName) {
-        return this.getDynamodbLowLevelConnection().scan(new ScanRequest(tableName).withLimit(1)).getItems().isEmpty();
+        final ScanRequest scanRequest = ScanRequest.builder().tableName(tableName).build();
+        return this.dynamoClient.scanPaginator(scanRequest).stream().reduce(0,
+                (subtotal, response) -> subtotal + response.count(), Integer::sum);
     }
 
     /**
@@ -106,10 +93,15 @@ public abstract class DynamodbTestInterface {
      * @param keyName   partition key (type is always string)
      */
     public void createTable(final String tableName, final String keyName) {
-        this.dynamoClient.createTable(tableName, List.of(new KeySchemaElement(keyName, KeyType.HASH)), // key schema
-                List.of(new AttributeDefinition(keyName, ScalarAttributeType.S)), // attribute definitions
-                new ProvisionedThroughput(1L, 1L));
-        this.tableNames.add(tableName);
+        final CreateTableRequest.Builder createTableRequestBuilder = CreateTableRequest.builder();
+        createTableRequestBuilder.tableName(tableName);
+        createTableRequestBuilder
+                .keySchema(List.of(KeySchemaElement.builder().attributeName(keyName).keyType(KeyType.HASH).build()));
+        createTableRequestBuilder.attributeDefinitions(List
+                .of(AttributeDefinition.builder().attributeName(keyName).attributeType(ScalarAttributeType.S).build()));
+        createTableRequestBuilder.provisionedThroughput(
+                ProvisionedThroughput.builder().readCapacityUnits(1L).writeCapacityUnits(1L).build());
+        this.createTable(createTableRequestBuilder.build());
     }
 
     /**
@@ -119,7 +111,7 @@ public abstract class DynamodbTestInterface {
      */
     public void createTable(final CreateTableRequest request) {
         this.dynamoClient.createTable(request);
-        this.tableNames.add(request.getTableName());
+        this.tableNames.add(request.tableName());
     }
 
     /**
@@ -128,8 +120,9 @@ public abstract class DynamodbTestInterface {
      * @param tableName name of the DynamoDB table to delete
      */
     public void deleteTable(final String tableName) {
-        this.dynamoClient.getTable(tableName).delete();
-        this.tableNames.removeIf(n -> n.equals(tableName));
+        final DeleteTableRequest deleteTableRequest = DeleteTableRequest.builder().tableName(tableName).build();
+        this.dynamoClient.deleteTable(deleteTableRequest);
+        this.tableNames.removeIf(table -> table.equals(tableName));
     }
 
     /**
@@ -199,6 +192,11 @@ public abstract class DynamodbTestInterface {
                 return DynamodbTestInterface.this.getDynamoPass();
             }
         };
+    }
+
+    public void dropAllTables() {
+        final ListTablesResponse listTablesResponse = this.dynamoClient.listTables();
+        listTablesResponse.tableNames().forEach(this::deleteTable);
     }
 
     @SuppressWarnings("serial")
