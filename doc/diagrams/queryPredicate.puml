@@ -1,6 +1,6 @@
 @startuml
 
-interface QueryPredicate{
+interface  QueryPredicate <<interface>> {
 {abstract}accept(QueryPredicateVisitor)
 }
 
@@ -13,7 +13,7 @@ class NotPredicate{
 accept(QueryPredicateVisitor)
 }
 
-interface ComparisonPredicate{
+interface  ComparisonPredicate <<interface>> {
 {abstract} getOperator()
 accept(QueryPredicateVisitor)
 {abstract}accept(ComparisonPredicateVisitor)
@@ -23,7 +23,7 @@ class NoPredicate{
 accept(QueryPredicateVisitor)
 }
 
-abstract class AbstractComparisonPredicate{
+abstract class  AbstractComparisonPredicate <<abstract>> {
 operator
 getOperator()
 }

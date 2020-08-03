@@ -6,20 +6,18 @@ propertyExtraction
 ...
 }
 
-class "..." as other {
-}
 
 class IterationIndexColumnMapping{
 +accept(ColumnMappingVisitor)
 ...
 }
 
-abstract class AbstractColumnMapping{
+abstract class AbstractColumnMapping <<abstract>>{
 -exasolColumnName
 +getExasolColumnName()
 }
 
-abstract class AbstractPropertyToColumnMapping{
+abstract class AbstractPropertyToColumnMapping <<abstract>>{
 -pathToSourceProperty
 -lookupFailBehaviour
 +pathToSourceProperty()
@@ -32,6 +30,5 @@ AbstractColumnMapping <|-- IterationIndexColumnMapping
 AbstractColumnMapping <|-- AbstractPropertyToColumnMapping
 PropertyToColumnMapping <|. AbstractPropertyToColumnMapping
 AbstractPropertyToColumnMapping <|-- ToStringPropertyToColumnMapping
-AbstractPropertyToColumnMapping <|-- other
 @enduml 
 

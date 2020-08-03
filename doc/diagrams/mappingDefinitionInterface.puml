@@ -1,6 +1,6 @@
 @startuml
 
-interface ColumnMapping{
+interface  ColumnMapping <<interface>> {
 +{abstract} getExasolColumnName()
 +{abstract} getExasolDataType()
 +{abstract} getExasolDefaultValue()
@@ -9,7 +9,7 @@ interface ColumnMapping{
 }
 
 
-interface PropertyToColumnMapping{
+interface  PropertyToColumnMapping <<interface>> {
 +{abstract} pathToSourceProperty()
 +{abstract} lookupFailBehaviour()
 +accept(ColumnMappingVisitor)
