@@ -117,7 +117,9 @@ class DynamodbTableMetadataFactoryTestIT {
         requestBuilder.globalSecondaryIndexes(GlobalSecondaryIndex.builder()
                 .keySchema(KeySchemaElement.builder().attributeName(indexKey1).keyType(KeyType.HASH).build(),
                         KeySchemaElement.builder().attributeName(indexKey2).keyType(KeyType.RANGE).build())
-                .indexName(indexName).build());
+                .indexName(indexName)
+                .provisionedThroughput(builder -> builder.readCapacityUnits(1L).writeCapacityUnits(1L).build())
+                .projection(builder -> builder.projectionType(ProjectionType.KEYS_ONLY)).build());
         dynamodbTestInterface.createTable(requestBuilder.build());
         final DynamodbTableMetadata dynamodbTableMetadata = tableMetadataFactory.buildMetadataForTable(TABLE_NAME);
         final DynamodbSecondaryIndex index = dynamodbTableMetadata.getGlobalIndexes().get(0);
