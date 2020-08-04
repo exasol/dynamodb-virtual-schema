@@ -7,9 +7,8 @@ import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.Base64;
 import java.util.stream.Collectors;
-
-import org.postgresql.util.Base64;
 
 import com.exasol.LogProxy;
 import com.exasol.jacoco.JacocoServer;
@@ -101,6 +100,6 @@ public class LocalExasolTestInterface extends AbstractExasolTestInterface {
             errorMessage.append(stdError.lines().collect(Collectors.joining("\n")));
             throw new IllegalStateException(errorMessage.toString());
         }
-        return new String(Base64.decode(output), StandardCharsets.UTF_8);
+        return new String(Base64.getDecoder().decode(output), StandardCharsets.UTF_8);
     }
 }
