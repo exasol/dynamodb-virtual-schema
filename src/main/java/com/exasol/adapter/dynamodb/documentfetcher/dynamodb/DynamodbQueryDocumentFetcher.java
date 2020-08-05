@@ -14,7 +14,7 @@ import software.amazon.awssdk.services.dynamodb.model.QueryRequest;
  * This class represents a DynamoDB {@code QUERY} operation.
  */
 public class DynamodbQueryDocumentFetcher extends AbstractDynamodbDocumentFetcher {
-    private static final long serialVersionUID = -810868396675247321L;//
+    private static final long serialVersionUID = -810868396675247321L;
 
     private final GenericTableAccessParameters genericParameters;
     private final String indexName;
@@ -40,16 +40,16 @@ public class DynamodbQueryDocumentFetcher extends AbstractDynamodbDocumentFetche
 
     QueryRequest getQueryRequest() {
         final QueryRequest.Builder builder = QueryRequest.builder().tableName(this.genericParameters.getTableName());
-        if (!this.genericParameters.hasExpressionAttributeNames()) {
+        if (this.genericParameters.hasExpressionAttributeNames()) {
             builder.expressionAttributeNames(this.genericParameters.getExpressionAttributeNames());
         }
-        if (!this.genericParameters.hasFilterExpression()) {
+        if (this.genericParameters.hasFilterExpression()) {
             builder.filterExpression(this.genericParameters.getFilterExpression());
         }
-        if (!this.genericParameters.hasExpressionAttributeValues()) {
+        if (this.genericParameters.hasExpressionAttributeValues()) {
             builder.expressionAttributeValues(this.genericParameters.getExpressionAttributeValues());
         }
-        if (!this.genericParameters.hasProjectionExpression()) {
+        if (this.genericParameters.hasProjectionExpression()) {
             builder.projectionExpression(this.genericParameters.getProjectionExpression());
         }
         if (this.indexName != null) {
