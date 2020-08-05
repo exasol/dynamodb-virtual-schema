@@ -61,7 +61,7 @@ class DynamodbAdapterIT {
         exasolTestDatabaseBuilder.uploadMapping(MappingTestFiles.DATA_TYPE_TEST_MAPPING_FILE_NAME);
         exasolTestDatabaseBuilder.uploadMapping(MappingTestFiles.DOUBLE_NESTED_TO_TABLE_MAPPING_FILE_NAME);
         exasolTestDatabaseBuilder.uploadMapping(MappingTestFiles.TO_JSON_MAPPING_FILE_NAME);
-        Thread.sleep(3000); //Wait for BucketFS to sync
+        Thread.sleep(3000); // Wait for BucketFS to sync
         exasolTestDatabaseBuilder.createAdapterScript();
         exasolTestDatabaseBuilder.createUdf();
         LOGGER.info("created adapter script");
@@ -154,6 +154,17 @@ class DynamodbAdapterIT {
         dynamodbTestInterface.importData(DYNAMO_BOOKS_TABLE, TestDocuments.BOOKS);
         final List<String> result = selectStringArray().rows;
         assertThat(result, containsInAnyOrder("123567", "123254545", "1235673"));
+    }
+
+    @Test
+    void testAnyColumnProjection() throws SQLException, IOException {
+        createBasicMappingVirtualSchema();
+        dynamodbTestInterface.createTable(DYNAMO_BOOKS_TABLE, TestDocuments.BOOKS_ISBN_PROPERTY);
+        dynamodbTestInterface.importData(DYNAMO_BOOKS_TABLE, TestDocuments.BOOKS);
+        final ResultSet resultSet = exasolTestDatabaseBuilder.getStatement().executeQuery("SELECT COUNT(*) as NUMBER_OF_BOOKS FROM BOOKS;");
+        resultSet.next();
+        final int number_of_books = resultSet.getInt("NUMBER_OF_BOOKS");
+        assertThat(number_of_books, equalTo(3));
     }
 
     @Test
