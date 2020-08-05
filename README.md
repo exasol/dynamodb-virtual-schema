@@ -14,112 +14,30 @@
 
 ## Overview
 
-Using this Virtual Schema you can access to [Amazon DynamoDB](https://aws.amazon.com/dynamodb/) from Exasol.
-SonarCloud results:
+This adapter allows you to access document data that is stored in a [Amazon's DynamoDB]((https://aws.amazon.com/dynamodb/)) from inside of the Exasol analytical database.
+It abstracts over the different interfaces so that you can access the document data just like any regular Exasol table.
 
- ## Installation
- 
-Upload the latest available release of this adapter to BucketFS.
+## Features
 
-Then create a schema to hold the adapter script.
+* Read access to data stored in DynamoDB
+* Maps unstructured document data to Exasol tables that you can access using regular SQL statements
+* Pushes down queries to the remote source
+* Distributes the data loading over the whole Exasol Cluster, what makes queries more than six times faster compared to using a JDBC adapter
+* Flexible definition of the schema mapping using the [Exasol Document Mapping Language](https://exasol.github.io/dynamodb-virtual-schema/schema_doc/index.html)
 
-```
-CREATE SCHEMA ADAPTER;
-```
-
-Next create the Adapter Script:
- ```
-CREATE OR REPLACE JAVA ADAPTER SCRIPT ADAPTER.DYNAMODB_ADAPTER AS
-    %scriptclass com.exasol.adapter.RequestDispatcher;
-    %jar /buckets/bfsdefault/default/dynamodb-virtual-schemas-adapter-dist-0.3.0.jar;
-/
-```
-
-In addition to the adapter script we must create a UDF function that will handle the loading of the data:
-```
-CREATE OR REPLACE JAVA SET SCRIPT ADAPTER.IMPORT_DOCUMENT_DATA(
-  DOCUMENT_FETCHER VARCHAR(2000000),
-  REMOTE_TABLE_QUERY VARCHAR(2000000),
-  CONNECTION_NAME VARCHAR(500))
-  EMITS(...) AS
-    %scriptclass com.exasol.adapter.dynamodb.ImportDocumentData;
-    %jar /buckets/bfsdefault/default/dynamodb-virtual-schemas-adapter-dist-0.3.0.jar;
-/
-```
-
-## Creating a Virtual Schema
- 
-For creating a Virtual Schema you need a connection either to AWS or to a local DynamoDB.
-
-For AWS use:
-
- ```
-CREATE CONNECTION DYNAMO_CONNECTION
-    TO 'aws:<REGION>'
-    USER '<AWS_ACCESS_KEY_ID>'
-    IDENTIFIED BY '<AWS_SECRET_ACCESS_KEY>';
-```
-
-As a region use for example `eu-central-1`.
-
-For creating a connection to a local [AWS testing instance](https://docs.aws.amazon.com/de_de/amazondynamodb/latest/developerguide/DynamoDBLocal.html) use:
-
-```
-CREATE CONNECTION DYNAMO_CONNECTION
-    TO 'http://localhost:8000'
-    USER 'fakeMyKeyId'
-    IDENTIFIED BY 'fakeSecretAccessKey';
-
-```
-
-Before creating a Virtual Schema you need to [create mapping definitions](doc/gettingStartedWithSchemaMappingLanguage.md) and upload them to a BucketFS bucket.
-
-Finally create the Virtual Schema using:
-
-```
-CREATE VIRTUAL SCHEMA DYNAMODB_TEST USING ADAPTER.DYNAMODB_ADAPTER WITH
-    CONNECTION_NAME = 'DYNAMO_CONNECTION'
-    SQL_DIALECT     = 'DYNAMO_DB'
-    MAPPING         = '/bfsdefault/default/path/to/mappings/in/bucketfs';
-```
- 
-
-## First Steps
-
-Start with the [mapping definition example](doc/gettingStartedWithSchemaMappingLanguage.md).
-
-# Documentation
-
-* [Schema mapping language reference](https://exasol.github.io/dynamodb-virtual-schema/schema_doc/index.html)
-* [Schema mapping software architecture](doc/schemaMappingArchitecture.md)
-
-# Limitations
+## Limitations
 
 * In this version the adapter does not support comparisons between two columns
 
-# Logging & Debugging
+## Information for Users
 
-The following links explain logging and debugging for the Virtual Schema in general:
+* [User Guide](doc/user-guide/user_guide.md)
+* [Schema mapping language reference](https://exasol.github.io/dynamodb-virtual-schema/schema_doc/index.html)
 
-* [Logging for Virtual Schemas](https://github.com/exasol/virtual-schemas/blob/master/doc/development/remote_logging.md)
-* [Remote debugging Virtual Schemas](https://github.com/exasol/virtual-schemas/blob/master/doc/development/remote_debugging.md)
+## Information for Developers
 
-For logging and debugging in the test code, things are easier, 
-as most of the setup code is already included in the AbstractExasolTestInterface.
-
-The tests automatically redirect the logs from the Virtual Schema to the tests command line output.
-
-For debugging start a debugger on your development machine listening on port `8000` and 
-start the tests with: `-Dtests.debug="virtualSchema"` or `-Dtests.debug="all"`. 
-The last option also starts the debugger for the UDF calls. This will however typically fail,
- as the UDFs run in parallel and therefore only one can connect to the debugger.
- 
-Additionally the test setup can run the VirtualSchema and the UDFs with a profiler. 
-Therefore we use the [Hones Profiler](https://github.com/jvm-profiling-tools/honest-profiler).
-To use it, download the binaries from the project homepage 
-and place the `liblagent.so` in the directory above this projects root.
-Then enable profiling by adding `-Dtests.profiling="true"` to your jvm parameters.
-      
+* [Developers Guid](doc/development/developers_guide.md)
+* [Schema mapping software architecture](doc/schemaMappingArchitecture.md)
 
 ## Dependencies
 
