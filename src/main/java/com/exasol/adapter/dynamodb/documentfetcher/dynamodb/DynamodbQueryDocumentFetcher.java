@@ -14,7 +14,7 @@ import software.amazon.awssdk.services.dynamodb.model.QueryRequest;
  * This class represents a DynamoDB {@code QUERY} operation.
  */
 public class DynamodbQueryDocumentFetcher extends AbstractDynamodbDocumentFetcher {
-    private static final long serialVersionUID = -810868396675247321L;//
+    private static final long serialVersionUID = -810868396675247321L;
 
     private final GenericTableAccessParameters genericParameters;
     private final String indexName;
@@ -160,9 +160,6 @@ public class DynamodbQueryDocumentFetcher extends AbstractDynamodbDocumentFetche
          * @return {@link DynamodbQueryDocumentFetcher}
          */
         public DynamodbQueryDocumentFetcher build() {
-            if(this.indexName == null){
-                throw new IllegalStateException("indexName was not set but is a mandatory field.");
-            }
             if(this.keyConditionExpression == null){
                 throw new IllegalStateException("keyConditionExpression was not set but is a mandatory field.");
             }
