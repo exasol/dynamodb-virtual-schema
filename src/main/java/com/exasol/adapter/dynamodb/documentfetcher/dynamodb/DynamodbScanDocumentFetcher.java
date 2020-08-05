@@ -17,7 +17,7 @@ import software.amazon.awssdk.services.dynamodb.model.ScanResponse;
  * This class represents a DynamoDB {@code SCAN} operation.
  */
 class DynamodbScanDocumentFetcher extends AbstractDynamodbDocumentFetcher {
-    private static final long serialVersionUID = 8061635540586030441L;
+    private static final long serialVersionUID = -4833355898811576425L;
     private final GenericTableAccessParameters genericParameters;
     private final int totalSegments;
     private final int segment;
@@ -41,23 +41,21 @@ class DynamodbScanDocumentFetcher extends AbstractDynamodbDocumentFetcher {
     }
 
     ScanRequest getScanRequest() {
-        final ScanRequest.Builder templateScanRequest = ScanRequest.builder();
-        templateScanRequest.tableName(this.genericParameters.getTableName());
+        final ScanRequest.Builder builder = ScanRequest.builder().tableName(this.genericParameters.getTableName());
         if (!this.genericParameters.getExpressionAttributeNames().isEmpty()) {
-            templateScanRequest.expressionAttributeNames(this.genericParameters.getExpressionAttributeNames());
+            builder.expressionAttributeNames(this.genericParameters.getExpressionAttributeNames());
         }
         if (!this.genericParameters.getFilterExpression().isEmpty()) {
-            templateScanRequest.filterExpression(this.genericParameters.getFilterExpression());
+            builder.filterExpression(this.genericParameters.getFilterExpression());
         }
         if (!this.genericParameters.getExpressionAttributeValues().isEmpty()) {
-            templateScanRequest.expressionAttributeValues(this.genericParameters.getExpressionAttributeValues());
+            builder.expressionAttributeValues(this.genericParameters.getExpressionAttributeValues());
         }
         if (!this.genericParameters.getProjectionExpression().isEmpty()) {
-            templateScanRequest.projectionExpression(this.genericParameters.getProjectionExpression());
+            builder.projectionExpression(this.genericParameters.getProjectionExpression());
         }
-        templateScanRequest.totalSegments(this.totalSegments);
-        templateScanRequest.segment(this.segment);
-        return templateScanRequest.build();
+        builder.totalSegments(this.totalSegments).segment(this.segment);
+        return builder.build();
     }
 
     @Override
@@ -131,10 +129,6 @@ class DynamodbScanDocumentFetcher extends AbstractDynamodbDocumentFetcher {
         private int segment;
 
         private Builder() {
-        }
-
-        public static Builder aDynamodbScanDocumentFetcher() {
-            return new Builder();
         }
 
         /**

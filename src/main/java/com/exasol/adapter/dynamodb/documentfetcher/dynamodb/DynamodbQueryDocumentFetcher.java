@@ -14,7 +14,7 @@ import software.amazon.awssdk.services.dynamodb.model.QueryRequest;
  * This class represents a DynamoDB {@code QUERY} operation.
  */
 public class DynamodbQueryDocumentFetcher extends AbstractDynamodbDocumentFetcher {
-    private static final long serialVersionUID = -7275323307086366189L;
+    private static final long serialVersionUID = -810868396675247321L;
 
     private final GenericTableAccessParameters genericParameters;
     private final String indexName;
@@ -39,25 +39,24 @@ public class DynamodbQueryDocumentFetcher extends AbstractDynamodbDocumentFetche
     }
 
     QueryRequest getQueryRequest() {
-        final QueryRequest.Builder templateQueryRequest = QueryRequest.builder();
-        templateQueryRequest.tableName(this.genericParameters.getTableName());
+        final QueryRequest.Builder builder = QueryRequest.builder().tableName(this.genericParameters.getTableName());
         if (!this.genericParameters.getExpressionAttributeNames().isEmpty()) {
-            templateQueryRequest.expressionAttributeNames(this.genericParameters.getExpressionAttributeNames());
+            builder.expressionAttributeNames(this.genericParameters.getExpressionAttributeNames());
         }
         if (!this.genericParameters.getFilterExpression().isEmpty()) {
-            templateQueryRequest.filterExpression(this.genericParameters.getFilterExpression());
+            builder.filterExpression(this.genericParameters.getFilterExpression());
         }
         if (!this.genericParameters.getExpressionAttributeValues().isEmpty()) {
-            templateQueryRequest.expressionAttributeValues(this.genericParameters.getExpressionAttributeValues());
+            builder.expressionAttributeValues(this.genericParameters.getExpressionAttributeValues());
         }
         if (!this.genericParameters.getProjectionExpression().isEmpty()) {
-            templateQueryRequest.projectionExpression(this.genericParameters.getProjectionExpression());
+            builder.projectionExpression(this.genericParameters.getProjectionExpression());
         }
         if (this.indexName != null) {
-            templateQueryRequest.indexName(this.indexName);
+            builder.indexName(this.indexName);
         }
-        templateQueryRequest.keyConditionExpression(this.keyConditionExpression);
-        return templateQueryRequest.build();
+        builder.keyConditionExpression(this.keyConditionExpression);
+        return builder.build();
     }
 
     @Override
@@ -78,10 +77,6 @@ public class DynamodbQueryDocumentFetcher extends AbstractDynamodbDocumentFetche
         private String keyConditionExpression;
 
         private Builder() {
-        }
-
-        public static Builder aDynamodbScanDocumentFetcher() {
-            return new Builder();
         }
 
         /**

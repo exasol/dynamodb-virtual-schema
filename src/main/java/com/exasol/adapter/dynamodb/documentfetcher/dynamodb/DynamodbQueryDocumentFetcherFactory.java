@@ -43,8 +43,8 @@ class DynamodbQueryDocumentFetcherFactory {
         final QueryOperationSelection bestQueryOperationSelection = findMostSelectiveIndexSelection(tableMetadata,
                 dnfOr);
 
-        final DynamodbQueryDocumentFetcher.Builder documentFetcherBuilder = DynamodbQueryDocumentFetcher.builder();
-        documentFetcherBuilder.tableName(remoteTableQuery.getFromTable().getRemoteName());
+        final DynamodbQueryDocumentFetcher.Builder documentFetcherBuilder = DynamodbQueryDocumentFetcher.builder()
+                .tableName(remoteTableQuery.getFromTable().getRemoteName());
         addSelectionToQuery(bestQueryOperationSelection, documentFetcherBuilder, remoteTableQuery);
         return List.of(documentFetcherBuilder.build());
     }
@@ -87,16 +87,15 @@ class DynamodbQueryDocumentFetcherFactory {
                 namePlaceholderMapBuilder, valuePlaceholderMapBuilder);
         final String keyFilterExpression = filterExpressionFactory
                 .buildFilterExpression(bestQueryOperationSelection.getIndexSelectionAsQueryPredicate());
-        documentFetcherBuilder.keyConditionExpression(keyFilterExpression);
         final String nonKeyFilterExpression = filterExpressionFactory.buildFilterExpression(
                 bestQueryOperationSelection.getNonIndexSelection().asQueryPredicate().simplify());
-        documentFetcherBuilder.filterExpression(nonKeyFilterExpression);
         final Set<DocumentPathExpression> requiredProperties = new RequiredPathExpressionExtractor()
                 .getRequiredProperties(remoteTableQuery);
         final String projectionExpression = this.projectionExpressionFactory.build(requiredProperties,
                 namePlaceholderMapBuilder);
-        documentFetcherBuilder.projectionExpression(projectionExpression);
-        documentFetcherBuilder.expressionAttributeNames(namePlaceholderMapBuilder.getPlaceholderMap());
-        documentFetcherBuilder.expressionAttributeValues(valuePlaceholderMapBuilder.getPlaceholderMap());
+        documentFetcherBuilder.keyConditionExpression(keyFilterExpression).filterExpression(nonKeyFilterExpression)
+                .projectionExpression(projectionExpression)
+                .expressionAttributeNames(namePlaceholderMapBuilder.getPlaceholderMap())
+                .expressionAttributeValues(valuePlaceholderMapBuilder.getPlaceholderMap());
     }
 }

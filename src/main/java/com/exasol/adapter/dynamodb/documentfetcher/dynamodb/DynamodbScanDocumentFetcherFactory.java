@@ -32,8 +32,6 @@ class DynamodbScanDocumentFetcherFactory {
      */
     public List<DocumentFetcher<DynamodbNodeVisitor>> buildDocumentFetcherForQuery(
             final RemoteTableQuery remoteTableQuery, final int maxNumberOfParallelFetchers) {
-        final DynamodbScanDocumentFetcher.Builder scanDocumentFetcherBuilder = DynamodbScanDocumentFetcher.builder();
-        scanDocumentFetcherBuilder.tableName(remoteTableQuery.getFromTable().getRemoteName());
         final DynamodbAttributeNamePlaceholderMapBuilder namePlaceholderMapBuilder = new DynamodbAttributeNamePlaceholderMapBuilder();
         final DynamodbAttributeValuePlaceholderMapBuilder valuePlaceholderMapBuilder = new DynamodbAttributeValuePlaceholderMapBuilder();
         final String filterExpression = new DynamodbFilterExpressionFactory(namePlaceholderMapBuilder,
@@ -42,22 +40,22 @@ class DynamodbScanDocumentFetcherFactory {
                 .getRequiredProperties(remoteTableQuery);
         final String projectionExpression = this.projectionExpressionFactory.build(requiredProperties,
                 namePlaceholderMapBuilder);
-        scanDocumentFetcherBuilder.expressionAttributeNames(namePlaceholderMapBuilder.getPlaceholderMap());
-        scanDocumentFetcherBuilder.expressionAttributeValues(valuePlaceholderMapBuilder.getPlaceholderMap());
-        scanDocumentFetcherBuilder.filterExpression(filterExpression);
-        scanDocumentFetcherBuilder.projectionExpression(projectionExpression);
-        return parallelizeScan(scanDocumentFetcherBuilder, maxNumberOfParallelFetchers);
+        final DynamodbScanDocumentFetcher.Builder documentFetcherBuilder = DynamodbScanDocumentFetcher.builder()
+                .tableName(remoteTableQuery.getFromTable().getRemoteName())
+                .expressionAttributeNames(namePlaceholderMapBuilder.getPlaceholderMap())
+                .expressionAttributeValues(valuePlaceholderMapBuilder.getPlaceholderMap())
+                .filterExpression(filterExpression).projectionExpression(projectionExpression);
+        return parallelizeScan(documentFetcherBuilder, maxNumberOfParallelFetchers);
     }
 
     private List<DocumentFetcher<DynamodbNodeVisitor>> parallelizeScan(
-            final DynamodbScanDocumentFetcher.Builder templateScanBuilder,
-            final int maxNumberOfParallelFetchers) {
-        templateScanBuilder.totalSegments(maxNumberOfParallelFetchers);
+            final DynamodbScanDocumentFetcher.Builder documentFetcherBuilder, final int maxNumberOfParallelFetchers) {
+        documentFetcherBuilder.totalSegments(maxNumberOfParallelFetchers);
         final List<DocumentFetcher<DynamodbNodeVisitor>> documentFetchers = new ArrayList<>(
                 maxNumberOfParallelFetchers);
         for (int segmentCounter = 0; segmentCounter < maxNumberOfParallelFetchers; segmentCounter++) {
-            templateScanBuilder.segment(segmentCounter);
-            documentFetchers.add(templateScanBuilder.build());
+            documentFetcherBuilder.segment(segmentCounter);
+            documentFetchers.add(documentFetcherBuilder.build());
         }
         return documentFetchers;
     }

@@ -135,6 +135,7 @@ Running the DynamoDB Virtual Schema requires a Java Runtime version 11 or later.
 | [JSON Schema Validator](https://github.com/everit-org/json-schema)                  | Validating the Exasol Document Mapping Language definitions | Apache License 2.0
 | [Exasol SQL statement builder](https://github.com/exasol/sql-statement-builder)     | Building pushdown SQL statements                            | MIT License
 | [LogicNG](https://github.com/logic-ng/LogicNG)                                      | DNF normalization                                           | Apache License 2.0
+
 ### Test Dependencies
 
 | Dependency                                                                          | Purpose                                                | License                          |

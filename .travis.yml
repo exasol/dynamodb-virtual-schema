@@ -14,8 +14,11 @@ before_install:
 install:
 - travis_retry mvn dependency:resolve
 - npm install -g bootprint bootprint-json-schema
+- pip install pre-commit
 before_script:
-- tools/version.sh verify
+  - tools/version.sh verify
+  - pre-commit install
+  - pre-commit
 script:
 - shellcheck .ci/*.sh
 - mvn clean org.jacoco:jacoco-maven-plugin:prepare-agent org.jacoco:jacoco-maven-plugin:prepare-agent-integration
