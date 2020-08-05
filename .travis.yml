@@ -19,6 +19,7 @@ install:
 - pip install pre-commit
 before_script:
   - tools/version.sh verify
+  - pyenv global 3.7.1
   - pre-commit install
   - pre-commit
 script:
