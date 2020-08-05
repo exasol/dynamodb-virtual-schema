@@ -21,8 +21,9 @@ before_script:
   - tools/version.sh verify
   - pyenv global 3.7.1
   - pre-commit install
-  - pre-commit
 script:
+- ls
+- pre-commit
 - shellcheck .ci/*.sh
 - mvn clean org.jacoco:jacoco-maven-plugin:prepare-agent org.jacoco:jacoco-maven-plugin:prepare-agent-integration
   verify sonar:sonar -Dsonar.login=${SONAR_TOKEN} -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml,target/site/jacoco-it/jacoco.xml,target/site/jacoco-udf/jacoco.xml
