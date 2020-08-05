@@ -17,7 +17,7 @@ import software.amazon.awssdk.services.dynamodb.model.ScanResponse;
  * This class represents a DynamoDB {@code SCAN} operation.
  */
 class DynamodbScanDocumentFetcher extends AbstractDynamodbDocumentFetcher {
-    private static final long serialVersionUID = -4833355898811576425L;//
+    private static final long serialVersionUID = -4833355898811576425L;
     private final GenericTableAccessParameters genericParameters;
     private final int totalSegments;
     private final int segment;
@@ -120,15 +120,12 @@ class DynamodbScanDocumentFetcher extends AbstractDynamodbDocumentFetcher {
      * Builder for {@link DynamodbScanDocumentFetcher}.
      */
     public static final class Builder {
-        private String tableName;
-        private Map<String, String> expressionAttributeNames;
-        private Map<String, DocumentValue<DynamodbNodeVisitor>> expressionAttributeValues;
-        private String filterExpression;
-        private String projectionExpression;
-        private int totalSegments;
-        private int segment;
+        private final GenericTableAccessParameters.Builder genericParametersBuilder;
+        private int totalSegments = -1;
+        private int segment = -1;
 
         private Builder() {
+            this.genericParametersBuilder = GenericTableAccessParameters.builder();
         }
 
         /**
@@ -138,7 +135,7 @@ class DynamodbScanDocumentFetcher extends AbstractDynamodbDocumentFetcher {
          * @return self
          */
         public Builder tableName(final String tableName) {
-            this.tableName = tableName;
+            this.genericParametersBuilder.tableName(tableName);
             return this;
         }
 
@@ -149,7 +146,7 @@ class DynamodbScanDocumentFetcher extends AbstractDynamodbDocumentFetcher {
          * @return self
          */
         public Builder expressionAttributeNames(final Map<String, String> expressionAttributeNames) {
-            this.expressionAttributeNames = expressionAttributeNames;
+            this.genericParametersBuilder.expressionAttributeNames(expressionAttributeNames);
             return this;
         }
 
@@ -161,7 +158,7 @@ class DynamodbScanDocumentFetcher extends AbstractDynamodbDocumentFetcher {
          */
         public Builder expressionAttributeValues(
                 final Map<String, DocumentValue<DynamodbNodeVisitor>> expressionAttributeValues) {
-            this.expressionAttributeValues = expressionAttributeValues;
+            this.genericParametersBuilder.expressionAttributeValues(expressionAttributeValues);
             return this;
         }
 
@@ -172,7 +169,7 @@ class DynamodbScanDocumentFetcher extends AbstractDynamodbDocumentFetcher {
          * @return self
          */
         public Builder filterExpression(final String filterExpression) {
-            this.filterExpression = filterExpression;
+            this.genericParametersBuilder.filterExpression(filterExpression);
             return this;
         }
 
@@ -183,7 +180,7 @@ class DynamodbScanDocumentFetcher extends AbstractDynamodbDocumentFetcher {
          * @return self
          */
         public Builder projectionExpression(final String projectionExpression) {
-            this.projectionExpression = projectionExpression;
+            this.genericParametersBuilder.projectionExpression(projectionExpression);
             return this;
         }
 
@@ -215,10 +212,13 @@ class DynamodbScanDocumentFetcher extends AbstractDynamodbDocumentFetcher {
          * @return {@link DynamodbScanDocumentFetcher}
          */
         public DynamodbScanDocumentFetcher build() {
-            final GenericTableAccessParameters genericTableAccessParameters = new GenericTableAccessParameters(
-                    this.tableName, this.expressionAttributeNames, this.expressionAttributeValues,
-                    this.filterExpression, this.projectionExpression);
-            return new DynamodbScanDocumentFetcher(genericTableAccessParameters, this.totalSegments, this.segment);
+            if(this.totalSegments == -1){
+                throw new IllegalStateException("totalSegments was not set but is a mandatory field.");
+            }
+            if(this.segment == -1){
+                throw new IllegalStateException("segment was not set but is a mandatory field.");
+            }
+            return new DynamodbScanDocumentFetcher(this.genericParametersBuilder.build(), this.totalSegments, this.segment);
         }
     }
 }

@@ -14,7 +14,7 @@ import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
  * This class groups the common parameters of Scan and Query document fetchers.
  */
 public class GenericTableAccessParameters implements Serializable {
-    private static final long serialVersionUID = -822082800908345226L;//
+    private static final long serialVersionUID = -822082800908345226L;
     private final String tableName;
     private final Map<String, String> expressionAttributeNames;
     private final Map<String, DocumentValue<DynamodbNodeVisitor>> expressionAttributeValues;
@@ -87,7 +87,6 @@ public class GenericTableAccessParameters implements Serializable {
         return !this.expressionAttributeValues.isEmpty();
     }
 
-
     /**
      * Get the DynamoDB filter expression string.
      * 
@@ -122,5 +121,108 @@ public class GenericTableAccessParameters implements Serializable {
      */
     public boolean hasProjectionExpression() {
         return !this.projectionExpression.isEmpty();
+    }
+
+    /**
+     * Create an builder for {@link @GenericTableAccessParameters}.
+     *
+     * @return builder for {@link @GenericTableAccessParameters}
+     */
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    /**
+     * Builder for {@link GenericTableAccessParameters}.
+     */
+    public static final class Builder {
+        private String tableName;
+        private Map<String, String> expressionAttributeNames;
+        private Map<String, DocumentValue<DynamodbNodeVisitor>> expressionAttributeValues;
+        private String filterExpression;
+        private String projectionExpression;
+
+        /**
+         * Private constructor to hide the public default.
+         */
+        private Builder() {
+            // empty on purpose
+        }
+
+        /**
+         * Set the name of the table to scan.
+         *
+         * @param tableName name of the table
+         * @return self
+         */
+        public Builder tableName(final String tableName) {
+            this.tableName = tableName;
+            return this;
+        }
+
+        /**
+         * Set the placeholder map for attribute names.
+         *
+         * @param expressionAttributeNames placeholder map for attribute names
+         * @return self
+         */
+        public Builder expressionAttributeNames(final Map<String, String> expressionAttributeNames) {
+            this.expressionAttributeNames = expressionAttributeNames;
+            return this;
+        }
+
+        /**
+         * Set the placeholder map for attribute values.
+         *
+         * @param expressionAttributeValues placeholder map for attribute values
+         * @return self
+         */
+        public Builder expressionAttributeValues(
+                final Map<String, DocumentValue<DynamodbNodeVisitor>> expressionAttributeValues) {
+            this.expressionAttributeValues = expressionAttributeValues;
+            return this;
+        }
+
+        /**
+         * Set the filter expression
+         *
+         * @param filterExpression filter expression
+         * @return self
+         */
+        public Builder filterExpression(final String filterExpression) {
+            this.filterExpression = filterExpression;
+            return this;
+        }
+
+        /**
+         * Set the projection expression.
+         *
+         * @param projectionExpression projection expression
+         * @return self
+         */
+        public Builder projectionExpression(final String projectionExpression) {
+            this.projectionExpression = projectionExpression;
+            return this;
+        }
+
+        public GenericTableAccessParameters build() {
+            if(this.tableName == null){
+                throw new IllegalStateException("tableName was not set but is a mandatory field.");
+            }
+            if(this.expressionAttributeNames == null){
+                throw new IllegalStateException("expressionAttributeNames  was not set but is a mandatory field.");
+            }
+            if(this.expressionAttributeValues == null){
+                throw new IllegalStateException("expressionAttributeValues  was not set but is a mandatory field.");
+            }
+            if(this.filterExpression == null){
+                throw new IllegalStateException("filterExpression  was not set but is a mandatory field.");
+            }
+            if(this.projectionExpression == null){
+                throw new IllegalStateException("projectionExpression  was not set but is a mandatory field.");
+            }
+            return new GenericTableAccessParameters(this.tableName, this.expressionAttributeNames,
+                    this.expressionAttributeValues, this.filterExpression, this.projectionExpression);
+        }
     }
 }

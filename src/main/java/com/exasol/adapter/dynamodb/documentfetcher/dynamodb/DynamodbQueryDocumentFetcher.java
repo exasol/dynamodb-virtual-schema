@@ -14,7 +14,7 @@ import software.amazon.awssdk.services.dynamodb.model.QueryRequest;
  * This class represents a DynamoDB {@code QUERY} operation.
  */
 public class DynamodbQueryDocumentFetcher extends AbstractDynamodbDocumentFetcher {
-    private static final long serialVersionUID = -810868396675247321L;
+    private static final long serialVersionUID = -810868396675247321L;//
 
     private final GenericTableAccessParameters genericParameters;
     private final String indexName;
@@ -68,15 +68,12 @@ public class DynamodbQueryDocumentFetcher extends AbstractDynamodbDocumentFetche
      * Builder for {@link DynamodbQueryDocumentFetcher}.
      */
     public static final class Builder {
-        private String tableName;
-        private Map<String, String> expressionAttributeNames;
-        private Map<String, DocumentValue<DynamodbNodeVisitor>> expressionAttributeValues;
-        private String filterExpression;
-        private String projectionExpression;
+        private final GenericTableAccessParameters.Builder genericParametersBuilder;
         private String indexName;
         private String keyConditionExpression;
 
         private Builder() {
+            this.genericParametersBuilder = GenericTableAccessParameters.builder();
         }
 
         /**
@@ -86,7 +83,7 @@ public class DynamodbQueryDocumentFetcher extends AbstractDynamodbDocumentFetche
          * @return self
          */
         public Builder tableName(final String tableName) {
-            this.tableName = tableName;
+            this.genericParametersBuilder.tableName(tableName);
             return this;
         }
 
@@ -97,7 +94,7 @@ public class DynamodbQueryDocumentFetcher extends AbstractDynamodbDocumentFetche
          * @return self
          */
         public Builder expressionAttributeNames(final Map<String, String> expressionAttributeNames) {
-            this.expressionAttributeNames = expressionAttributeNames;
+            this.genericParametersBuilder.expressionAttributeNames(expressionAttributeNames);
             return this;
         }
 
@@ -109,7 +106,7 @@ public class DynamodbQueryDocumentFetcher extends AbstractDynamodbDocumentFetche
          */
         public Builder expressionAttributeValues(
                 final Map<String, DocumentValue<DynamodbNodeVisitor>> expressionAttributeValues) {
-            this.expressionAttributeValues = expressionAttributeValues;
+            this.genericParametersBuilder.expressionAttributeValues(expressionAttributeValues);
             return this;
         }
 
@@ -120,7 +117,7 @@ public class DynamodbQueryDocumentFetcher extends AbstractDynamodbDocumentFetche
          * @return self
          */
         public Builder filterExpression(final String filterExpression) {
-            this.filterExpression = filterExpression;
+            this.genericParametersBuilder.filterExpression(filterExpression);
             return this;
         }
 
@@ -131,7 +128,7 @@ public class DynamodbQueryDocumentFetcher extends AbstractDynamodbDocumentFetche
          * @return self
          */
         public Builder projectionExpression(final String projectionExpression) {
-            this.projectionExpression = projectionExpression;
+            this.genericParametersBuilder.projectionExpression(projectionExpression);
             return this;
         }
 
@@ -163,10 +160,13 @@ public class DynamodbQueryDocumentFetcher extends AbstractDynamodbDocumentFetche
          * @return {@link DynamodbQueryDocumentFetcher}
          */
         public DynamodbQueryDocumentFetcher build() {
-            final GenericTableAccessParameters genericTableAccessParameters = new GenericTableAccessParameters(
-                    this.tableName, this.expressionAttributeNames, this.expressionAttributeValues,
-                    this.filterExpression, this.projectionExpression);
-            return new DynamodbQueryDocumentFetcher(genericTableAccessParameters, this.indexName,
+            if(this.indexName == null){
+                throw new IllegalStateException("indexName was not set but is a mandatory field.");
+            }
+            if(this.keyConditionExpression == null){
+                throw new IllegalStateException("keyConditionExpression was not set but is a mandatory field.");
+            }
+            return new DynamodbQueryDocumentFetcher(this.genericParametersBuilder.build(), this.indexName,
                     this.keyConditionExpression);
         }
     }
