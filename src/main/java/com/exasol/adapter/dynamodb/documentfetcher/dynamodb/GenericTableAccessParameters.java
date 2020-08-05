@@ -14,7 +14,7 @@ import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
  * This class groups the common parameters of Scan and Query document fetchers.
  */
 public class GenericTableAccessParameters implements Serializable {
-    private static final long serialVersionUID = -822082800908345226L;
+    private static final long serialVersionUID = -822082800908345226L;//
     private final String tableName;
     private final Map<String, String> expressionAttributeNames;
     private final Map<String, DocumentValue<DynamodbNodeVisitor>> expressionAttributeValues;
@@ -59,6 +59,15 @@ public class GenericTableAccessParameters implements Serializable {
     }
 
     /**
+     * Get if the map of placeholders for attribute names is not empty.
+     * 
+     * @return {@code true} if the map contains at least one entry
+     */
+    public boolean hasExpressionAttributeNames() {
+        return !this.expressionAttributeNames.isEmpty();
+    }
+
+    /**
      * Get the map of placeholders for attribute values.
      * 
      * @return map of placeholders for attribute values
@@ -70,6 +79,16 @@ public class GenericTableAccessParameters implements Serializable {
     }
 
     /**
+     * Get if the map of placeholders for attribute names is not empty.
+     *
+     * @return {@code true} if the map contains at least one entry
+     */
+    public boolean hasExpressionAttributeValues() {
+        return !this.expressionAttributeValues.isEmpty();
+    }
+
+
+    /**
      * Get the DynamoDB filter expression string.
      * 
      * @return filter expression string
@@ -79,11 +98,29 @@ public class GenericTableAccessParameters implements Serializable {
     }
 
     /**
+     * Get if the filter expression is not empty.
+     * 
+     * @return true if not empty
+     */
+    public boolean hasFilterExpression() {
+        return !this.filterExpression.isEmpty();
+    }
+
+    /**
      * Get the DynamoDB projection expression string.
      * 
      * @return projection expression string
      */
     public String getProjectionExpression() {
         return this.projectionExpression;
+    }
+
+    /**
+     * Get if the projection expression is not empty.
+     *
+     * @return true if not empty
+     */
+    public boolean hasProjectionExpression() {
+        return !this.projectionExpression.isEmpty();
     }
 }

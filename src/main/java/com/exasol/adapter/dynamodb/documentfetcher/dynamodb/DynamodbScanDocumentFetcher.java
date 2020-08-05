@@ -17,7 +17,7 @@ import software.amazon.awssdk.services.dynamodb.model.ScanResponse;
  * This class represents a DynamoDB {@code SCAN} operation.
  */
 class DynamodbScanDocumentFetcher extends AbstractDynamodbDocumentFetcher {
-    private static final long serialVersionUID = -4833355898811576425L;
+    private static final long serialVersionUID = -4833355898811576425L;//
     private final GenericTableAccessParameters genericParameters;
     private final int totalSegments;
     private final int segment;
@@ -42,16 +42,16 @@ class DynamodbScanDocumentFetcher extends AbstractDynamodbDocumentFetcher {
 
     ScanRequest getScanRequest() {
         final ScanRequest.Builder builder = ScanRequest.builder().tableName(this.genericParameters.getTableName());
-        if (!this.genericParameters.getExpressionAttributeNames().isEmpty()) {
+        if (this.genericParameters.hasExpressionAttributeNames()) {
             builder.expressionAttributeNames(this.genericParameters.getExpressionAttributeNames());
         }
-        if (!this.genericParameters.getFilterExpression().isEmpty()) {
+        if (this.genericParameters.hasFilterExpression()) {
             builder.filterExpression(this.genericParameters.getFilterExpression());
         }
-        if (!this.genericParameters.getExpressionAttributeValues().isEmpty()) {
+        if (this.genericParameters.hasExpressionAttributeValues()) {
             builder.expressionAttributeValues(this.genericParameters.getExpressionAttributeValues());
         }
-        if (!this.genericParameters.getProjectionExpression().isEmpty()) {
+        if (this.genericParameters.hasProjectionExpression()) {
             builder.projectionExpression(this.genericParameters.getProjectionExpression());
         }
         builder.totalSegments(this.totalSegments).segment(this.segment);

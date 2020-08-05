@@ -61,7 +61,7 @@ class DynamodbAdapterIT {
         exasolTestDatabaseBuilder.uploadMapping(MappingTestFiles.DATA_TYPE_TEST_MAPPING_FILE_NAME);
         exasolTestDatabaseBuilder.uploadMapping(MappingTestFiles.DOUBLE_NESTED_TO_TABLE_MAPPING_FILE_NAME);
         exasolTestDatabaseBuilder.uploadMapping(MappingTestFiles.TO_JSON_MAPPING_FILE_NAME);
-        Thread.sleep(3000);
+        Thread.sleep(3000); //Wait for BucketFS to sync
         exasolTestDatabaseBuilder.createAdapterScript();
         exasolTestDatabaseBuilder.createUdf();
         LOGGER.info("created adapter script");
