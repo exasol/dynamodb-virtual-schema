@@ -1,10 +1,11 @@
 package com.exasol.adapter.dynamodb;
 
+import java.net.URISyntaxException;
 import java.util.Optional;
 
-import com.amazonaws.auth.AWSCredentials;
-import com.amazonaws.auth.AWSSessionCredentials;
-import com.amazonaws.auth.DefaultAWSCredentialsProviderChain;
+import software.amazon.awssdk.auth.credentials.AwsCredentials;
+import software.amazon.awssdk.auth.credentials.AwsSessionCredentials;
+import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider;
 
 /**
  * DynamoDB test interface using a DynamoDB running on AWS.
@@ -12,7 +13,7 @@ import com.amazonaws.auth.DefaultAWSCredentialsProviderChain;
 public class AwsDynamodbTestInterface extends DynamodbTestInterface {
 
     private AwsDynamodbTestInterface(final String dynamoUrl, final String user, final String pass,
-            final Optional<String> sessionToken) {
+            final Optional<String> sessionToken) throws URISyntaxException {
         super(dynamoUrl, user, pass, sessionToken);
     }
 
@@ -24,16 +25,16 @@ public class AwsDynamodbTestInterface extends DynamodbTestInterface {
     public static class Builder {
         private static final String DEFAULT_REGION = "aws:eu-central-1";
 
-        public DynamodbTestInterface build() {
-            final AWSCredentials awsCredentials = DefaultAWSCredentialsProviderChain.getInstance().getCredentials();
-            return new AwsDynamodbTestInterface(DEFAULT_REGION, awsCredentials.getAWSAccessKeyId(),
-                    awsCredentials.getAWSSecretKey(), getSessionTokenIfPossible(awsCredentials));
+        public DynamodbTestInterface build() throws URISyntaxException {
+            final AwsCredentials awsCredentials = DefaultCredentialsProvider.create().resolveCredentials();
+
+            return new AwsDynamodbTestInterface(DEFAULT_REGION, awsCredentials.accessKeyId(),
+                    awsCredentials.secretAccessKey(), getSessionTokenIfPossible(awsCredentials));
         }
 
-        private Optional<String> getSessionTokenIfPossible(final AWSCredentials awsCredentials) {
-            if (awsCredentials instanceof AWSSessionCredentials) {
-                final AWSSessionCredentials sessionCredentials = (AWSSessionCredentials) awsCredentials;
-                return Optional.of(((AWSSessionCredentials) awsCredentials).getSessionToken());
+        private Optional<String> getSessionTokenIfPossible(final AwsCredentials awsCredentials) {
+            if (awsCredentials instanceof AwsSessionCredentials) {
+                return Optional.of(((AwsSessionCredentials) awsCredentials).sessionToken());
             } else {
                 return Optional.empty();
             }

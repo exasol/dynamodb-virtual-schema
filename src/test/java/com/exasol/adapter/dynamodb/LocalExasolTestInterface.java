@@ -7,18 +7,24 @@ import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.Base64;
 import java.util.stream.Collectors;
 
-import org.postgresql.util.Base64;
+import com.exasol.LogProxy;
+import com.exasol.jacoco.JacocoServer;
 
 /**
  * Exasol test interface for a local Exasol database created with the docker-compose file from test/java/resources.
  */
 public class LocalExasolTestInterface extends AbstractExasolTestInterface {
     private final String bucketfsWritePassword;
+    private final String testHostIpAddress;
 
     public LocalExasolTestInterface() throws IOException, SQLException {
         this.bucketfsWritePassword = extractWritePasswordFromExaconf();
+        this.testHostIpAddress = lookupTestHostIpAddress();
+        JacocoServer.startIfNotRunning();
+        LogProxy.startIfNotRunning();
         new ExasolTestDatabaseBuilder(this).cleanup();
     }
 
@@ -29,7 +35,29 @@ public class LocalExasolTestInterface extends AbstractExasolTestInterface {
 
     @Override
     public String getTestHostIpAddress() {
-        return null;
+        return this.testHostIpAddress;
+    }
+
+    private String lookupTestHostIpAddress() {
+        try {
+            final Runtime runtime = Runtime.getRuntime();
+            final String[] command = { "docker", "inspect", "-f",
+                    "{{range .NetworkSettings.Networks}}{{.Gateway}}{{end}}", "resources_dynamodb_1" };
+            final Process dockerComposeProcess = runtime.exec(command);
+            final BufferedReader stdInput = new BufferedReader(
+                    new InputStreamReader(dockerComposeProcess.getInputStream()));
+            final String output = stdInput.readLine();
+            if (output == null) {
+                final StringBuilder errorMessage = new StringBuilder("Could not read docker-compose output:\n");
+                final BufferedReader stdError = new BufferedReader(
+                        new InputStreamReader(dockerComposeProcess.getErrorStream()));
+                errorMessage.append(stdError.lines().collect(Collectors.joining("\n")));
+                throw new IllegalStateException(errorMessage.toString());
+            }
+            return output;
+        } catch (final IOException exception) {
+            return null;
+        }
     }
 
     @Override
@@ -72,6 +100,6 @@ public class LocalExasolTestInterface extends AbstractExasolTestInterface {
             errorMessage.append(stdError.lines().collect(Collectors.joining("\n")));
             throw new IllegalStateException(errorMessage.toString());
         }
-        return new String(Base64.decode(output), StandardCharsets.UTF_8);
+        return new String(Base64.getDecoder().decode(output), StandardCharsets.UTF_8);
     }
 }

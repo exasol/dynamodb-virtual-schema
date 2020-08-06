@@ -1,11 +1,12 @@
 package com.exasol.adapter.dynamodb.documentnode.dynamodb;
 
-import java.nio.ByteBuffer;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import com.exasol.adapter.dynamodb.documentnode.DocumentArray;
+
+import software.amazon.awssdk.core.SdkBytes;
 
 /**
  * This class represents a DynamoDB binary set value.
@@ -19,7 +20,7 @@ public class DynamodbBinarySet implements DocumentArray<DynamodbNodeVisitor> {
      *
      * @param value value to hold
      */
-    public DynamodbBinarySet(final Collection<ByteBuffer> value) {
+    public DynamodbBinarySet(final Collection<SdkBytes> value) {
         this.value = value.stream().map(DynamodbBinary::new).collect(Collectors.toList());
     }
 

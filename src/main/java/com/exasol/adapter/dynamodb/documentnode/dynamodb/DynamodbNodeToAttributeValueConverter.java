@@ -1,12 +1,13 @@
 package com.exasol.adapter.dynamodb.documentnode.dynamodb;
 
-import java.nio.ByteBuffer;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.exasol.adapter.dynamodb.documentnode.DocumentNode;
 import com.exasol.adapter.dynamodb.documentnode.DocumentValue;
+
+import software.amazon.awssdk.core.SdkBytes;
+import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 
 /**
  * This class converts a {@link DocumentValue <DynamodbNodeVisitor>} into a DynamoDB {@link AttributeValue}.
@@ -26,58 +27,58 @@ public class DynamodbNodeToAttributeValueConverter {
     }
 
     private static class Visitor implements DynamodbNodeVisitor {
-        private final AttributeValue result = new AttributeValue();
+        private AttributeValue result;
 
         @Override
         public void visit(final DynamodbString string) {
-            this.result.setS(string.getValue());
+            this.result = AttributeValue.builder().s(string.getValue()).build();
         }
 
         @Override
         public void visit(final DynamodbNumber number) {
-            this.result.setN(number.getValue());
+            this.result = AttributeValue.builder().n(number.getValue()).build();
         }
 
         @Override
         public void visit(final DynamodbBinary binary) {
-            this.result.setB(binary.getValue());
+            this.result = AttributeValue.builder().b(binary.getValue()).build();
         }
 
         @Override
         public void visit(final DynamodbBoolean bool) {
-            this.result.setBOOL(bool.getValue());
+            this.result = AttributeValue.builder().bool(bool.getValue()).build();
         }
 
         @Override
         public void visit(final DynamodbStringSet stringSet) {
-            this.result.setSS(stringSet.getValue());
+            this.result = AttributeValue.builder().ss(stringSet.getValue()).build();
         }
 
         @Override
         public void visit(final DynamodbBinarySet binarySet) {
-            final List<ByteBuffer> byteSet = binarySet.getValuesList().stream().map(DynamodbBinary::getValue)
+            final List<SdkBytes> byteSet = binarySet.getValuesList().stream().map(DynamodbBinary::getValue)
                     .collect(Collectors.toList());
-            this.result.setBS(byteSet);
+            this.result = AttributeValue.builder().bs(byteSet).build();
         }
 
         @Override
         public void visit(final DynamodbNumberSet numberSet) {
-            this.result.setNS(numberSet.getValue());
+            this.result = AttributeValue.builder().ns(numberSet.getValue()).build();
         }
 
         @Override
         public void visit(final DynamodbList list) {
-            this.result.setL(list.getValue());
+            this.result = AttributeValue.builder().l(list.getValue()).build();
         }
 
         @Override
         public void visit(final DynamodbMap map) {
-            this.result.setM(map.getValue());
+            this.result = AttributeValue.builder().m(map.getValue()).build();
         }
 
         @Override
         public void visit(final DynamodbNull nullValue) {
-            this.result.setNULL(true);
+            this.result = AttributeValue.builder().nul(true).build();
         }
 
         private AttributeValue getResult() {

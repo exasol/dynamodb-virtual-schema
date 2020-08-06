@@ -4,6 +4,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.sql.ResultSet;
@@ -37,7 +38,7 @@ class DynamodbAdapterPerformanceIT {
     @BeforeAll
     static void beforeAll() throws SQLException, BucketAccessException, InterruptedException,
             java.util.concurrent.TimeoutException, IOException, NoSuchAlgorithmException, KeyManagementException,
-            XmlRpcException, DynamodbTestInterface.NoNetworkFoundException {
+            XmlRpcException, DynamodbTestInterface.NoNetworkFoundException, URISyntaxException {
         final IntegrationTestSetup integrationTestSetup = new IntegrationTestSetup();
         dynamodbTestInterface = integrationTestSetup.getDynamodbTestInterface();
         exasolTestInterface = integrationTestSetup.getExasolTestInterface();

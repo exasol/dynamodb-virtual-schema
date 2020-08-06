@@ -3,10 +3,11 @@ package com.exasol.adapter.dynamodb.documentnode.dynamodb;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 
-import java.nio.ByteBuffer;
 import java.util.Collections;
 
 import org.junit.jupiter.api.Test;
+
+import software.amazon.awssdk.core.SdkBytes;
 
 class IncompleteDynamodbNodeVisitorTest {
 
@@ -27,7 +28,7 @@ class IncompleteDynamodbNodeVisitorTest {
     @Test
     void testVisitBinary() {
         final Visitor visitor = new Visitor();
-        new DynamodbBinary(ByteBuffer.wrap("".getBytes())).accept(visitor);
+        new DynamodbBinary(SdkBytes.fromUtf8String("")).accept(visitor);
         assertThat(visitor.getVisited(), equalTo("Binary"));
     }
 

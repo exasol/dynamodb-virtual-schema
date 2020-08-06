@@ -22,10 +22,10 @@ class SelectionsConstants {
         EQUAL1 = new ColumnLiteralComparisonPredicate(AbstractComparisonPredicate.Operator.EQUAL,
                 new ToJsonPropertyToColumnMapping("isbn", null, null, 0, null), new SqlLiteralString("test"));
         EQUAL2 = new ColumnLiteralComparisonPredicate(AbstractComparisonPredicate.Operator.EQUAL,
-                new ToJsonPropertyToColumnMapping("publisher", null, null, 0, null), new SqlLiteralString("test"));
+                new ToJsonPropertyToColumnMapping("publisher", null, null, 1, null), new SqlLiteralString("test"));
 
         EQUAL3 = new ColumnLiteralComparisonPredicate(AbstractComparisonPredicate.Operator.EQUAL,
-                new ToJsonPropertyToColumnMapping("publisher", null, null, 0, null), new SqlLiteralString("test2"));
+                new ToJsonPropertyToColumnMapping("publisher", null, null, 2, null), new SqlLiteralString("test2"));
 
         AND_OF_TWO_DIFFERENT_PREDICATES = new LogicalOperator(Set.of(EQUAL1, EQUAL2), LogicalOperator.Operator.AND);
         OR_OF_TWO_DIFFERENT_PREDICATES = new LogicalOperator(Set.of(EQUAL1, EQUAL2), LogicalOperator.Operator.OR);

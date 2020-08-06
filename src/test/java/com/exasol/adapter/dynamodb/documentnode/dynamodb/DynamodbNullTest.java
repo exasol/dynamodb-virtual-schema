@@ -6,9 +6,10 @@ import static org.hamcrest.Matchers.instanceOf;
 
 import org.junit.jupiter.api.Test;
 
-import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.exasol.adapter.dynamodb.documentnode.DocumentNode;
 import com.exasol.dynamodb.attributevalue.AttributeValueQuickCreator;
+
+import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 
 class DynamodbNullTest {
     private static final AttributeValue ATTRIBUTE_VALUE = AttributeValueQuickCreator.forNull();

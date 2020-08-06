@@ -1,6 +1,5 @@
 package com.exasol.adapter.dynamodb.mapping.dynamodb;
 
-import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.exasol.adapter.dynamodb.documentnode.DocumentNode;
 import com.exasol.adapter.dynamodb.documentnode.dynamodb.*;
 import com.exasol.adapter.dynamodb.mapping.ToStringPropertyToColumnMapping;
@@ -28,7 +27,7 @@ public class DynamodbToStringPropertyToColumnValueExtractor
     }
 
     /**
-     * Visitor for {@link AttributeValue} that converts its value to string. If this is not possible an
+     * Visitor for DynamodbNodes that converts its value to string. If this is not possible an
      * {@link UnsupportedOperationException} is thrown.
      */
     private static class ToStringVisitor implements IncompleteDynamodbNodeVisitor {

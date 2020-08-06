@@ -3,9 +3,10 @@ package com.exasol.adapter.dynamodb.documentnode.dynamodb;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.exasol.adapter.dynamodb.documentnode.DocumentNode;
 import com.exasol.adapter.dynamodb.documentnode.DocumentObject;
+
+import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 
 /**
  * This class represents a DynamoDB map value.

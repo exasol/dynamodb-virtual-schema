@@ -1,11 +1,10 @@
 package com.exasol.dynamodb.attributevalue;
 
-import java.nio.ByteBuffer;
 import java.util.Collection;
-import java.util.List;
 import java.util.Map;
 
-import com.amazonaws.services.dynamodbv2.model.AttributeValue;
+import software.amazon.awssdk.core.SdkBytes;
+import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 
 /**
  * This class provides factory methods for quickly creating {@link AttributeValue}s.
@@ -13,62 +12,42 @@ import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 public class AttributeValueQuickCreator {
 
     public static AttributeValue forString(final String string) {
-        final AttributeValue attributeValue = new AttributeValue();
-        attributeValue.setS(string);
-        return attributeValue;
+        return AttributeValue.builder().s(string).build();
     }
 
     public static AttributeValue forNumber(final String string) {
-        final AttributeValue attributeValue = new AttributeValue();
-        attributeValue.setN(string);
-        return attributeValue;
+        return AttributeValue.builder().n(string).build();
     }
 
-    public static AttributeValue forBinary(final ByteBuffer bytes) {
-        final AttributeValue attributeValue = new AttributeValue();
-        attributeValue.setB(bytes);
-        return attributeValue;
+    public static AttributeValue forBinary(final SdkBytes bytes) {
+        return AttributeValue.builder().b(bytes).build();
     }
 
     public static AttributeValue forNull() {
-        final AttributeValue attributeValue = new AttributeValue();
-        attributeValue.setNULL(true);
-        return attributeValue;
+        return AttributeValue.builder().nul(true).build();
     }
 
     public static AttributeValue forBoolean(final boolean value) {
-        final AttributeValue attributeValue = new AttributeValue();
-        attributeValue.setBOOL(value);
-        return attributeValue;
+        return AttributeValue.builder().bool(value).build();
     }
 
     public static AttributeValue forList(final AttributeValue... values) {
-        final AttributeValue attributeValue = new AttributeValue();
-        attributeValue.setL(List.of(values));
-        return attributeValue;
+        return AttributeValue.builder().l(values).build();
     }
 
     public static AttributeValue forMap(final Map<String, AttributeValue> value) {
-        final AttributeValue attributeValue = new AttributeValue();
-        attributeValue.setM(value);
-        return attributeValue;
+        return AttributeValue.builder().m(value).build();
     }
 
-    public static AttributeValue forBinarySet(final Collection<ByteBuffer> value) {
-        final AttributeValue attributeValue = new AttributeValue();
-        attributeValue.setBS(value);
-        return attributeValue;
+    public static AttributeValue forBinarySet(final Collection<SdkBytes> value) {
+        return AttributeValue.builder().bs(value).build();
     }
 
     public static AttributeValue forStringSet(final Collection<String> value) {
-        final AttributeValue attributeValue = new AttributeValue();
-        attributeValue.setSS(value);
-        return attributeValue;
+        return AttributeValue.builder().ss(value).build();
     }
 
     public static AttributeValue forNumberSet(final Collection<String> value) {
-        final AttributeValue attributeValue = new AttributeValue();
-        attributeValue.setNS(value);
-        return attributeValue;
+        return AttributeValue.builder().ns(value).build();
     }
 }

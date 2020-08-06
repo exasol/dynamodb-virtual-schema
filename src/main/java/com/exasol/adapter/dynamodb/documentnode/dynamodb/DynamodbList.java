@@ -3,9 +3,10 @@ package com.exasol.adapter.dynamodb.documentnode.dynamodb;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.exasol.adapter.dynamodb.documentnode.DocumentArray;
 import com.exasol.adapter.dynamodb.documentnode.DocumentNode;
+
+import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 
 /**
  * This class represents a DynamoDB list value.

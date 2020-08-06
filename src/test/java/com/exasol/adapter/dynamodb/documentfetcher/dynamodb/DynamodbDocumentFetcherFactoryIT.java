@@ -7,6 +7,7 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -15,7 +16,6 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
-import com.amazonaws.services.dynamodbv2.model.*;
 import com.exasol.adapter.AdapterException;
 import com.exasol.adapter.dynamodb.DynamodbTestInterface;
 import com.exasol.adapter.dynamodb.IntegrationTestSetup;
@@ -27,6 +27,8 @@ import com.exasol.adapter.dynamodb.documentnode.dynamodb.DynamodbString;
 import com.exasol.adapter.dynamodb.mapping.TestDocuments;
 import com.exasol.adapter.dynamodb.queryplanning.RemoteTableQuery;
 
+import software.amazon.awssdk.services.dynamodb.model.*;
+
 @Tag("integration")
 @Tag("quick")
 class DynamodbDocumentFetcherFactoryIT {
@@ -34,7 +36,8 @@ class DynamodbDocumentFetcherFactoryIT {
     private static BasicMappingSetup basicMappingSetup;
 
     @BeforeAll
-    static void beforeAll() throws DynamodbTestInterface.NoNetworkFoundException, IOException, AdapterException {
+    static void beforeAll()
+            throws DynamodbTestInterface.NoNetworkFoundException, IOException, AdapterException, URISyntaxException {
         final IntegrationTestSetup integrationTestSetup = new IntegrationTestSetup();
         dynamodbTestInterface = integrationTestSetup.getDynamodbTestInterface();
         basicMappingSetup = new BasicMappingSetup();
@@ -42,20 +45,27 @@ class DynamodbDocumentFetcherFactoryIT {
     }
 
     private static void setupTestDatabase() throws IOException, AdapterException {
-        final CreateTableRequest request = new CreateTableRequest()
-                .withTableName(basicMappingSetup.tableMapping.getRemoteName())
-                .withKeySchema(new KeySchemaElement(PRIMARY_KEY_NAME, KeyType.HASH))
-                .withAttributeDefinitions(new AttributeDefinition(PRIMARY_KEY_NAME, ScalarAttributeType.S),
-                        new AttributeDefinition(INDEX_PARTITION_KEY, ScalarAttributeType.S),
-                        new AttributeDefinition(INDEX_SORT_KEY, ScalarAttributeType.N))
-                .withProvisionedThroughput(new ProvisionedThroughput(1L, 1L))//
-                .withGlobalSecondaryIndexes(new GlobalSecondaryIndex()
-                        .withKeySchema(new KeySchemaElement(INDEX_PARTITION_KEY, KeyType.HASH),
-                                new KeySchemaElement(INDEX_SORT_KEY, KeyType.RANGE))
-                        .withIndexName(INDEX_NAME)
-                        .withProjection(new Projection().withProjectionType(ProjectionType.ALL))
-                        .withProvisionedThroughput(new ProvisionedThroughput(1L, 1L)));
-        dynamodbTestInterface.createTable(request);
+        final CreateTableRequest.Builder requestBuilder = CreateTableRequest.builder();
+        requestBuilder.tableName(basicMappingSetup.tableMapping.getRemoteName());
+        requestBuilder
+                .keySchema(KeySchemaElement.builder().attributeName(PRIMARY_KEY_NAME).keyType(KeyType.HASH).build());
+        requestBuilder.attributeDefinitions(
+                AttributeDefinition.builder().attributeName(PRIMARY_KEY_NAME).attributeType(ScalarAttributeType.S)
+                        .build(),
+                AttributeDefinition.builder().attributeName(INDEX_PARTITION_KEY).attributeType(ScalarAttributeType.S)
+                        .build(),
+                AttributeDefinition.builder().attributeName(INDEX_SORT_KEY).attributeType(ScalarAttributeType.N)
+                        .build());
+        requestBuilder.provisionedThroughput(
+                ProvisionedThroughput.builder().readCapacityUnits(1L).writeCapacityUnits(1L).build());
+        requestBuilder.globalSecondaryIndexes(GlobalSecondaryIndex.builder()
+                .keySchema(KeySchemaElement.builder().attributeName(INDEX_PARTITION_KEY).keyType(KeyType.HASH).build(),
+                        KeySchemaElement.builder().attributeName(INDEX_SORT_KEY).keyType(KeyType.RANGE).build())
+                .provisionedThroughput(
+                        ProvisionedThroughput.builder().readCapacityUnits(1L).writeCapacityUnits(1L).build())
+                .indexName(INDEX_NAME).projection(Projection.builder().projectionType(ProjectionType.ALL).build())
+                .build());
+        dynamodbTestInterface.createTable(requestBuilder.build());
         dynamodbTestInterface.importData(basicMappingSetup.tableMapping.getRemoteName(), TestDocuments.BOOKS);
     }
 
@@ -64,7 +74,7 @@ class DynamodbDocumentFetcherFactoryIT {
         dynamodbTestInterface.teardown();
     }
 
-    private List<DocumentNode<DynamodbNodeVisitor>> runQuery(final RemoteTableQuery query) {
+    private List<DocumentNode<DynamodbNodeVisitor>> runQuery(final RemoteTableQuery query) throws URISyntaxException {
         final DynamodbDocumentFetcherFactory fetcherFactory = new DynamodbDocumentFetcherFactory(
                 dynamodbTestInterface.getDynamodbLowLevelConnection());
         final List<DocumentFetcher<DynamodbNodeVisitor>> documentFetchers = fetcherFactory
@@ -76,7 +86,7 @@ class DynamodbDocumentFetcherFactoryIT {
     }
 
     @Test
-    void testSelectAll() {
+    void testSelectAll() throws URISyntaxException {
         final RemoteTableQuery remoteTableQuery = basicMappingSetup.getSelectAllQuery();
         final List<DocumentNode<DynamodbNodeVisitor>> result = runQuery(remoteTableQuery);
         assertThat(result.size(), equalTo(3));
@@ -85,7 +95,7 @@ class DynamodbDocumentFetcherFactoryIT {
     }
 
     @Test
-    void testRequestSingleItem() {
+    void testRequestSingleItem() throws URISyntaxException {
         final String isbn = "123567";
         final RemoteTableQuery documentQuery = basicMappingSetup.getQueryForIsbn(isbn);
         final List<DocumentNode<DynamodbNodeVisitor>> result = runQuery(documentQuery);
@@ -95,7 +105,7 @@ class DynamodbDocumentFetcherFactoryIT {
     }
 
     @Test
-    void testSelectAllButASingleItem() {
+    void testSelectAllButASingleItem() throws URISyntaxException {
         final RemoteTableQuery documentQuery = basicMappingSetup.getQueryForNotIsbn("123567");
         final List<DocumentNode<DynamodbNodeVisitor>> result = runQuery(documentQuery);
         final List<String> resultsIsbns = result.stream()
@@ -104,7 +114,7 @@ class DynamodbDocumentFetcherFactoryIT {
     }
 
     @Test
-    void testSecondaryIndexQuery() {
+    void testSecondaryIndexQuery() throws URISyntaxException {
         final String publisher = "jb books";
         final RemoteTableQuery documentQuery = basicMappingSetup.getQueryForPublisher(publisher);
         final List<DocumentNode<DynamodbNodeVisitor>> result = runQuery(documentQuery);
@@ -115,7 +125,7 @@ class DynamodbDocumentFetcherFactoryIT {
     }
 
     @Test
-    void testSortKeyIndexQuery() {
+    void testSortKeyIndexQuery() throws URISyntaxException {
         final String publisher = "jb books";
         final RemoteTableQuery query = basicMappingSetup.getQueryForMinPriceAndPublisher(11, publisher);
         final List<DocumentNode<DynamodbNodeVisitor>> result = runQuery(query);
@@ -125,7 +135,7 @@ class DynamodbDocumentFetcherFactoryIT {
     }
 
     @Test
-    void testSortKeyIndexQueryWithNot() {
+    void testSortKeyIndexQueryWithNot() throws URISyntaxException {
         final String publisher = "jb books";
         final RemoteTableQuery query = basicMappingSetup.getQueryForMaxPriceAndPublisher(11, publisher);
         final List<DocumentNode<DynamodbNodeVisitor>> result = runQuery(query);
@@ -135,7 +145,7 @@ class DynamodbDocumentFetcherFactoryIT {
     }
 
     @Test
-    void testKeyAndNonKeyQuery() {
+    void testKeyAndNonKeyQuery() throws URISyntaxException {
         final String publisher = "jb books";
         final String name = "bad book 1";
         final RemoteTableQuery documentQuery = basicMappingSetup.getQueryForNameAndPublisher(name, publisher);
@@ -151,7 +161,7 @@ class DynamodbDocumentFetcherFactoryIT {
     }
 
     @Test
-    void testKeyAndNonKeyQueryWithTwoNonKeyValues() {
+    void testKeyAndNonKeyQueryWithTwoNonKeyValues() throws URISyntaxException {
         final String publisher = "jb books";
         final String name1 = "bad book 1";
         final String name2 = "bad book 2";
@@ -170,7 +180,7 @@ class DynamodbDocumentFetcherFactoryIT {
     }
 
     @Test
-    void testRangeQuery() {
+    void testRangeQuery() throws URISyntaxException {
         final RemoteTableQuery documentQuery = basicMappingSetup.getQueryForMinPrice(16);
         final List<DocumentNode<DynamodbNodeVisitor>> result = runQuery(documentQuery);
         assertThat(result.size(), equalTo(1));
@@ -179,7 +189,7 @@ class DynamodbDocumentFetcherFactoryIT {
     }
 
     @Test
-    void testQueryOnIndexAndPrimaryKeyProperties() {
+    void testQueryOnIndexAndPrimaryKeyProperties() throws URISyntaxException {
         final String isbn = "123567";
         final RemoteTableQuery documentQuery = basicMappingSetup.getQueryForPriceAndPublisherAndIsbn(15, "jb books",
                 isbn);

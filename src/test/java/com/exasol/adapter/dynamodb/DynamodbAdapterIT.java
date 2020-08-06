@@ -6,6 +6,7 @@ import static org.hamcrest.collection.IsIterableContainingInAnyOrder.containsInA
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.sql.ResultSet;
@@ -21,10 +22,11 @@ import org.junit.jupiter.api.Tag;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.amazonaws.services.dynamodbv2.model.*;
 import com.exasol.adapter.dynamodb.mapping.MappingTestFiles;
 import com.exasol.adapter.dynamodb.mapping.TestDocuments;
 import com.exasol.bucketfs.BucketAccessException;
+
+import software.amazon.awssdk.services.dynamodb.model.*;
 
 /**
  * Tests the {@link DynamodbAdapter} using a local docker version of DynamoDB and a local docker version of exasol.
@@ -47,7 +49,7 @@ class DynamodbAdapterIT {
     @BeforeAll
     static void beforeAll() throws DynamodbTestInterface.NoNetworkFoundException, SQLException, InterruptedException,
             BucketAccessException, TimeoutException, IOException, NoSuchAlgorithmException, KeyManagementException,
-            XmlRpcException {
+            XmlRpcException, URISyntaxException {
         final IntegrationTestSetup integrationTestSetup = new IntegrationTestSetup();
         exasolTestInterface = integrationTestSetup.getExasolTestInterface();
         exasolTestDatabaseBuilder = new ExasolTestDatabaseBuilder(exasolTestInterface);
@@ -59,6 +61,7 @@ class DynamodbAdapterIT {
         exasolTestDatabaseBuilder.uploadMapping(MappingTestFiles.DATA_TYPE_TEST_MAPPING_FILE_NAME);
         exasolTestDatabaseBuilder.uploadMapping(MappingTestFiles.DOUBLE_NESTED_TO_TABLE_MAPPING_FILE_NAME);
         exasolTestDatabaseBuilder.uploadMapping(MappingTestFiles.TO_JSON_MAPPING_FILE_NAME);
+        Thread.sleep(3000); //Wait for BucketFS to sync
         exasolTestDatabaseBuilder.createAdapterScript();
         exasolTestDatabaseBuilder.createUdf();
         LOGGER.info("created adapter script");
@@ -278,13 +281,17 @@ class DynamodbAdapterIT {
     }
 
     private void createTableBooksTableWithPublisherPriceKey() throws IOException {
-        final CreateTableRequest request = new CreateTableRequest().withTableName(DYNAMO_BOOKS_TABLE)
-                .withKeySchema(new KeySchemaElement("publisher", KeyType.HASH),
-                        new KeySchemaElement("price", KeyType.RANGE))
-                .withAttributeDefinitions(new AttributeDefinition("publisher", ScalarAttributeType.S),
-                        new AttributeDefinition("price", ScalarAttributeType.N))
-                .withProvisionedThroughput(new ProvisionedThroughput(100L, 100L));
-        dynamodbTestInterface.createTable(request);
+        final CreateTableRequest.Builder requestBuilder = CreateTableRequest.builder();
+        requestBuilder.tableName(DYNAMO_BOOKS_TABLE);
+        requestBuilder
+                .keySchema(List.of(KeySchemaElement.builder().attributeName("publisher").keyType(KeyType.HASH).build(),
+                        KeySchemaElement.builder().attributeName("price").keyType(KeyType.RANGE).build()));
+        requestBuilder.attributeDefinitions(List.of(
+                AttributeDefinition.builder().attributeName("publisher").attributeType(ScalarAttributeType.S).build(),
+                AttributeDefinition.builder().attributeName("price").attributeType(ScalarAttributeType.N).build()));
+        requestBuilder.provisionedThroughput(
+                ProvisionedThroughput.builder().readCapacityUnits(100L).writeCapacityUnits(100L).build());
+        dynamodbTestInterface.createTable(requestBuilder.build());
         dynamodbTestInterface.importData(DYNAMO_BOOKS_TABLE, TestDocuments.BOOKS);
     }
 
@@ -292,8 +299,8 @@ class DynamodbAdapterIT {
     void testDataTypes() throws IOException, SQLException {
         createDataTypesVirtualSchema();
         final ResultSet actualResultSet = exasolTestDatabaseBuilder.getStatement()
-                .executeQuery("SELECT * FROM " + TEST_SCHEMA
-                + "." + MappingTestFiles.DATA_TYPE_TEST_EXASOL_TABLE_NAME + " WHERE STRINGVALUE = 'test';");
+                .executeQuery("SELECT * FROM " + TEST_SCHEMA + "." + MappingTestFiles.DATA_TYPE_TEST_EXASOL_TABLE_NAME
+                        + " WHERE STRINGVALUE = 'test';");
         actualResultSet.next();
         assertAll(() -> assertThat(actualResultSet.getString("STRINGVALUE"), equalTo("test")),
                 () -> assertThat(actualResultSet.getString("BOOLVALUE"), equalTo("true")),

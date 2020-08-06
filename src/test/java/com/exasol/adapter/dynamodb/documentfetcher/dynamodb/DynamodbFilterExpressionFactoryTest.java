@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Test;
 
+import com.exasol.adapter.dynamodb.documentnode.dynamodb.DynamodbString;
 import com.exasol.adapter.dynamodb.documentpath.DocumentPathExpression;
 import com.exasol.adapter.dynamodb.mapping.ToJsonPropertyToColumnMapping;
 import com.exasol.adapter.dynamodb.querypredicate.*;
@@ -83,8 +84,7 @@ class DynamodbFilterExpressionFactoryTest {
                 AbstractComparisonPredicate.Operator.EQUAL);
         final ColumnLiteralComparisonPredicate comparison2 = getComparison(literal2,
                 AbstractComparisonPredicate.Operator.EQUAL);
-        final LogicalOperator and = new LogicalOperator(Set.of(comparison1, comparison2),
-                LogicalOperator.Operator.AND);
+        final LogicalOperator and = new LogicalOperator(Set.of(comparison1, comparison2), LogicalOperator.Operator.AND);
         assertFilterExpression(and, "(#0 = :0 and (#0 = :1))", Set.of("key"), Set.of(literal1, literal2));
     }
 
@@ -99,8 +99,8 @@ class DynamodbFilterExpressionFactoryTest {
                 AbstractComparisonPredicate.Operator.EQUAL);
         final ColumnLiteralComparisonPredicate comparison3 = getComparison(literal3,
                 AbstractComparisonPredicate.Operator.EQUAL);
-        final LogicalOperator and = new LogicalOperator(
-                Set.of(comparison1, comparison2, comparison3), LogicalOperator.Operator.AND);
+        final LogicalOperator and = new LogicalOperator(Set.of(comparison1, comparison2, comparison3),
+                LogicalOperator.Operator.AND);
         assertFilterExpression(and, "(#0 = :0 and ((#0 = :1 and (#0 = :2))))", Set.of("key"),
                 Set.of(literal1, literal2, literal3));
     }
@@ -118,15 +118,14 @@ class DynamodbFilterExpressionFactoryTest {
         return new ColumnLiteralComparisonPredicate(operator, column, new SqlLiteralString(literal));
     }
 
-    void assertFilterExpression(final QueryPredicate predicateToTest,
-            final String expectedExpression, final Map<String, String> expectedAttributeNameMap,
-            final Map<String, String> expectedValueMap) {
+    void assertFilterExpression(final QueryPredicate predicateToTest, final String expectedExpression,
+            final Map<String, String> expectedAttributeNameMap, final Map<String, String> expectedValueMap) {
         final DynamodbAttributeNamePlaceholderMapBuilder namePlaceholderMapBuilder = new DynamodbAttributeNamePlaceholderMapBuilder();
         final DynamodbAttributeValuePlaceholderMapBuilder valuePlaceholderMapBuilder = new DynamodbAttributeValuePlaceholderMapBuilder();
         final String result = new DynamodbFilterExpressionFactory(namePlaceholderMapBuilder, valuePlaceholderMapBuilder)
                 .buildFilterExpression(predicateToTest);
         final Map<String, String> valuesStrings = valuePlaceholderMapBuilder.getPlaceholderMap().entrySet().stream()
-                .collect(Collectors.toMap(Map.Entry::getKey, entry -> entry.getValue().getS()));
+                .collect(Collectors.toMap(Map.Entry::getKey, entry -> ((DynamodbString) entry.getValue()).getValue()));
         assertAll(//
                 () -> assertThat(result, equalTo(expectedExpression)),
                 () -> assertThat(valuesStrings, equalTo(expectedValueMap)),
@@ -134,15 +133,14 @@ class DynamodbFilterExpressionFactoryTest {
         );
     }
 
-    void assertFilterExpression(final QueryPredicate predicateToTest,
-            final String expectedExpression, final Set<String> expectedAttributeNames,
-            final Set<String> expectedValues) {
+    void assertFilterExpression(final QueryPredicate predicateToTest, final String expectedExpression,
+            final Set<String> expectedAttributeNames, final Set<String> expectedValues) {
         final DynamodbAttributeNamePlaceholderMapBuilder namePlaceholderMapBuilder = new DynamodbAttributeNamePlaceholderMapBuilder();
         final DynamodbAttributeValuePlaceholderMapBuilder valuePlaceholderMapBuilder = new DynamodbAttributeValuePlaceholderMapBuilder();
         final String result = new DynamodbFilterExpressionFactory(namePlaceholderMapBuilder, valuePlaceholderMapBuilder)
                 .buildFilterExpression(predicateToTest);
         final Map<String, String> valuesStrings = valuePlaceholderMapBuilder.getPlaceholderMap().entrySet().stream()
-                .collect(Collectors.toMap(Map.Entry::getKey, entry -> entry.getValue().getS()));
+                .collect(Collectors.toMap(Map.Entry::getKey, entry -> ((DynamodbString) entry.getValue()).getValue()));
         assertAll(//
                 () -> assertThat(result, equalTo(expectedExpression)),
                 () -> assertThat(new HashSet<>(valuesStrings.values()), equalTo(expectedValues)),
