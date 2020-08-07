@@ -4,7 +4,8 @@ This user guide helps with getting started with the DynamoDB Virtual Schemas.
 
 ### Installation
  
-Upload the latest available release of this adapter to BucketFS.
+Upload the latest available [release of this adapter](https://github.com/exasol/dynamodb-virtual-schema/releases) to BucketFS.
+See [Create a bucket in BucketFS](https://docs.exasol.com/administration/on-premise/bucketfs/create_new_bucket_in_bucketfs_service.htm) and [Upload the driver to BucketFS](https://docs.exasol.com/administration/on-premise/bucketfs/accessfiles.htm) for details.
 
 Then create a schema to hold the adapter script.
 

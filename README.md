@@ -1,5 +1,7 @@
 # Virtual Schema for AWS DynamoDB
 
+[![Build Status](https://travis-ci.com/exasol/dynamodb-virtual-schema.svg?branch=master)](https://travis-ci.com/exasol/dynamodb-virtual-schema)
+
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=com.exasol%3Adynamodb-virtual-schema&metric=alert_status)](https://sonarcloud.io/dashboard?id=com.exasol%3Adynamodb-virtual-schema)
 
 [![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=com.exasol%3Adynamodb-virtual-schema&metric=security_rating)](https://sonarcloud.io/dashboard?id=com.exasol%3Adynamodb-virtual-schema)
@@ -37,7 +39,6 @@ It abstracts over the different interfaces so that you can access the document d
 ## Information for Developers
 
 * [Developers Guide](doc/development/developers_guide.md)
-* [Schema mapping software architecture](doc/schemaMappingArchitecture.md)
 
 ## Dependencies
 
