@@ -36,7 +36,7 @@ It abstracts over the different interfaces so that you can access the document d
 
 ## Information for Developers
 
-* [Developers Guid](doc/development/developers_guide.md)
+* [Developers Guide](doc/development/developers_guide.md)
 * [Schema mapping software architecture](doc/schemaMappingArchitecture.md)
 
 ## Dependencies

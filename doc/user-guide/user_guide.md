@@ -1,6 +1,6 @@
 # DynamoDB Virtual Schema User Guide
-This user guide helps with getting started with the DynamoDB Virtual Schemas.
 
+This user guide helps with getting started with the DynamoDB Virtual Schemas.
 
 ### Installation
  
@@ -68,4 +68,4 @@ CREATE VIRTUAL SCHEMA DYNAMODB_TEST USING ADAPTER.DYNAMODB_ADAPTER WITH
     MAPPING         = '/bfsdefault/default/path/to/mappings/in/bucketfs';
 ```
  
-No browse your data using you favorite SQL client.
+Now browse your data using you favorite SQL client.
