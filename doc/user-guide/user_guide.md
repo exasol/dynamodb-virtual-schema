@@ -58,7 +58,7 @@ CREATE CONNECTION DYNAMO_CONNECTION
 
 ```
 
-Before creating a Virtual Schema you need to [create mapping definitions](doc/gettingStartedWithSchemaMappingLanguage.md) and upload them to a BucketFS bucket.
+Before creating a Virtual Schema you need to [create mapping definitions](../gettingStartedWithSchemaMappingLanguage.md) and upload them to a BucketFS bucket.
 
 Finally create the Virtual Schema using:
 
