@@ -41,7 +41,7 @@ class ToStringPropertyToColumnMappingTest {
     void testEqual() {
         final ToStringPropertyToColumnMapping other = new ToStringPropertyToColumnMapping(COLUMN_NAME,
                 TEST_OBJECT.getPathToSourceProperty(), TEST_OBJECT.getLookupFailBehaviour(),
-                TEST_OBJECT.getExasolStringSize(), TEST_OBJECT.getOverflowBehaviour());
+                TEST_OBJECT.getMaxSize(), TEST_OBJECT.getOverflowBehaviour());
         assertSymmetricEqualWithHashAndEquals(TEST_OBJECT, other);
     }
 
@@ -49,14 +49,14 @@ class ToStringPropertyToColumnMappingTest {
     void testNotEqualWithDifferentName() {
         final ToStringPropertyToColumnMapping other = new ToStringPropertyToColumnMapping("otherName",
                 TEST_OBJECT.getPathToSourceProperty(), TEST_OBJECT.getLookupFailBehaviour(),
-                TEST_OBJECT.getExasolStringSize(), TEST_OBJECT.getOverflowBehaviour());
+                TEST_OBJECT.getMaxSize(), TEST_OBJECT.getOverflowBehaviour());
         assertSymmetricNotEqualWithHashAndEquals(TEST_OBJECT, other);
     }
 
     @Test
     void testNotEqualWithDifferentPath() {
         final ToStringPropertyToColumnMapping other = new ToStringPropertyToColumnMapping(COLUMN_NAME,
-                DocumentPathExpression.empty(), TEST_OBJECT.getLookupFailBehaviour(), TEST_OBJECT.getExasolStringSize(),
+                DocumentPathExpression.empty(), TEST_OBJECT.getLookupFailBehaviour(), TEST_OBJECT.getMaxSize(),
                 TEST_OBJECT.getOverflowBehaviour());
         assertSymmetricNotEqualWithHashAndEquals(TEST_OBJECT, other);
     }
