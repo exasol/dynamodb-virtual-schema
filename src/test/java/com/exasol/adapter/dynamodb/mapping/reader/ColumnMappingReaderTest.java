@@ -41,7 +41,7 @@ class ColumnMappingReaderTest {
         final ToStringPropertyToColumnMapping columnMapping = (ToStringPropertyToColumnMapping) ColumnMappingReader
                 .getInstance()
                 .readColumnMapping("toStringMapping", definition, new DocumentPathExpression.Builder(), "test", false);
-        assertAll(// )
+        assertAll(//
                 () -> assertThat(columnMapping.getVarcharColumnSize(), equalTo(254)),
                 () -> assertThat(columnMapping.getOverflowBehaviour(),
                         equalTo(ToStringPropertyToColumnMapping.OverflowBehaviour.TRUNCATE)),
@@ -61,7 +61,7 @@ class ColumnMappingReaderTest {
         final ToStringPropertyToColumnMapping columnMapping = (ToStringPropertyToColumnMapping) ColumnMappingReader
                 .getInstance()
                 .readColumnMapping("toStringMapping", definition, new DocumentPathExpression.Builder(), "test", false);
-        assertAll(// )
+        assertAll(//
                 () -> assertThat(columnMapping.getVarcharColumnSize(), equalTo(123)),
                 () -> assertThat(columnMapping.getOverflowBehaviour(),
                         equalTo(ToStringPropertyToColumnMapping.OverflowBehaviour.EXCEPTION)),
@@ -101,7 +101,7 @@ class ColumnMappingReaderTest {
         final ToJsonPropertyToColumnMapping columnMapping = (ToJsonPropertyToColumnMapping) ColumnMappingReader
                 .getInstance()
                 .readColumnMapping("toJsonMapping", definition, new DocumentPathExpression.Builder(), "test", false);
-        assertAll(// )
+        assertAll(//
                 () -> assertThat(columnMapping.getVarcharColumnSize(), equalTo(254)),
                 () -> assertThat(columnMapping.getOverflowBehaviour(), equalTo(NULL)),
                 () -> assertThat(columnMapping.getExasolColumnName(), equalTo("TEST")),
@@ -120,7 +120,7 @@ class ColumnMappingReaderTest {
         final ToJsonPropertyToColumnMapping columnMapping = (ToJsonPropertyToColumnMapping) ColumnMappingReader
                 .getInstance()
                 .readColumnMapping("toJsonMapping", definition, new DocumentPathExpression.Builder(), "test", false);
-        assertAll(// )
+        assertAll(//
                 () -> assertThat(columnMapping.getVarcharColumnSize(), equalTo(123)),
                 () -> assertThat(columnMapping.getOverflowBehaviour(),
                         equalTo(ToJsonPropertyToColumnMapping.OverflowBehaviour.EXCEPTION)),
