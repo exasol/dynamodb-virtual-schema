@@ -11,8 +11,8 @@ import com.exasol.sql.expression.ValueExpression;
  * This class defines a mapping that extracts a string from the remote document and maps it to an Exasol VARCHAR column.
  */
 public final class ToStringPropertyToColumnMapping extends AbstractPropertyToColumnMapping {
-    private static final long serialVersionUID = -128983678455744470L;
-    private final int maxSize;
+    private static final long serialVersionUID = 3105623085127908020L;
+    private final int varcharColumnSize;
     private final OverflowBehaviour overflowBehaviour;
 
     /**
@@ -22,14 +22,14 @@ public final class ToStringPropertyToColumnMapping extends AbstractPropertyToCol
      * @param pathToSourceProperty {@link DocumentPathExpression} path to the property to extract
      * @param lookupFailBehaviour  {@link LookupFailBehaviour} behaviour for the case, that the defined path does not
      *                             exist
-     * @param maxSize              Length of the Exasol VARCHAR
-     * @param overflowBehaviour    Behaviour if extracted string exceeds {@link #maxSize}
+     * @param varcharColumnSize    Length of the Exasol VARCHAR
+     * @param overflowBehaviour    Behaviour if extracted string exceeds {@link #varcharColumnSize}
      */
     public ToStringPropertyToColumnMapping(final String exasolColumnName,
             final DocumentPathExpression pathToSourceProperty, final LookupFailBehaviour lookupFailBehaviour,
-            final int maxSize, final OverflowBehaviour overflowBehaviour) {
+            final int varcharColumnSize, final OverflowBehaviour overflowBehaviour) {
         super(exasolColumnName, pathToSourceProperty, lookupFailBehaviour);
-        this.maxSize = maxSize;
+        this.varcharColumnSize = varcharColumnSize;
         this.overflowBehaviour = overflowBehaviour;
     }
 
@@ -38,12 +38,12 @@ public final class ToStringPropertyToColumnMapping extends AbstractPropertyToCol
      * 
      * @return maximum size of Exasol VARCHAR
      */
-    public int getMaxSize() {
-        return this.maxSize;
+    public int getVarcharColumnSize() {
+        return this.varcharColumnSize;
     }
 
     /**
-     * Get the behaviour if the {@link #maxSize} is exceeded.
+     * Get the behaviour if the {@link #varcharColumnSize} is exceeded.
      * 
      * @return {@link OverflowBehaviour}
      */
@@ -53,7 +53,7 @@ public final class ToStringPropertyToColumnMapping extends AbstractPropertyToCol
 
     @Override
     public DataType getExasolDataType() {
-        return DataType.createVarChar(this.maxSize, DataType.ExaCharset.UTF8);
+        return DataType.createVarChar(this.varcharColumnSize, DataType.ExaCharset.UTF8);
     }
 
     @Override
@@ -74,7 +74,7 @@ public final class ToStringPropertyToColumnMapping extends AbstractPropertyToCol
     @Override
     public ColumnMapping withNewExasolName(final String newExasolName) {
         return new ToStringPropertyToColumnMapping(newExasolName, getPathToSourceProperty(), getLookupFailBehaviour(),
-                getMaxSize(), getOverflowBehaviour());
+                getVarcharColumnSize(), getOverflowBehaviour());
     }
 
     @Override
@@ -89,17 +89,17 @@ public final class ToStringPropertyToColumnMapping extends AbstractPropertyToCol
             return false;
         }
         final ToStringPropertyToColumnMapping that = (ToStringPropertyToColumnMapping) other;
-        return this.overflowBehaviour == that.overflowBehaviour && this.maxSize == that.maxSize;
+        return this.overflowBehaviour == that.overflowBehaviour && this.varcharColumnSize == that.varcharColumnSize;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), this.maxSize, this.overflowBehaviour);
+        return Objects.hash(super.hashCode(), this.varcharColumnSize, this.overflowBehaviour);
     }
 
     /**
      * Specifies the behaviour of {@link ToStringPropertyToColumnValueExtractor} if the string from DynamoDB is longer
-     * than {@link #maxSize}.
+     * than {@link #varcharColumnSize}.
      */
     public enum OverflowBehaviour {
         /**
