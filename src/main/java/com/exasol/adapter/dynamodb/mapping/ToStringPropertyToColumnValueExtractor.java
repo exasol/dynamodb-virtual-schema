@@ -35,7 +35,7 @@ public abstract class ToStringPropertyToColumnValueExtractor<DocumentVisitorType
     protected abstract String mapStringValue(DocumentNode<DocumentVisitorType> dynamodbProperty);
 
     private String handleOverflowIfNecessary(final String sourceString) {
-        if (sourceString.length() > this.column.getExasolStringSize()) {
+        if (sourceString.length() > this.column.getVarcharColumnSize()) {
             return handleOverflow(sourceString);
         } else {
             return sourceString;
@@ -44,7 +44,7 @@ public abstract class ToStringPropertyToColumnValueExtractor<DocumentVisitorType
 
     private String handleOverflow(final String tooLongSourceString) {
         if (this.column.getOverflowBehaviour() == ToStringPropertyToColumnMapping.OverflowBehaviour.TRUNCATE) {
-            return tooLongSourceString.substring(0, this.column.getExasolStringSize());
+            return tooLongSourceString.substring(0, this.column.getVarcharColumnSize());
         } else {
             throw new OverflowException(
                     "String overflow. You can either increase the string size if this column or set the overflow behaviour to truncate.",

@@ -13,14 +13,14 @@ import com.exasol.adapter.dynamodb.documentpath.DocumentPathExpression;
  * from a nested list or object. See {@link #isRootTable()} for details.
  */
 public class TableMapping implements Serializable {
-    private static final long serialVersionUID = 4733787702889353750L;
+    private static final long serialVersionUID = 4733787702889353750L;//
     private final String exasolName;
     private final String remoteName;
     private final transient List<ColumnMapping> columns; // The columns are serialized separately in
                                                          // {@link ColumnMetadata}.
     private final DocumentPathExpression pathInRemoteTable;
 
-    TableMapping(final String exasolName, final String remoteName, final List<ColumnMapping> columns,
+    public TableMapping(final String exasolName, final String remoteName, final List<ColumnMapping> columns,
             final DocumentPathExpression pathInRemoteTable) {
         this.exasolName = exasolName;
         this.remoteName = remoteName;

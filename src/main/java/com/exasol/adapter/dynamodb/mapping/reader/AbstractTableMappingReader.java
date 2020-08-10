@@ -1,17 +1,21 @@
-package com.exasol.adapter.dynamodb.mapping;
+package com.exasol.adapter.dynamodb.mapping.reader;
 
 import java.util.*;
 
 import javax.json.JsonObject;
 
 import com.exasol.adapter.dynamodb.documentpath.DocumentPathExpression;
+import com.exasol.adapter.dynamodb.mapping.ColumnMapping;
+import com.exasol.adapter.dynamodb.mapping.ColumnMappingDefinitionKeyTypeReader;
+import com.exasol.adapter.dynamodb.mapping.ExasolDocumentMappingLanguageException;
+import com.exasol.adapter.dynamodb.mapping.TableMapping;
 
 /**
  * This class builds {@link TableMapping}s from Exasol document mapping language definitions. If the definition contains
  * nested lists that are mapped using a {@code ToTableMapping}, then the nested table is built using a recursive call to
  * {@link NestedTableMappingReader}.
  */
-public abstract class AbstractTableMappingReader {
+abstract class AbstractTableMappingReader {
     protected static final String DEST_TABLE_NAME_KEY = "destTable";
     private static final String MAPPING_KEY = "mapping";
     final List<TableMapping> tables = new ArrayList<>();
@@ -102,8 +106,6 @@ public abstract class AbstractTableMappingReader {
 
     private static class SchemaMappingDefinitionLanguageVisitor {
         private static final String FIELDS_KEY = "fields";
-        private static final String TO_STRING_MAPPING_KEY = "toStringMapping";
-        private static final String TO_JSON_MAPPING_KEY = "toJsonMapping";
         private static final String TO_TABLE_MAPPING_KEY = "toTableMapping";
 
         /**
@@ -124,28 +126,15 @@ public abstract class AbstractTableMappingReader {
 
         public final void visitMapping(final JsonObject definition, final DocumentPathExpression.Builder sourcePath,
                 final String propertyName, final boolean isRootLevel) {
-            final JsonColumnMappingReader columnMappingFactory = new JsonColumnMappingReader();
-            switch (getMappingType(definition, sourcePath)) {
-            case TO_STRING_MAPPING_KEY:
-                final JsonObject toStringDefinition = definition.getJsonObject(TO_STRING_MAPPING_KEY);
-                addColumn(columnMappingFactory.readStringColumnIfPossible(toStringDefinition, sourcePath, propertyName,
-                        isRootLevel), toStringDefinition, sourcePath);
-                break;
-            case TO_JSON_MAPPING_KEY:
-                final JsonObject toJsonDefinition = definition.getJsonObject(TO_JSON_MAPPING_KEY);
-                addColumn(columnMappingFactory.readToJsonColumn(toJsonDefinition, sourcePath, propertyName),
-                        toJsonDefinition, sourcePath);
-                break;
-            case TO_TABLE_MAPPING_KEY:
+            final String mappingKey = getMappingType(definition, sourcePath);
+            if (mappingKey.equals(TO_TABLE_MAPPING_KEY)) {
                 queueAddingNestedTable(definition.getJsonObject(TO_TABLE_MAPPING_KEY), sourcePath, propertyName);
-                break;
-            case FIELDS_KEY:
+            } else if (mappingKey.equals(FIELDS_KEY)) {
                 visitChildren(definition.getJsonObject(FIELDS_KEY), sourcePath);
-                break;
-            case "":// no mapping definition
-                break;
-            default:
-                throw new UnsupportedOperationException("This mapping type is not supported in the current version.");
+            } else {
+                final JsonObject columnMappingDefinition = definition.getJsonObject(mappingKey);
+                addColumn(ColumnMappingReader.getInstance().readColumnMapping(mappingKey, columnMappingDefinition,
+                        sourcePath, propertyName, isRootLevel), columnMappingDefinition, sourcePath);
             }
         }
 

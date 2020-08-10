@@ -1,4 +1,6 @@
-package com.exasol.adapter.dynamodb.mapping;
+package com.exasol.adapter.dynamodb.mapping.reader;
+
+import com.exasol.adapter.dynamodb.mapping.SchemaMapping;
 
 /**
  * Interface for {@link SchemaMapping} readers.

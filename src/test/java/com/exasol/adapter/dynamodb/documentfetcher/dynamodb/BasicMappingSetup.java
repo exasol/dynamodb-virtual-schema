@@ -6,9 +6,9 @@ import java.util.Set;
 
 import com.exasol.adapter.AdapterException;
 import com.exasol.adapter.dynamodb.mapping.ColumnMapping;
-import com.exasol.adapter.dynamodb.mapping.JsonSchemaMappingReader;
 import com.exasol.adapter.dynamodb.mapping.MappingTestFiles;
 import com.exasol.adapter.dynamodb.mapping.TableMapping;
+import com.exasol.adapter.dynamodb.mapping.reader.JsonSchemaMappingReader;
 import com.exasol.adapter.dynamodb.queryplanning.RemoteTableQuery;
 import com.exasol.adapter.dynamodb.querypredicate.*;
 import com.exasol.adapter.sql.SqlLiteralDouble;

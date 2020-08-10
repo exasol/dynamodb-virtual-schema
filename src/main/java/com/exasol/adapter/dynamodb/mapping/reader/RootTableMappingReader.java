@@ -1,4 +1,4 @@
-package com.exasol.adapter.dynamodb.mapping;
+package com.exasol.adapter.dynamodb.mapping.reader;
 
 import java.util.Collections;
 import java.util.List;
@@ -6,12 +6,16 @@ import java.util.List;
 import javax.json.JsonObject;
 
 import com.exasol.adapter.dynamodb.documentpath.DocumentPathExpression;
+import com.exasol.adapter.dynamodb.mapping.ColumnMapping;
+import com.exasol.adapter.dynamodb.mapping.ExasolDocumentMappingLanguageException;
+import com.exasol.adapter.dynamodb.mapping.TableKeyFetcher;
+import com.exasol.adapter.dynamodb.mapping.TableMapping;
 
 /**
  * This class builds {@link TableMapping}s from Exasol document mapping language definitions. In contrast to
  * {@link NestedTableMappingReader} this class handles the whole definition object.
  */
-public class RootTableMappingReader extends AbstractTableMappingReader {
+class RootTableMappingReader extends AbstractTableMappingReader {
     private static final String SRC_TABLE_NAME_KEY = "srcTable";
     private final TableKeyFetcher tableKeyFetcher;
     private final String exasolTableName;

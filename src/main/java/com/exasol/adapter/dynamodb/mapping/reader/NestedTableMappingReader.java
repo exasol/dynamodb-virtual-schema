@@ -1,4 +1,4 @@
-package com.exasol.adapter.dynamodb.mapping;
+package com.exasol.adapter.dynamodb.mapping.reader;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -8,6 +8,9 @@ import java.util.stream.Stream;
 import javax.json.JsonObject;
 
 import com.exasol.adapter.dynamodb.documentpath.DocumentPathExpression;
+import com.exasol.adapter.dynamodb.mapping.ColumnMapping;
+import com.exasol.adapter.dynamodb.mapping.IterationIndexColumnMapping;
+import com.exasol.adapter.dynamodb.mapping.TableMapping;
 
 /**
  * This class builds {@link TableMapping}s from Exasol document mapping language definitions for nested lists. It is

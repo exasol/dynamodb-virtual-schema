@@ -1,4 +1,4 @@
-package com.exasol.adapter.dynamodb.mapping;
+package com.exasol.adapter.dynamodb.mapping.reader;
 
 import java.io.File;
 import java.io.FileInputStream;

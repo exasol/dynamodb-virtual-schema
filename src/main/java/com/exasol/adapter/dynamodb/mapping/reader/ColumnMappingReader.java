@@ -1,23 +1,56 @@
-package com.exasol.adapter.dynamodb.mapping;
+package com.exasol.adapter.dynamodb.mapping.reader;
 
 import javax.json.JsonObject;
 
 import com.exasol.adapter.dynamodb.documentpath.DocumentPathExpression;
+import com.exasol.adapter.dynamodb.mapping.*;
 
 /**
  * This class creates {@link ColumnMapping}s from a JSON definition. It is used in the {@link JsonSchemaMappingReader}.
  */
-class JsonColumnMappingReader {
+class ColumnMappingReader {
+    private static final ColumnMappingReader INSTANCE = new ColumnMappingReader();
     private static final String MAX_LENGTH_KEY = "maxLength";
     private static final int DEFAULT_MAX_LENGTH = 254;
     private static final String OVERFLOW_KEY = "overflow";
     private static final String OVERFLOW_ABORT = "ABORT";
     private static final String DEST_NAME_KEY = "destName";
     private static final String REQUIRED_KEY = "required";
+    private static final String TO_STRING_MAPPING_KEY = "toStringMapping";
+    private static final String TO_JSON_MAPPING_KEY = "toJsonMapping";
     private static final ToStringPropertyToColumnMapping.OverflowBehaviour DEFAULT_TO_STRING_OVERFLOW = ToStringPropertyToColumnMapping.OverflowBehaviour.TRUNCATE;
     private static final LookupFailBehaviour DEFAULT_LOOKUP_BEHAVIOUR = LookupFailBehaviour.DEFAULT_VALUE;
 
-    ToStringPropertyToColumnMapping readStringColumnIfPossible(final JsonObject definition,
+    /**
+     * Private constructor to hide the public default. Get an instance using {@link #getInstance()}.
+     */
+    private ColumnMappingReader() {
+        // empty on purpose
+    }
+
+    /**
+     * Get a singleton instance of {@link ColumnMappingReader}.
+     * 
+     * @return singleton instance of {@link ColumnMappingReader}
+     */
+    public static ColumnMappingReader getInstance() {
+        return INSTANCE;
+    }
+
+    ColumnMapping readColumnMapping(final String mappingKey, final JsonObject definition,
+            final DocumentPathExpression.Builder sourcePath, final String propertyName, final boolean isRootLevel) {
+        switch (mappingKey) {
+        case TO_STRING_MAPPING_KEY:
+            return readStringColumnIfPossible(definition, sourcePath, propertyName, isRootLevel);
+        case TO_JSON_MAPPING_KEY:
+            return readToJsonColumn(definition, sourcePath, propertyName);
+        default:
+            throw new UnsupportedOperationException(
+                    "This mapping type (" + mappingKey + ") is not supported in the current version.");
+        }
+    }
+
+    private ToStringPropertyToColumnMapping readStringColumnIfPossible(final JsonObject definition,
             final DocumentPathExpression.Builder sourcePath, final String dynamodbPropertyName,
             final boolean isRootLevel) {
         if (isRootLevel) {
@@ -63,7 +96,7 @@ class JsonColumnMappingReader {
         return exasolColumnName.toUpperCase();
     }
 
-    ToJsonPropertyToColumnMapping readToJsonColumn(final JsonObject definition,
+    private ToJsonPropertyToColumnMapping readToJsonColumn(final JsonObject definition,
             final DocumentPathExpression.Builder sourcePath, final String dynamodbPropertyName) {
         final String exasolColumnName = readExasolColumnName(definition, dynamodbPropertyName);
         final LookupFailBehaviour lookupFailBehaviour = readLookupFailBehaviour(definition);

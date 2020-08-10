@@ -11,8 +11,8 @@ import com.exasol.sql.expression.ValueExpression;
  * This class defines a mapping that extracts a string from the remote document and maps it to an Exasol VARCHAR column.
  */
 public final class ToStringPropertyToColumnMapping extends AbstractPropertyToColumnMapping {
-    private static final long serialVersionUID = 6745045082640538961L;
-    private final int exasolStringSize;
+    private static final long serialVersionUID = 3105623085127908020L;
+    private final int varcharColumnSize;
     private final OverflowBehaviour overflowBehaviour;
 
     /**
@@ -22,28 +22,28 @@ public final class ToStringPropertyToColumnMapping extends AbstractPropertyToCol
      * @param pathToSourceProperty {@link DocumentPathExpression} path to the property to extract
      * @param lookupFailBehaviour  {@link LookupFailBehaviour} behaviour for the case, that the defined path does not
      *                             exist
-     * @param exasolStringSize     Length of the Exasol VARCHAR
-     * @param overflowBehaviour    Behaviour if extracted string exceeds {@link #exasolStringSize}
+     * @param varcharColumnSize    Size of the Exasol VARCHAR column
+     * @param overflowBehaviour    Behaviour if extracted string exceeds {@link #varcharColumnSize}
      */
     public ToStringPropertyToColumnMapping(final String exasolColumnName,
             final DocumentPathExpression pathToSourceProperty, final LookupFailBehaviour lookupFailBehaviour,
-            final int exasolStringSize, final OverflowBehaviour overflowBehaviour) {
+            final int varcharColumnSize, final OverflowBehaviour overflowBehaviour) {
         super(exasolColumnName, pathToSourceProperty, lookupFailBehaviour);
-        this.exasolStringSize = exasolStringSize;
+        this.varcharColumnSize = varcharColumnSize;
         this.overflowBehaviour = overflowBehaviour;
     }
 
     /**
-     * Get the maximum Exasol VARCHAR size.
+     * Get the size of the Exasol VARCHAR column.
      * 
-     * @return maximum size of Exasol VARCHAR
+     * @return size of Exasol VARCHAR column
      */
-    public int getExasolStringSize() {
-        return this.exasolStringSize;
+    public int getVarcharColumnSize() {
+        return this.varcharColumnSize;
     }
 
     /**
-     * Get the behaviour if the {@link #exasolStringSize} is exceeded.
+     * Get the behaviour if the {@link #varcharColumnSize} is exceeded.
      * 
      * @return {@link OverflowBehaviour}
      */
@@ -53,7 +53,7 @@ public final class ToStringPropertyToColumnMapping extends AbstractPropertyToCol
 
     @Override
     public DataType getExasolDataType() {
-        return DataType.createVarChar(this.exasolStringSize, DataType.ExaCharset.UTF8);
+        return DataType.createVarChar(this.varcharColumnSize, DataType.ExaCharset.UTF8);
     }
 
     @Override
@@ -74,7 +74,7 @@ public final class ToStringPropertyToColumnMapping extends AbstractPropertyToCol
     @Override
     public ColumnMapping withNewExasolName(final String newExasolName) {
         return new ToStringPropertyToColumnMapping(newExasolName, getPathToSourceProperty(), getLookupFailBehaviour(),
-                getExasolStringSize(), getOverflowBehaviour());
+                getVarcharColumnSize(), getOverflowBehaviour());
     }
 
     @Override
@@ -89,17 +89,17 @@ public final class ToStringPropertyToColumnMapping extends AbstractPropertyToCol
             return false;
         }
         final ToStringPropertyToColumnMapping that = (ToStringPropertyToColumnMapping) other;
-        return this.overflowBehaviour == that.overflowBehaviour && this.exasolStringSize == that.exasolStringSize;
+        return this.overflowBehaviour == that.overflowBehaviour && this.varcharColumnSize == that.varcharColumnSize;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), this.exasolStringSize, this.overflowBehaviour);
+        return Objects.hash(super.hashCode(), this.varcharColumnSize, this.overflowBehaviour);
     }
 
     /**
      * Specifies the behaviour of {@link ToStringPropertyToColumnValueExtractor} if the string from DynamoDB is longer
-     * than {@link #exasolStringSize}.
+     * than {@link #varcharColumnSize}.
      */
     public enum OverflowBehaviour {
         /**

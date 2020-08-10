@@ -2,6 +2,7 @@ package com.exasol.adapter.dynamodb.mapping;
 
 import java.io.Serializable;
 
+import com.exasol.adapter.dynamodb.mapping.reader.SchemaMappingReader;
 import com.exasol.adapter.metadata.DataType;
 import com.exasol.sql.expression.ValueExpression;
 
