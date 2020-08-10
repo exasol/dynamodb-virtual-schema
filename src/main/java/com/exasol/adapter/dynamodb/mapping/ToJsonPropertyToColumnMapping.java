@@ -11,7 +11,7 @@ import com.exasol.sql.expression.ValueExpression;
  * Maps a property of a DynamoDB table and all its descendants to a JSON string.
  */
 public final class ToJsonPropertyToColumnMapping extends AbstractPropertyToColumnMapping {
-    private static final long serialVersionUID = 8019967800146460950L;
+    private static final long serialVersionUID = 8019967800146460950L;//
     private final int varcharColumnSize;
     private final OverflowBehaviour overflowBehaviour;
 
@@ -38,9 +38,9 @@ public final class ToJsonPropertyToColumnMapping extends AbstractPropertyToColum
     }
 
     /**
-     * Get the maximum string length of the Exasol column
+     * Get the size of the Exasol VARCHAR column.
      *
-     * @return maximum string length
+     * @return size of Exasol VARCHAR column
      */
     public int getVarcharColumnSize() {
         return this.varcharColumnSize;

@@ -11,7 +11,7 @@ import com.exasol.sql.expression.ValueExpression;
  * This class defines a mapping that extracts a string from the remote document and maps it to an Exasol VARCHAR column.
  */
 public final class ToStringPropertyToColumnMapping extends AbstractPropertyToColumnMapping {
-    private static final long serialVersionUID = 3105623085127908020L;
+    private static final long serialVersionUID = 3105623085127908020L;//
     private final int varcharColumnSize;
     private final OverflowBehaviour overflowBehaviour;
 
@@ -34,9 +34,9 @@ public final class ToStringPropertyToColumnMapping extends AbstractPropertyToCol
     }
 
     /**
-     * Get the maximum Exasol VARCHAR size.
+     * Get the size of the Exasol VARCHAR column.
      * 
-     * @return maximum size of Exasol VARCHAR
+     * @return size of Exasol VARCHAR column
      */
     public int getVarcharColumnSize() {
         return this.varcharColumnSize;
