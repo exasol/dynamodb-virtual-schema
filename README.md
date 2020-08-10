@@ -67,6 +67,13 @@ Running the DynamoDB Virtual Schema requires a Java Runtime version 11 or later.
 | [SLF4J](http://www.slf4j.org/)                                                      | Logging facade                                         | MIT License                      |
 | [Apache XMLRPC](https://mvnrepository.com/artifact/org.apache.xmlrpc)               | Connecting to ExaOperation XMLRPC interface            | Apache License 2.0               |
 
+### CI Dependencies
+| Dependency                                                                          | Purpose                                                | License                          |
+|-------------------------------------------------------------------------------------|--------------------------------------------------------|----------------------------------|
+| [bootprint](https://www.npmjs.com/package/bootprint)                                | Generating [EDML documentation][edml-doc]              | MIT License                      |
+| [bootprint-json-schema](https://www.npmjs.com/package/bootprint-json-schema)        | Generating [EDML documentation][edml-doc]              | MIT License                      |
+| [shellcheck](https://www.shellcheck.net/)                                           | Detecting code smells in shell scripts                 | GPL v3                           |
+
 ### Maven Plug-ins
 
 | Plug-in                                                                             | Purpose                                                | License                          |
@@ -91,3 +98,4 @@ Running the DynamoDB Virtual Schema requires a Java Runtime version 11 or later.
 [sonatype-oss-index-maven-plugin]: https://sonatype.github.io/ossindex-maven/maven-plugin/
 [versions-maven-plugin]: https://www.mojohaus.org/versions-maven-plugin/
 [exasol-virtual-schema-common-java]: https://github.com/exasol/virtual-schema-common-java
+[edml-doc]: https://exasol.github.io/dynamodb-virtual-schema/schema_doc/index.html
