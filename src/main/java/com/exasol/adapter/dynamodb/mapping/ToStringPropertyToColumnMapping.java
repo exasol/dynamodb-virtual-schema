@@ -11,7 +11,7 @@ import com.exasol.sql.expression.ValueExpression;
  * This class defines a mapping that extracts a string from the remote document and maps it to an Exasol VARCHAR column.
  */
 public final class ToStringPropertyToColumnMapping extends AbstractPropertyToColumnMapping {
-    private static final long serialVersionUID = 3105623085127908020L;//
+    private static final long serialVersionUID = 3105623085127908020L;
     private final int varcharColumnSize;
     private final OverflowBehaviour overflowBehaviour;
 
@@ -22,7 +22,7 @@ public final class ToStringPropertyToColumnMapping extends AbstractPropertyToCol
      * @param pathToSourceProperty {@link DocumentPathExpression} path to the property to extract
      * @param lookupFailBehaviour  {@link LookupFailBehaviour} behaviour for the case, that the defined path does not
      *                             exist
-     * @param varcharColumnSize    Length of the Exasol VARCHAR
+     * @param varcharColumnSize    Size of the Exasol VARCHAR column
      * @param overflowBehaviour    Behaviour if extracted string exceeds {@link #varcharColumnSize}
      */
     public ToStringPropertyToColumnMapping(final String exasolColumnName,
