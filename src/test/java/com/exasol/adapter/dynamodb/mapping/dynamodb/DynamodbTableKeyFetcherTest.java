@@ -18,9 +18,9 @@ import com.exasol.adapter.dynamodb.dynamodbmetadata.DynamodbPrimaryIndex;
 import com.exasol.adapter.dynamodb.dynamodbmetadata.DynamodbTableMetadata;
 import com.exasol.adapter.dynamodb.dynamodbmetadata.DynamodbTableMetadataFactory;
 import com.exasol.adapter.dynamodb.mapping.ColumnMapping;
-import com.exasol.adapter.dynamodb.mapping.JsonSchemaMappingReader;
 import com.exasol.adapter.dynamodb.mapping.MappingTestFiles;
 import com.exasol.adapter.dynamodb.mapping.TableKeyFetcher;
+import com.exasol.adapter.dynamodb.mapping.reader.JsonSchemaMappingReader;
 
 class DynamodbTableKeyFetcherTest {
 

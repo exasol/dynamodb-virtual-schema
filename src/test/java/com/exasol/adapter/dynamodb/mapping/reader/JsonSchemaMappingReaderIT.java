@@ -1,4 +1,4 @@
-package com.exasol.adapter.dynamodb.mapping;
+package com.exasol.adapter.dynamodb.mapping.reader;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
@@ -12,11 +12,15 @@ import java.util.stream.Collectors;
 
 import org.json.JSONObject;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 import com.exasol.adapter.AdapterException;
+import com.exasol.adapter.dynamodb.mapping.*;
 
-class JsonSchemaMappingReaderTest {
+@Tag("integration")
+@Tag("quick")
+class JsonSchemaMappingReaderIT {
     private final MappingTestFiles mappingTestFiles = new MappingTestFiles();
 
     private SchemaMapping getMappingDefinitionForFile(final File mappingFile) throws IOException, AdapterException {
@@ -86,7 +90,7 @@ class JsonSchemaMappingReaderTest {
         final SchemaMapping schemaMapping = getMappingDefinitionForFile(
                 MappingTestFiles.SINGLE_COLUMN_TO_TABLE_MAPPING_FILE);
         final List<TableMapping> tables = schemaMapping.getTableMappings();
-        final TableMapping nestedTable = tables.stream().filter(table -> !table.isRootTable()).findAny().get();
+        final TableMapping nestedTable = tables.stream().filter(table -> !table.isRootTable()).findAny().orElseThrow();
         final ToStringPropertyToColumnMapping column = (ToStringPropertyToColumnMapping) getColumnByExasolName(
                 nestedTable, "NAME");
         assertAll(//
@@ -151,7 +155,7 @@ class JsonSchemaMappingReaderTest {
                 });
         final SchemaMapping schemaMapping = getMappingDefinitionForFile(mappingFile);
         final List<TableMapping> tables = schemaMapping.getTableMappings();
-        final TableMapping nestedTable = tables.stream().filter(table -> !table.isRootTable()).findAny().get();
+        final TableMapping nestedTable = tables.stream().filter(table -> !table.isRootTable()).findAny().orElseThrow();
         assertThat(getColumnNames(nestedTable.getColumns()), containsInAnyOrder("NAME", "BOOKS_ISBN"));
     }
 
@@ -174,11 +178,11 @@ class JsonSchemaMappingReaderTest {
                 MappingTestFiles.DOUBLE_NESTED_TO_TABLE_MAPPING_FILE);
         final List<TableMapping> tables = schemaMapping.getTableMappings();
         final TableMapping doubleNestedTable = tables.stream()
-                .filter(table -> table.getExasolName().equals("BOOKS_CHAPTERS_FIGURES")).findAny().get();
+                .filter(table -> table.getExasolName().equals("BOOKS_CHAPTERS_FIGURES")).findAny().orElseThrow();
         final TableMapping nestedTable = tables.stream().filter(table -> table.getExasolName().equals("BOOKS_CHAPTERS"))
-                .findAny().get();
+                .findAny().orElseThrow();
         final TableMapping rootTable = tables.stream().filter(table -> table.getExasolName().equals("BOOKS")).findAny()
-                .get();
+                .orElseThrow();
         final PropertyToColumnMapping foreignKey1 = (PropertyToColumnMapping) getColumnByExasolName(nestedTable,
                 "BOOKS_ISBN");
         final IterationIndexColumnMapping indexColumn = (IterationIndexColumnMapping) getColumnByExasolName(nestedTable,
@@ -200,6 +204,6 @@ class JsonSchemaMappingReaderTest {
 
     private ColumnMapping getColumnByExasolName(final TableMapping table, final String exasolName) {
         return table.getColumns().stream().filter(each -> each.getExasolColumnName().equals(exasolName)).findAny()
-                .get();
+                .orElseThrow();
     }
 }
