@@ -47,6 +47,6 @@ class DynamodbToDecimalPropertyToColumnValueExtractorTest {
         final ColumnValueExtractorException exception = assertThrows(ColumnValueExtractorException.class,
                 () -> EXTRACTOR.extractColumnValue(testData, iterationState));
         assertThat(exception.getMessage(),
-                equalTo("Only DynamoDB numbers can be converted to DECIMAL. Try using a different mapping."));
+                equalTo("The input value was no number. Try using a different mapping or ignore this error by setting notANumberBehaviour = \"null\"."));
     }
 }
