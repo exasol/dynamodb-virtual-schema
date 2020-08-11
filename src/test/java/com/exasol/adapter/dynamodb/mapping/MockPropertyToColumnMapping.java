@@ -2,25 +2,18 @@ package com.exasol.adapter.dynamodb.mapping;
 
 import com.exasol.adapter.dynamodb.documentpath.DocumentPathExpression;
 import com.exasol.adapter.metadata.DataType;
-import com.exasol.sql.expression.StringLiteral;
-import com.exasol.sql.expression.ValueExpression;
 
 public class MockPropertyToColumnMapping extends AbstractPropertyToColumnMapping {
-    private static final long serialVersionUID = -4381185567913054550L;
+    private static final long serialVersionUID = 190719191206210825L;
 
     public MockPropertyToColumnMapping(final String destinationName, final DocumentPathExpression sourcePath,
-            final LookupFailBehaviour lookupFailBehaviour) {
+            final MappingErrorBehaviour lookupFailBehaviour) {
         super(destinationName, sourcePath, lookupFailBehaviour);
     }
 
     @Override
     public DataType getExasolDataType() {
         throw new UnsupportedOperationException("not implemented");
-    }
-
-    @Override
-    public ValueExpression getExasolDefaultValue() {
-        return StringLiteral.of("default");
     }
 
     @Override
@@ -35,6 +28,6 @@ public class MockPropertyToColumnMapping extends AbstractPropertyToColumnMapping
 
     @Override
     public ColumnMapping withNewExasolName(final String newExasolName) {
-        return new MockPropertyToColumnMapping(newExasolName, getPathToSourceProperty(), getLookupFailBehaviour());
+        return new MockPropertyToColumnMapping(newExasolName, getPathToSourceProperty(), getMappingErrorBehaviour());
     }
 }

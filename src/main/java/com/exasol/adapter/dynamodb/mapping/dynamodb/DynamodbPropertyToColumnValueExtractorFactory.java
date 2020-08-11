@@ -29,6 +29,11 @@ public class DynamodbPropertyToColumnValueExtractorFactory
             this.columnValueExtractor = new DynamodbToJsonPropertyToColumnValueExtractor(columnDefinition);
         }
 
+        @Override
+        public void visit(final ToDecimalPropertyToColumnMapping columnDefinition) {
+            this.columnValueExtractor = new DynamodbToDecimalPropertyToColumnValueExtractor(columnDefinition);
+        }
+
         public ColumnValueExtractor<DynamodbNodeVisitor> getColumnValueExtractor() {
             return this.columnValueExtractor;
         }

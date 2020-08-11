@@ -61,12 +61,12 @@ class JsonSchemaMappingReaderIT {
                 () -> assertThat(columnNames, containsInAnyOrder("ISBN", "NAME", "AUTHOR_NAME", "PUBLISHER", "PRICE")),
                 () -> assertThat(isbnColumn.getVarcharColumnSize(), equalTo(20)),
                 () -> assertThat(isbnColumn.getOverflowBehaviour(),
-                        equalTo(ToStringPropertyToColumnMapping.OverflowBehaviour.EXCEPTION)),
-                () -> assertThat(isbnColumn.getLookupFailBehaviour(), equalTo(LookupFailBehaviour.EXCEPTION)),
-                () -> assertThat(nameColumn.getLookupFailBehaviour(), equalTo(LookupFailBehaviour.DEFAULT_VALUE)),
+                        equalTo(TruncateableMappingErrorBehaviour.ABORT)),
+                () -> assertThat(isbnColumn.getMappingErrorBehaviour(), equalTo(MappingErrorBehaviour.ABORT)),
+                () -> assertThat(nameColumn.getMappingErrorBehaviour(), equalTo(MappingErrorBehaviour.NULL)),
                 () -> assertThat(nameColumn.getVarcharColumnSize(), equalTo(100)),
                 () -> assertThat(nameColumn.getOverflowBehaviour(),
-                        equalTo(ToStringPropertyToColumnMapping.OverflowBehaviour.TRUNCATE)));
+                        equalTo(TruncateableMappingErrorBehaviour.TRUNCATE)));
     }
 
     @Test

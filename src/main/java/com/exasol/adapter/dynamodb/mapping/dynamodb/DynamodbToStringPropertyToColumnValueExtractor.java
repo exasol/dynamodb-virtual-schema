@@ -6,7 +6,7 @@ import com.exasol.adapter.dynamodb.mapping.ToStringPropertyToColumnMapping;
 import com.exasol.adapter.dynamodb.mapping.ToStringPropertyToColumnValueExtractor;
 
 /**
- * This class represents {@link ToStringPropertyToColumnValueExtractor} for DynamoDB values.
+ * This class converts DynamoDB values to strings, stored in VARCHAR columns.
  */
 public class DynamodbToStringPropertyToColumnValueExtractor
         extends ToStringPropertyToColumnValueExtractor<DynamodbNodeVisitor> {

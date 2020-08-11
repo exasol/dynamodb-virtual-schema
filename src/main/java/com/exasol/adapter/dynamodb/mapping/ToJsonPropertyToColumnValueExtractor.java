@@ -24,10 +24,10 @@ public abstract class ToJsonPropertyToColumnValueExtractor<DocumentVisitorType>
     }
 
     @Override
-    protected ValueExpression mapValue(final DocumentNode<DocumentVisitorType> documentValue) {
+    protected final ValueExpression mapValue(final DocumentNode<DocumentVisitorType> documentValue) {
         final String jsonValue = mapJsonValue(documentValue);
         if (jsonValue.length() > this.column.getVarcharColumnSize()) {
-            if (this.column.getOverflowBehaviour().equals(ToJsonPropertyToColumnMapping.OverflowBehaviour.EXCEPTION)) {
+            if (this.column.getOverflowBehaviour().equals(MappingErrorBehaviour.ABORT)) {
                 throw new OverflowException(
                         "The generated JSON did exceed the configured maximum size. You can either increase the column size of this column or set the overflow behaviour to NULL.",
                         this.column);

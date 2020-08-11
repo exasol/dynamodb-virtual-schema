@@ -9,7 +9,7 @@ import com.exasol.adapter.dynamodb.mapping.ToJsonPropertyToColumnValueExtractor;
 import com.exasol.dynamodb.DynamodbValueToJsonConverter;
 
 /**
- * This class represents {@link ToJsonPropertyToColumnValueExtractor} for DynamoDB values.
+ * This class converts DynamoDB values to JSON strings in VARCHAR columns.
  */
 public class DynamodbToJsonPropertyToColumnValueExtractor
         extends ToJsonPropertyToColumnValueExtractor<DynamodbNodeVisitor> {

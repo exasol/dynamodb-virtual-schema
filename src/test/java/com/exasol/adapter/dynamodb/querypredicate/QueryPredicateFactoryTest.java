@@ -13,6 +13,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import com.exasol.adapter.dynamodb.mapping.ColumnMapping;
+import com.exasol.adapter.dynamodb.mapping.MappingErrorBehaviour;
 import com.exasol.adapter.dynamodb.mapping.SchemaMappingToSchemaMetadataConverter;
 import com.exasol.adapter.dynamodb.mapping.ToJsonPropertyToColumnMapping;
 import com.exasol.adapter.metadata.ColumnMetadata;
@@ -20,7 +21,7 @@ import com.exasol.adapter.sql.*;
 
 class QueryPredicateFactoryTest {
     private static final ColumnMapping COLUMN_MAPPING = new ToJsonPropertyToColumnMapping("name", null, null, 0,
-            ToJsonPropertyToColumnMapping.OverflowBehaviour.NULL);
+            MappingErrorBehaviour.NULL);
     private static final SqlLiteralString LITERAL = new SqlLiteralString("test");
     private static final QueryPredicateFactory FACTORY = QueryPredicateFactory.getInstance();
     private static ColumnMetadata columnMetadata;

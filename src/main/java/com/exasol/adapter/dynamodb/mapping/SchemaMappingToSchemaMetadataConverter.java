@@ -66,7 +66,7 @@ public class SchemaMappingToSchemaMetadataConverter {
         return ColumnMetadata.builder()//
                 .name(columnMapping.getExasolColumnName())//
                 .type(columnMapping.getExasolDataType())//
-                .defaultValue(getLiteralString(columnMapping.getExasolDefaultValue()))//
+                .defaultValue("NULL")//
                 .nullable(columnMapping.isExasolColumnNullable())//
                 .adapterNotes(serialized).build();
     }
@@ -140,7 +140,7 @@ public class SchemaMappingToSchemaMetadataConverter {
      * {@link SchemaMetadata} and stores a map that gives the {@link TableMapping} for its Exasol table name.
      */
     private static class TableMappings implements Serializable {
-        private static final long serialVersionUID = -6920869661356098960L;
+        private static final long serialVersionUID = -6920869661356098960L;//
         private final HashMap<String, TableMapping> mappings;
 
         private TableMappings(final HashMap<String, TableMapping> mappings) {

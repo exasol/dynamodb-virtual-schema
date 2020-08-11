@@ -1,6 +1,7 @@
 package com.exasol.adapter.dynamodb.mapping;
 
 import com.exasol.adapter.dynamodb.documentnode.DocumentNode;
+import com.exasol.sql.expression.NullLiteral;
 import com.exasol.sql.expression.StringLiteral;
 import com.exasol.sql.expression.ValueExpression;
 
@@ -23,10 +24,10 @@ public abstract class ToStringPropertyToColumnValueExtractor<DocumentVisitorType
     }
 
     @Override
-    protected ValueExpression mapValue(final DocumentNode<DocumentVisitorType> documentValue) {
+    protected final ValueExpression mapValue(final DocumentNode<DocumentVisitorType> documentValue) {
         final String stringValue = mapStringValue(documentValue);
         if (stringValue == null) {
-            return this.column.getExasolDefaultValue();
+            return NullLiteral.nullLiteral();
         } else {
             return StringLiteral.of(handleOverflowIfNecessary(stringValue));
         }
@@ -43,7 +44,7 @@ public abstract class ToStringPropertyToColumnValueExtractor<DocumentVisitorType
     }
 
     private String handleOverflow(final String tooLongSourceString) {
-        if (this.column.getOverflowBehaviour() == ToStringPropertyToColumnMapping.OverflowBehaviour.TRUNCATE) {
+        if (this.column.getOverflowBehaviour() == TruncateableMappingErrorBehaviour.TRUNCATE) {
             return tooLongSourceString.substring(0, this.column.getVarcharColumnSize());
         } else {
             throw new OverflowException(

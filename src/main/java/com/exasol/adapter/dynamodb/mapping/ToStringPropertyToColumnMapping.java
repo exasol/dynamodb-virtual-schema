@@ -4,30 +4,28 @@ import java.util.Objects;
 
 import com.exasol.adapter.dynamodb.documentpath.DocumentPathExpression;
 import com.exasol.adapter.metadata.DataType;
-import com.exasol.sql.expression.StringLiteral;
-import com.exasol.sql.expression.ValueExpression;
 
 /**
  * This class defines a mapping that extracts a string from the remote document and maps it to an Exasol VARCHAR column.
  */
 public final class ToStringPropertyToColumnMapping extends AbstractPropertyToColumnMapping {
-    private static final long serialVersionUID = 3105623085127908020L;
+    private static final long serialVersionUID = 3465558198156097064L;
     private final int varcharColumnSize;
-    private final OverflowBehaviour overflowBehaviour;
+    private final TruncateableMappingErrorBehaviour overflowBehaviour;
 
     /**
      * Create an instance of {@link ToStringPropertyToColumnMapping}.
      *
      * @param exasolColumnName     Name of the Exasol column
      * @param pathToSourceProperty {@link DocumentPathExpression} path to the property to extract
-     * @param lookupFailBehaviour  {@link LookupFailBehaviour} behaviour for the case, that the defined path does not
+     * @param lookupFailBehaviour  {@link MappingErrorBehaviour} behaviour for the case, that the defined path does not
      *                             exist
      * @param varcharColumnSize    Size of the Exasol VARCHAR column
      * @param overflowBehaviour    Behaviour if extracted string exceeds {@link #varcharColumnSize}
      */
     public ToStringPropertyToColumnMapping(final String exasolColumnName,
-            final DocumentPathExpression pathToSourceProperty, final LookupFailBehaviour lookupFailBehaviour,
-            final int varcharColumnSize, final OverflowBehaviour overflowBehaviour) {
+            final DocumentPathExpression pathToSourceProperty, final MappingErrorBehaviour lookupFailBehaviour,
+            final int varcharColumnSize, final TruncateableMappingErrorBehaviour overflowBehaviour) {
         super(exasolColumnName, pathToSourceProperty, lookupFailBehaviour);
         this.varcharColumnSize = varcharColumnSize;
         this.overflowBehaviour = overflowBehaviour;
@@ -45,9 +43,9 @@ public final class ToStringPropertyToColumnMapping extends AbstractPropertyToCol
     /**
      * Get the behaviour if the {@link #varcharColumnSize} is exceeded.
      * 
-     * @return {@link OverflowBehaviour}
+     * @return {@link TruncateableMappingErrorBehaviour}
      */
-    public OverflowBehaviour getOverflowBehaviour() {
+    public TruncateableMappingErrorBehaviour getOverflowBehaviour() {
         return this.overflowBehaviour;
     }
 
@@ -57,23 +55,13 @@ public final class ToStringPropertyToColumnMapping extends AbstractPropertyToCol
     }
 
     @Override
-    public ValueExpression getExasolDefaultValue() {
-        return StringLiteral.of("");
-    }
-
-    @Override
     public void accept(final PropertyToColumnMappingVisitor visitor) {
         visitor.visit(this);
     }
 
     @Override
-    public boolean isExasolColumnNullable() {
-        return true;
-    }
-
-    @Override
     public ColumnMapping withNewExasolName(final String newExasolName) {
-        return new ToStringPropertyToColumnMapping(newExasolName, getPathToSourceProperty(), getLookupFailBehaviour(),
+        return new ToStringPropertyToColumnMapping(newExasolName, getPathToSourceProperty(), getMappingErrorBehaviour(),
                 getVarcharColumnSize(), getOverflowBehaviour());
     }
 
@@ -97,19 +85,4 @@ public final class ToStringPropertyToColumnMapping extends AbstractPropertyToCol
         return Objects.hash(super.hashCode(), this.varcharColumnSize, this.overflowBehaviour);
     }
 
-    /**
-     * Specifies the behaviour of {@link ToStringPropertyToColumnValueExtractor} if the string from DynamoDB is longer
-     * than {@link #varcharColumnSize}.
-     */
-    public enum OverflowBehaviour {
-        /**
-         * truncate the string to the configured length.
-         */
-        TRUNCATE,
-
-        /**
-         * throw an {@link OverflowException}.
-         */
-        EXCEPTION
-    }
 }

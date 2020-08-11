@@ -12,7 +12,7 @@ import com.exasol.adapter.dynamodb.documentnode.dynamodb.DynamodbList;
 import com.exasol.adapter.dynamodb.documentnode.dynamodb.DynamodbNumber;
 import com.exasol.adapter.dynamodb.documentnode.dynamodb.DynamodbString;
 import com.exasol.adapter.dynamodb.documentpath.DocumentPathExpression;
-import com.exasol.adapter.dynamodb.mapping.LookupFailBehaviour;
+import com.exasol.adapter.dynamodb.mapping.MappingErrorBehaviour;
 import com.exasol.adapter.dynamodb.mapping.ToStringPropertyToColumnMapping;
 
 class DynamodbToStringPropertyToColumnValueExtractorTest {
@@ -21,11 +21,11 @@ class DynamodbToStringPropertyToColumnValueExtractorTest {
     private static final String TEST_SOURCE_COLUMN = "myColumn";
     private static final String DEST_COLUMN = "destColumn";
 
-    private static final DocumentPathExpression TEST_SOURCE_COLUMN_PATH = new DocumentPathExpression.Builder()
+    private static final DocumentPathExpression TEST_SOURCE_COLUMN_PATH = DocumentPathExpression.builder()
             .addObjectLookup(TEST_SOURCE_COLUMN).build();
 
     private static final ToStringPropertyToColumnMapping TO_STRING_PROPERTY_TO_COLUMN_MAPPING = new ToStringPropertyToColumnMapping(
-            DEST_COLUMN, TEST_SOURCE_COLUMN_PATH, LookupFailBehaviour.DEFAULT_VALUE, 100, null);
+            DEST_COLUMN, TEST_SOURCE_COLUMN_PATH, MappingErrorBehaviour.NULL, 100, null);
 
     @Test
     void testConvertStringRow() {

@@ -10,11 +10,10 @@ import org.junit.jupiter.api.Test;
 
 import com.exasol.adapter.dynamodb.documentpath.DocumentPathExpression;
 import com.exasol.adapter.metadata.DataType;
-import com.exasol.sql.expression.IntegerLiteral;
 
 class IterationIndexColumnMappingTest {
     private static final String EXASOL_COLUMN_NAME = "columnName";
-    private static final DocumentPathExpression PATH = new DocumentPathExpression.Builder().addObjectLookup("test")
+    private static final DocumentPathExpression PATH = DocumentPathExpression.builder().addObjectLookup("test")
             .build();
     private static final IterationIndexColumnMapping TEST_OBJECT = new IterationIndexColumnMapping(EXASOL_COLUMN_NAME,
             PATH);
@@ -58,12 +57,6 @@ class IterationIndexColumnMappingTest {
     @Test
     void testIsColumnNullable() {
         assertThat(TEST_OBJECT.isExasolColumnNullable(), equalTo(false));
-    }
-
-    @Test
-    void testExasolDefaultValue() {
-        final IntegerLiteral defaultValue = (IntegerLiteral) TEST_OBJECT.getExasolDefaultValue();
-        assertThat(defaultValue.getValue(), equalTo(-1));
     }
 
     @Test

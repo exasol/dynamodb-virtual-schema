@@ -8,20 +8,20 @@ import com.exasol.adapter.dynamodb.documentpath.DocumentPathExpression;
  * This class is an abstract basis for {@link PropertyToColumnMapping}s.
  */
 abstract class AbstractPropertyToColumnMapping extends AbstractColumnMapping implements PropertyToColumnMapping {
-    private static final long serialVersionUID = 8355270641073197862L;
+    private static final long serialVersionUID = -2781971706810760667L;
     private final DocumentPathExpression pathToSourceProperty;
-    private final LookupFailBehaviour lookupFailBehaviour;
+    private final MappingErrorBehaviour lookupFailBehaviour;
 
     /**
      * Create an instance of {@link AbstractPropertyToColumnMapping}.
      *
      * @param exasolColumnName     name of the Exasol column
      * @param pathToSourceProperty {@link DocumentPathExpression} path to the property to extract
-     * @param lookupFailBehaviour  {@link LookupFailBehaviour} behaviour for the case, that the defined path does not
+     * @param lookupFailBehaviour  {@link MappingErrorBehaviour} behaviour for the case, that the defined path does not
      *                             exist
      */
     protected AbstractPropertyToColumnMapping(final String exasolColumnName,
-            final DocumentPathExpression pathToSourceProperty, final LookupFailBehaviour lookupFailBehaviour) {
+            final DocumentPathExpression pathToSourceProperty, final MappingErrorBehaviour lookupFailBehaviour) {
         super(exasolColumnName);
         this.pathToSourceProperty = pathToSourceProperty;
         this.lookupFailBehaviour = lookupFailBehaviour;
@@ -37,11 +37,11 @@ abstract class AbstractPropertyToColumnMapping extends AbstractColumnMapping imp
     }
 
     /**
-     * Get the {@link LookupFailBehaviour} used in case that the path does not exist in the document.
+     * Get the {@link MappingErrorBehaviour} used in case that the path does not exist in the document.
      *
-     * @return {@link LookupFailBehaviour}
+     * @return {@link MappingErrorBehaviour}
      */
-    public final LookupFailBehaviour getLookupFailBehaviour() {
+    public final MappingErrorBehaviour getMappingErrorBehaviour() {
         return this.lookupFailBehaviour;
     }
 
@@ -57,10 +57,15 @@ abstract class AbstractPropertyToColumnMapping extends AbstractColumnMapping imp
             return false;
         }
         final PropertyToColumnMapping that = (PropertyToColumnMapping) other;
-        if (this.lookupFailBehaviour != that.getLookupFailBehaviour()) {
+        if (this.lookupFailBehaviour != that.getMappingErrorBehaviour()) {
             return false;
         }
         return this.pathToSourceProperty.equals(that.getPathToSourceProperty());
+    }
+
+    @Override
+    public boolean isExasolColumnNullable() {
+        return true;
     }
 
     @Override

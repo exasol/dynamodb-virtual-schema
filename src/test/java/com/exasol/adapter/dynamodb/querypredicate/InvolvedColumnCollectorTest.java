@@ -11,15 +11,16 @@ import java.util.Set;
 import org.junit.jupiter.api.Test;
 
 import com.exasol.adapter.dynamodb.mapping.ColumnMapping;
+import com.exasol.adapter.dynamodb.mapping.MappingErrorBehaviour;
 import com.exasol.adapter.dynamodb.mapping.ToJsonPropertyToColumnMapping;
 import com.exasol.adapter.sql.SqlLiteralString;
 
 class InvolvedColumnCollectorTest {
     private static final InvolvedColumnCollector COLLECTOR = new InvolvedColumnCollector();
     private static final ToJsonPropertyToColumnMapping COLUMN1 = new ToJsonPropertyToColumnMapping("column1", null,
-            null, 0, ToJsonPropertyToColumnMapping.OverflowBehaviour.EXCEPTION);
+            null, 0, MappingErrorBehaviour.ABORT);
     private static final ToJsonPropertyToColumnMapping COLUMN2 = new ToJsonPropertyToColumnMapping("column2", null,
-            null, 0, ToJsonPropertyToColumnMapping.OverflowBehaviour.EXCEPTION);
+            null, 0, MappingErrorBehaviour.ABORT);
     private static final QueryPredicate COMPARISON1 = new ColumnLiteralComparisonPredicate(
             AbstractComparisonPredicate.Operator.EQUAL, COLUMN1, new SqlLiteralString(""));
     private static final QueryPredicate COMPARISON2 = new ColumnLiteralComparisonPredicate(

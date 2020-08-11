@@ -17,4 +17,11 @@ public interface PropertyToColumnMappingVisitor {
      * @param columnDefinition {@link ToJsonPropertyToColumnMapping} to visit
      */
     public void visit(ToJsonPropertyToColumnMapping columnDefinition);
+
+    /**
+     * Visits a {@link ToDecimalPropertyToColumnMapping}.
+     *
+     * @param columnDefinition {@link ToDecimalPropertyToColumnMapping} to visit
+     */
+    public void visit(ToDecimalPropertyToColumnMapping columnDefinition);
 }

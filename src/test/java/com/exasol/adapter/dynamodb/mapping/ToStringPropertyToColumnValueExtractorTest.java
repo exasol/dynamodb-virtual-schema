@@ -17,8 +17,8 @@ class ToStringPropertyToColumnValueExtractorTest {
     @Test
     void testConvertStringRowBasic() {
         final ToStringPropertyToColumnMapping toStringColumnMappingDefinition = new ToStringPropertyToColumnMapping("",
-                DocumentPathExpression.empty(), LookupFailBehaviour.DEFAULT_VALUE, TEST_STRING.length(),
-                ToStringPropertyToColumnMapping.OverflowBehaviour.EXCEPTION);
+                DocumentPathExpression.empty(), MappingErrorBehaviour.NULL, TEST_STRING.length(),
+                TruncateableMappingErrorBehaviour.ABORT);
         final ValueExpression exasolCellValue = new ToStringValueMapperStub(toStringColumnMappingDefinition)
                 .mapValue(null);
         assertThat(exasolCellValue.toString(), equalTo(TEST_STRING));
@@ -27,8 +27,8 @@ class ToStringPropertyToColumnValueExtractorTest {
     @Test
     void testConvertRowOverflowTruncate() {
         final ToStringPropertyToColumnMapping toStringColumnMappingDefinition = new ToStringPropertyToColumnMapping("",
-                DocumentPathExpression.empty(), LookupFailBehaviour.DEFAULT_VALUE, TEST_STRING.length() - 1,
-                ToStringPropertyToColumnMapping.OverflowBehaviour.TRUNCATE);
+                DocumentPathExpression.empty(), MappingErrorBehaviour.NULL, TEST_STRING.length() - 1,
+                TruncateableMappingErrorBehaviour.TRUNCATE);
         final ValueExpression exasolCellValue = new ToStringValueMapperStub(toStringColumnMappingDefinition)
                 .mapValue(null);
         final String expected = TEST_STRING.substring(0, TEST_STRING.length() - 1);
@@ -38,8 +38,8 @@ class ToStringPropertyToColumnValueExtractorTest {
     @Test
     void testConvertRowOverflowException() {
         final ToStringPropertyToColumnMapping toStringColumnMappingDefinition = new ToStringPropertyToColumnMapping("",
-                DocumentPathExpression.empty(), LookupFailBehaviour.DEFAULT_VALUE, TEST_STRING.length() - 1,
-                ToStringPropertyToColumnMapping.OverflowBehaviour.EXCEPTION);
+                DocumentPathExpression.empty(), MappingErrorBehaviour.NULL, TEST_STRING.length() - 1,
+                TruncateableMappingErrorBehaviour.ABORT);
         final ToStringValueMapperStub valueMapper = new ToStringValueMapperStub(toStringColumnMappingDefinition);
         assertThrows(OverflowException.class,
                 () -> valueMapper.mapValue(null));

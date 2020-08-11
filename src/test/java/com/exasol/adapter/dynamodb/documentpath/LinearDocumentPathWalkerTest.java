@@ -20,7 +20,7 @@ class LinearDocumentPathWalkerTest {
 
     @Test
     void testWalk() {
-        final DocumentPathExpression pathExpression = new DocumentPathExpression.Builder().addObjectLookup("key")
+        final DocumentPathExpression pathExpression = DocumentPathExpression.builder().addObjectLookup("key")
                 .build();
         final Optional<DocumentNode<Object>> result = new LinearDocumentPathWalker<>(pathExpression)
                 .walkThroughDocument(TEST_OBJECT_NODE);
@@ -29,7 +29,7 @@ class LinearDocumentPathWalkerTest {
 
     @Test
     void testNonLinearPath() {
-        final DocumentPathExpression pathExpression = new DocumentPathExpression.Builder().addArrayAll().build();
+        final DocumentPathExpression pathExpression = DocumentPathExpression.builder().addArrayAll().build();
         final IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
                 () -> new LinearDocumentPathWalker<>(pathExpression));
         assertThat(exception.getMessage(), equalTo(

@@ -14,8 +14,7 @@ public class HardCodedSchemaMappingReader implements SchemaMappingReader {
     public SchemaMapping getSchemaMapping() {
         final TableMapping table = TableMapping.rootTableBuilder("testTable", "srcTable")
                 .withColumnMappingDefinition(new ToJsonPropertyToColumnMapping("json", DocumentPathExpression.empty(),
-                        LookupFailBehaviour.DEFAULT_VALUE, 0,
-                        ToJsonPropertyToColumnMapping.OverflowBehaviour.EXCEPTION))
+                        MappingErrorBehaviour.NULL, 0, MappingErrorBehaviour.ABORT))
                 .build();
         return new SchemaMapping(List.of(table));
     }

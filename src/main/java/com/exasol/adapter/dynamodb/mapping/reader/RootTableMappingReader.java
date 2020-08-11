@@ -7,7 +7,6 @@ import javax.json.JsonObject;
 
 import com.exasol.adapter.dynamodb.documentpath.DocumentPathExpression;
 import com.exasol.adapter.dynamodb.mapping.ColumnMapping;
-import com.exasol.adapter.dynamodb.mapping.ExasolDocumentMappingLanguageException;
 import com.exasol.adapter.dynamodb.mapping.TableKeyFetcher;
 import com.exasol.adapter.dynamodb.mapping.TableMapping;
 
@@ -55,7 +54,7 @@ class RootTableMappingReader extends AbstractTableMappingReader {
 
     @Override
     protected DocumentPathExpression.Builder getPathToTable() {
-        return new DocumentPathExpression.Builder();
+        return DocumentPathExpression.builder();
     }
 
     @Override
