@@ -9,7 +9,7 @@ import com.exasol.adapter.metadata.DataType;
  * Maps a property of a DynamoDB table and all its descendants to a JSON string.
  */
 public final class PropertyToJsonColumnMapping extends AbstractPropertyToColumnMapping {
-    private static final long serialVersionUID = -6383134783719798072L;//
+    private static final long serialVersionUID = -6383134783719798072L;
     private final int varcharColumnSize;
     private final MappingErrorBehaviour overflowBehaviour;
 
@@ -79,5 +79,75 @@ public final class PropertyToJsonColumnMapping extends AbstractPropertyToColumnM
     public int hashCode() {
         return Objects.hash(super.hashCode(), this.getClass().getName(), this.overflowBehaviour,
                 this.varcharColumnSize);
+    }
+
+    /**
+     * Get a builder for {@link PropertyToJsonColumnMapping}.
+     *
+     * @return builder for {@link PropertyToJsonColumnMapping}
+     */
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    /**
+     * Builder for {@link PropertyToJsonColumnMapping}.
+     */
+    public static class Builder implements PropertyToColumnMapping.Builder {
+        private String exasolColumnName;
+        private DocumentPathExpression pathToSourceProperty;
+        private MappingErrorBehaviour lookupFailBehaviour;
+        private int varcharColumnSize;
+        private MappingErrorBehaviour overflowBehaviour;
+
+        @Override
+        public Builder exasolColumnName(final String exasolColumnName) {
+            this.exasolColumnName = exasolColumnName;
+            return this;
+        }
+
+        @Override
+        public Builder pathToSourceProperty(final DocumentPathExpression pathToSourceProperty) {
+            this.pathToSourceProperty = pathToSourceProperty;
+            return this;
+        }
+
+        @Override
+        public Builder lookupFailBehaviour(final MappingErrorBehaviour lookupFailBehaviour) {
+            this.lookupFailBehaviour = lookupFailBehaviour;
+            return this;
+        }
+
+        /**
+         * Set the size of the VARCHAR column.
+         *
+         * @param varcharColumnSize size
+         * @return self
+         */
+        public Builder varcharColumnSize(final int varcharColumnSize) {
+            this.varcharColumnSize = varcharColumnSize;
+            return this;
+        }
+
+        /**
+         * Set the behaviour to apply in case the value exceeds the size of the VARCHAR column.
+         *
+         * @param overflowBehaviour Behaviour to apply in case the value exceeds the size of the VARCHAR column
+         * @return self
+         */
+        public Builder overflowBehaviour(final MappingErrorBehaviour overflowBehaviour) {
+            this.overflowBehaviour = overflowBehaviour;
+            return this;
+        }
+
+        /**
+         * Build the {@link PropertyToJsonColumnMapping}.
+         *
+         * @return built {@link PropertyToJsonColumnMapping}
+         */
+        public PropertyToJsonColumnMapping build() {
+            return new PropertyToJsonColumnMapping(this.exasolColumnName, this.pathToSourceProperty,
+                    this.lookupFailBehaviour, this.varcharColumnSize, this.overflowBehaviour);
+        }
     }
 }

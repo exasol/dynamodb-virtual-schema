@@ -28,7 +28,9 @@ public interface PropertyToColumnMapping extends ColumnMapping {
         visitor.visit(this);
     }
 
-    // TODO use builder also for ToStringPropertyToColumnMapping and ToJsonPropertyToColumnMapping
+    /**
+     * Builder for {@link PropertyToJsonColumnMapping}.
+     */
     public interface Builder {
         /**
          * Set the name of the Exasol column
