@@ -12,7 +12,6 @@ import javax.json.JsonObject;
 import javax.json.JsonReader;
 
 import com.exasol.adapter.AdapterException;
-import com.exasol.adapter.dynamodb.mapping.ExasolDocumentMappingLanguageException;
 import com.exasol.adapter.dynamodb.mapping.SchemaMapping;
 import com.exasol.adapter.dynamodb.mapping.TableKeyFetcher;
 import com.exasol.adapter.dynamodb.mapping.TableMapping;

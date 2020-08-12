@@ -20,13 +20,18 @@ public class DynamodbPropertyToColumnValueExtractorFactory
         private ColumnValueExtractor<DynamodbNodeVisitor> columnValueExtractor;
 
         @Override
-        public void visit(final ToStringPropertyToColumnMapping columnDefinition) {
-            this.columnValueExtractor = new DynamodbToStringPropertyToColumnValueExtractor(columnDefinition);
+        public void visit(final PropertyToVarcharColumnMapping columnDefinition) {
+            this.columnValueExtractor = new DynamodbPropertyToVarcharColumnValueExtractor(columnDefinition);
         }
 
         @Override
-        public void visit(final ToJsonPropertyToColumnMapping columnDefinition) {
-            this.columnValueExtractor = new DynamodbToJsonPropertyToColumnValueExtractor(columnDefinition);
+        public void visit(final PropertyToJsonColumnMapping columnDefinition) {
+            this.columnValueExtractor = new DynamodbPropertyToJsonColumnValueExtractor(columnDefinition);
+        }
+
+        @Override
+        public void visit(final PropertyToDecimalColumnMapping columnDefinition) {
+            this.columnValueExtractor = new DynamodbPropertyToDecimalColumnValueExtractor(columnDefinition);
         }
 
         public ColumnValueExtractor<DynamodbNodeVisitor> getColumnValueExtractor() {

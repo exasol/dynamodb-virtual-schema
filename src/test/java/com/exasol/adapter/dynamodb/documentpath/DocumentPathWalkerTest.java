@@ -37,7 +37,7 @@ class DocumentPathWalkerTest {
 
     @Test
     void testWalkObjectPath() {
-        final DocumentPathExpression pathExpression = new DocumentPathExpression.Builder().addObjectLookup("key")
+        final DocumentPathExpression pathExpression = DocumentPathExpression.builder().addObjectLookup("key")
                 .build();
         final Optional<DocumentNode<Object>> result = new DocumentPathWalker<Object>(pathExpression,
                 new StaticDocumentPathIterator()).walkThroughDocument(TEST_OBJECT_NODE);
@@ -46,7 +46,7 @@ class DocumentPathWalkerTest {
 
     @Test
     void testNestedObject() {
-        final DocumentPathExpression pathExpression = new DocumentPathExpression.Builder().addObjectLookup(OBJECT_KEY)
+        final DocumentPathExpression pathExpression = DocumentPathExpression.builder().addObjectLookup(OBJECT_KEY)
                 .addObjectLookup("key").build();
         final Optional<DocumentNode<Object>> result = new DocumentPathWalker<>(pathExpression,
                 new StaticDocumentPathIterator()).walkThroughDocument(TEST_NESTED_OBJECT_NODE);
@@ -55,7 +55,7 @@ class DocumentPathWalkerTest {
 
     @Test
     void testNotAnObject() {
-        final DocumentPathExpression pathExpression = new DocumentPathExpression.Builder().addObjectLookup("key")
+        final DocumentPathExpression pathExpression = DocumentPathExpression.builder().addObjectLookup("key")
                 .addObjectLookup("key2").build();
         final DocumentPathWalker<Object> pathWalker = new DocumentPathWalker<>(pathExpression,
                 new StaticDocumentPathIterator());
@@ -65,7 +65,7 @@ class DocumentPathWalkerTest {
 
     @Test
     void testUnknownProperty() {
-        final DocumentPathExpression pathExpression = new DocumentPathExpression.Builder().addObjectLookup("unknownKey")
+        final DocumentPathExpression pathExpression = DocumentPathExpression.builder().addObjectLookup("unknownKey")
                 .build();
         final DocumentPathWalker<Object> pathWalker = new DocumentPathWalker<>(pathExpression,
                 new StaticDocumentPathIterator());
@@ -75,7 +75,7 @@ class DocumentPathWalkerTest {
 
     @Test
     void testArrayLookup() {
-        final DocumentPathExpression pathExpression = new DocumentPathExpression.Builder().addArrayLookup(0).build();
+        final DocumentPathExpression pathExpression = DocumentPathExpression.builder().addArrayLookup(0).build();
         final Optional<DocumentNode<Object>> result = new DocumentPathWalker<Object>(pathExpression,
                 new StaticDocumentPathIterator()).walkThroughDocument(TEST_ARRAY_NODE);
         assertThat(result.orElse(null), equalTo(NESTED_VALUE1));
@@ -83,7 +83,7 @@ class DocumentPathWalkerTest {
 
     @Test
     void testOutOfBoundsArrayLookup() {
-        final DocumentPathExpression pathExpression = new DocumentPathExpression.Builder().addArrayLookup(10).build();
+        final DocumentPathExpression pathExpression = DocumentPathExpression.builder().addArrayLookup(10).build();
         final DocumentPathWalker<Object> pathWalker = new DocumentPathWalker<>(pathExpression,
                 new StaticDocumentPathIterator());
         final Optional<DocumentNode<Object>> result = pathWalker.walkThroughDocument(TEST_ARRAY_NODE);
@@ -92,7 +92,7 @@ class DocumentPathWalkerTest {
 
     @Test
     void testArrayLookupOnNonArray() {
-        final DocumentPathExpression pathExpression = new DocumentPathExpression.Builder().addArrayLookup(10).build();
+        final DocumentPathExpression pathExpression = DocumentPathExpression.builder().addArrayLookup(10).build();
         final DocumentPathWalker<Object> pathWalker = new DocumentPathWalker<>(pathExpression,
                 new StaticDocumentPathIterator());
         final Optional<DocumentNode<Object>> result = pathWalker.walkThroughDocument(TEST_OBJECT_NODE);
@@ -102,7 +102,7 @@ class DocumentPathWalkerTest {
 
     @Test
     void testArrayAll() {
-        final DocumentPathExpression pathExpression = new DocumentPathExpression.Builder().addArrayAll().build();
+        final DocumentPathExpression pathExpression = DocumentPathExpression.builder().addArrayAll().build();
         final Optional<DocumentNode<Object>> result1 = new DocumentPathWalker<Object>(pathExpression,
                 new PathIterationStateProviderStub(0)).walkThroughDocument(TEST_ARRAY_NODE);
         final Optional<DocumentNode<Object>> result2 = new DocumentPathWalker<Object>(pathExpression,
@@ -113,7 +113,7 @@ class DocumentPathWalkerTest {
 
     @Test
     void testNestedArrayAll() {
-        final DocumentPathExpression pathExpression = new DocumentPathExpression.Builder().addObjectLookup(OBJECT_KEY)
+        final DocumentPathExpression pathExpression = DocumentPathExpression.builder().addObjectLookup(OBJECT_KEY)
                 .addArrayAll().build();
         final Optional<DocumentNode<Object>> result1 = new DocumentPathWalker<Object>(pathExpression,
                 new PathIterationStateProviderStub(0)).walkThroughDocument(TEST_OBJECT_NODE);

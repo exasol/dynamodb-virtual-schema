@@ -10,15 +10,15 @@ import com.exasol.adapter.dynamodb.documentnode.DocumentNode;
 import com.exasol.adapter.dynamodb.documentpath.DocumentPathExpression;
 import com.exasol.sql.expression.ValueExpression;
 
-class ToStringPropertyToColumnValueExtractorTest {
+class PropertyToVarcharColumnValueExtractorTest {
 
     private static final String TEST_STRING = "test";
 
     @Test
     void testConvertStringRowBasic() {
-        final ToStringPropertyToColumnMapping toStringColumnMappingDefinition = new ToStringPropertyToColumnMapping("",
-                DocumentPathExpression.empty(), LookupFailBehaviour.DEFAULT_VALUE, TEST_STRING.length(),
-                ToStringPropertyToColumnMapping.OverflowBehaviour.EXCEPTION);
+        final PropertyToVarcharColumnMapping toStringColumnMappingDefinition = new PropertyToVarcharColumnMapping("",
+                DocumentPathExpression.empty(), MappingErrorBehaviour.NULL, TEST_STRING.length(),
+                TruncateableMappingErrorBehaviour.ABORT);
         final ValueExpression exasolCellValue = new ToStringValueMapperStub(toStringColumnMappingDefinition)
                 .mapValue(null);
         assertThat(exasolCellValue.toString(), equalTo(TEST_STRING));
@@ -26,9 +26,9 @@ class ToStringPropertyToColumnValueExtractorTest {
 
     @Test
     void testConvertRowOverflowTruncate() {
-        final ToStringPropertyToColumnMapping toStringColumnMappingDefinition = new ToStringPropertyToColumnMapping("",
-                DocumentPathExpression.empty(), LookupFailBehaviour.DEFAULT_VALUE, TEST_STRING.length() - 1,
-                ToStringPropertyToColumnMapping.OverflowBehaviour.TRUNCATE);
+        final PropertyToVarcharColumnMapping toStringColumnMappingDefinition = new PropertyToVarcharColumnMapping("",
+                DocumentPathExpression.empty(), MappingErrorBehaviour.NULL, TEST_STRING.length() - 1,
+                TruncateableMappingErrorBehaviour.TRUNCATE);
         final ValueExpression exasolCellValue = new ToStringValueMapperStub(toStringColumnMappingDefinition)
                 .mapValue(null);
         final String expected = TEST_STRING.substring(0, TEST_STRING.length() - 1);
@@ -37,16 +37,16 @@ class ToStringPropertyToColumnValueExtractorTest {
 
     @Test
     void testConvertRowOverflowException() {
-        final ToStringPropertyToColumnMapping toStringColumnMappingDefinition = new ToStringPropertyToColumnMapping("",
-                DocumentPathExpression.empty(), LookupFailBehaviour.DEFAULT_VALUE, TEST_STRING.length() - 1,
-                ToStringPropertyToColumnMapping.OverflowBehaviour.EXCEPTION);
+        final PropertyToVarcharColumnMapping toStringColumnMappingDefinition = new PropertyToVarcharColumnMapping("",
+                DocumentPathExpression.empty(), MappingErrorBehaviour.NULL, TEST_STRING.length() - 1,
+                TruncateableMappingErrorBehaviour.ABORT);
         final ToStringValueMapperStub valueMapper = new ToStringValueMapperStub(toStringColumnMappingDefinition);
         assertThrows(OverflowException.class,
                 () -> valueMapper.mapValue(null));
     }
 
-    private static class ToStringValueMapperStub extends ToStringPropertyToColumnValueExtractor<Void> {
-        public ToStringValueMapperStub(final ToStringPropertyToColumnMapping column) {
+    private static class ToStringValueMapperStub extends PropertyToVarcharColumnValueExtractor<Void> {
+        public ToStringValueMapperStub(final PropertyToVarcharColumnMapping column) {
             super(column);
         }
 

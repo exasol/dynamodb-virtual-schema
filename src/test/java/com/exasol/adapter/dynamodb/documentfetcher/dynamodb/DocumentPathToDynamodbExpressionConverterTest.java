@@ -17,7 +17,7 @@ class DocumentPathToDynamodbExpressionConverterTest {
 
     @Test
     void testConvertPath() {
-        final DocumentPathExpression path = new DocumentPathExpression.Builder().addObjectLookup("key")
+        final DocumentPathExpression path = DocumentPathExpression.builder().addObjectLookup("key")
                 .addArrayLookup(2).addObjectLookup("nestedKey").build();
         final DynamodbAttributeNamePlaceholderMapBuilder namePlaceholderMapBuilder = new DynamodbAttributeNamePlaceholderMapBuilder();
         final String result = CONVERTER.convert(path, namePlaceholderMapBuilder);
@@ -31,7 +31,7 @@ class DocumentPathToDynamodbExpressionConverterTest {
 
     @Test
     void testArrayAllException() {
-        final DocumentPathExpression path = new DocumentPathExpression.Builder().addArrayAll().build();
+        final DocumentPathExpression path = DocumentPathExpression.builder().addArrayAll().build();
         final DynamodbAttributeNamePlaceholderMapBuilder namePlaceholderMapBuilder = new DynamodbAttributeNamePlaceholderMapBuilder();
         final UnsupportedOperationException exception = assertThrows(UnsupportedOperationException.class,
                 () -> CONVERTER.convert(path, namePlaceholderMapBuilder));

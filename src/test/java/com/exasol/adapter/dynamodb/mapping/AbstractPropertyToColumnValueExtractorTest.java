@@ -2,6 +2,7 @@ package com.exasol.adapter.dynamodb.mapping;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.instanceOf;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.Map;
@@ -13,6 +14,7 @@ import com.exasol.adapter.dynamodb.documentnode.DocumentObject;
 import com.exasol.adapter.dynamodb.documentnode.DocumentValue;
 import com.exasol.adapter.dynamodb.documentpath.DocumentPathExpression;
 import com.exasol.adapter.dynamodb.documentpath.StaticDocumentPathIterator;
+import com.exasol.sql.expression.NullLiteral;
 import com.exasol.sql.expression.ValueExpression;
 
 class AbstractPropertyToColumnValueExtractorTest {
@@ -21,9 +23,9 @@ class AbstractPropertyToColumnValueExtractorTest {
 
     @Test
     void testLookup() {
-        final DocumentPathExpression sourcePath = new DocumentPathExpression.Builder().addObjectLookup("isbn").build();
+        final DocumentPathExpression sourcePath = DocumentPathExpression.builder().addObjectLookup("isbn").build();
         final MockPropertyToColumnMapping columnMappingDefinition = new MockPropertyToColumnMapping("d", sourcePath,
-                LookupFailBehaviour.EXCEPTION);
+                MappingErrorBehaviour.ABORT);
 
         final ValueMapperStub valueMapperStub = new ValueMapperStub(columnMappingDefinition);
         valueMapperStub.extractColumnValue(STUB_DOCUMENT, new StaticDocumentPathIterator());
@@ -31,23 +33,23 @@ class AbstractPropertyToColumnValueExtractorTest {
     }
 
     @Test
-    void testNullLookupFailBehaviour() throws ColumnValueExtractorException {
-        final DocumentPathExpression sourcePath = new DocumentPathExpression.Builder()
+    void testNullMappingErrorBehaviour() throws ColumnValueExtractorException {
+        final DocumentPathExpression sourcePath = DocumentPathExpression.builder()
                 .addObjectLookup("nonExistingColumn").build();
         final MockPropertyToColumnMapping columnMappingDefinition = new MockPropertyToColumnMapping("d", sourcePath,
-                LookupFailBehaviour.DEFAULT_VALUE);
+                MappingErrorBehaviour.NULL);
         final ValueMapperStub valueMapper = new ValueMapperStub(columnMappingDefinition);
         final ValueExpression valueExpression = valueMapper.extractColumnValue(STUB_DOCUMENT,
                 new StaticDocumentPathIterator());
-        assertThat(valueExpression.toString(), equalTo("default"));
+        assertThat(valueExpression, instanceOf(NullLiteral.class));
     }
 
     @Test
-    void testExceptionLookupFailBehaviour() {
-        final DocumentPathExpression sourcePath = new DocumentPathExpression.Builder()
+    void testExceptionMappingErrorBehaviour() {
+        final DocumentPathExpression sourcePath = DocumentPathExpression.builder()
                 .addObjectLookup("nonExistingColumn").build();
         final MockPropertyToColumnMapping columnMappingDefinition = new MockPropertyToColumnMapping("d", sourcePath,
-                LookupFailBehaviour.EXCEPTION);
+                MappingErrorBehaviour.ABORT);
         final ValueMapperStub valueMapper = new ValueMapperStub(columnMappingDefinition);
         final StaticDocumentPathIterator pathIterator = new StaticDocumentPathIterator();
         assertThrows(SchemaMappingException.class,
@@ -58,7 +60,7 @@ class AbstractPropertyToColumnValueExtractorTest {
     void testColumnMappingException() {
         final String columnName = "name";
         final MockPropertyToColumnMapping mappingDefinition = new MockPropertyToColumnMapping(columnName,
-                DocumentPathExpression.empty(), LookupFailBehaviour.EXCEPTION);
+                DocumentPathExpression.empty(), MappingErrorBehaviour.ABORT);
         final ExceptionMockColumnValueMapper valueMapper = new ExceptionMockColumnValueMapper(mappingDefinition);
         final StaticDocumentPathIterator pathIterator = new StaticDocumentPathIterator();
         final ColumnValueExtractorException exception = assertThrows(ColumnValueExtractorException.class,
@@ -97,7 +99,7 @@ class AbstractPropertyToColumnValueExtractorTest {
 
     private static class StubDocumentValue implements DocumentValue<DummyVisitor> {
 
-        private static final long serialVersionUID = -2835741189976407365L;
+        private static final long serialVersionUID = -2835741189976407365L;//
 
         @Override
         public void accept(final DummyVisitor visitor) {

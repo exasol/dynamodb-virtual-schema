@@ -11,7 +11,7 @@ import com.exasol.adapter.dynamodb.documentpath.PathIterationStateProvider;
 import com.exasol.sql.expression.IntegerLiteral;
 
 class IterationIndexColumnValueExtractorTest {
-    private static final DocumentPathExpression TABLES_PATH = new DocumentPathExpression.Builder()
+    private static final DocumentPathExpression TABLES_PATH = DocumentPathExpression.builder()
             .addObjectLookup("test").addArrayAll().build();
     private static final IterationIndexColumnMapping COLUMN = new IterationIndexColumnMapping("INDEX", TABLES_PATH);
     private static final IterationIndexColumnValueExtractor<Object> EXTRACTOR = new IterationIndexColumnValueExtractor<>(

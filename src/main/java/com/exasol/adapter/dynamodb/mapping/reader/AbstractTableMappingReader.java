@@ -7,7 +7,6 @@ import javax.json.JsonObject;
 import com.exasol.adapter.dynamodb.documentpath.DocumentPathExpression;
 import com.exasol.adapter.dynamodb.mapping.ColumnMapping;
 import com.exasol.adapter.dynamodb.mapping.ColumnMappingDefinitionKeyTypeReader;
-import com.exasol.adapter.dynamodb.mapping.ExasolDocumentMappingLanguageException;
 import com.exasol.adapter.dynamodb.mapping.TableMapping;
 
 /**

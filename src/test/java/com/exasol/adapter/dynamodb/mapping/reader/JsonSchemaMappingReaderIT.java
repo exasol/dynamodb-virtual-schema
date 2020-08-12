@@ -51,9 +51,9 @@ class JsonSchemaMappingReaderIT {
         final TableMapping table = tables.get(0);
         final List<ColumnMapping> columns = table.getColumns();
         final List<String> columnNames = getColumnNames(columns);
-        final ToStringPropertyToColumnMapping isbnColumn = (ToStringPropertyToColumnMapping) getColumnByExasolName(
+        final PropertyToVarcharColumnMapping isbnColumn = (PropertyToVarcharColumnMapping) getColumnByExasolName(
                 table, "ISBN");
-        final ToStringPropertyToColumnMapping nameColumn = (ToStringPropertyToColumnMapping) getColumnByExasolName(
+        final PropertyToVarcharColumnMapping nameColumn = (PropertyToVarcharColumnMapping) getColumnByExasolName(
                 table, "NAME");
         assertAll(() -> assertThat(tables.size(), equalTo(1)), //
                 () -> assertThat(table.getExasolName(), equalTo("BOOKS")),
@@ -61,12 +61,12 @@ class JsonSchemaMappingReaderIT {
                 () -> assertThat(columnNames, containsInAnyOrder("ISBN", "NAME", "AUTHOR_NAME", "PUBLISHER", "PRICE")),
                 () -> assertThat(isbnColumn.getVarcharColumnSize(), equalTo(20)),
                 () -> assertThat(isbnColumn.getOverflowBehaviour(),
-                        equalTo(ToStringPropertyToColumnMapping.OverflowBehaviour.EXCEPTION)),
-                () -> assertThat(isbnColumn.getLookupFailBehaviour(), equalTo(LookupFailBehaviour.EXCEPTION)),
-                () -> assertThat(nameColumn.getLookupFailBehaviour(), equalTo(LookupFailBehaviour.DEFAULT_VALUE)),
+                        equalTo(TruncateableMappingErrorBehaviour.ABORT)),
+                () -> assertThat(isbnColumn.getMappingErrorBehaviour(), equalTo(MappingErrorBehaviour.ABORT)),
+                () -> assertThat(nameColumn.getMappingErrorBehaviour(), equalTo(MappingErrorBehaviour.NULL)),
                 () -> assertThat(nameColumn.getVarcharColumnSize(), equalTo(100)),
                 () -> assertThat(nameColumn.getOverflowBehaviour(),
-                        equalTo(ToStringPropertyToColumnMapping.OverflowBehaviour.TRUNCATE)));
+                        equalTo(TruncateableMappingErrorBehaviour.TRUNCATE)));
     }
 
     @Test
@@ -91,7 +91,7 @@ class JsonSchemaMappingReaderIT {
                 MappingTestFiles.SINGLE_COLUMN_TO_TABLE_MAPPING_FILE);
         final List<TableMapping> tables = schemaMapping.getTableMappings();
         final TableMapping nestedTable = tables.stream().filter(table -> !table.isRootTable()).findAny().orElseThrow();
-        final ToStringPropertyToColumnMapping column = (ToStringPropertyToColumnMapping) getColumnByExasolName(
+        final PropertyToVarcharColumnMapping column = (PropertyToVarcharColumnMapping) getColumnByExasolName(
                 nestedTable, "NAME");
         assertAll(//
                 () -> assertThat(tables.size(), equalTo(2)),
@@ -187,7 +187,7 @@ class JsonSchemaMappingReaderIT {
                 "BOOKS_ISBN");
         final IterationIndexColumnMapping indexColumn = (IterationIndexColumnMapping) getColumnByExasolName(nestedTable,
                 "INDEX");
-        final ToStringPropertyToColumnMapping figureNameColumn = (ToStringPropertyToColumnMapping) getColumnByExasolName(
+        final PropertyToVarcharColumnMapping figureNameColumn = (PropertyToVarcharColumnMapping) getColumnByExasolName(
                 doubleNestedTable, "NAME");
         assertAll(//
                 () -> assertThat(tables.size(), equalTo(3)),

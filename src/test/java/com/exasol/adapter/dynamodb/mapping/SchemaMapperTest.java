@@ -27,9 +27,8 @@ class SchemaMapperTest {
 
     @Test
     void testMapRow() {
-        final ToJsonPropertyToColumnMapping columnMapping = new ToJsonPropertyToColumnMapping("test",
-                DocumentPathExpression.empty(), LookupFailBehaviour.EXCEPTION, 0,
-                ToJsonPropertyToColumnMapping.OverflowBehaviour.EXCEPTION);
+        final PropertyToJsonColumnMapping columnMapping = new PropertyToJsonColumnMapping("test",
+                DocumentPathExpression.empty(), MappingErrorBehaviour.ABORT, 0, MappingErrorBehaviour.ABORT);
 
         final TableMapping tableMapping = TableMapping.rootTableBuilder("table", "table")
                 .withColumnMappingDefinition(columnMapping).build();
@@ -50,12 +49,12 @@ class SchemaMapperTest {
     void testMapNestedTable() {
         final String nestedListKey = "topics";
 
-        final DocumentPathExpression pathToNestedTable = new DocumentPathExpression.Builder()
+        final DocumentPathExpression pathToNestedTable = DocumentPathExpression.builder()
                 .addObjectLookup(nestedListKey).addArrayAll().build();
-        final ToJsonPropertyToColumnMapping columnMapping = new ToJsonPropertyToColumnMapping("test", pathToNestedTable,
-                LookupFailBehaviour.EXCEPTION, 0, ToJsonPropertyToColumnMapping.OverflowBehaviour.EXCEPTION);
+        final PropertyToJsonColumnMapping columnMapping = new PropertyToJsonColumnMapping("test", pathToNestedTable,
+                MappingErrorBehaviour.ABORT, 0, MappingErrorBehaviour.ABORT);
         final ColumnMapping indexColumn = new IterationIndexColumnMapping("INDEX",
-                new DocumentPathExpression.Builder().addObjectLookup(nestedListKey).addArrayAll().build());
+                DocumentPathExpression.builder().addObjectLookup(nestedListKey).addArrayAll().build());
         final TableMapping tableMapping = TableMapping.nestedTableBuilder("table", "table", pathToNestedTable)
                 .withColumnMappingDefinition(columnMapping).withColumnMappingDefinition(indexColumn).build();
         final RemoteTableQuery remoteTableQuery = new RemoteTableQuery(tableMapping,

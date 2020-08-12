@@ -10,7 +10,7 @@ import java.util.List;
  */
 public class DocumentPathExpression implements Serializable {
     private static final DocumentPathExpression EMPTY_PATH = new DocumentPathExpression(Collections.emptyList());
-    private static final long serialVersionUID = -5010657725802907603L;
+    private static final long serialVersionUID = -5010657725802907603L;//
     private final ArrayList<PathSegment> segments;
 
     private DocumentPathExpression(final List<PathSegment> segments) {
@@ -109,15 +109,21 @@ public class DocumentPathExpression implements Serializable {
     }
 
     /**
+     * Get a builder for {@link DocumentPathExpression}.
+     * 
+     * @return builder for {@link DocumentPathExpression}
+     */
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    /**
      * Builder for {@link DocumentPathExpression}.
      */
     public static class Builder {
         private final List<PathSegment> segments = new ArrayList<>();
 
-        /**
-         * Create an instance of {@link Builder} with an empty path.
-         */
-        public Builder() {
+        private Builder() {
             // intentionally left empty.
         }
 

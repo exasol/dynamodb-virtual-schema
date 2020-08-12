@@ -4,7 +4,6 @@ import java.io.Serializable;
 
 import com.exasol.adapter.dynamodb.mapping.reader.SchemaMappingReader;
 import com.exasol.adapter.metadata.DataType;
-import com.exasol.sql.expression.ValueExpression;
 
 /**
  * This interface defines the mapping for a column in the Virtual Schema.
@@ -30,13 +29,6 @@ public interface ColumnMapping extends Serializable {
      * @return Exasol data type
      */
     public DataType getExasolDataType();
-
-    /**
-     * Get the default value of this column.
-     *
-     * @return {@link ValueExpression} holding default value
-     */
-    public ValueExpression getExasolDefaultValue();
 
     /**
      * Describes if Exasol column is nullable.

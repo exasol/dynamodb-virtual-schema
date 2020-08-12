@@ -12,39 +12,39 @@ import com.exasol.adapter.dynamodb.documentnode.dynamodb.DynamodbList;
 import com.exasol.adapter.dynamodb.documentnode.dynamodb.DynamodbNumber;
 import com.exasol.adapter.dynamodb.documentnode.dynamodb.DynamodbString;
 import com.exasol.adapter.dynamodb.documentpath.DocumentPathExpression;
-import com.exasol.adapter.dynamodb.mapping.LookupFailBehaviour;
-import com.exasol.adapter.dynamodb.mapping.ToStringPropertyToColumnMapping;
+import com.exasol.adapter.dynamodb.mapping.MappingErrorBehaviour;
+import com.exasol.adapter.dynamodb.mapping.PropertyToVarcharColumnMapping;
 
-class DynamodbToStringPropertyToColumnValueExtractorTest {
+class DynamodbPropertyToVarcharColumnValueExtractorTest {
 
     private static final int TEST_NUMBER = 42;
     private static final String TEST_SOURCE_COLUMN = "myColumn";
     private static final String DEST_COLUMN = "destColumn";
 
-    private static final DocumentPathExpression TEST_SOURCE_COLUMN_PATH = new DocumentPathExpression.Builder()
+    private static final DocumentPathExpression TEST_SOURCE_COLUMN_PATH = DocumentPathExpression.builder()
             .addObjectLookup(TEST_SOURCE_COLUMN).build();
 
-    private static final ToStringPropertyToColumnMapping TO_STRING_PROPERTY_TO_COLUMN_MAPPING = new ToStringPropertyToColumnMapping(
-            DEST_COLUMN, TEST_SOURCE_COLUMN_PATH, LookupFailBehaviour.DEFAULT_VALUE, 100, null);
+    private static final PropertyToVarcharColumnMapping TO_STRING_PROPERTY_TO_COLUMN_MAPPING = new PropertyToVarcharColumnMapping(
+            DEST_COLUMN, TEST_SOURCE_COLUMN_PATH, MappingErrorBehaviour.NULL, 100, null);
 
     @Test
     void testConvertStringRow() {
         final String testString = "test";
-        final String result = new DynamodbToStringPropertyToColumnValueExtractor(TO_STRING_PROPERTY_TO_COLUMN_MAPPING)
+        final String result = new DynamodbPropertyToVarcharColumnValueExtractor(TO_STRING_PROPERTY_TO_COLUMN_MAPPING)
                 .mapStringValue(new DynamodbString(testString));
         assertThat(result, equalTo(testString));
     }
 
     @Test
     void testConvertNumberRow() {
-        final String result = new DynamodbToStringPropertyToColumnValueExtractor(TO_STRING_PROPERTY_TO_COLUMN_MAPPING)
+        final String result = new DynamodbPropertyToVarcharColumnValueExtractor(TO_STRING_PROPERTY_TO_COLUMN_MAPPING)
                 .mapStringValue(new DynamodbNumber(String.valueOf(TEST_NUMBER)));
         assertThat(result, equalTo(String.valueOf(TEST_NUMBER)));
     }
 
     @Test
     void testConvertUnsupportedDynamodbType() {
-        final DynamodbToStringPropertyToColumnValueExtractor valueExtractor = new DynamodbToStringPropertyToColumnValueExtractor(
+        final DynamodbPropertyToVarcharColumnValueExtractor valueExtractor = new DynamodbPropertyToVarcharColumnValueExtractor(
                 TO_STRING_PROPERTY_TO_COLUMN_MAPPING);
         final DynamodbList dynamodbList = new DynamodbList(Collections.emptyList());
         final UnsupportedOperationException exception = assertThrows(UnsupportedOperationException.class,

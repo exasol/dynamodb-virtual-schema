@@ -4,7 +4,7 @@ package com.exasol.adapter.dynamodb.mapping;
  * This exception is thrown on errors during the schema mapping. It is passed to the user.
  */
 public class SchemaMappingException extends RuntimeException {
-    private static final long serialVersionUID = 4440950553927795128L;
+    private static final long serialVersionUID = -8528943426430594404L;
 
     /**
      * Create an instance of {@link SchemaMappingException}.
@@ -13,5 +13,15 @@ public class SchemaMappingException extends RuntimeException {
      */
     public SchemaMappingException(final String message) {
         super(message);
+    }
+
+    /**
+     * Create an instance of {@link SchemaMappingException}.
+     *
+     * @param message Exception message
+     * @param cause   Exception that caused this exception
+     */
+    public SchemaMappingException(final String message, final Exception cause) {
+        super(message, cause);
     }
 }

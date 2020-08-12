@@ -46,7 +46,7 @@ public class DynamodbTableKeyFetcher implements TableKeyFetcher {
                 continue;
             }
             final PropertyToColumnMapping propertyToColumnMapping = (PropertyToColumnMapping) column;
-            final DocumentPathExpression propertiesPath = new DocumentPathExpression.Builder()
+            final DocumentPathExpression propertiesPath = DocumentPathExpression.builder()
                     .addObjectLookup(propertyName).build();
             if (propertyToColumnMapping.getPathToSourceProperty().equals(propertiesPath)) {
                 return propertyToColumnMapping;

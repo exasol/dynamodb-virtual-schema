@@ -18,8 +18,8 @@ class ColumnMappingReader {
     private static final String REQUIRED_KEY = "required";
     private static final String TO_STRING_MAPPING_KEY = "toStringMapping";
     private static final String TO_JSON_MAPPING_KEY = "toJsonMapping";
-    private static final ToStringPropertyToColumnMapping.OverflowBehaviour DEFAULT_TO_STRING_OVERFLOW = ToStringPropertyToColumnMapping.OverflowBehaviour.TRUNCATE;
-    private static final LookupFailBehaviour DEFAULT_LOOKUP_BEHAVIOUR = LookupFailBehaviour.DEFAULT_VALUE;
+    private static final TruncateableMappingErrorBehaviour DEFAULT_TO_STRING_OVERFLOW = TruncateableMappingErrorBehaviour.TRUNCATE;
+    private static final MappingErrorBehaviour DEFAULT_LOOKUP_BEHAVIOUR = MappingErrorBehaviour.NULL;
 
     /**
      * Private constructor to hide the public default. Get an instance using {@link #getInstance()}.
@@ -50,7 +50,7 @@ class ColumnMappingReader {
         }
     }
 
-    private ToStringPropertyToColumnMapping readStringColumnIfPossible(final JsonObject definition,
+    private PropertyToVarcharColumnMapping readStringColumnIfPossible(final JsonObject definition,
             final DocumentPathExpression.Builder sourcePath, final String dynamodbPropertyName,
             final boolean isRootLevel) {
         if (isRootLevel) {
@@ -60,28 +60,28 @@ class ColumnMappingReader {
         return addStringColumn(definition, sourcePath, dynamodbPropertyName);
     }
 
-    private ToStringPropertyToColumnMapping addStringColumn(final JsonObject definition,
+    private PropertyToVarcharColumnMapping addStringColumn(final JsonObject definition,
             final DocumentPathExpression.Builder sourcePath, final String dynamodbPropertyName) {
         final int maxLength = definition.getInt(MAX_LENGTH_KEY, DEFAULT_MAX_LENGTH);
-        final ToStringPropertyToColumnMapping.OverflowBehaviour overflowBehaviour = readStringOverflowBehaviour(
+        final TruncateableMappingErrorBehaviour overflowBehaviour = readStringOverflowBehaviour(
                 definition);
         final String exasolColumnName = readExasolColumnName(definition, dynamodbPropertyName);
-        final LookupFailBehaviour lookupFailBehaviour = readLookupFailBehaviour(definition);
-        return new ToStringPropertyToColumnMapping(exasolColumnName, sourcePath.build(), lookupFailBehaviour, maxLength,
+        final MappingErrorBehaviour lookupFailBehaviour = readMappingErrorBehaviour(definition);
+        return new PropertyToVarcharColumnMapping(exasolColumnName, sourcePath.build(), lookupFailBehaviour, maxLength,
                 overflowBehaviour);
     }
 
-    private ToStringPropertyToColumnMapping.OverflowBehaviour readStringOverflowBehaviour(final JsonObject definition) {
+    private TruncateableMappingErrorBehaviour readStringOverflowBehaviour(final JsonObject definition) {
         if (definition.containsKey(OVERFLOW_KEY) && definition.getString(OVERFLOW_KEY).equals(OVERFLOW_ABORT)) {
-            return ToStringPropertyToColumnMapping.OverflowBehaviour.EXCEPTION;
+            return TruncateableMappingErrorBehaviour.ABORT;
         } else {
             return DEFAULT_TO_STRING_OVERFLOW;
         }
     }
 
-    private LookupFailBehaviour readLookupFailBehaviour(final JsonObject definition) {
+    private MappingErrorBehaviour readMappingErrorBehaviour(final JsonObject definition) {
         if (definition.containsKey(REQUIRED_KEY) && definition.getBoolean(REQUIRED_KEY)) {
-            return LookupFailBehaviour.EXCEPTION;
+            return MappingErrorBehaviour.ABORT;
         } else {
             return DEFAULT_LOOKUP_BEHAVIOUR;
         }
@@ -96,14 +96,13 @@ class ColumnMappingReader {
         return exasolColumnName.toUpperCase();
     }
 
-    private ToJsonPropertyToColumnMapping readToJsonColumn(final JsonObject definition,
+    private PropertyToJsonColumnMapping readToJsonColumn(final JsonObject definition,
             final DocumentPathExpression.Builder sourcePath, final String dynamodbPropertyName) {
         final String exasolColumnName = readExasolColumnName(definition, dynamodbPropertyName);
-        final LookupFailBehaviour lookupFailBehaviour = readLookupFailBehaviour(definition);
-        final ToJsonPropertyToColumnMapping.OverflowBehaviour overflowBehaviour = definition.getString(OVERFLOW_KEY, "")
-                .equalsIgnoreCase(OVERFLOW_ABORT) ? ToJsonPropertyToColumnMapping.OverflowBehaviour.EXCEPTION
-                        : ToJsonPropertyToColumnMapping.OverflowBehaviour.NULL;
-        return new ToJsonPropertyToColumnMapping(exasolColumnName, sourcePath.build(), lookupFailBehaviour,
+        final MappingErrorBehaviour lookupFailBehaviour = readMappingErrorBehaviour(definition);
+        final MappingErrorBehaviour overflowBehaviour = definition.getString(OVERFLOW_KEY, "")
+                .equalsIgnoreCase(OVERFLOW_ABORT) ? MappingErrorBehaviour.ABORT : MappingErrorBehaviour.NULL;
+        return new PropertyToJsonColumnMapping(exasolColumnName, sourcePath.build(), lookupFailBehaviour,
                 definition.getInt(MAX_LENGTH_KEY, DEFAULT_MAX_LENGTH), overflowBehaviour);
     }
 }
