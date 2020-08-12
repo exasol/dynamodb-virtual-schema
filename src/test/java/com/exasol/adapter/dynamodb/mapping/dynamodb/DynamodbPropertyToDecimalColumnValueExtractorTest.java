@@ -47,6 +47,6 @@ class DynamodbPropertyToDecimalColumnValueExtractorTest {
         final ColumnValueExtractorException exception = assertThrows(ColumnValueExtractorException.class,
                 () -> EXTRACTOR.extractColumnValue(testData, iterationState));
         assertThat(exception.getMessage(),
-                equalTo("The input value was no number. Try using a different mapping or ignore this error by setting notANumberBehaviour = \"null\"."));
+                equalTo("The input value was no number. Try using a different mapping or ignore this error by setting notNumericBehaviour = \"null\"."));
     }
 }

@@ -27,7 +27,7 @@ class PropertyToDecimalColumnMappingTest {
                 () -> assertThat(TEST_OBJECT.getDecimalScale(), equalTo(1)),
                 () -> assertThat(TEST_OBJECT.getOverflowBehaviour(), equalTo(MappingErrorBehaviour.NULL)),
                 () -> assertThat(TEST_OBJECT.getExasolDataType(), equalTo(DataType.createDecimal(12, 1))),
-                () -> assertThat(TEST_OBJECT.getNotANumberBehaviour(), equalTo(MappingErrorBehaviour.NULL))//
+                () -> assertThat(TEST_OBJECT.getNotNumericBehaviour(), equalTo(MappingErrorBehaviour.NULL))//
         );
     }
 

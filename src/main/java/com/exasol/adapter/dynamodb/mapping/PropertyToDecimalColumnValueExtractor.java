@@ -58,9 +58,9 @@ public abstract class PropertyToDecimalColumnValueExtractor<DocumentVisitorType>
     }
 
     private ValueExpression handleNotANumber() {
-        if (this.column.getNotANumberBehaviour() == MappingErrorBehaviour.ABORT) {
+        if (this.column.getNotNumericBehaviour() == MappingErrorBehaviour.ABORT) {
             throw new ColumnValueExtractorException(
-                    "The input value was no number. Try using a different mapping or ignore this error by setting notANumberBehaviour = \"null\".",
+                    "The input value was no number. Try using a different mapping or ignore this error by setting notNumericBehaviour = \"null\".",
                     this.column);
         } else {
             return NullLiteral.nullLiteral();

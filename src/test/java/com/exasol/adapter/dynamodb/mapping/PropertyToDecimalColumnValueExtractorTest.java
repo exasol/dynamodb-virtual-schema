@@ -62,7 +62,7 @@ class PropertyToDecimalColumnValueExtractorTest {
         final ColumnValueExtractorException exception = assertThrows(ColumnValueExtractorException.class,
                 () -> extractor.mapValue(null));
         assertThat(exception.getMessage(), equalTo(
-                "The input value was no number. Try using a different mapping or ignore this error by setting notANumberBehaviour = \"null\"."));
+                "The input value was no number. Try using a different mapping or ignore this error by setting notNumericBehaviour = \"null\"."));
     }
 
     @Test

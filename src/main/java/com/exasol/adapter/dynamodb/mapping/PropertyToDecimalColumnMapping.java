@@ -10,11 +10,11 @@ import com.exasol.adapter.metadata.DataType;
  * column.
  */
 public final class PropertyToDecimalColumnMapping extends AbstractPropertyToColumnMapping {
-    private static final long serialVersionUID = -2534835248457080092L;
+    private static final long serialVersionUID = 6021806680404016342L;
     private final int decimalPrecision;
     private final int decimalScale;
     private final MappingErrorBehaviour overflowBehaviour;
-    private final MappingErrorBehaviour notANumberBehaviour;
+    private final MappingErrorBehaviour notNumericBehaviour;
 
     /**
      * Create an instance of {@link PropertyToDecimalColumnMapping}.
@@ -25,17 +25,17 @@ public final class PropertyToDecimalColumnMapping extends AbstractPropertyToColu
      * @param decimalPrecision     Precision of the Exasol DECIMAL column
      * @param decimalScale         Scale of the Exasol DECIMAL column
      * @param overflowBehaviour    Behaviour to apply in case the value exceeds the size of the DECIMAL column
-     * @param notANumberBehaviour  Behaviour to apply in case a value is not a number
+     * @param notNumericBehaviour  Behaviour to apply in case a value is not a number
      */
     private PropertyToDecimalColumnMapping(final String exasolColumnName,
             final DocumentPathExpression pathToSourceProperty, final MappingErrorBehaviour lookupFailBehaviour,
             final int decimalPrecision, final int decimalScale, final MappingErrorBehaviour overflowBehaviour,
-            final MappingErrorBehaviour notANumberBehaviour) {
+            final MappingErrorBehaviour notNumericBehaviour) {
         super(exasolColumnName, pathToSourceProperty, lookupFailBehaviour);
         this.decimalPrecision = decimalPrecision;
         this.decimalScale = decimalScale;
         this.overflowBehaviour = overflowBehaviour;
-        this.notANumberBehaviour = notANumberBehaviour;
+        this.notNumericBehaviour = notNumericBehaviour;
     }
 
     /**
@@ -61,7 +61,7 @@ public final class PropertyToDecimalColumnMapping extends AbstractPropertyToColu
     public ColumnMapping withNewExasolName(final String newExasolName) {
         return new PropertyToDecimalColumnMapping(newExasolName, getPathToSourceProperty(),
                 getMappingErrorBehaviour(), this.decimalPrecision, this.decimalScale, this.overflowBehaviour,
-                this.notANumberBehaviour);
+                this.notNumericBehaviour);
     }
 
     /**
@@ -96,8 +96,8 @@ public final class PropertyToDecimalColumnMapping extends AbstractPropertyToColu
      *
      * @return {@link MappingErrorBehaviour}
      */
-    public MappingErrorBehaviour getNotANumberBehaviour() {
-        return this.notANumberBehaviour;
+    public MappingErrorBehaviour getNotNumericBehaviour() {
+        return this.notNumericBehaviour;
     }
 
     @Override
@@ -113,13 +113,13 @@ public final class PropertyToDecimalColumnMapping extends AbstractPropertyToColu
                 && this.decimalPrecision == that.decimalPrecision//
                 && this.decimalScale == that.decimalScale//
                 && this.overflowBehaviour == that.overflowBehaviour//
-                && this.notANumberBehaviour == that.notANumberBehaviour;
+                && this.notNumericBehaviour == that.notNumericBehaviour;
     }
 
     @Override
     public int hashCode() {
         return Objects.hash(super.hashCode(), this.decimalPrecision, this.decimalScale, this.overflowBehaviour,
-                this.notANumberBehaviour);
+                this.notNumericBehaviour);
     }
 
     /**
@@ -132,7 +132,7 @@ public final class PropertyToDecimalColumnMapping extends AbstractPropertyToColu
         private int decimalPrecision;
         private int decimalScale;
         private MappingErrorBehaviour overflowBehaviour;
-        private MappingErrorBehaviour notANumberBehaviour;
+        private MappingErrorBehaviour notNumericBehaviour;
 
         private Builder() {
         }
@@ -195,7 +195,7 @@ public final class PropertyToDecimalColumnMapping extends AbstractPropertyToColu
          * @return self
          */
         public Builder notANumberBehaviour(final MappingErrorBehaviour notANumberBehaviour) {
-            this.notANumberBehaviour = notANumberBehaviour;
+            this.notNumericBehaviour = notANumberBehaviour;
             return this;
         }
 
@@ -207,7 +207,7 @@ public final class PropertyToDecimalColumnMapping extends AbstractPropertyToColu
         public PropertyToDecimalColumnMapping build() {
             return new PropertyToDecimalColumnMapping(this.exasolColumnName, this.pathToSourceProperty,
                     this.lookupFailBehaviour, this.decimalPrecision, this.decimalScale, this.overflowBehaviour,
-                    this.notANumberBehaviour);
+                    this.notNumericBehaviour);
         }
     }
 }
