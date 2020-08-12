@@ -33,13 +33,17 @@ public abstract class ToDecimalPropertyToColumnValueExtractor<DocumentVisitorTyp
         if (decimalValue == null) {
             return handleNotANumber();
         } else {
-            final BigDecimal decimalWithDestinationScale = decimalValue.setScale(this.column.getDecimalScale(),
-                    RoundingMode.FLOOR);
-            if (decimalWithDestinationScale.precision() > this.column.getDecimalPrecision()) {
-                return handleOverflow();
-            } else {
-                return BigDecimalLiteral.of(decimalWithDestinationScale);
-            }
+            return fitValue(decimalValue);
+        }
+    }
+
+    private ValueExpression fitValue(final BigDecimal decimalValue) {
+        final BigDecimal decimalWithDestinationScale = decimalValue.setScale(this.column.getDecimalScale(),
+                RoundingMode.FLOOR);
+        if (decimalWithDestinationScale.precision() > this.column.getDecimalPrecision()) {
+            return handleOverflow();
+        } else {
+            return BigDecimalLiteral.of(decimalWithDestinationScale);
         }
     }
 
@@ -65,8 +69,9 @@ public abstract class ToDecimalPropertyToColumnValueExtractor<DocumentVisitorTyp
 
     private ValueExpression handleOverflow() {
         if (this.column.getOverflowBehaviour() == MappingErrorBehaviour.ABORT) {
-            throw new OverflowException(
-                    "Decimal overflow. You can either increase the DECIMAL precision of this column or set the overflow behaviour to NULL.",
+            throw new OverflowException("The input value exceeded the size of the " + this.column.getExasolColumnName()
+                    + " DECIMAL column."
+                    + " You can either increase the DECIMAL precision of this column or set the overflow behaviour to NULL.",
                     this.column);
         } else {
             return NullLiteral.nullLiteral();

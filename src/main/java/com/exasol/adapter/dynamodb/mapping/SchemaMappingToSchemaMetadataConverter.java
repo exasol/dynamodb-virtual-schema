@@ -9,9 +9,6 @@ import java.util.List;
 import com.exasol.adapter.metadata.ColumnMetadata;
 import com.exasol.adapter.metadata.SchemaMetadata;
 import com.exasol.adapter.metadata.TableMetadata;
-import com.exasol.sql.expression.ValueExpression;
-import com.exasol.sql.expression.rendering.ValueExpressionRenderer;
-import com.exasol.sql.rendering.StringRendererConfig;
 import com.exasol.utils.StringSerializer;
 
 /**
@@ -69,13 +66,6 @@ public class SchemaMappingToSchemaMetadataConverter {
                 .defaultValue("NULL")//
                 .nullable(columnMapping.isExasolColumnNullable())//
                 .adapterNotes(serialized).build();
-    }
-
-    private String getLiteralString(final ValueExpression value) {
-        final StringRendererConfig stringRendererConfig = StringRendererConfig.createDefault();
-        final ValueExpressionRenderer renderer = new ValueExpressionRenderer(stringRendererConfig);
-        value.accept(renderer);
-        return renderer.render();
     }
 
     /**
@@ -140,7 +130,7 @@ public class SchemaMappingToSchemaMetadataConverter {
      * {@link SchemaMetadata} and stores a map that gives the {@link TableMapping} for its Exasol table name.
      */
     private static class TableMappings implements Serializable {
-        private static final long serialVersionUID = -6920869661356098960L;//
+        private static final long serialVersionUID = -6920869661356098960L;
         private final HashMap<String, TableMapping> mappings;
 
         private TableMappings(final HashMap<String, TableMapping> mappings) {

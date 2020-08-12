@@ -9,7 +9,7 @@ import com.exasol.adapter.metadata.DataType;
  * Maps a property of a DynamoDB table and all its descendants to a JSON string.
  */
 public final class ToJsonPropertyToColumnMapping extends AbstractPropertyToColumnMapping {
-    private static final long serialVersionUID = -6383134783719798072L;
+    private static final long serialVersionUID = -6383134783719798072L;//
     private final int varcharColumnSize;
     private final MappingErrorBehaviour overflowBehaviour;
 
@@ -19,6 +19,7 @@ public final class ToJsonPropertyToColumnMapping extends AbstractPropertyToColum
      * @param exasolColumnName     Name of the Exasol column
      * @param pathToSourceProperty {@link DocumentPathExpression} path to the property to extract
      * @param lookupFailBehaviour  {@link MappingErrorBehaviour} behaviour for the case, that the defined path does not
+     *                             exist
      * @param varcharColumnSize    Size of the Exasol VARCHAR column
      * @param overflowBehaviour    Behaviour if the result exceeds the columns size
      */

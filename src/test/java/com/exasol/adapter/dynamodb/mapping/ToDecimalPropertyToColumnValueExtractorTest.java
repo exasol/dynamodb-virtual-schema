@@ -46,7 +46,7 @@ class ToDecimalPropertyToColumnValueExtractorTest {
         final ToDecimalExtractorStub extractor = new ToDecimalExtractorStub(ABORT_MAPPING, bigDecimalValue);
         final OverflowException exception = assertThrows(OverflowException.class, () -> extractor.mapValue(null));
         assertThat(exception.getMessage(), equalTo(
-                "Decimal overflow. You can either increase the DECIMAL precision of this column or set the overflow behaviour to NULL."));
+                "The input value exceeded the size of the EXASOL_COLUMN DECIMAL column. You can either increase the DECIMAL precision of this column or set the overflow behaviour to NULL."));
     }
 
     @Test
