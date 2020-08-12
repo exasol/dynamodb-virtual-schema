@@ -31,9 +31,9 @@ class ColumnMappingReaderTest {
     @Test
     void testToStringColumnExplicitDefaultValues() {
         final JsonObject definition = Json.createObjectBuilder()//
-                .add("maxLength", 254)//
-                .add("overflow", "TRUNCATE")//
-                .add("destName", "test")//
+                .add("varcharColumnSize", 254)//
+                .add("overflowBehaviour", "TRUNCATE")//
+                .add("destinationName", "test")//
                 .add("required", false).build();
         assertToStringDefinitionDefaultValues(definition);
     }
@@ -41,7 +41,7 @@ class ColumnMappingReaderTest {
     void assertToStringDefinitionDefaultValues(final JsonObject definition) {
         final PropertyToVarcharColumnMapping columnMapping = (PropertyToVarcharColumnMapping) ColumnMappingReader
                 .getInstance()
-                .readColumnMapping("toStringMapping", definition, DocumentPathExpression.builder(), "test", false);
+                .readColumnMapping("toVarcharMapping", definition, DocumentPathExpression.builder(), "test", false);
         assertAll(//
                 () -> assertThat(columnMapping.getVarcharColumnSize(), equalTo(254)),
                 () -> assertThat(columnMapping.getOverflowBehaviour(),
@@ -55,13 +55,13 @@ class ColumnMappingReaderTest {
     @Test
     void testToStringColumnExplicitNonDefaultValues() {
         final JsonObject definition = Json.createObjectBuilder()//
-                .add("maxLength", 123)//
-                .add("overflow", "ABORT")//
-                .add("destName", "my_column")//
+                .add("varcharColumnSize", 123)//
+                .add("overflowBehaviour", "ABORT")//
+                .add("destinationName", "my_column")//
                 .add("required", true).build();
         final PropertyToVarcharColumnMapping columnMapping = (PropertyToVarcharColumnMapping) ColumnMappingReader
                 .getInstance()
-                .readColumnMapping("toStringMapping", definition, DocumentPathExpression.builder(), "test", false);
+                .readColumnMapping("toVarcharMapping", definition, DocumentPathExpression.builder(), "test", false);
         assertAll(//
                 () -> assertThat(columnMapping.getVarcharColumnSize(), equalTo(123)),
                 () -> assertThat(columnMapping.getOverflowBehaviour(),
@@ -91,9 +91,9 @@ class ColumnMappingReaderTest {
     @Test
     void testToJsonColumnExplicitDefaultValues() {
         final JsonObject definition = Json.createObjectBuilder()//
-                .add("maxLength", 254)//
-                .add("overflow", "TRUNCATE")//
-                .add("destName", "test")//
+                .add("varcharColumnSize", 254)//
+                .add("overflowBehaviour", "TRUNCATE")//
+                .add("destinationName", "test")//
                 .add("required", false).build();
         assertToJsonDefinitionDefaultValues(definition);
     }
@@ -114,9 +114,9 @@ class ColumnMappingReaderTest {
     @Test
     void testToJsonColumnExplicitNonDefaultValues() {
         final JsonObject definition = Json.createObjectBuilder()//
-                .add("maxLength", 123)//
-                .add("overflow", "ABORT")//
-                .add("destName", "my_column")//
+                .add("varcharColumnSize", 123)//
+                .add("overflowBehaviour", "ABORT")//
+                .add("destinationName", "my_column")//
                 .add("required", true).build();
         final PropertyToJsonColumnMapping columnMapping = (PropertyToJsonColumnMapping) ColumnMappingReader
                 .getInstance()

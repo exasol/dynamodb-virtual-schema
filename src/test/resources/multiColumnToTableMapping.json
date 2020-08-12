@@ -10,8 +10,8 @@
           "mapping": {
             "fields": {
               "name": {
-                "toStringMapping": {
-                  "destName": "chapterName"
+                "toVarcharMapping": {
+                  "destinationName": "chapterName"
                 }
               }
             }

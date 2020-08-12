@@ -10,13 +10,13 @@ import com.exasol.adapter.dynamodb.mapping.*;
  */
 class ColumnMappingReader {
     private static final ColumnMappingReader INSTANCE = new ColumnMappingReader();
-    private static final String MAX_LENGTH_KEY = "maxLength";
+    private static final String MAX_LENGTH_KEY = "varcharColumnSize";
     private static final int DEFAULT_MAX_LENGTH = 254;
-    private static final String OVERFLOW_KEY = "overflow";
+    private static final String OVERFLOW_KEY = "overflowBehaviour";
     private static final String OVERFLOW_ABORT = "ABORT";
-    private static final String DEST_NAME_KEY = "destName";
+    private static final String DEST_NAME_KEY = "destinationName";
     private static final String REQUIRED_KEY = "required";
-    private static final String TO_STRING_MAPPING_KEY = "toStringMapping";
+    private static final String TO_STRING_MAPPING_KEY = "toVarcharMapping";
     private static final String TO_JSON_MAPPING_KEY = "toJsonMapping";
     private static final TruncateableMappingErrorBehaviour DEFAULT_TO_STRING_OVERFLOW = TruncateableMappingErrorBehaviour.TRUNCATE;
     private static final MappingErrorBehaviour DEFAULT_LOOKUP_BEHAVIOUR = MappingErrorBehaviour.NULL;

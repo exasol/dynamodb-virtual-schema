@@ -106,7 +106,7 @@ class JsonSchemaMappingReaderIT {
         final File invalidFile = this.mappingTestFiles.generateInvalidFile(MappingTestFiles.BASIC_MAPPING_FILE,
                 base -> {
                     final JSONObject newMappings = new JSONObject();
-                    newMappings.put("toStringMapping", new JSONObject());
+                    newMappings.put("toVarcharMapping", new JSONObject());
                     base.put("mapping", newMappings);
                     return base;
                 });
@@ -122,7 +122,7 @@ class JsonSchemaMappingReaderIT {
         final File invalidFile = this.mappingTestFiles.generateInvalidFile(MappingTestFiles.BASIC_MAPPING_FILE,
                 base -> {
                     base.getJSONObject("mapping").getJSONObject("fields").getJSONObject("name")
-                            .getJSONObject("toStringMapping").put("key", "local");
+                            .getJSONObject("toVarcharMapping").put("key", "local");
                     return base;
                 });
         final ExasolDocumentMappingLanguageException exception = assertThrows(
@@ -136,7 +136,7 @@ class JsonSchemaMappingReaderIT {
         final File invalidFile = this.mappingTestFiles
                 .generateInvalidFile(MappingTestFiles.SINGLE_COLUMN_TO_TABLE_MAPPING_FILE, base -> {
                     base.getJSONObject("mapping").getJSONObject("fields").getJSONObject("isbn")
-                            .getJSONObject("toStringMapping").put("key", "local");
+                            .getJSONObject("toVarcharMapping").put("key", "local");
                     return base;
                 });
         final ExasolDocumentMappingLanguageException exception = assertThrows(
@@ -150,7 +150,7 @@ class JsonSchemaMappingReaderIT {
         final File mappingFile = this.mappingTestFiles
                 .generateInvalidFile(MappingTestFiles.SINGLE_COLUMN_TO_TABLE_MAPPING_FILE, base -> {
                     base.getJSONObject("mapping").getJSONObject("fields").getJSONObject("isbn")
-                            .getJSONObject("toStringMapping").remove("key");
+                            .getJSONObject("toVarcharMapping").remove("key");
                     return base;
                 });
         final SchemaMapping schemaMapping = getMappingDefinitionForFile(mappingFile);

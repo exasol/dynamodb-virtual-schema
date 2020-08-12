@@ -278,9 +278,9 @@ public class ExasolTestDatabaseBuilder {
         uploadMapping(name, "mappings/" + name);
     }
 
-    public void uploadMapping(final String name, final String destName)
+    public void uploadMapping(final String name, final String destinationName)
             throws InterruptedException, BucketAccessException, TimeoutException {
-        this.testInterface.uploadFileToBucketfs(Path.of("src", "test", "resources", name), destName);
+        this.testInterface.uploadFileToBucketfs(Path.of("src", "test", "resources", name), destinationName);
     }
 
     public void cleanup() throws SQLException {
