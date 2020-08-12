@@ -14,21 +14,21 @@ import com.exasol.adapter.dynamodb.documentnode.dynamodb.DynamodbMap;
 import com.exasol.adapter.dynamodb.documentpath.StaticDocumentPathIterator;
 import com.exasol.adapter.dynamodb.mapping.ColumnValueExtractorException;
 import com.exasol.adapter.dynamodb.mapping.MappingErrorBehaviour;
-import com.exasol.adapter.dynamodb.mapping.ToDecimalPropertyToColumnMapping;
+import com.exasol.adapter.dynamodb.mapping.PropertyToDecimalColumnMapping;
 import com.exasol.dynamodb.attributevalue.AttributeValueQuickCreator;
 import com.exasol.sql.expression.BigDecimalLiteral;
 
-class DynamodbToDecimalPropertyToColumnValueExtractorTest {
+class DynamodbPropertyToDecimalColumnValueExtractorTest {
 
-    public static final ToDecimalPropertyToColumnMapping MAPPING = configureExampleMapping(
-            ToDecimalPropertyToColumnMapping.builder())//
+    public static final PropertyToDecimalColumnMapping MAPPING = configureExampleMapping(
+            PropertyToDecimalColumnMapping.builder())//
                     .lookupFailBehaviour(MappingErrorBehaviour.ABORT)//
                     .decimalPrecision(10)//
                     .decimalScale(2)//
                     .overflowBehaviour(MappingErrorBehaviour.ABORT)//
                     .notANumberBehaviour(MappingErrorBehaviour.ABORT)//
                     .build();
-    public static final DynamodbToDecimalPropertyToColumnValueExtractor EXTRACTOR = new DynamodbToDecimalPropertyToColumnValueExtractor(
+    public static final DynamodbPropertyToDecimalColumnValueExtractor EXTRACTOR = new DynamodbPropertyToDecimalColumnValueExtractor(
             MAPPING);
 
     @Test

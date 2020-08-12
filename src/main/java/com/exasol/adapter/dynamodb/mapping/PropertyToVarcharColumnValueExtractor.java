@@ -6,19 +6,19 @@ import com.exasol.sql.expression.StringLiteral;
 import com.exasol.sql.expression.ValueExpression;
 
 /**
- * ValueMapper for {@link ToStringPropertyToColumnMapping}
+ * ValueMapper for {@link PropertyToVarcharColumnMapping}
  */
 @java.lang.SuppressWarnings("squid:S119") // DocumentVisitorType does not fit naming conventions.
-public abstract class ToStringPropertyToColumnValueExtractor<DocumentVisitorType>
+public abstract class PropertyToVarcharColumnValueExtractor<DocumentVisitorType>
         extends AbstractPropertyToColumnValueExtractor<DocumentVisitorType> {
-    private final ToStringPropertyToColumnMapping column;
+    private final PropertyToVarcharColumnMapping column;
 
     /**
-     * Create an instance of {@link ToStringPropertyToColumnValueExtractor}.
+     * Create an instance of {@link PropertyToVarcharColumnValueExtractor}.
      * 
-     * @param column {@link ToStringPropertyToColumnMapping}
+     * @param column {@link PropertyToVarcharColumnMapping}
      */
-    public ToStringPropertyToColumnValueExtractor(final ToStringPropertyToColumnMapping column) {
+    public PropertyToVarcharColumnValueExtractor(final PropertyToVarcharColumnMapping column) {
         super(column);
         this.column = column;
     }

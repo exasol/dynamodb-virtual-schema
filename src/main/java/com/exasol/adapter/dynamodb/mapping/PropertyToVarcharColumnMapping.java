@@ -8,13 +8,13 @@ import com.exasol.adapter.metadata.DataType;
 /**
  * This class defines a mapping that extracts a string from the remote document and maps it to an Exasol VARCHAR column.
  */
-public final class ToStringPropertyToColumnMapping extends AbstractPropertyToColumnMapping {
+public final class PropertyToVarcharColumnMapping extends AbstractPropertyToColumnMapping {
     private static final long serialVersionUID = 3465558198156097064L;
     private final int varcharColumnSize;
     private final TruncateableMappingErrorBehaviour overflowBehaviour;
 
     /**
-     * Create an instance of {@link ToStringPropertyToColumnMapping}.
+     * Create an instance of {@link PropertyToVarcharColumnMapping}.
      *
      * @param exasolColumnName     Name of the Exasol column
      * @param pathToSourceProperty {@link DocumentPathExpression} path to the property to extract
@@ -23,7 +23,7 @@ public final class ToStringPropertyToColumnMapping extends AbstractPropertyToCol
      * @param varcharColumnSize    Size of the Exasol VARCHAR column
      * @param overflowBehaviour    Behaviour if extracted string exceeds {@link #varcharColumnSize}
      */
-    public ToStringPropertyToColumnMapping(final String exasolColumnName,
+    public PropertyToVarcharColumnMapping(final String exasolColumnName,
             final DocumentPathExpression pathToSourceProperty, final MappingErrorBehaviour lookupFailBehaviour,
             final int varcharColumnSize, final TruncateableMappingErrorBehaviour overflowBehaviour) {
         super(exasolColumnName, pathToSourceProperty, lookupFailBehaviour);
@@ -61,7 +61,7 @@ public final class ToStringPropertyToColumnMapping extends AbstractPropertyToCol
 
     @Override
     public ColumnMapping withNewExasolName(final String newExasolName) {
-        return new ToStringPropertyToColumnMapping(newExasolName, getPathToSourceProperty(), getMappingErrorBehaviour(),
+        return new PropertyToVarcharColumnMapping(newExasolName, getPathToSourceProperty(), getMappingErrorBehaviour(),
                 getVarcharColumnSize(), getOverflowBehaviour());
     }
 
@@ -70,13 +70,13 @@ public final class ToStringPropertyToColumnMapping extends AbstractPropertyToCol
         if (this == other) {
             return true;
         }
-        if (!(other instanceof ToStringPropertyToColumnMapping)) {
+        if (!(other instanceof PropertyToVarcharColumnMapping)) {
             return false;
         }
         if (!super.equals(other)) {
             return false;
         }
-        final ToStringPropertyToColumnMapping that = (ToStringPropertyToColumnMapping) other;
+        final PropertyToVarcharColumnMapping that = (PropertyToVarcharColumnMapping) other;
         return this.overflowBehaviour == that.overflowBehaviour && this.varcharColumnSize == that.varcharColumnSize;
     }
 

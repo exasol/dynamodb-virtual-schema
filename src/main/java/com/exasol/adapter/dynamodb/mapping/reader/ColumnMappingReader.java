@@ -50,7 +50,7 @@ class ColumnMappingReader {
         }
     }
 
-    private ToStringPropertyToColumnMapping readStringColumnIfPossible(final JsonObject definition,
+    private PropertyToVarcharColumnMapping readStringColumnIfPossible(final JsonObject definition,
             final DocumentPathExpression.Builder sourcePath, final String dynamodbPropertyName,
             final boolean isRootLevel) {
         if (isRootLevel) {
@@ -60,14 +60,14 @@ class ColumnMappingReader {
         return addStringColumn(definition, sourcePath, dynamodbPropertyName);
     }
 
-    private ToStringPropertyToColumnMapping addStringColumn(final JsonObject definition,
+    private PropertyToVarcharColumnMapping addStringColumn(final JsonObject definition,
             final DocumentPathExpression.Builder sourcePath, final String dynamodbPropertyName) {
         final int maxLength = definition.getInt(MAX_LENGTH_KEY, DEFAULT_MAX_LENGTH);
         final TruncateableMappingErrorBehaviour overflowBehaviour = readStringOverflowBehaviour(
                 definition);
         final String exasolColumnName = readExasolColumnName(definition, dynamodbPropertyName);
         final MappingErrorBehaviour lookupFailBehaviour = readMappingErrorBehaviour(definition);
-        return new ToStringPropertyToColumnMapping(exasolColumnName, sourcePath.build(), lookupFailBehaviour, maxLength,
+        return new PropertyToVarcharColumnMapping(exasolColumnName, sourcePath.build(), lookupFailBehaviour, maxLength,
                 overflowBehaviour);
     }
 
@@ -96,13 +96,13 @@ class ColumnMappingReader {
         return exasolColumnName.toUpperCase();
     }
 
-    private ToJsonPropertyToColumnMapping readToJsonColumn(final JsonObject definition,
+    private PropertyToJsonColumnMapping readToJsonColumn(final JsonObject definition,
             final DocumentPathExpression.Builder sourcePath, final String dynamodbPropertyName) {
         final String exasolColumnName = readExasolColumnName(definition, dynamodbPropertyName);
         final MappingErrorBehaviour lookupFailBehaviour = readMappingErrorBehaviour(definition);
         final MappingErrorBehaviour overflowBehaviour = definition.getString(OVERFLOW_KEY, "")
                 .equalsIgnoreCase(OVERFLOW_ABORT) ? MappingErrorBehaviour.ABORT : MappingErrorBehaviour.NULL;
-        return new ToJsonPropertyToColumnMapping(exasolColumnName, sourcePath.build(), lookupFailBehaviour,
+        return new PropertyToJsonColumnMapping(exasolColumnName, sourcePath.build(), lookupFailBehaviour,
                 definition.getInt(MAX_LENGTH_KEY, DEFAULT_MAX_LENGTH), overflowBehaviour);
     }
 }

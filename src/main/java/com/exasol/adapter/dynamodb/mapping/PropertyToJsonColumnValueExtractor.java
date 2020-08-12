@@ -6,19 +6,19 @@ import com.exasol.sql.expression.StringLiteral;
 import com.exasol.sql.expression.ValueExpression;
 
 /**
- * {@link ColumnValueExtractor} for {@link ToJsonPropertyToColumnMapping}.
+ * {@link ColumnValueExtractor} for {@link PropertyToJsonColumnMapping}.
  */
 @java.lang.SuppressWarnings("squid:S119") // DocumentVisitorType does not fit naming conventions.
-public abstract class ToJsonPropertyToColumnValueExtractor<DocumentVisitorType>
+public abstract class PropertyToJsonColumnValueExtractor<DocumentVisitorType>
         extends AbstractPropertyToColumnValueExtractor<DocumentVisitorType> {
-    private final ToJsonPropertyToColumnMapping column;
+    private final PropertyToJsonColumnMapping column;
 
     /**
-     * Create an instance of {@link ToJsonPropertyToColumnValueExtractor}.
+     * Create an instance of {@link PropertyToJsonColumnValueExtractor}.
      * 
-     * @param column {@link ToJsonPropertyToColumnMapping}
+     * @param column {@link PropertyToJsonColumnMapping}
      */
-    public ToJsonPropertyToColumnValueExtractor(final ToJsonPropertyToColumnMapping column) {
+    public PropertyToJsonColumnValueExtractor(final PropertyToJsonColumnMapping column) {
         super(column);
         this.column = column;
     }

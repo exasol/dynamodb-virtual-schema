@@ -30,13 +30,13 @@ class TestSetup {
 
     static ColumnMapping columnForAttribute(final String attributeName) {
         final DocumentPathExpression path = DocumentPathExpression.builder().addObjectLookup(attributeName).build();
-        return new ToJsonPropertyToColumnMapping(attributeName, path, null, 0, null);
+        return new PropertyToJsonColumnMapping(attributeName, path, null, 0, null);
     }
 
     public static ColumnLiteralComparisonPredicate getCompareForColumn(final String propertyName) {
         final DocumentPathExpression sourcePath = DocumentPathExpression.builder().addObjectLookup(propertyName)
                 .build();
-        final ToJsonPropertyToColumnMapping column = new ToJsonPropertyToColumnMapping("columnName", sourcePath, null,
+        final PropertyToJsonColumnMapping column = new PropertyToJsonColumnMapping("columnName", sourcePath, null,
                 0, MappingErrorBehaviour.NULL);
         return new ColumnLiteralComparisonPredicate(AbstractComparisonPredicate.Operator.EQUAL, column,
                 new SqlLiteralString(""));

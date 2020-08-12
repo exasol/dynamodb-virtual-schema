@@ -5,23 +5,23 @@ package com.exasol.adapter.dynamodb.mapping;
  */
 public interface PropertyToColumnMappingVisitor {
     /**
-     * Visits a {@link ToStringPropertyToColumnMapping}.
+     * Visits a {@link PropertyToVarcharColumnMapping}.
      * 
-     * @param columnDefinition {@link ToStringPropertyToColumnMapping} to visit
+     * @param columnDefinition {@link PropertyToVarcharColumnMapping} to visit
      */
-    public void visit(ToStringPropertyToColumnMapping columnDefinition);
+    public void visit(PropertyToVarcharColumnMapping columnDefinition);
 
     /**
-     * Visits a {@link ToJsonPropertyToColumnMapping}.
+     * Visits a {@link PropertyToJsonColumnMapping}.
      * 
-     * @param columnDefinition {@link ToJsonPropertyToColumnMapping} to visit
+     * @param columnDefinition {@link PropertyToJsonColumnMapping} to visit
      */
-    public void visit(ToJsonPropertyToColumnMapping columnDefinition);
+    public void visit(PropertyToJsonColumnMapping columnDefinition);
 
     /**
-     * Visits a {@link ToDecimalPropertyToColumnMapping}.
+     * Visits a {@link PropertyToDecimalColumnMapping}.
      *
-     * @param columnDefinition {@link ToDecimalPropertyToColumnMapping} to visit
+     * @param columnDefinition {@link PropertyToDecimalColumnMapping} to visit
      */
-    public void visit(ToDecimalPropertyToColumnMapping columnDefinition);
+    public void visit(PropertyToDecimalColumnMapping columnDefinition);
 }

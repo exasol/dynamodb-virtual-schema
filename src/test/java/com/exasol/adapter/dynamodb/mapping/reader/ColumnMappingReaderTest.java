@@ -13,15 +13,15 @@ import org.junit.jupiter.api.Test;
 
 import com.exasol.adapter.dynamodb.documentpath.DocumentPathExpression;
 import com.exasol.adapter.dynamodb.mapping.MappingErrorBehaviour;
-import com.exasol.adapter.dynamodb.mapping.ToJsonPropertyToColumnMapping;
-import com.exasol.adapter.dynamodb.mapping.ToStringPropertyToColumnMapping;
+import com.exasol.adapter.dynamodb.mapping.PropertyToJsonColumnMapping;
+import com.exasol.adapter.dynamodb.mapping.PropertyToVarcharColumnMapping;
 import com.exasol.adapter.dynamodb.mapping.TruncateableMappingErrorBehaviour;
 
 class ColumnMappingReaderTest {
 
     /**
      * Tests for the {@link ColumnMappingReader} uses the correct default values for the
-     * {@link ToStringPropertyToColumnMapping}.
+     * {@link PropertyToVarcharColumnMapping}.
      */
     @Test
     void testToStringColumnDefaultValues() {
@@ -39,7 +39,7 @@ class ColumnMappingReaderTest {
     }
 
     void assertToStringDefinitionDefaultValues(final JsonObject definition) {
-        final ToStringPropertyToColumnMapping columnMapping = (ToStringPropertyToColumnMapping) ColumnMappingReader
+        final PropertyToVarcharColumnMapping columnMapping = (PropertyToVarcharColumnMapping) ColumnMappingReader
                 .getInstance()
                 .readColumnMapping("toStringMapping", definition, DocumentPathExpression.builder(), "test", false);
         assertAll(//
@@ -59,7 +59,7 @@ class ColumnMappingReaderTest {
                 .add("overflow", "ABORT")//
                 .add("destName", "my_column")//
                 .add("required", true).build();
-        final ToStringPropertyToColumnMapping columnMapping = (ToStringPropertyToColumnMapping) ColumnMappingReader
+        final PropertyToVarcharColumnMapping columnMapping = (PropertyToVarcharColumnMapping) ColumnMappingReader
                 .getInstance()
                 .readColumnMapping("toStringMapping", definition, DocumentPathExpression.builder(), "test", false);
         assertAll(//
@@ -99,7 +99,7 @@ class ColumnMappingReaderTest {
     }
 
     void assertToJsonDefinitionDefaultValues(final JsonObject definition) {
-        final ToJsonPropertyToColumnMapping columnMapping = (ToJsonPropertyToColumnMapping) ColumnMappingReader
+        final PropertyToJsonColumnMapping columnMapping = (PropertyToJsonColumnMapping) ColumnMappingReader
                 .getInstance()
                 .readColumnMapping("toJsonMapping", definition, DocumentPathExpression.builder(), "test", false);
         assertAll(//
@@ -118,7 +118,7 @@ class ColumnMappingReaderTest {
                 .add("overflow", "ABORT")//
                 .add("destName", "my_column")//
                 .add("required", true).build();
-        final ToJsonPropertyToColumnMapping columnMapping = (ToJsonPropertyToColumnMapping) ColumnMappingReader
+        final PropertyToJsonColumnMapping columnMapping = (PropertyToJsonColumnMapping) ColumnMappingReader
                 .getInstance()
                 .readColumnMapping("toJsonMapping", definition, DocumentPathExpression.builder(), "test", false);
         assertAll(//

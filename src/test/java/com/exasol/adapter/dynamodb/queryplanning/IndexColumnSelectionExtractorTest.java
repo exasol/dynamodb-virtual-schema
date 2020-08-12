@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Test;
 import com.exasol.adapter.dynamodb.documentpath.DocumentPathExpression;
 import com.exasol.adapter.dynamodb.mapping.IterationIndexColumnMapping;
 import com.exasol.adapter.dynamodb.mapping.MappingErrorBehaviour;
-import com.exasol.adapter.dynamodb.mapping.ToStringPropertyToColumnMapping;
+import com.exasol.adapter.dynamodb.mapping.PropertyToVarcharColumnMapping;
 import com.exasol.adapter.dynamodb.mapping.TruncateableMappingErrorBehaviour;
 import com.exasol.adapter.dynamodb.querypredicate.*;
 import com.exasol.adapter.sql.SqlLiteralString;
@@ -25,7 +25,7 @@ class IndexColumnSelectionExtractorTest {
     private static final IndexColumnSelectionExtractor EXTRACTOR = new IndexColumnSelectionExtractor();
 
     private static ColumnLiteralComparisonPredicate buildNonIndexComparison(final String columnName) {
-        final ToStringPropertyToColumnMapping column = new ToStringPropertyToColumnMapping(columnName,
+        final PropertyToVarcharColumnMapping column = new PropertyToVarcharColumnMapping(columnName,
                 DocumentPathExpression.builder().addObjectLookup(columnName).build(), MappingErrorBehaviour.ABORT, 254,
                 TruncateableMappingErrorBehaviour.ABORT);
         final SqlLiteralString literal = new SqlLiteralString("valueToCompareTo");

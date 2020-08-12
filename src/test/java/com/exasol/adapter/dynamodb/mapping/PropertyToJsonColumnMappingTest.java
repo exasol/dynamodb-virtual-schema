@@ -7,15 +7,15 @@ import org.junit.jupiter.api.Test;
 
 import com.exasol.adapter.dynamodb.documentpath.DocumentPathExpression;
 
-class ToJsonPropertyToColumnMappingTest {
+class PropertyToJsonColumnMappingTest {
 
-    private static final ToJsonPropertyToColumnMapping TEST_OBJECT = new ToJsonPropertyToColumnMapping("name",
+    private static final PropertyToJsonColumnMapping TEST_OBJECT = new PropertyToJsonColumnMapping("name",
             DocumentPathExpression.builder().addArrayAll().build(), MappingErrorBehaviour.ABORT, 10,
             MappingErrorBehaviour.ABORT);
 
     @Test
     void testEqual() {
-        final ToJsonPropertyToColumnMapping other = new ToJsonPropertyToColumnMapping(TEST_OBJECT.getExasolColumnName(),
+        final PropertyToJsonColumnMapping other = new PropertyToJsonColumnMapping(TEST_OBJECT.getExasolColumnName(),
                 TEST_OBJECT.getPathToSourceProperty(), TEST_OBJECT.getMappingErrorBehaviour(), 10,
                 MappingErrorBehaviour.ABORT);
         assertSymmetricEqualWithHashAndEquals(TEST_OBJECT, other);
@@ -23,7 +23,7 @@ class ToJsonPropertyToColumnMappingTest {
 
     @Test
     void testNotEqualWithDifferentName() {
-        final ToJsonPropertyToColumnMapping other = new ToJsonPropertyToColumnMapping("otherName",
+        final PropertyToJsonColumnMapping other = new PropertyToJsonColumnMapping("otherName",
                 TEST_OBJECT.getPathToSourceProperty(), TEST_OBJECT.getMappingErrorBehaviour(), 10,
                 MappingErrorBehaviour.ABORT);
         assertSymmetricNotEqualWithHashAndEquals(TEST_OBJECT, other);
@@ -31,7 +31,7 @@ class ToJsonPropertyToColumnMappingTest {
 
     @Test
     void testNotEqualWithDifferentColumn() {
-        final ToJsonPropertyToColumnMapping other = new ToJsonPropertyToColumnMapping(TEST_OBJECT.getExasolColumnName(),
+        final PropertyToJsonColumnMapping other = new PropertyToJsonColumnMapping(TEST_OBJECT.getExasolColumnName(),
                 DocumentPathExpression.empty(), TEST_OBJECT.getMappingErrorBehaviour(), 10,
                 MappingErrorBehaviour.ABORT);
         assertSymmetricNotEqualWithHashAndEquals(TEST_OBJECT, other);

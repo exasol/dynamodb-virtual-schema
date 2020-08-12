@@ -10,19 +10,19 @@ import com.exasol.sql.expression.ValueExpression;
 
 /**
  * This class extracts DECIMAL values from document data. The extraction is defined using a
- * {@link ToDecimalPropertyToColumnMapping}.
+ * {@link PropertyToDecimalColumnMapping}.
  */
 @java.lang.SuppressWarnings("squid:S119") // DocumentVisitorType does not fit naming conventions.
-public abstract class ToDecimalPropertyToColumnValueExtractor<DocumentVisitorType>
+public abstract class PropertyToDecimalColumnValueExtractor<DocumentVisitorType>
         extends AbstractPropertyToColumnValueExtractor<DocumentVisitorType> {
-    private final ToDecimalPropertyToColumnMapping column;
+    private final PropertyToDecimalColumnMapping column;
 
     /**
-     * Create an instance of {@link ToDecimalPropertyToColumnValueExtractor}.
+     * Create an instance of {@link PropertyToDecimalColumnValueExtractor}.
      *
-     * @param column {@link ToDecimalPropertyToColumnMapping} defining the mapping
+     * @param column {@link PropertyToDecimalColumnMapping} defining the mapping
      */
-    public ToDecimalPropertyToColumnValueExtractor(final ToDecimalPropertyToColumnMapping column) {
+    public PropertyToDecimalColumnValueExtractor(final PropertyToDecimalColumnMapping column) {
         super(column);
         this.column = column;
     }

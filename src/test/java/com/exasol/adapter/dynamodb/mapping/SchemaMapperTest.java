@@ -27,7 +27,7 @@ class SchemaMapperTest {
 
     @Test
     void testMapRow() {
-        final ToJsonPropertyToColumnMapping columnMapping = new ToJsonPropertyToColumnMapping("test",
+        final PropertyToJsonColumnMapping columnMapping = new PropertyToJsonColumnMapping("test",
                 DocumentPathExpression.empty(), MappingErrorBehaviour.ABORT, 0, MappingErrorBehaviour.ABORT);
 
         final TableMapping tableMapping = TableMapping.rootTableBuilder("table", "table")
@@ -51,7 +51,7 @@ class SchemaMapperTest {
 
         final DocumentPathExpression pathToNestedTable = DocumentPathExpression.builder()
                 .addObjectLookup(nestedListKey).addArrayAll().build();
-        final ToJsonPropertyToColumnMapping columnMapping = new ToJsonPropertyToColumnMapping("test", pathToNestedTable,
+        final PropertyToJsonColumnMapping columnMapping = new PropertyToJsonColumnMapping("test", pathToNestedTable,
                 MappingErrorBehaviour.ABORT, 0, MappingErrorBehaviour.ABORT);
         final ColumnMapping indexColumn = new IterationIndexColumnMapping("INDEX",
                 DocumentPathExpression.builder().addObjectLookup(nestedListKey).addArrayAll().build());

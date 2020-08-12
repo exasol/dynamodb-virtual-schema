@@ -8,13 +8,13 @@ import com.exasol.adapter.metadata.DataType;
 /**
  * Maps a property of a DynamoDB table and all its descendants to a JSON string.
  */
-public final class ToJsonPropertyToColumnMapping extends AbstractPropertyToColumnMapping {
+public final class PropertyToJsonColumnMapping extends AbstractPropertyToColumnMapping {
     private static final long serialVersionUID = -6383134783719798072L;//
     private final int varcharColumnSize;
     private final MappingErrorBehaviour overflowBehaviour;
 
     /**
-     * Create an instance of {@link ToJsonPropertyToColumnMapping}.
+     * Create an instance of {@link PropertyToJsonColumnMapping}.
      * 
      * @param exasolColumnName     Name of the Exasol column
      * @param pathToSourceProperty {@link DocumentPathExpression} path to the property to extract
@@ -23,9 +23,9 @@ public final class ToJsonPropertyToColumnMapping extends AbstractPropertyToColum
      * @param varcharColumnSize    Size of the Exasol VARCHAR column
      * @param overflowBehaviour    Behaviour if the result exceeds the columns size
      */
-    public ToJsonPropertyToColumnMapping(final String exasolColumnName,
-            final DocumentPathExpression pathToSourceProperty, final MappingErrorBehaviour lookupFailBehaviour,
-            final int varcharColumnSize, final MappingErrorBehaviour overflowBehaviour) {
+    public PropertyToJsonColumnMapping(final String exasolColumnName, final DocumentPathExpression pathToSourceProperty,
+            final MappingErrorBehaviour lookupFailBehaviour, final int varcharColumnSize,
+            final MappingErrorBehaviour overflowBehaviour) {
         super(exasolColumnName, pathToSourceProperty, lookupFailBehaviour);
         this.varcharColumnSize = varcharColumnSize;
         this.overflowBehaviour = overflowBehaviour;
@@ -56,7 +56,7 @@ public final class ToJsonPropertyToColumnMapping extends AbstractPropertyToColum
 
     @Override
     public ColumnMapping withNewExasolName(final String newExasolName) {
-        return new ToJsonPropertyToColumnMapping(newExasolName, this.getPathToSourceProperty(),
+        return new PropertyToJsonColumnMapping(newExasolName, this.getPathToSourceProperty(),
                 this.getMappingErrorBehaviour(), this.varcharColumnSize, this.overflowBehaviour);
     }
 
@@ -67,10 +67,10 @@ public final class ToJsonPropertyToColumnMapping extends AbstractPropertyToColum
 
     @Override
     public boolean equals(final Object other) {
-        if (!(other instanceof ToJsonPropertyToColumnMapping)) {
+        if (!(other instanceof PropertyToJsonColumnMapping)) {
             return false;
         }
-        final ToJsonPropertyToColumnMapping that = (ToJsonPropertyToColumnMapping) other;
+        final PropertyToJsonColumnMapping that = (PropertyToJsonColumnMapping) other;
         return this.varcharColumnSize == that.varcharColumnSize && this.overflowBehaviour.equals(that.overflowBehaviour)
                 && super.equals(other);
     }

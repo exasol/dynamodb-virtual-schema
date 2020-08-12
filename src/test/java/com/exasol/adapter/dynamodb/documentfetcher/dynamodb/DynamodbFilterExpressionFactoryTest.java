@@ -14,7 +14,7 @@ import org.junit.jupiter.api.Test;
 
 import com.exasol.adapter.dynamodb.documentnode.dynamodb.DynamodbString;
 import com.exasol.adapter.dynamodb.documentpath.DocumentPathExpression;
-import com.exasol.adapter.dynamodb.mapping.ToJsonPropertyToColumnMapping;
+import com.exasol.adapter.dynamodb.mapping.PropertyToJsonColumnMapping;
 import com.exasol.adapter.dynamodb.querypredicate.*;
 import com.exasol.adapter.sql.SqlLiteralString;
 
@@ -113,7 +113,7 @@ class DynamodbFilterExpressionFactoryTest {
     private ColumnLiteralComparisonPredicate getComparison(final String literal,
             final AbstractComparisonPredicate.Operator operator) {
         final DocumentPathExpression sourcePath = DocumentPathExpression.builder().addObjectLookup("key").build();
-        final ToJsonPropertyToColumnMapping column = new ToJsonPropertyToColumnMapping("columnName", sourcePath, null,
+        final PropertyToJsonColumnMapping column = new PropertyToJsonColumnMapping("columnName", sourcePath, null,
                 0, null);
         return new ColumnLiteralComparisonPredicate(operator, column, new SqlLiteralString(literal));
     }

@@ -9,13 +9,13 @@ import org.junit.jupiter.api.Test;
 import com.exasol.adapter.dynamodb.documentpath.DocumentPathExpression;
 import com.exasol.adapter.dynamodb.mapping.ColumnMapping;
 import com.exasol.adapter.dynamodb.mapping.MappingErrorBehaviour;
-import com.exasol.adapter.dynamodb.mapping.ToJsonPropertyToColumnMapping;
+import com.exasol.adapter.dynamodb.mapping.PropertyToJsonColumnMapping;
 import com.exasol.adapter.sql.SqlLiteralString;
 
 class ColumnLiteralComparisonPredicateTest {
     private static final AbstractComparisonPredicate.Operator OPERATOR = AbstractComparisonPredicate.Operator.EQUAL;
     private static final SqlLiteralString LITERAL = new SqlLiteralString("test");
-    private static final ColumnMapping COLUMN = new ToJsonPropertyToColumnMapping("", DocumentPathExpression.empty(),
+    private static final ColumnMapping COLUMN = new PropertyToJsonColumnMapping("", DocumentPathExpression.empty(),
             MappingErrorBehaviour.ABORT, 0, MappingErrorBehaviour.ABORT);
     private static final ColumnLiteralComparisonPredicate TEST_PREDICATE = new ColumnLiteralComparisonPredicate(
             OPERATOR, COLUMN, LITERAL);

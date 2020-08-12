@@ -15,19 +15,19 @@ import com.exasol.sql.expression.BigDecimalLiteral;
 import com.exasol.sql.expression.NullLiteral;
 import com.exasol.sql.expression.ValueExpression;
 
-class ToDecimalPropertyToColumnValueExtractorTest {
+class PropertyToDecimalColumnValueExtractorTest {
 
-    private static final ToDecimalPropertyToColumnMapping ABORT_MAPPING = commonMappingBuilder()//
+    private static final PropertyToDecimalColumnMapping ABORT_MAPPING = commonMappingBuilder()//
             .overflowBehaviour(MappingErrorBehaviour.ABORT)//
             .notANumberBehaviour(MappingErrorBehaviour.ABORT)//
             .build();
-    private static final ToDecimalPropertyToColumnMapping NULL_MAPPING = commonMappingBuilder()//
+    private static final PropertyToDecimalColumnMapping NULL_MAPPING = commonMappingBuilder()//
             .overflowBehaviour(MappingErrorBehaviour.NULL)//
             .notANumberBehaviour(MappingErrorBehaviour.NULL)//
             .build();
 
-    private static ToDecimalPropertyToColumnMapping.Builder commonMappingBuilder() {
-        return configureExampleMapping(ToDecimalPropertyToColumnMapping.builder())//
+    private static PropertyToDecimalColumnMapping.Builder commonMappingBuilder() {
+        return configureExampleMapping(PropertyToDecimalColumnMapping.builder())//
                 .decimalPrecision(2)//
                 .decimalScale(0);
     }
@@ -72,10 +72,10 @@ class ToDecimalPropertyToColumnValueExtractorTest {
         assertThat(valueExpression, instanceOf(NullLiteral.class));
     }
 
-    private static class ToDecimalExtractorStub extends ToDecimalPropertyToColumnValueExtractor<Object> {
+    private static class ToDecimalExtractorStub extends PropertyToDecimalColumnValueExtractor<Object> {
         private final BigDecimal value;
 
-        public ToDecimalExtractorStub(final ToDecimalPropertyToColumnMapping column, final BigDecimal value) {
+        public ToDecimalExtractorStub(final PropertyToDecimalColumnMapping column, final BigDecimal value) {
             super(column);
             this.value = value;
         }

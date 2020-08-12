@@ -11,9 +11,9 @@ import org.junit.jupiter.api.Test;
 
 import com.exasol.adapter.metadata.DataType;
 
-class ToDecimalPropertyToColumnMappingTest {
-    private static final ToDecimalPropertyToColumnMapping TEST_OBJECT = configureExampleMapping(
-            ToDecimalPropertyToColumnMapping.builder())//
+class PropertyToDecimalColumnMappingTest {
+    private static final PropertyToDecimalColumnMapping TEST_OBJECT = configureExampleMapping(
+            PropertyToDecimalColumnMapping.builder())//
                     .decimalPrecision(12)//
                     .decimalScale(1)//
                     .overflowBehaviour(MappingErrorBehaviour.NULL)//
@@ -44,8 +44,7 @@ class ToDecimalPropertyToColumnMappingTest {
 
     @Test
     void testInequalityByPrecision() {
-        final ToDecimalPropertyToColumnMapping other = configureExampleMapping(
-                ToDecimalPropertyToColumnMapping.builder())//
+        final PropertyToDecimalColumnMapping other = configureExampleMapping(PropertyToDecimalColumnMapping.builder())//
                         .decimalPrecision(11)// single difference
                         .decimalScale(1)//
                         .overflowBehaviour(MappingErrorBehaviour.NULL)//
@@ -56,8 +55,7 @@ class ToDecimalPropertyToColumnMappingTest {
 
     @Test
     void testInequalityByScale() {
-        final ToDecimalPropertyToColumnMapping other = configureExampleMapping(
-                ToDecimalPropertyToColumnMapping.builder())//
+        final PropertyToDecimalColumnMapping other = configureExampleMapping(PropertyToDecimalColumnMapping.builder())//
                         .decimalPrecision(12)//
                         .decimalScale(2)// single difference
                         .overflowBehaviour(MappingErrorBehaviour.NULL)//
@@ -68,8 +66,7 @@ class ToDecimalPropertyToColumnMappingTest {
 
     @Test
     void testInequalityByOverflowBehaviour() {
-        final ToDecimalPropertyToColumnMapping other = configureExampleMapping(
-                ToDecimalPropertyToColumnMapping.builder())//
+        final PropertyToDecimalColumnMapping other = configureExampleMapping(PropertyToDecimalColumnMapping.builder())//
                         .decimalPrecision(12)//
                         .decimalScale(1)//
                         .overflowBehaviour(MappingErrorBehaviour.ABORT)// single difference
@@ -80,8 +77,7 @@ class ToDecimalPropertyToColumnMappingTest {
 
     @Test
     void testInequalityByNotANumberBehaviour() {
-        final ToDecimalPropertyToColumnMapping other = configureExampleMapping(
-                ToDecimalPropertyToColumnMapping.builder())//
+        final PropertyToDecimalColumnMapping other = configureExampleMapping(PropertyToDecimalColumnMapping.builder())//
                         .decimalPrecision(12)//
                         .decimalScale(1)//
                         .overflowBehaviour(MappingErrorBehaviour.NULL)//
@@ -92,8 +88,7 @@ class ToDecimalPropertyToColumnMappingTest {
 
     @Test
     void testInequalityBySuper() {
-        final ToDecimalPropertyToColumnMapping other = configureExampleMapping(
-                ToDecimalPropertyToColumnMapping.builder())//
+        final PropertyToDecimalColumnMapping other = configureExampleMapping(PropertyToDecimalColumnMapping.builder())//
                         .exasolColumnName("different name")// single difference
                         .decimalPrecision(12)//
                         .decimalScale(1)//

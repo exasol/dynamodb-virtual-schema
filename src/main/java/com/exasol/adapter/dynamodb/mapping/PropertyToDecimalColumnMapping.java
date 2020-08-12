@@ -9,7 +9,7 @@ import com.exasol.adapter.metadata.DataType;
  * This class defines a mapping that extracts a decimal number from the remote document and maps it to an Exasol DECIMAL
  * column.
  */
-public final class ToDecimalPropertyToColumnMapping extends AbstractPropertyToColumnMapping {
+public final class PropertyToDecimalColumnMapping extends AbstractPropertyToColumnMapping {
     private static final long serialVersionUID = -2534835248457080092L;
     private final int decimalPrecision;
     private final int decimalScale;
@@ -17,7 +17,7 @@ public final class ToDecimalPropertyToColumnMapping extends AbstractPropertyToCo
     private final MappingErrorBehaviour notANumberBehaviour;
 
     /**
-     * Create an instance of {@link ToDecimalPropertyToColumnMapping}.
+     * Create an instance of {@link PropertyToDecimalColumnMapping}.
      * 
      * @param exasolColumnName     Name of the Exasol column
      * @param pathToSourceProperty {@link DocumentPathExpression} path to the property to extract
@@ -27,7 +27,7 @@ public final class ToDecimalPropertyToColumnMapping extends AbstractPropertyToCo
      * @param overflowBehaviour    Behaviour to apply in case the value exceeds the size of the DECIMAL column
      * @param notANumberBehaviour  Behaviour to apply in case a value is not a number
      */
-    private ToDecimalPropertyToColumnMapping(final String exasolColumnName,
+    private PropertyToDecimalColumnMapping(final String exasolColumnName,
             final DocumentPathExpression pathToSourceProperty, final MappingErrorBehaviour lookupFailBehaviour,
             final int decimalPrecision, final int decimalScale, final MappingErrorBehaviour overflowBehaviour,
             final MappingErrorBehaviour notANumberBehaviour) {
@@ -39,9 +39,9 @@ public final class ToDecimalPropertyToColumnMapping extends AbstractPropertyToCo
     }
 
     /**
-     * Get a builder for {@link ToDecimalPropertyToColumnMapping}.
+     * Get a builder for {@link PropertyToDecimalColumnMapping}.
      *
-     * @return builder for {@link ToDecimalPropertyToColumnMapping}
+     * @return builder for {@link PropertyToDecimalColumnMapping}
      */
     public static Builder builder() {
         return new Builder();
@@ -59,7 +59,7 @@ public final class ToDecimalPropertyToColumnMapping extends AbstractPropertyToCo
 
     @Override
     public ColumnMapping withNewExasolName(final String newExasolName) {
-        return new ToDecimalPropertyToColumnMapping(newExasolName, getPathToSourceProperty(),
+        return new PropertyToDecimalColumnMapping(newExasolName, getPathToSourceProperty(),
                 getMappingErrorBehaviour(), this.decimalPrecision, this.decimalScale, this.overflowBehaviour,
                 this.notANumberBehaviour);
     }
@@ -105,10 +105,10 @@ public final class ToDecimalPropertyToColumnMapping extends AbstractPropertyToCo
         if (this == other) {
             return true;
         }
-        if (!(other instanceof ToDecimalPropertyToColumnMapping)) {
+        if (!(other instanceof PropertyToDecimalColumnMapping)) {
             return false;
         }
-        final ToDecimalPropertyToColumnMapping that = (ToDecimalPropertyToColumnMapping) other;
+        final PropertyToDecimalColumnMapping that = (PropertyToDecimalColumnMapping) other;
         return super.equals(other)//
                 && this.decimalPrecision == that.decimalPrecision//
                 && this.decimalScale == that.decimalScale//
@@ -123,7 +123,7 @@ public final class ToDecimalPropertyToColumnMapping extends AbstractPropertyToCo
     }
 
     /**
-     * Builder for {@link ToDecimalPropertyToColumnMapping}
+     * Builder for {@link PropertyToDecimalColumnMapping}
      */
     public static final class Builder implements PropertyToColumnMapping.Builder {
         private String exasolColumnName;
@@ -200,12 +200,12 @@ public final class ToDecimalPropertyToColumnMapping extends AbstractPropertyToCo
         }
 
         /**
-         * Build the {@link ToDecimalPropertyToColumnMapping}.
+         * Build the {@link PropertyToDecimalColumnMapping}.
          * 
-         * @return built {@link ToDecimalPropertyToColumnMapping}
+         * @return built {@link PropertyToDecimalColumnMapping}
          */
-        public ToDecimalPropertyToColumnMapping build() {
-            return new ToDecimalPropertyToColumnMapping(this.exasolColumnName, this.pathToSourceProperty,
+        public PropertyToDecimalColumnMapping build() {
+            return new PropertyToDecimalColumnMapping(this.exasolColumnName, this.pathToSourceProperty,
                     this.lookupFailBehaviour, this.decimalPrecision, this.decimalScale, this.overflowBehaviour,
                     this.notANumberBehaviour);
         }

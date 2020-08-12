@@ -2,7 +2,7 @@ package com.exasol.adapter.dynamodb.querypredicate.normalizer;
 
 import java.util.Set;
 
-import com.exasol.adapter.dynamodb.mapping.ToJsonPropertyToColumnMapping;
+import com.exasol.adapter.dynamodb.mapping.PropertyToJsonColumnMapping;
 import com.exasol.adapter.dynamodb.querypredicate.AbstractComparisonPredicate;
 import com.exasol.adapter.dynamodb.querypredicate.ColumnLiteralComparisonPredicate;
 import com.exasol.adapter.dynamodb.querypredicate.LogicalOperator;
@@ -20,12 +20,12 @@ class SelectionsConstants {
 
     static {
         EQUAL1 = new ColumnLiteralComparisonPredicate(AbstractComparisonPredicate.Operator.EQUAL,
-                new ToJsonPropertyToColumnMapping("isbn", null, null, 0, null), new SqlLiteralString("test"));
+                new PropertyToJsonColumnMapping("isbn", null, null, 0, null), new SqlLiteralString("test"));
         EQUAL2 = new ColumnLiteralComparisonPredicate(AbstractComparisonPredicate.Operator.EQUAL,
-                new ToJsonPropertyToColumnMapping("publisher", null, null, 1, null), new SqlLiteralString("test"));
+                new PropertyToJsonColumnMapping("publisher", null, null, 1, null), new SqlLiteralString("test"));
 
         EQUAL3 = new ColumnLiteralComparisonPredicate(AbstractComparisonPredicate.Operator.EQUAL,
-                new ToJsonPropertyToColumnMapping("publisher", null, null, 2, null), new SqlLiteralString("test2"));
+                new PropertyToJsonColumnMapping("publisher", null, null, 2, null), new SqlLiteralString("test2"));
 
         AND_OF_TWO_DIFFERENT_PREDICATES = new LogicalOperator(Set.of(EQUAL1, EQUAL2), LogicalOperator.Operator.AND);
         OR_OF_TWO_DIFFERENT_PREDICATES = new LogicalOperator(Set.of(EQUAL1, EQUAL2), LogicalOperator.Operator.OR);

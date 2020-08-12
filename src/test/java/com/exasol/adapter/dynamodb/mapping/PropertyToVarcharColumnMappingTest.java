@@ -11,10 +11,10 @@ import org.junit.jupiter.api.Test;
 import com.exasol.adapter.dynamodb.documentpath.DocumentPathExpression;
 import com.exasol.adapter.metadata.DataType;
 
-class ToStringPropertyToColumnMappingTest {
+class PropertyToVarcharColumnMappingTest {
     private static final String COLUMN_NAME = "columnName";
     private static final int STRING_LENGTH = 10;
-    private static final ToStringPropertyToColumnMapping TEST_OBJECT = new ToStringPropertyToColumnMapping(COLUMN_NAME,
+    private static final PropertyToVarcharColumnMapping TEST_OBJECT = new PropertyToVarcharColumnMapping(COLUMN_NAME,
             DocumentPathExpression.builder().addArrayAll().build(), MappingErrorBehaviour.NULL, STRING_LENGTH,
             TruncateableMappingErrorBehaviour.TRUNCATE);
 
@@ -34,7 +34,7 @@ class ToStringPropertyToColumnMappingTest {
 
     @Test
     void testEqual() {
-        final ToStringPropertyToColumnMapping other = new ToStringPropertyToColumnMapping(COLUMN_NAME,
+        final PropertyToVarcharColumnMapping other = new PropertyToVarcharColumnMapping(COLUMN_NAME,
                 TEST_OBJECT.getPathToSourceProperty(), TEST_OBJECT.getMappingErrorBehaviour(),
                 TEST_OBJECT.getVarcharColumnSize(), TEST_OBJECT.getOverflowBehaviour());
         assertSymmetricEqualWithHashAndEquals(TEST_OBJECT, other);
@@ -42,7 +42,7 @@ class ToStringPropertyToColumnMappingTest {
 
     @Test
     void testNotEqualWithDifferentName() {
-        final ToStringPropertyToColumnMapping other = new ToStringPropertyToColumnMapping("otherName",
+        final PropertyToVarcharColumnMapping other = new PropertyToVarcharColumnMapping("otherName",
                 TEST_OBJECT.getPathToSourceProperty(), TEST_OBJECT.getMappingErrorBehaviour(),
                 TEST_OBJECT.getVarcharColumnSize(), TEST_OBJECT.getOverflowBehaviour());
         assertSymmetricNotEqualWithHashAndEquals(TEST_OBJECT, other);
@@ -50,7 +50,7 @@ class ToStringPropertyToColumnMappingTest {
 
     @Test
     void testNotEqualWithDifferentPath() {
-        final ToStringPropertyToColumnMapping other = new ToStringPropertyToColumnMapping(COLUMN_NAME,
+        final PropertyToVarcharColumnMapping other = new PropertyToVarcharColumnMapping(COLUMN_NAME,
                 DocumentPathExpression.empty(), TEST_OBJECT.getMappingErrorBehaviour(),
                 TEST_OBJECT.getVarcharColumnSize(),
                 TEST_OBJECT.getOverflowBehaviour());
@@ -59,7 +59,7 @@ class ToStringPropertyToColumnMappingTest {
 
     @Test
     void testNotEqualWithDifferentStringSize() {
-        final ToStringPropertyToColumnMapping other = new ToStringPropertyToColumnMapping(COLUMN_NAME,
+        final PropertyToVarcharColumnMapping other = new PropertyToVarcharColumnMapping(COLUMN_NAME,
                 TEST_OBJECT.getPathToSourceProperty(), TEST_OBJECT.getMappingErrorBehaviour(), 123,
                 TEST_OBJECT.getOverflowBehaviour());
         assertSymmetricNotEqualWithHashAndEquals(TEST_OBJECT, other);

@@ -2,20 +2,20 @@ package com.exasol.adapter.dynamodb.mapping.dynamodb;
 
 import com.exasol.adapter.dynamodb.documentnode.DocumentNode;
 import com.exasol.adapter.dynamodb.documentnode.dynamodb.*;
-import com.exasol.adapter.dynamodb.mapping.ToStringPropertyToColumnMapping;
-import com.exasol.adapter.dynamodb.mapping.ToStringPropertyToColumnValueExtractor;
+import com.exasol.adapter.dynamodb.mapping.PropertyToVarcharColumnMapping;
+import com.exasol.adapter.dynamodb.mapping.PropertyToVarcharColumnValueExtractor;
 
 /**
  * This class converts DynamoDB values to strings, stored in VARCHAR columns.
  */
-public class DynamodbToStringPropertyToColumnValueExtractor
-        extends ToStringPropertyToColumnValueExtractor<DynamodbNodeVisitor> {
+public class DynamodbPropertyToVarcharColumnValueExtractor
+        extends PropertyToVarcharColumnValueExtractor<DynamodbNodeVisitor> {
     /**
-     * Create an instance of {@link DynamodbToStringPropertyToColumnValueExtractor}.
+     * Create an instance of {@link DynamodbPropertyToVarcharColumnValueExtractor}.
      *
-     * @param column {@link ToStringPropertyToColumnMapping}
+     * @param column {@link PropertyToVarcharColumnMapping}
      */
-    public DynamodbToStringPropertyToColumnValueExtractor(final ToStringPropertyToColumnMapping column) {
+    public DynamodbPropertyToVarcharColumnValueExtractor(final PropertyToVarcharColumnMapping column) {
         super(column);
     }
 

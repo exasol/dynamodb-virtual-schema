@@ -11,20 +11,20 @@ import com.exasol.adapter.dynamodb.documentnode.dynamodb.DynamodbMap;
 import com.exasol.adapter.dynamodb.documentpath.DocumentPathExpression;
 import com.exasol.adapter.dynamodb.documentpath.StaticDocumentPathIterator;
 import com.exasol.adapter.dynamodb.mapping.MappingErrorBehaviour;
-import com.exasol.adapter.dynamodb.mapping.ToJsonPropertyToColumnMapping;
+import com.exasol.adapter.dynamodb.mapping.PropertyToJsonColumnMapping;
 import com.exasol.dynamodb.attributevalue.AttributeValueQuickCreator;
 import com.exasol.sql.expression.ValueExpression;
 
-class DynamodbToJsonPropertyToColumnValueExtractorTest {
+class DynamodbPropertyToJsonColumnValueExtractorTest {
     private static final String DEST_COLUMN = "destColumn";
 
     @Test
     void testConvertRowBasic() {
-        final ToJsonPropertyToColumnMapping toStringColumnMappingDefinition = new ToJsonPropertyToColumnMapping(
+        final PropertyToJsonColumnMapping toStringColumnMappingDefinition = new PropertyToJsonColumnMapping(
                 DEST_COLUMN, DocumentPathExpression.empty(), MappingErrorBehaviour.ABORT, 100,
                 MappingErrorBehaviour.ABORT);
         final DynamodbMap testData = new DynamodbMap(Map.of("key", AttributeValueQuickCreator.forString("value")));
-        final ValueExpression exasolCellValue = new DynamodbToJsonPropertyToColumnValueExtractor(
+        final ValueExpression exasolCellValue = new DynamodbPropertyToJsonColumnValueExtractor(
                 toStringColumnMappingDefinition).extractColumnValue(testData, new StaticDocumentPathIterator());
         assertThat(exasolCellValue.toString(), equalTo("{\"key\":\"value\"}"));
     }
