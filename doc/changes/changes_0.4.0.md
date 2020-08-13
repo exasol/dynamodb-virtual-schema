@@ -1,4 +1,4 @@
-# dynamodb-virtual-schema 0.4.0, released 2020-07-08
+# dynamodb-virtual-schema 0.4.0, released 2020-08-XX
  
 ## Summary
 
@@ -8,5 +8,5 @@ and query parallelization.
 ## Features / Enhancements
  
 * #11: Added toDecimalMapping
-* #48: EDML: renamed destinationName -> destinationName
+* #48: EDML: renamed destName -> destinationName
  
