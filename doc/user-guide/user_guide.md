@@ -71,9 +71,9 @@ CREATE VIRTUAL SCHEMA DYNAMODB_TEST USING ADAPTER.DYNAMODB_ADAPTER WITH
 
 The CREATE VIRTUAL SCHEMA command accepts the following properties:
 
-| Property          | Required    |  Default      |   Description                                                                 |
+| Property          | Mandatory   |  Default      |   Description                                                                 |
 |-------------------|-------------|---------------|-------------------------------------------------------------------------------|
-|`MAPPING`          | ✓           |               | Path to the mapping definition file(s)                                        |
-|`MAX_PARALLEL_UDFS`| ×           | -1            | Maximum number of UDFs that are executed in parallel. -1 represents unlimited.|
+|`MAPPING`          | Yes         |               | Path to the mapping definition file(s)                                        |
+|`MAX_PARALLEL_UDFS`| No          | -1            | Maximum number of UDFs that are executed in parallel. -1 represents unlimited.|
  
 Now browse the data using your favorite SQL client.

@@ -54,14 +54,14 @@ public class DynamodbAdapterProperties {
      */
     public int getMaxParallelUdfs() throws AdapterException {
         final String propertyValue = this.properties.get(MAX_PARALLEL_UDFS_KEY);
-        final int intValue = readMaxParallelUdfs(propertyValue);
-        if (intValue == -1) {
+        final int integerValue = readMaxParallelUdfs(propertyValue);
+        if (integerValue == -1) {
             return Integer.MAX_VALUE;
-        } else if (intValue < 1) {
+        } else if (integerValue >= 1) {
+            return integerValue;
+        } else {
             throw new AdapterException("Invalid value for property MAX_PARALLEL_UDFS: " + propertyValue
                     + ". Value must be >= 1 or -1 for no limitation.");
-        } else {
-            return intValue;
         }
     }
 

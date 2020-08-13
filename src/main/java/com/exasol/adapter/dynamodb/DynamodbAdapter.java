@@ -170,7 +170,7 @@ public class DynamodbAdapter implements VirtualSchemaAdapter {
         final int cores = Runtime.getRuntime().availableProcessors();
         final DynamodbAdapterProperties dynamodbAdapterProperties = new DynamodbAdapterProperties(adapterProperties);
         final int maxConfiguredCores = dynamodbAdapterProperties.getMaxParallelUdfs();
-        return (int) Math.min((exaMetadata.getNodeCount() * cores), maxConfiguredCores);
+        return Math.min(((int) exaMetadata.getNodeCount() * cores), maxConfiguredCores);
     }
 
     private DynamoDbClient getDynamoDBClient(final ExaMetadata exaMetadata, final AbstractAdapterRequest request)
