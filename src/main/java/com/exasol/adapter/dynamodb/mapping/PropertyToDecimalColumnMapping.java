@@ -10,7 +10,7 @@ import com.exasol.adapter.metadata.DataType;
  * column.
  */
 public final class PropertyToDecimalColumnMapping extends AbstractPropertyToColumnMapping {
-    private static final long serialVersionUID = 6021806680404016342L;
+    private static final long serialVersionUID = 6021806680404016342L;//
     private final int decimalPrecision;
     private final int decimalScale;
     private final MappingErrorBehaviour overflowBehaviour;
@@ -60,7 +60,7 @@ public final class PropertyToDecimalColumnMapping extends AbstractPropertyToColu
     @Override
     public ColumnMapping withNewExasolName(final String newExasolName) {
         return new PropertyToDecimalColumnMapping(newExasolName, getPathToSourceProperty(),
-                getMappingErrorBehaviour(), this.decimalPrecision, this.decimalScale, this.overflowBehaviour,
+                getLookupFailBehaviour(), this.decimalPrecision, this.decimalScale, this.overflowBehaviour,
                 this.notNumericBehaviour);
     }
 
@@ -194,7 +194,7 @@ public final class PropertyToDecimalColumnMapping extends AbstractPropertyToColu
          * @param notANumberBehaviour behaviour to apply in case a value is not a number
          * @return self
          */
-        public Builder notANumberBehaviour(final MappingErrorBehaviour notANumberBehaviour) {
+        public Builder notNumericBehaviour(final MappingErrorBehaviour notANumberBehaviour) {
             this.notNumericBehaviour = notANumberBehaviour;
             return this;
         }

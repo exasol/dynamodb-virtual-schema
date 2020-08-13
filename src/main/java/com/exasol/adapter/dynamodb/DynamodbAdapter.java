@@ -141,12 +141,13 @@ public class DynamodbAdapter implements VirtualSchemaAdapter {
 
     private String runQuery(final ExaMetadata exaMetadata, final PushDownRequest request,
             final RemoteTableQuery remoteTableQuery)
-            throws ExaConnectionAccessException, IOException, URISyntaxException {
+            throws ExaConnectionAccessException, IOException, URISyntaxException, AdapterException {
         final DynamoDbClient dynamodbClient = getDynamoDBClient(exaMetadata, request);
         final DynamodbDocumentFetcherFactory documentFetcherFactory = new DynamodbDocumentFetcherFactory(
                 dynamodbClient);
-
-        final int availableClusterCores = getAvailableClusterCores(exaMetadata);
+        final AdapterProperties adapterProperties = new AdapterProperties(
+                request.getSchemaMetadataInfo().getProperties());
+        final int availableClusterCores = getMaxCoreNumber(exaMetadata, adapterProperties);
         final List<DocumentFetcher<DynamodbNodeVisitor>> documentFetchers = documentFetcherFactory
                 .buildDocumentFetcherForQuery(remoteTableQuery, availableClusterCores);
         final String connectionName = getPropertiesFromRequest(request).getConnectionName();
@@ -155,15 +156,21 @@ public class DynamodbAdapter implements VirtualSchemaAdapter {
     }
 
     /**
-     * Get the total number of cores that are available in the cluster. This method assumes that all cluster nodes have
-     * an equal number of cores.
+     * Get the number of cores that can be used by a query. This methods calculates the number of available cores and
+     * limits it by the configured allowed amount.
+     * 
+     * @implNote This method assumes that all cluster nodes have * an equal number of cores.
      *
-     * @param exaMetadata {@link ExaMetadata}
+     * @param exaMetadata       {@link ExaMetadata}
+     * @param adapterProperties adapter properties
      * @return total number of cores that are available in the cluster
      */
-    private int getAvailableClusterCores(final ExaMetadata exaMetadata) {
+    private int getMaxCoreNumber(final ExaMetadata exaMetadata, final AdapterProperties adapterProperties)
+            throws AdapterException {
         final int cores = Runtime.getRuntime().availableProcessors();
-        return (int) (exaMetadata.getNodeCount() * cores);
+        final DynamodbAdapterProperties dynamodbAdapterProperties = new DynamodbAdapterProperties(adapterProperties);
+        final int maxConfiguredCores = dynamodbAdapterProperties.getMaxParallelUdfs();
+        return (int) Math.min((exaMetadata.getNodeCount() * cores), maxConfiguredCores);
     }
 
     private DynamoDbClient getDynamoDBClient(final ExaMetadata exaMetadata, final AbstractAdapterRequest request)

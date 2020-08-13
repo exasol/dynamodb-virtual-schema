@@ -19,11 +19,11 @@ class PropertyToDecimalColumnValueExtractorTest {
 
     private static final PropertyToDecimalColumnMapping ABORT_MAPPING = commonMappingBuilder()//
             .overflowBehaviour(MappingErrorBehaviour.ABORT)//
-            .notANumberBehaviour(MappingErrorBehaviour.ABORT)//
+            .notNumericBehaviour(MappingErrorBehaviour.ABORT)//
             .build();
     private static final PropertyToDecimalColumnMapping NULL_MAPPING = commonMappingBuilder()//
             .overflowBehaviour(MappingErrorBehaviour.NULL)//
-            .notANumberBehaviour(MappingErrorBehaviour.NULL)//
+            .notNumericBehaviour(MappingErrorBehaviour.NULL)//
             .build();
 
     private static PropertyToDecimalColumnMapping.Builder commonMappingBuilder() {

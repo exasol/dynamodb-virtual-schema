@@ -29,9 +29,9 @@
         }
       },
       "price": {
-        "toVarcharMapping": {
-          "varcharColumnSize": 10,
-          "overflowBehaviour": "ABORT"
+        "toDecimalMapping": {
+          "decimalPrecision": 8,
+          "decimalScale": 2
         }
       },
       "author": {

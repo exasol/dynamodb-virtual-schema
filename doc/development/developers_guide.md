@@ -28,7 +28,8 @@ The tests automatically redirect the logs from the Virtual Schema to the tests c
 
 For debugging, start a debugger on your development machine listening on port `8000` and 
 start the tests with: `-Dtests.debug="virtualSchema"` or `-Dtests.debug="all"`. 
-The last option also starts the debugger for the UDF calls. This will fail in case multiple UDFs run in parallel. This is the case when the adapter uses DynamoDB's parallel scan. You can debug anyway by changing the behaviour in the `DynamodbScanDocumentFetcherFactory` to only use one UDF.
+The last option also starts the debugger for the UDF calls.
+Since this does not work with multiple UDFs in parallel, the test setup sets `MAX_PARALLEL_UDFS` automatically to 1. 
  
 ## Profiling
 

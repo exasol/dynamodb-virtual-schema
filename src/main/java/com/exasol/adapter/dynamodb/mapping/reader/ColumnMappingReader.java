@@ -10,16 +10,23 @@ import com.exasol.adapter.dynamodb.mapping.*;
  */
 class ColumnMappingReader {
     private static final ColumnMappingReader INSTANCE = new ColumnMappingReader();
-    private static final String MAX_LENGTH_KEY = "varcharColumnSize";
-    private static final int DEFAULT_MAX_LENGTH = 254;
-    private static final String OVERFLOW_KEY = "overflowBehaviour";
-    private static final String OVERFLOW_ABORT = "ABORT";
+    private static final String VARCHAR_COLUMN_SIZE_KEY = "varcharColumnSize";
+    private static final int DEFAULT_VARCHAR_COLUMN_SIZE = 254;
+    private static final String OVERFLOW_BEHAVIOUR_KEY = "overflowBehaviour";
+    private static final String ABORT_KEY = "ABORT";
+    private static final String NULL_KEY = "NULL";
     private static final String DEST_NAME_KEY = "destinationName";
     private static final String REQUIRED_KEY = "required";
-    private static final String TO_STRING_MAPPING_KEY = "toVarcharMapping";
+    private static final String TO_VARCHAR_MAPPING_KEY = "toVarcharMapping";
     private static final String TO_JSON_MAPPING_KEY = "toJsonMapping";
+    private static final String TO_DECIMAL_MAPPING_KEY = "toDecimalMapping";
     private static final TruncateableMappingErrorBehaviour DEFAULT_TO_STRING_OVERFLOW = TruncateableMappingErrorBehaviour.TRUNCATE;
     private static final MappingErrorBehaviour DEFAULT_LOOKUP_BEHAVIOUR = MappingErrorBehaviour.NULL;
+    private static final String DECIMAL_PRECISION_KEY = "decimalPrecision";
+    private static final String DECIMAL_SCALE_KEY = "decimalScale";
+    private static final int DEFUALT_DECIMAL_SCALE = 0;
+    private static final int DEFAULT_DECIMAL_PRECISION = 18;
+    private static final String NOT_NUMERIC_BEHAVIOUR = "notNumericBehaviour";
 
     /**
      * Private constructor to hide the public default. Get an instance using {@link #getInstance()}.
@@ -39,47 +46,79 @@ class ColumnMappingReader {
 
     ColumnMapping readColumnMapping(final String mappingKey, final JsonObject definition,
             final DocumentPathExpression.Builder sourcePath, final String propertyName, final boolean isRootLevel) {
+        return readColumnMappingBuilder(mappingKey, definition, isRootLevel)//
+                .pathToSourceProperty(sourcePath.build())//
+                .exasolColumnName(readExasolColumnName(definition, propertyName))//
+                .lookupFailBehaviour(readLookupFailBehaviour(definition)).build();
+    }
+
+    private PropertyToColumnMapping.Builder readColumnMappingBuilder(final String mappingKey,
+            final JsonObject definition, final boolean isRootLevel) {
         switch (mappingKey) {
-        case TO_STRING_MAPPING_KEY:
-            return readStringColumnIfPossible(definition, sourcePath, propertyName, isRootLevel);
+        case TO_VARCHAR_MAPPING_KEY:
+            abortIfAtRootLevel(TO_VARCHAR_MAPPING_KEY, isRootLevel);
+            return readToVarcharColumn(definition);
         case TO_JSON_MAPPING_KEY:
-            return readToJsonColumn(definition, sourcePath, propertyName);
+            return readToJsonColumn(definition);
+        case TO_DECIMAL_MAPPING_KEY:
+            abortIfAtRootLevel(TO_DECIMAL_MAPPING_KEY, isRootLevel);
+            return readToDecimalColumn(definition);
         default:
             throw new UnsupportedOperationException(
                     "This mapping type (" + mappingKey + ") is not supported in the current version.");
         }
     }
 
-    private PropertyToVarcharColumnMapping readStringColumnIfPossible(final JsonObject definition,
-            final DocumentPathExpression.Builder sourcePath, final String dynamodbPropertyName,
-            final boolean isRootLevel) {
-        if (isRootLevel) {
-            throw new ExasolDocumentMappingLanguageException(
-                    "ToStringMapping is not allowed at root level. You probably want to replace it with a \"fields\" definition.");
-        }
-        return addStringColumn(definition, sourcePath, dynamodbPropertyName);
+    private PropertyToVarcharColumnMapping.Builder readToVarcharColumn(final JsonObject definition) {
+        final PropertyToVarcharColumnMapping.Builder builder = PropertyToVarcharColumnMapping.builder();
+        readLookupFailBehaviour(definition);
+        return builder.overflowBehaviour(readStringOverflowBehaviour(definition))//
+                .varcharColumnSize(readVarcharColumnSize(definition));
     }
 
-    private PropertyToVarcharColumnMapping addStringColumn(final JsonObject definition,
-            final DocumentPathExpression.Builder sourcePath, final String dynamodbPropertyName) {
-        final int maxLength = definition.getInt(MAX_LENGTH_KEY, DEFAULT_MAX_LENGTH);
-        final TruncateableMappingErrorBehaviour overflowBehaviour = readStringOverflowBehaviour(
-                definition);
-        final String exasolColumnName = readExasolColumnName(definition, dynamodbPropertyName);
-        final MappingErrorBehaviour lookupFailBehaviour = readMappingErrorBehaviour(definition);
-        return new PropertyToVarcharColumnMapping(exasolColumnName, sourcePath.build(), lookupFailBehaviour, maxLength,
-                overflowBehaviour);
+    private PropertyToJsonColumnMapping.Builder readToJsonColumn(final JsonObject definition) {
+        return PropertyToJsonColumnMapping.builder()//
+                .varcharColumnSize(readVarcharColumnSize(definition))//
+                .overflowBehaviour(
+                        readMappingErrorBehaviour(OVERFLOW_BEHAVIOUR_KEY, MappingErrorBehaviour.ABORT, definition));
+    }
+
+    private PropertyToDecimalColumnMapping.Builder readToDecimalColumn(final JsonObject definition) {
+        return PropertyToDecimalColumnMapping.builder()//
+                .decimalPrecision(definition.getInt(DECIMAL_PRECISION_KEY, DEFAULT_DECIMAL_PRECISION))//
+                .decimalScale(definition.getInt(DECIMAL_SCALE_KEY, DEFUALT_DECIMAL_SCALE))//
+                .overflowBehaviour(
+                        readMappingErrorBehaviour(OVERFLOW_BEHAVIOUR_KEY, MappingErrorBehaviour.ABORT, definition))//
+                .notNumericBehaviour(
+                        readMappingErrorBehaviour(NOT_NUMERIC_BEHAVIOUR, MappingErrorBehaviour.ABORT, definition));
+    }
+
+    private MappingErrorBehaviour readMappingErrorBehaviour(final String key, final MappingErrorBehaviour defaultValue,
+            final JsonObject definition) {
+        switch (definition.getString(key, "").toUpperCase()) {
+        case ABORT_KEY:
+            return MappingErrorBehaviour.ABORT;
+        case NULL_KEY:
+            return MappingErrorBehaviour.NULL;
+        default:
+            return defaultValue;
+        }
+    }
+
+    private int readVarcharColumnSize(final JsonObject definition) {
+        return definition.getInt(VARCHAR_COLUMN_SIZE_KEY, DEFAULT_VARCHAR_COLUMN_SIZE);
     }
 
     private TruncateableMappingErrorBehaviour readStringOverflowBehaviour(final JsonObject definition) {
-        if (definition.containsKey(OVERFLOW_KEY) && definition.getString(OVERFLOW_KEY).equals(OVERFLOW_ABORT)) {
+        if (definition.containsKey(OVERFLOW_BEHAVIOUR_KEY)
+                && definition.getString(OVERFLOW_BEHAVIOUR_KEY).equals(ABORT_KEY)) {
             return TruncateableMappingErrorBehaviour.ABORT;
         } else {
             return DEFAULT_TO_STRING_OVERFLOW;
         }
     }
 
-    private MappingErrorBehaviour readMappingErrorBehaviour(final JsonObject definition) {
+    private MappingErrorBehaviour readLookupFailBehaviour(final JsonObject definition) {
         if (definition.containsKey(REQUIRED_KEY) && definition.getBoolean(REQUIRED_KEY)) {
             return MappingErrorBehaviour.ABORT;
         } else {
@@ -96,13 +135,10 @@ class ColumnMappingReader {
         return exasolColumnName.toUpperCase();
     }
 
-    private PropertyToJsonColumnMapping readToJsonColumn(final JsonObject definition,
-            final DocumentPathExpression.Builder sourcePath, final String dynamodbPropertyName) {
-        final String exasolColumnName = readExasolColumnName(definition, dynamodbPropertyName);
-        final MappingErrorBehaviour lookupFailBehaviour = readMappingErrorBehaviour(definition);
-        final MappingErrorBehaviour overflowBehaviour = definition.getString(OVERFLOW_KEY, "")
-                .equalsIgnoreCase(OVERFLOW_ABORT) ? MappingErrorBehaviour.ABORT : MappingErrorBehaviour.NULL;
-        return new PropertyToJsonColumnMapping(exasolColumnName, sourcePath.build(), lookupFailBehaviour,
-                definition.getInt(MAX_LENGTH_KEY, DEFAULT_MAX_LENGTH), overflowBehaviour);
+    private void abortIfAtRootLevel(final String mappingType, final boolean isRootLevel) {
+        if (isRootLevel) {
+            throw new ExasolDocumentMappingLanguageException(mappingType
+                    + " is not allowed at root level. You probably want to replace it with a \"fields\" definition.");
+        }
     }
 }

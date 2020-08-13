@@ -197,6 +197,9 @@ public class ExasolTestDatabaseBuilder {
         if (hostIp != null) {
             createStatement += "\n   DEBUG_ADDRESS   = '" + hostIp + ":" + LOGGER_PORT + "'\n"
                     + "   LOG_LEVEL       =  'ALL'";
+            if (isVirtualSchemaDebuggingEnabled()) {
+                createStatement += "\n   MAX_PARALLEL_UDFS   = '1'\n";
+            }
         }
         createStatement += ";";
         this.getStatement().execute(createStatement);

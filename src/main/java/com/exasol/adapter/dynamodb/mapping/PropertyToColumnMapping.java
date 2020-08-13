@@ -19,7 +19,7 @@ public interface PropertyToColumnMapping extends ColumnMapping {
      *
      * @return {@link MappingErrorBehaviour}
      */
-    public MappingErrorBehaviour getMappingErrorBehaviour();
+    public MappingErrorBehaviour getLookupFailBehaviour();
 
     public void accept(PropertyToColumnMappingVisitor visitor);
 
@@ -55,5 +55,12 @@ public interface PropertyToColumnMapping extends ColumnMapping {
          * @return self
          */
         public Builder lookupFailBehaviour(final MappingErrorBehaviour lookupFailBehaviour);
+
+        /**
+         * Build the {@link PropertyToColumnMapping}.
+         * 
+         * @return built {@link PropertyToColumnMapping}
+         */
+        public PropertyToColumnMapping build();
     }
 }

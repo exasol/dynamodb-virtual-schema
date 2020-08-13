@@ -4,7 +4,7 @@ import com.exasol.adapter.dynamodb.documentpath.DocumentPathExpression;
 import com.exasol.adapter.metadata.DataType;
 
 public class MockPropertyToColumnMapping extends AbstractPropertyToColumnMapping {
-    private static final long serialVersionUID = 190719191206210825L;
+    private static final long serialVersionUID = 190719191206210825L;//
 
     public MockPropertyToColumnMapping(final String destinationName, final DocumentPathExpression sourcePath,
             final MappingErrorBehaviour lookupFailBehaviour) {
@@ -28,6 +28,6 @@ public class MockPropertyToColumnMapping extends AbstractPropertyToColumnMapping
 
     @Override
     public ColumnMapping withNewExasolName(final String newExasolName) {
-        return new MockPropertyToColumnMapping(newExasolName, getPathToSourceProperty(), getMappingErrorBehaviour());
+        return new MockPropertyToColumnMapping(newExasolName, getPathToSourceProperty(), getLookupFailBehaviour());
     }
 }

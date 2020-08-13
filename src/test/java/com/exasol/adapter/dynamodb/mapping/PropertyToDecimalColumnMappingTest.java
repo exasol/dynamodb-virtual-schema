@@ -17,7 +17,7 @@ class PropertyToDecimalColumnMappingTest {
                     .decimalPrecision(12)//
                     .decimalScale(1)//
                     .overflowBehaviour(MappingErrorBehaviour.NULL)//
-                    .notANumberBehaviour(MappingErrorBehaviour.NULL)//
+                    .notNumericBehaviour(MappingErrorBehaviour.NULL)//
                     .build();
 
     @Test
@@ -48,7 +48,7 @@ class PropertyToDecimalColumnMappingTest {
                         .decimalPrecision(11)// single difference
                         .decimalScale(1)//
                         .overflowBehaviour(MappingErrorBehaviour.NULL)//
-                        .notANumberBehaviour(MappingErrorBehaviour.NULL)//
+                .notNumericBehaviour(MappingErrorBehaviour.NULL)//
                         .build();
         assertSymmetricNotEqualWithHashAndEquals(TEST_OBJECT, other);
     }
@@ -59,7 +59,7 @@ class PropertyToDecimalColumnMappingTest {
                         .decimalPrecision(12)//
                         .decimalScale(2)// single difference
                         .overflowBehaviour(MappingErrorBehaviour.NULL)//
-                        .notANumberBehaviour(MappingErrorBehaviour.NULL)//
+                .notNumericBehaviour(MappingErrorBehaviour.NULL)//
                         .build();
         assertSymmetricNotEqualWithHashAndEquals(TEST_OBJECT, other);
     }
@@ -70,7 +70,7 @@ class PropertyToDecimalColumnMappingTest {
                         .decimalPrecision(12)//
                         .decimalScale(1)//
                         .overflowBehaviour(MappingErrorBehaviour.ABORT)// single difference
-                        .notANumberBehaviour(MappingErrorBehaviour.NULL)//
+                .notNumericBehaviour(MappingErrorBehaviour.NULL)//
                         .build();
         assertSymmetricNotEqualWithHashAndEquals(TEST_OBJECT, other);
     }
@@ -81,7 +81,7 @@ class PropertyToDecimalColumnMappingTest {
                         .decimalPrecision(12)//
                         .decimalScale(1)//
                         .overflowBehaviour(MappingErrorBehaviour.NULL)//
-                        .notANumberBehaviour(MappingErrorBehaviour.ABORT)// single difference
+                .notNumericBehaviour(MappingErrorBehaviour.ABORT)// single difference
                         .build();
         assertSymmetricNotEqualWithHashAndEquals(TEST_OBJECT, other);
     }
@@ -93,7 +93,7 @@ class PropertyToDecimalColumnMappingTest {
                         .decimalPrecision(12)//
                         .decimalScale(1)//
                         .overflowBehaviour(MappingErrorBehaviour.NULL)//
-                        .notANumberBehaviour(MappingErrorBehaviour.NULL)//
+                .notNumericBehaviour(MappingErrorBehaviour.NULL)//
                         .build();
         assertSymmetricNotEqualWithHashAndEquals(TEST_OBJECT, other);
     }

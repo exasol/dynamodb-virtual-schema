@@ -8,6 +8,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.json.JSONObject;
@@ -50,21 +51,21 @@ class JsonSchemaMappingReaderIT {
         final List<TableMapping> tables = schemaMapping.getTableMappings();
         final TableMapping table = tables.get(0);
         final List<ColumnMapping> columns = table.getColumns();
-        final List<String> columnNames = getColumnNames(columns);
-        final PropertyToVarcharColumnMapping isbnColumn = (PropertyToVarcharColumnMapping) getColumnByExasolName(
-                table, "ISBN");
-        final PropertyToVarcharColumnMapping nameColumn = (PropertyToVarcharColumnMapping) getColumnByExasolName(
-                table, "NAME");
+        final Map<String, String> columnNames = getColumnNamesWithType(columns);
+        final PropertyToVarcharColumnMapping isbnColumn = (PropertyToVarcharColumnMapping) getColumnByExasolName(table,
+                "ISBN");
+        final PropertyToVarcharColumnMapping nameColumn = (PropertyToVarcharColumnMapping) getColumnByExasolName(table,
+                "NAME");
         assertAll(() -> assertThat(tables.size(), equalTo(1)), //
                 () -> assertThat(table.getExasolName(), equalTo("BOOKS")),
                 () -> assertThat(table.getRemoteName(), equalTo("MY_BOOKS")),
-                () -> assertThat(columnNames, containsInAnyOrder("ISBN", "NAME", "AUTHOR_NAME", "PUBLISHER", "PRICE")),
+                () -> assertThat(columnNames,
+                        equalTo(Map.of("ISBN", "VARCHAR(20) UTF8", "NAME", "VARCHAR(100) UTF8", "AUTHOR_NAME",
+                                "VARCHAR(20) UTF8", "PUBLISHER", "VARCHAR(100) UTF8", "PRICE", "DECIMAL(8, 2)"))),
                 () -> assertThat(isbnColumn.getVarcharColumnSize(), equalTo(20)),
-                () -> assertThat(isbnColumn.getOverflowBehaviour(),
-                        equalTo(TruncateableMappingErrorBehaviour.ABORT)),
-                () -> assertThat(isbnColumn.getMappingErrorBehaviour(), equalTo(MappingErrorBehaviour.ABORT)),
-                () -> assertThat(nameColumn.getMappingErrorBehaviour(), equalTo(MappingErrorBehaviour.NULL)),
-                () -> assertThat(nameColumn.getVarcharColumnSize(), equalTo(100)),
+                () -> assertThat(isbnColumn.getOverflowBehaviour(), equalTo(TruncateableMappingErrorBehaviour.ABORT)),
+                () -> assertThat(isbnColumn.getLookupFailBehaviour(), equalTo(MappingErrorBehaviour.ABORT)),
+                () -> assertThat(nameColumn.getLookupFailBehaviour(), equalTo(MappingErrorBehaviour.NULL)),
                 () -> assertThat(nameColumn.getOverflowBehaviour(),
                         equalTo(TruncateableMappingErrorBehaviour.TRUNCATE)));
     }
@@ -83,6 +84,11 @@ class JsonSchemaMappingReaderIT {
 
     private List<String> getColumnNames(final List<ColumnMapping> columns) {
         return columns.stream().map(ColumnMapping::getExasolColumnName).collect(Collectors.toList());
+    }
+
+    private Map<String, String> getColumnNamesWithType(final List<ColumnMapping> columns) {
+        return columns.stream().collect(
+                Collectors.toMap(ColumnMapping::getExasolColumnName, column -> column.getExasolDataType().toString()));
     }
 
     @Test
@@ -114,7 +120,7 @@ class JsonSchemaMappingReaderIT {
         final ExasolDocumentMappingLanguageException exception = assertThrows(
                 ExasolDocumentMappingLanguageException.class, () -> getMappingDefinitionForFile(invalidFile));
         assertThat(exception.getMessage(), startsWith(
-                "ToStringMapping is not allowed at root level. You probably want to replace it with a \"fields\" definition. In mapping definition file"));
+                "toVarcharMapping is not allowed at root level. You probably want to replace it with a \"fields\" definition. In mapping definition file"));
     }
 
     @Test

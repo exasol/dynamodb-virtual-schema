@@ -73,7 +73,7 @@
             },
             "overflowBehaviour": {
               "description": "Behaviour to apply in case a value exceeds the size of the Exasol column.\n\nNULL: use null instead ABORT: abort whole query",
-              "default": "NULL",
+              "default": "ABORT",
               "enum": [
                 "NULL",
                 "ABORT"

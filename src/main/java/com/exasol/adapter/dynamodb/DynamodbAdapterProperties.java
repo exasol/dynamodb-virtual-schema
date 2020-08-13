@@ -8,6 +8,7 @@ import com.exasol.adapter.AdapterProperties;
  */
 public class DynamodbAdapterProperties {
     private static final String MAPPING_KEY = "MAPPING";
+    private static final String MAX_PARALLEL_UDFS_KEY = "MAX_PARALLEL_UDFS";
     private final AdapterProperties properties;
 
     /**
@@ -44,5 +45,36 @@ public class DynamodbAdapterProperties {
                     + " must not be empty. Please set MAPPING to the path to your schema mapping files in the BucketFS.");
         }
         return property;
+    }
+
+    /**
+     * Get MAX_PARALLEL_UDFS property value.
+     * 
+     * @return configured maximum number of UDFs that are executed in parallel. default: -1
+     */
+    public int getMaxParallelUdfs() throws AdapterException {
+        final String propertyValue = this.properties.get(MAX_PARALLEL_UDFS_KEY);
+        final int intValue = readMaxParallelUdfs(propertyValue);
+        if (intValue == -1) {
+            return Integer.MAX_VALUE;
+        } else if (intValue < 1) {
+            throw new AdapterException("Invalid value for property MAX_PARALLEL_UDFS: " + propertyValue
+                    + ". Value must be >= 1 or -1 for no limitation.");
+        } else {
+            return intValue;
+        }
+    }
+
+    private int readMaxParallelUdfs(final String propertyValue) throws AdapterException {
+        if (propertyValue == null) {
+            return Integer.MAX_VALUE;
+        } else {
+            try {
+                return Integer.parseInt(propertyValue);
+            } catch (final NumberFormatException exception) {
+                throw new AdapterException("Invalid value for property MAX_PARALLEL_UDFS: " + propertyValue
+                        + ". Only integers are allows.");
+            }
+        }
     }
 }
