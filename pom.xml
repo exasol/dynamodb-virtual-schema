@@ -9,7 +9,7 @@
     <description>Adapter for DynamoDB data access from Virtual Schemas.</description>
     <url>https://github.com/exasol/virtual-schema-dynamodb</url>
     <properties>
-        <product.version>0.3.0</product.version>
+        <product.version>0.4.0</product.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <java.version>11</java.version>
