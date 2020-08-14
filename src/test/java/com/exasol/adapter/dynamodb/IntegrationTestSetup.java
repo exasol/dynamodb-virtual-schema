@@ -1,6 +1,7 @@
 package com.exasol.adapter.dynamodb;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.sql.SQLException;
@@ -47,7 +48,7 @@ public class IntegrationTestSetup {
     }
 
     public DynamodbTestInterface getDynamodbTestInterface()
-            throws DynamodbTestInterface.NoNetworkFoundException, IOException {
+            throws DynamodbTestInterface.NoNetworkFoundException, IOException, URISyntaxException {
         final String property = System.getProperty("tests.testSetup");
         if (property == null) {
             LOGGER.info("No tests setup was specified. Using defualt tescontainers test setup. " + TUTORIAL);

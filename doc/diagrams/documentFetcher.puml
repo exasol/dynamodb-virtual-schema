@@ -1,10 +1,10 @@
 @startuml
 
-interface DocumentFetcher{
+interface  DocumentFetcher <<interface>> {
 {abstract} run() : Stream of documents
 }
 
-interface DocumentFetcherFactory{
+interface  DocumentFetcherFactory <<interface>> {
 {abstract} buildDocumentFetcherForQuery(query): DocumentFetcher
 }
 

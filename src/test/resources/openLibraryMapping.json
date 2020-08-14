@@ -6,15 +6,15 @@
   "mapping": {
     "fields": {
       "key": {
-        "toStringMapping": {
-          "overflow": "TRUNCATE",
+        "toVarcharMapping": {
+          "overflowBehaviour": "TRUNCATE",
           "required": true,
           "key": "global"
         }
       },
       "revision": {
-        "toStringMapping": {
-          "overflow": "TRUNCATE"
+        "toVarcharMapping": {
+          "overflowBehaviour": "TRUNCATE"
         }
       },
       "authors": {
@@ -22,8 +22,8 @@
           "mapping": {
             "fields": {
               "key": {
-                "toStringMapping": {
-                  "maxLength": 200000
+                "toVarcharMapping": {
+                  "varcharColumnSize": 200000
                 }
               }
             }
@@ -31,20 +31,20 @@
         }
       },
       "title": {
-        "toStringMapping": {
-          "maxLength": 200000,
-          "overflow": "TRUNCATE"
+        "toVarcharMapping": {
+          "varcharColumnSize": 200000,
+          "overflowBehaviour": "TRUNCATE"
         }
       },
       "title_prefix": {
-        "toStringMapping": {
-          "maxLength": 2000
+        "toVarcharMapping": {
+          "varcharColumnSize": 2000
         }
       },
       "publishers": {
         "toJsonMapping": {
-          "maxLength": 200000,
-          "overflow": "NULL"
+          "varcharColumnSize": 200000,
+          "overflowBehaviour": "NULL"
         }
       }
     }

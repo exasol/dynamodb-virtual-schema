@@ -4,7 +4,7 @@ class DocumentPathExpression{
 
 }
 
-interface PathSegment{
+interface  PathSegment <<interface>> {
 accept(PathSegmentVisitor)
 }
 

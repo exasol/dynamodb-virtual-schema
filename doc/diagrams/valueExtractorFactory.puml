@@ -5,7 +5,7 @@ class ColumnValueExtractorFactory{
 + getValueExtractorForColumn(ColumnMapping): ColumnValueExtractor
 }
 
-interface PropertyToColumnValueExtractorFactory{
+interface  PropertyToColumnValueExtractorFactory <<interface>> {
 + getValueExtractorForColumn(PropertyToColumnMapping): ColumnValueExtractor
 }
 

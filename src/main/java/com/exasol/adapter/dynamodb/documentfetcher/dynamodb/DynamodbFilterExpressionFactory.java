@@ -3,9 +3,7 @@ package com.exasol.adapter.dynamodb.documentfetcher.dynamodb;
 import java.util.HashSet;
 import java.util.Set;
 
-import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.exasol.adapter.dynamodb.documentnode.DocumentValue;
-import com.exasol.adapter.dynamodb.documentnode.dynamodb.DynamodbNodeToAttributeValueConverter;
 import com.exasol.adapter.dynamodb.documentnode.dynamodb.DynamodbNodeVisitor;
 import com.exasol.adapter.dynamodb.documentpath.DocumentPathExpression;
 import com.exasol.adapter.dynamodb.literalconverter.NotLiteralException;
@@ -74,8 +72,7 @@ public class DynamodbFilterExpressionFactory {
                 this.filterExpression = convertPredicateRecursively(operands.iterator().next());
             } else {
                 final QueryPredicate firstPredicate = operands.iterator().next();
-                final Set<QueryPredicate> remainingOperands = getRemainingOperands(operands,
-                        firstPredicate);
+                final Set<QueryPredicate> remainingOperands = getRemainingOperands(operands, firstPredicate);
                 final String firstOperandsExpression = convertPredicateRecursively(firstPredicate);
                 final LogicalOperator.Operator operator = logicalOperator.getOperator();
                 this.filterExpression = "(" + firstOperandsExpression + " "
@@ -93,8 +90,7 @@ public class DynamodbFilterExpressionFactory {
 
         private String getRemainingOperandsExpression(final Set<QueryPredicate> remainingOperands,
                 final LogicalOperator.Operator operator) {
-            final LogicalOperator logicalOperatorForRemaining = new LogicalOperator(
-                    remainingOperands, operator);
+            final LogicalOperator logicalOperatorForRemaining = new LogicalOperator(remainingOperands, operator);
             return "(" + convertPredicateRecursively(logicalOperatorForRemaining) + ")";
         }
 
@@ -138,8 +134,7 @@ public class DynamodbFilterExpressionFactory {
         }
 
         @Override
-        public void visit(
-                final ColumnLiteralComparisonPredicate columnLiteralComparisonPredicate) {
+        public void visit(final ColumnLiteralComparisonPredicate columnLiteralComparisonPredicate) {
             final ColumnMapping column = columnLiteralComparisonPredicate.getColumn();
             if (column instanceof PropertyToColumnMapping) {
                 final PropertyToColumnMapping columnMapping = (PropertyToColumnMapping) column;
@@ -147,9 +142,7 @@ public class DynamodbFilterExpressionFactory {
                 final String columnPathExpression = DocumentPathToDynamodbExpressionConverter.getInstance()
                         .convert(columnsPath, this.namePlaceholderMapBuilder);
                 final DocumentValue<DynamodbNodeVisitor> literal = getLiteral(columnLiteralComparisonPredicate);
-                final AttributeValue attributeValue = new DynamodbNodeToAttributeValueConverter()
-                        .convertToAttributeValue(literal);
-                final String valuePlaceholder = this.valuePlaceholderMapBuilder.addValue(attributeValue);
+                final String valuePlaceholder = this.valuePlaceholderMapBuilder.addValue(literal);
                 this.filterExpression = columnPathExpression + " "
                         + convertComparisonOperator(columnLiteralComparisonPredicate.getOperator()) + " "
                         + valuePlaceholder;

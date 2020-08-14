@@ -5,23 +5,23 @@
   "mapping": {
     "fields": {
       "stringValue": {
-        "toStringMapping": {
+        "toVarcharMapping": {
         }
       },
       "boolValue": {
-        "toStringMapping": {
+        "toVarcharMapping": {
         }
       },
       "doubleValue": {
-        "toStringMapping": {
+        "toVarcharMapping": {
         }
       },
       "integerValue": {
-        "toStringMapping": {
+        "toVarcharMapping": {
         }
       },
       "nullValue": {
-        "toStringMapping": {
+        "toVarcharMapping": {
         }
       }
     }

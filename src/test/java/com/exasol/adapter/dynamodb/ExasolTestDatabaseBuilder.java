@@ -22,7 +22,7 @@ public class ExasolTestDatabaseBuilder {
     public static final String DYNAMODB_ADAPTER = "DYNAMODB_ADAPTER";
     public static final String PROFILING_AGENT_FILE_NAME = "liblagent.so";
     private static final Logger LOGGER = LoggerFactory.getLogger(TestcontainerExasolTestInterface.class);
-    private static final String VIRTUAL_SCHEMAS_JAR_NAME_AND_VERSION = "dynamodb-virtual-schemas-adapter-dist-0.3.0.jar";
+    private static final String VIRTUAL_SCHEMAS_JAR_NAME_AND_VERSION = "dynamodb-virtual-schemas-adapter-dist-0.4.0.jar";
     private static final Path PATH_TO_VIRTUAL_SCHEMAS_JAR = Path.of("target", VIRTUAL_SCHEMAS_JAR_NAME_AND_VERSION);
     private static final String JACOCO_JAR_NAME = "org.jacoco.agent-runtime.jar";
     private static final Path PATH_TO_JACOCO_JAR = Path.of("target", "jacoco-agent", JACOCO_JAR_NAME);
@@ -197,6 +197,9 @@ public class ExasolTestDatabaseBuilder {
         if (hostIp != null) {
             createStatement += "\n   DEBUG_ADDRESS   = '" + hostIp + ":" + LOGGER_PORT + "'\n"
                     + "   LOG_LEVEL       =  'ALL'";
+            if (isVirtualSchemaDebuggingEnabled()) {
+                createStatement += "\n   MAX_PARALLEL_UDFS   = '1'\n";
+            }
         }
         createStatement += ";";
         this.getStatement().execute(createStatement);
@@ -278,9 +281,9 @@ public class ExasolTestDatabaseBuilder {
         uploadMapping(name, "mappings/" + name);
     }
 
-    public void uploadMapping(final String name, final String destName)
+    public void uploadMapping(final String name, final String destinationName)
             throws InterruptedException, BucketAccessException, TimeoutException {
-        this.testInterface.uploadFileToBucketfs(Path.of("src", "test", "resources", name), destName);
+        this.testInterface.uploadFileToBucketfs(Path.of("src", "test", "resources", name), destinationName);
     }
 
     public void cleanup() throws SQLException {

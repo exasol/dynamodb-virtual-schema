@@ -9,9 +9,6 @@ import java.util.List;
 import com.exasol.adapter.metadata.ColumnMetadata;
 import com.exasol.adapter.metadata.SchemaMetadata;
 import com.exasol.adapter.metadata.TableMetadata;
-import com.exasol.sql.expression.ValueExpression;
-import com.exasol.sql.expression.rendering.ValueExpressionRenderer;
-import com.exasol.sql.rendering.StringRendererConfig;
 import com.exasol.utils.StringSerializer;
 
 /**
@@ -66,16 +63,9 @@ public class SchemaMappingToSchemaMetadataConverter {
         return ColumnMetadata.builder()//
                 .name(columnMapping.getExasolColumnName())//
                 .type(columnMapping.getExasolDataType())//
-                .defaultValue(getLiteralString(columnMapping.getExasolDefaultValue()))//
+                .defaultValue("NULL")//
                 .nullable(columnMapping.isExasolColumnNullable())//
                 .adapterNotes(serialized).build();
-    }
-
-    private String getLiteralString(final ValueExpression value) {
-        final StringRendererConfig stringRendererConfig = StringRendererConfig.createDefault();
-        final ValueExpressionRenderer renderer = new ValueExpressionRenderer(stringRendererConfig);
-        value.accept(renderer);
-        return renderer.render();
     }
 
     /**

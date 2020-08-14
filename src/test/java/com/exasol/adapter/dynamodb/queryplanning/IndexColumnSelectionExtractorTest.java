@@ -11,8 +11,9 @@ import org.junit.jupiter.api.Test;
 
 import com.exasol.adapter.dynamodb.documentpath.DocumentPathExpression;
 import com.exasol.adapter.dynamodb.mapping.IterationIndexColumnMapping;
-import com.exasol.adapter.dynamodb.mapping.LookupFailBehaviour;
-import com.exasol.adapter.dynamodb.mapping.ToStringPropertyToColumnMapping;
+import com.exasol.adapter.dynamodb.mapping.MappingErrorBehaviour;
+import com.exasol.adapter.dynamodb.mapping.PropertyToVarcharColumnMapping;
+import com.exasol.adapter.dynamodb.mapping.TruncateableMappingErrorBehaviour;
 import com.exasol.adapter.dynamodb.querypredicate.*;
 import com.exasol.adapter.sql.SqlLiteralString;
 
@@ -24,32 +25,34 @@ class IndexColumnSelectionExtractorTest {
     private static final IndexColumnSelectionExtractor EXTRACTOR = new IndexColumnSelectionExtractor();
 
     private static ColumnLiteralComparisonPredicate buildNonIndexComparison(final String columnName) {
-        final ToStringPropertyToColumnMapping column = new ToStringPropertyToColumnMapping(columnName,
-                new DocumentPathExpression.Builder().addObjectLookup(columnName).build(), LookupFailBehaviour.EXCEPTION,
-                254, ToStringPropertyToColumnMapping.OverflowBehaviour.EXCEPTION);
+        final PropertyToVarcharColumnMapping column = PropertyToVarcharColumnMapping.builder()//
+                .exasolColumnName(columnName)//
+                .pathToSourceProperty(DocumentPathExpression.builder().addObjectLookup(columnName).build())//
+                .lookupFailBehaviour(MappingErrorBehaviour.ABORT)//
+                .varcharColumnSize(254)//
+                .overflowBehaviour(TruncateableMappingErrorBehaviour.ABORT)//
+                .build();
         final SqlLiteralString literal = new SqlLiteralString("valueToCompareTo");
         return new ColumnLiteralComparisonPredicate(AbstractComparisonPredicate.Operator.EQUAL, column, literal);
     }
 
     private static ColumnLiteralComparisonPredicate buildIndexComparison(final String columnName) {
         final IterationIndexColumnMapping column = new IterationIndexColumnMapping(columnName,
-                new DocumentPathExpression.Builder().addObjectLookup(columnName).addArrayAll().build());
+                DocumentPathExpression.builder().addObjectLookup(columnName).addArrayAll().build());
         final SqlLiteralString literal = new SqlLiteralString("valueToCompareTo");
         return new ColumnLiteralComparisonPredicate(AbstractComparisonPredicate.Operator.EQUAL, column, literal);
     }
 
     @Test
     void testExtractWithNoIndexColumn() {
-        final IndexColumnSelectionExtractor.Result result = EXTRACTOR
-                .extractIndexColumnSelection(NON_INDEX_COMPARISON);
+        final IndexColumnSelectionExtractor.Result result = EXTRACTOR.extractIndexColumnSelection(NON_INDEX_COMPARISON);
         assertAll(() -> assertThat(result.getSelectedSelection().asQueryPredicate(), equalTo(new NoPredicate())),
                 () -> assertThat(result.getRemainingSelection().asQueryPredicate(), equalTo(NON_INDEX_COMPARISON)));
     }
 
     @Test
     void testExtractOnlyIndexColumn() {
-        final IndexColumnSelectionExtractor.Result result = EXTRACTOR
-                .extractIndexColumnSelection(INDEX_COMPARISON);
+        final IndexColumnSelectionExtractor.Result result = EXTRACTOR.extractIndexColumnSelection(INDEX_COMPARISON);
         assertAll(() -> assertThat(result.getSelectedSelection().asQueryPredicate(), equalTo(INDEX_COMPARISON)),
                 () -> assertThat(result.getRemainingSelection().asQueryPredicate(), equalTo(new NoPredicate())));
     }

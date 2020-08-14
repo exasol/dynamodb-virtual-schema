@@ -6,40 +6,40 @@
   "mapping": {
     "fields": {
       "isbn": {
-        "toStringMapping": {
-          "maxLength": 20,
+        "toVarcharMapping": {
+          "varcharColumnSize": 20,
           "description": "The isbn is mapped to a string with max length of 20",
-          "overflow": "ABORT",
+          "overflowBehaviour": "ABORT",
           "required": true,
           "key": "global"
         }
       },
       "name": {
-        "toStringMapping": {
-          "maxLength": 100,
+        "toVarcharMapping": {
+          "varcharColumnSize": 100,
           "description": "The name is mapped to a string with max length of 100",
-          "overflow": "TRUNCATE"
+          "overflowBehaviour": "TRUNCATE"
         }
       },
       "publisher": {
-        "toStringMapping": {
-          "maxLength": 100,
+        "toVarcharMapping": {
+          "varcharColumnSize": 100,
           "description": "The name is mapped to a string with max length of 100",
-          "overflow": "TRUNCATE"
+          "overflowBehaviour": "TRUNCATE"
         }
       },
       "price": {
-        "toStringMapping": {
-          "maxLength": 10,
-          "overflow": "ABORT"
+        "toDecimalMapping": {
+          "decimalPrecision": 8,
+          "decimalScale": 2
         }
       },
       "author": {
         "fields": {
           "name": {
-            "toStringMapping": {
-              "maxLength": 20,
-              "destName": "AUTHOR_NAME",
+            "toVarcharMapping": {
+              "varcharColumnSize": 20,
+              "destinationName": "AUTHOR_NAME",
               "description": "Maps the nested property authors.name to column authorName"
             }
           }

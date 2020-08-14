@@ -63,8 +63,7 @@ public class RemoteTableQueryFactory {
         @Override
         public Void visit(final SqlSelectList selectList) {
             if (selectList.isRequestAnyColumn()) {
-                throw new UnsupportedOperationException(
-                        "The current version of DynamoDB Virtual Schema does not support requesting any columns.");
+                selectAnyColumn();
             } else if (selectList.isSelectStar()) {
                 selectAllColumns();
             } else {
@@ -78,6 +77,15 @@ public class RemoteTableQueryFactory {
                 }
             }
             return null;
+        }
+
+        private void selectAnyColumn() {
+            final List<ColumnMetadata> columns = this.tableMetadata.getColumns();
+            if (columns.isEmpty()) {
+                throw new UnsupportedOperationException(
+                        "Selecting any column is not possible on tables without columns");
+            }
+            addColumnToSelectList(columns.get(0));
         }
 
         private void selectAllColumns() {

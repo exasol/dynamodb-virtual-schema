@@ -59,6 +59,11 @@ public class ValueExpressionToJavaObjectConverter {
         }
 
         @Override
+        public void visit(final BigDecimalLiteral literal) {
+            this.result = literal.getValue();
+        }
+
+        @Override
         public void visit(final BooleanLiteral literal) {
             this.result = literal.toBoolean();
         }

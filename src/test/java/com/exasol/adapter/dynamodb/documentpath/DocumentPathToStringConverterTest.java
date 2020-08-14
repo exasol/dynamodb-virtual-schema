@@ -16,7 +16,7 @@ class DocumentPathToStringConverterTest {
 
     @Test
     void testStringifyObjectLookup() {
-        final DocumentPathExpression pathExpression = new DocumentPathExpression.Builder()//
+        final DocumentPathExpression pathExpression = DocumentPathExpression.builder()//
                 .addObjectLookup("key1")//
                 .addObjectLookup("key2")//
                 .build();
@@ -26,7 +26,7 @@ class DocumentPathToStringConverterTest {
 
     @Test
     void testStringifyArrayLookup() {
-        final DocumentPathExpression pathExpression = new DocumentPathExpression.Builder()//
+        final DocumentPathExpression pathExpression = DocumentPathExpression.builder()//
                 .addObjectLookup("key1")//
                 .addArrayLookup(0)//
                 .build();
@@ -36,7 +36,7 @@ class DocumentPathToStringConverterTest {
 
     @Test
     void testStringifyArrayAll() {
-        final DocumentPathExpression pathExpression = new DocumentPathExpression.Builder()//
+        final DocumentPathExpression pathExpression = DocumentPathExpression.builder()//
                 .addObjectLookup("key1")//
                 .addArrayAll()//
                 .build();

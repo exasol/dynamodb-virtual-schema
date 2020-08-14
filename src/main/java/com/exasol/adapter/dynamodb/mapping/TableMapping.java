@@ -13,14 +13,14 @@ import com.exasol.adapter.dynamodb.documentpath.DocumentPathExpression;
  * from a nested list or object. See {@link #isRootTable()} for details.
  */
 public class TableMapping implements Serializable {
-    private static final long serialVersionUID = 4733787702889353750L;
+    private static final long serialVersionUID = 4768289714640213806L;
     private final String exasolName;
     private final String remoteName;
     private final transient List<ColumnMapping> columns; // The columns are serialized separately in
                                                          // {@link ColumnMetadata}.
     private final DocumentPathExpression pathInRemoteTable;
 
-    TableMapping(final String exasolName, final String remoteName, final List<ColumnMapping> columns,
+    public TableMapping(final String exasolName, final String remoteName, final List<ColumnMapping> columns,
             final DocumentPathExpression pathInRemoteTable) {
         this.exasolName = exasolName;
         this.remoteName = remoteName;
@@ -38,26 +38,26 @@ public class TableMapping implements Serializable {
     /**
      * Get an instance of the Builder for {@link TableMapping}. This version of the builder is used for root tables.
      *
-     * @param destName Name of the Exasol table
+     * @param destinationName Name of the Exasol table
      * @return {@link TableMapping.Builder}
      */
-    public static Builder rootTableBuilder(final String destName, final String remoteName) {
+    public static Builder rootTableBuilder(final String destinationName, final String remoteName) {
         final DocumentPathExpression emptyPath = DocumentPathExpression.empty();
-        return new Builder(destName, remoteName, emptyPath);
+        return new Builder(destinationName, remoteName, emptyPath);
     }
 
     /**
      * Get an instance of the builder for {@link TableMapping}. This version of the builder is used to create tables
      * extracted from nested lists.
      *
-     * @param destName          Name of the Exasol table
+     * @param destinationName   Name of the Exasol table
      * @param remoteName        Name of the remote table
      * @param pathInRemoteTable Path expression within the document to a nested list that is mapped to a table
      * @return Builder for {@link TableMapping}
      */
-    public static Builder nestedTableBuilder(final String destName, final String remoteName,
+    public static Builder nestedTableBuilder(final String destinationName, final String remoteName,
             final DocumentPathExpression pathInRemoteTable) {
-        return new Builder(destName, remoteName, pathInRemoteTable);
+        return new Builder(destinationName, remoteName, pathInRemoteTable);
     }
 
     /**

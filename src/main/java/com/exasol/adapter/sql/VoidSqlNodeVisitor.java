@@ -225,6 +225,24 @@ public abstract class VoidSqlNodeVisitor implements SqlNodeVisitor<Void> {
         return null;
     }
 
+    @Override
+    public Void visit(final SqlPredicateIsJson sqlPredicateIsJson) throws AdapterException {
+        visitUnimplemented();
+        return null;
+    }
+
+    @Override
+    public Void visit(final SqlPredicateIsNotJson sqlPredicateIsNotJson) throws AdapterException {
+        visitUnimplemented();
+        return null;
+    }
+
+    @Override
+    public Void visit(final SqlFunctionScalarJsonValue sqlFunctionScalarJsonValue) throws AdapterException {
+        visitUnimplemented();
+        return null;
+    }
+
     /**
      * This method is called when the specific visit method for a type was not implemented.
      */

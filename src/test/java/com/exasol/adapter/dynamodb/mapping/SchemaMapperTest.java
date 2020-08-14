@@ -1,5 +1,6 @@
 package com.exasol.adapter.dynamodb.mapping;
 
+import static com.exasol.adapter.dynamodb.mapping.PropertyToColumnMappingBuilderQuickAccess.getColumnMappingExample;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.equalTo;
@@ -27,10 +28,7 @@ class SchemaMapperTest {
 
     @Test
     void testMapRow() {
-        final ToJsonPropertyToColumnMapping columnMapping = new ToJsonPropertyToColumnMapping("test",
-                DocumentPathExpression.empty(), LookupFailBehaviour.EXCEPTION, 0,
-                ToJsonPropertyToColumnMapping.OverflowBehaviour.EXCEPTION);
-
+        final PropertyToColumnMapping columnMapping = getColumnMappingExample().build();
         final TableMapping tableMapping = TableMapping.rootTableBuilder("table", "table")
                 .withColumnMappingDefinition(columnMapping).build();
         final RemoteTableQuery remoteTableQuery = new RemoteTableQuery(tableMapping, List.of(columnMapping),
@@ -50,12 +48,12 @@ class SchemaMapperTest {
     void testMapNestedTable() {
         final String nestedListKey = "topics";
 
-        final DocumentPathExpression pathToNestedTable = new DocumentPathExpression.Builder()
+        final DocumentPathExpression pathToNestedTable = DocumentPathExpression.builder()
                 .addObjectLookup(nestedListKey).addArrayAll().build();
-        final ToJsonPropertyToColumnMapping columnMapping = new ToJsonPropertyToColumnMapping("test", pathToNestedTable,
-                LookupFailBehaviour.EXCEPTION, 0, ToJsonPropertyToColumnMapping.OverflowBehaviour.EXCEPTION);
+        final PropertyToColumnMapping columnMapping = getColumnMappingExample().pathToSourceProperty(pathToNestedTable)
+                .build();
         final ColumnMapping indexColumn = new IterationIndexColumnMapping("INDEX",
-                new DocumentPathExpression.Builder().addObjectLookup(nestedListKey).addArrayAll().build());
+                DocumentPathExpression.builder().addObjectLookup(nestedListKey).addArrayAll().build());
         final TableMapping tableMapping = TableMapping.nestedTableBuilder("table", "table", pathToNestedTable)
                 .withColumnMappingDefinition(columnMapping).withColumnMappingDefinition(indexColumn).build();
         final RemoteTableQuery remoteTableQuery = new RemoteTableQuery(tableMapping,

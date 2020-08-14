@@ -1,5 +1,6 @@
 package com.exasol.adapter.dynamodb.mapping;
 
+import static com.exasol.adapter.dynamodb.mapping.PropertyToColumnMappingBuilderQuickAccess.getColumnMappingExample;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.equalTo;
@@ -11,7 +12,6 @@ import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Test;
 
-import com.exasol.adapter.dynamodb.documentpath.DocumentPathExpression;
 import com.exasol.adapter.metadata.ColumnMetadata;
 import com.exasol.adapter.metadata.SchemaMetadata;
 import com.exasol.adapter.metadata.TableMetadata;
@@ -23,9 +23,7 @@ class SchemaMappingToSchemaMetadataConverterTest {
 
     public SchemaMapping getSchemaMapping() {
         final TableMapping table = TableMapping.rootTableBuilder(DEST_TABLE_NAME, SRC_TABLE_NAME)
-                .withColumnMappingDefinition(new ToJsonPropertyToColumnMapping(COLUMN_NAME,
-                        DocumentPathExpression.empty(), LookupFailBehaviour.DEFAULT_VALUE, 0,
-                        ToJsonPropertyToColumnMapping.OverflowBehaviour.EXCEPTION))
+                .withColumnMappingDefinition(getColumnMappingExample().exasolColumnName(COLUMN_NAME).build())
                 .build();
         return new SchemaMapping(List.of(table));
     }

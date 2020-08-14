@@ -6,6 +6,7 @@ import static org.hamcrest.collection.IsIterableContainingInAnyOrder.containsInA
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.sql.ResultSet;
@@ -21,10 +22,11 @@ import org.junit.jupiter.api.Tag;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.amazonaws.services.dynamodbv2.model.*;
 import com.exasol.adapter.dynamodb.mapping.MappingTestFiles;
 import com.exasol.adapter.dynamodb.mapping.TestDocuments;
 import com.exasol.bucketfs.BucketAccessException;
+
+import software.amazon.awssdk.services.dynamodb.model.*;
 
 /**
  * Tests the {@link DynamodbAdapter} using a local docker version of DynamoDB and a local docker version of exasol.
@@ -47,7 +49,7 @@ class DynamodbAdapterIT {
     @BeforeAll
     static void beforeAll() throws DynamodbTestInterface.NoNetworkFoundException, SQLException, InterruptedException,
             BucketAccessException, TimeoutException, IOException, NoSuchAlgorithmException, KeyManagementException,
-            XmlRpcException {
+            XmlRpcException, URISyntaxException {
         final IntegrationTestSetup integrationTestSetup = new IntegrationTestSetup();
         exasolTestInterface = integrationTestSetup.getExasolTestInterface();
         exasolTestDatabaseBuilder = new ExasolTestDatabaseBuilder(exasolTestInterface);
@@ -59,6 +61,7 @@ class DynamodbAdapterIT {
         exasolTestDatabaseBuilder.uploadMapping(MappingTestFiles.DATA_TYPE_TEST_MAPPING_FILE_NAME);
         exasolTestDatabaseBuilder.uploadMapping(MappingTestFiles.DOUBLE_NESTED_TO_TABLE_MAPPING_FILE_NAME);
         exasolTestDatabaseBuilder.uploadMapping(MappingTestFiles.TO_JSON_MAPPING_FILE_NAME);
+        Thread.sleep(3000); // Wait for BucketFS to sync
         exasolTestDatabaseBuilder.createAdapterScript();
         exasolTestDatabaseBuilder.createUdf();
         LOGGER.info("created adapter script");
@@ -84,7 +87,21 @@ class DynamodbAdapterIT {
         createBasicMappingVirtualSchema();
         final Map<String, String> rowNames = exasolTestDatabaseBuilder.describeTable(TEST_SCHEMA, "BOOKS");
         assertThat(rowNames, equalTo(Map.of("ISBN", "VARCHAR(20) UTF8", "NAME", "VARCHAR(100) UTF8", "AUTHOR_NAME",
-                "VARCHAR(20) UTF8", "PUBLISHER", "VARCHAR(100) UTF8", "PRICE", "VARCHAR(10) UTF8")));
+                "VARCHAR(20) UTF8", "PUBLISHER", "VARCHAR(100) UTF8", "PRICE", "DECIMAL(8,2)")));
+    }
+
+    @Test
+    void testToDecimalMapping() throws SQLException, IOException {
+        createBasicMappingVirtualSchema();
+        dynamodbTestInterface.createTable(DYNAMO_BOOKS_TABLE, TestDocuments.BOOKS_ISBN_PROPERTY);
+        dynamodbTestInterface.importData(DYNAMO_BOOKS_TABLE, TestDocuments.BOOKS);
+        final String query = "SELECT PRICE FROM " + TEST_SCHEMA + ".BOOKS;";
+        final ResultSet actualResultSet = exasolTestDatabaseBuilder.getStatement().executeQuery(query);
+        final List<Double> result = new ArrayList<>();
+        while (actualResultSet.next()) {
+            result.add(actualResultSet.getDouble("PRICE"));
+        }
+        assertThat(result, containsInAnyOrder(10.0, 15.0, 21.12));
     }
 
     /**
@@ -151,6 +168,17 @@ class DynamodbAdapterIT {
         dynamodbTestInterface.importData(DYNAMO_BOOKS_TABLE, TestDocuments.BOOKS);
         final List<String> result = selectStringArray().rows;
         assertThat(result, containsInAnyOrder("123567", "123254545", "1235673"));
+    }
+
+    @Test
+    void testAnyColumnProjection() throws SQLException, IOException {
+        createBasicMappingVirtualSchema();
+        dynamodbTestInterface.createTable(DYNAMO_BOOKS_TABLE, TestDocuments.BOOKS_ISBN_PROPERTY);
+        dynamodbTestInterface.importData(DYNAMO_BOOKS_TABLE, TestDocuments.BOOKS);
+        final ResultSet resultSet = exasolTestDatabaseBuilder.getStatement().executeQuery("SELECT COUNT(*) as NUMBER_OF_BOOKS FROM BOOKS;");
+        resultSet.next();
+        final int number_of_books = resultSet.getInt("NUMBER_OF_BOOKS");
+        assertThat(number_of_books, equalTo(3));
     }
 
     @Test
@@ -278,13 +306,17 @@ class DynamodbAdapterIT {
     }
 
     private void createTableBooksTableWithPublisherPriceKey() throws IOException {
-        final CreateTableRequest request = new CreateTableRequest().withTableName(DYNAMO_BOOKS_TABLE)
-                .withKeySchema(new KeySchemaElement("publisher", KeyType.HASH),
-                        new KeySchemaElement("price", KeyType.RANGE))
-                .withAttributeDefinitions(new AttributeDefinition("publisher", ScalarAttributeType.S),
-                        new AttributeDefinition("price", ScalarAttributeType.N))
-                .withProvisionedThroughput(new ProvisionedThroughput(100L, 100L));
-        dynamodbTestInterface.createTable(request);
+        final CreateTableRequest.Builder requestBuilder = CreateTableRequest.builder();
+        requestBuilder.tableName(DYNAMO_BOOKS_TABLE);
+        requestBuilder
+                .keySchema(List.of(KeySchemaElement.builder().attributeName("publisher").keyType(KeyType.HASH).build(),
+                        KeySchemaElement.builder().attributeName("price").keyType(KeyType.RANGE).build()));
+        requestBuilder.attributeDefinitions(List.of(
+                AttributeDefinition.builder().attributeName("publisher").attributeType(ScalarAttributeType.S).build(),
+                AttributeDefinition.builder().attributeName("price").attributeType(ScalarAttributeType.N).build()));
+        requestBuilder.provisionedThroughput(
+                ProvisionedThroughput.builder().readCapacityUnits(100L).writeCapacityUnits(100L).build());
+        dynamodbTestInterface.createTable(requestBuilder.build());
         dynamodbTestInterface.importData(DYNAMO_BOOKS_TABLE, TestDocuments.BOOKS);
     }
 
@@ -292,8 +324,8 @@ class DynamodbAdapterIT {
     void testDataTypes() throws IOException, SQLException {
         createDataTypesVirtualSchema();
         final ResultSet actualResultSet = exasolTestDatabaseBuilder.getStatement()
-                .executeQuery("SELECT * FROM " + TEST_SCHEMA
-                + "." + MappingTestFiles.DATA_TYPE_TEST_EXASOL_TABLE_NAME + " WHERE STRINGVALUE = 'test';");
+                .executeQuery("SELECT * FROM " + TEST_SCHEMA + "." + MappingTestFiles.DATA_TYPE_TEST_EXASOL_TABLE_NAME
+                        + " WHERE STRINGVALUE = 'test';");
         actualResultSet.next();
         assertAll(() -> assertThat(actualResultSet.getString("STRINGVALUE"), equalTo("test")),
                 () -> assertThat(actualResultSet.getString("BOOLVALUE"), equalTo("true")),

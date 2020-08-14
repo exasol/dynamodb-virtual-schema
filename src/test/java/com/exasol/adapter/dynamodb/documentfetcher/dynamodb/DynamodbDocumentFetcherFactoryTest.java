@@ -13,12 +13,13 @@ import java.util.Optional;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.exasol.adapter.AdapterException;
 import com.exasol.adapter.dynamodb.dynamodbmetadata.DynamodbPrimaryIndex;
 import com.exasol.adapter.dynamodb.dynamodbmetadata.DynamodbSecondaryIndex;
 import com.exasol.adapter.dynamodb.dynamodbmetadata.DynamodbTableMetadata;
 import com.exasol.adapter.dynamodb.queryplanning.RemoteTableQuery;
+
+import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 
 class DynamodbDocumentFetcherFactoryTest {
     private static final DynamodbTableMetadata tableMetadata = new DynamodbTableMetadata(
@@ -37,7 +38,7 @@ class DynamodbDocumentFetcherFactoryTest {
         final RemoteTableQuery documentQuery = basicMappingSetup.getSelectAllQuery();
         final DynamodbScanDocumentFetcher scanPlan = (DynamodbScanDocumentFetcher) new DynamodbDocumentFetcherFactory(
                 null).buildDocumentFetcherForQuery(documentQuery, tableMetadata, 1).get(0);
-        assertThat(scanPlan.getScanRequest().getTableName(), equalTo(basicMappingSetup.tableMapping.getRemoteName()));
+        assertThat(scanPlan.getScanRequest().tableName(), equalTo(basicMappingSetup.tableMapping.getRemoteName()));
     }
 
     @Test
@@ -46,10 +47,10 @@ class DynamodbDocumentFetcherFactoryTest {
         final DynamodbScanDocumentFetcher scanPlan = (DynamodbScanDocumentFetcher) new DynamodbDocumentFetcherFactory(
                 null).buildDocumentFetcherForQuery(documentQuery, tableMetadata, 1).get(0);
         assertAll(//
-                () -> assertThat(scanPlan.getScanRequest().getTableName(),
+                () -> assertThat(scanPlan.getScanRequest().tableName(),
                         equalTo(basicMappingSetup.tableMapping.getRemoteName())),
-                () -> assertThat(scanPlan.getScanRequest().getProjectionExpression(), equalTo("#0")),
-                () -> assertThat(scanPlan.getScanRequest().getExpressionAttributeNames(), equalTo(Map.of("#0", "name")))//
+                () -> assertThat(scanPlan.getScanRequest().projectionExpression(), equalTo("#0")),
+                () -> assertThat(scanPlan.getScanRequest().expressionAttributeNames(), equalTo(Map.of("#0", "name")))//
         );
     }
 
@@ -60,13 +61,13 @@ class DynamodbDocumentFetcherFactoryTest {
         final DynamodbQueryDocumentFetcher queryPlan = (DynamodbQueryDocumentFetcher) new DynamodbDocumentFetcherFactory(
                 null).buildDocumentFetcherForQuery(documentQuery, tableMetadata, 1).get(0);
         assertAll(//
-                () -> assertThat(queryPlan.getQueryRequest().getTableName(),
+                () -> assertThat(queryPlan.getQueryRequest().tableName(),
                         equalTo(basicMappingSetup.tableMapping.getRemoteName())),
-                () -> assertThat(queryPlan.getQueryRequest().getIndexName(), equalTo("publisherIndex")),
-                () -> assertThat(queryPlan.getQueryRequest().getKeyConditionExpression(), equalTo("#0 = :0")),
-                () -> assertThat(queryPlan.getQueryRequest().getExpressionAttributeNames().get("#0"),
+                () -> assertThat(queryPlan.getQueryRequest().indexName(), equalTo("publisherIndex")),
+                () -> assertThat(queryPlan.getQueryRequest().keyConditionExpression(), equalTo("#0 = :0")),
+                () -> assertThat(queryPlan.getQueryRequest().expressionAttributeNames().get("#0"),
                         equalTo("publisher")),
-                () -> assertThat(queryPlan.getQueryRequest().getExpressionAttributeValues().get(":0").getS(),
+                () -> assertThat(queryPlan.getQueryRequest().expressionAttributeValues().get(":0").s(),
                         equalTo(publisher))//
         );
     }
@@ -81,12 +82,12 @@ class DynamodbDocumentFetcherFactoryTest {
         final RemoteTableQuery documentQuery = basicMappingSetup.getQueryForMinPriceAndPublisher(price, publisher);
         final DynamodbQueryDocumentFetcher queryPlan = (DynamodbQueryDocumentFetcher) new DynamodbDocumentFetcherFactory(
                 null).buildDocumentFetcherForQuery(documentQuery, tableMetadata, 1).get(0);
-        final Map<String, String> attributeNames = queryPlan.getQueryRequest().getExpressionAttributeNames();
-        final Map<String, AttributeValue> attributeValues = queryPlan.getQueryRequest().getExpressionAttributeValues();
+        final Map<String, String> attributeNames = queryPlan.getQueryRequest().expressionAttributeNames();
+        final Map<String, AttributeValue> attributeValues = queryPlan.getQueryRequest().expressionAttributeValues();
         final String keyConditionExpression = replaceBackPlaceholders(
-                queryPlan.getQueryRequest().getKeyConditionExpression(), attributeNames, attributeValues);
+                queryPlan.getQueryRequest().keyConditionExpression(), attributeNames, attributeValues);
         assertAll(//
-                () -> assertThat(queryPlan.getQueryRequest().getTableName(),
+                () -> assertThat(queryPlan.getQueryRequest().tableName(),
                         equalTo(basicMappingSetup.tableMapping.getRemoteName())),
                 () -> assertThat(keyConditionExpression, anyOf(equalTo("(publisher = 'jb books' and (price > 10.1))"),
                         equalTo("(price > 10.1 and (publisher = 'jb books'))")))//
@@ -103,12 +104,12 @@ class DynamodbDocumentFetcherFactoryTest {
         final RemoteTableQuery documentQuery = basicMappingSetup.getQueryForMaxPriceAndPublisher(price, publisher);
         final DynamodbQueryDocumentFetcher queryPlan = (DynamodbQueryDocumentFetcher) new DynamodbDocumentFetcherFactory(
                 null).buildDocumentFetcherForQuery(documentQuery, tableMetadata, 1).get(0);
-        final Map<String, String> attributeNames = queryPlan.getQueryRequest().getExpressionAttributeNames();
-        final Map<String, AttributeValue> attributeValues = queryPlan.getQueryRequest().getExpressionAttributeValues();
+        final Map<String, String> attributeNames = queryPlan.getQueryRequest().expressionAttributeNames();
+        final Map<String, AttributeValue> attributeValues = queryPlan.getQueryRequest().expressionAttributeValues();
         final String keyConditionExpression = replaceBackPlaceholders(
-                queryPlan.getQueryRequest().getKeyConditionExpression(), attributeNames, attributeValues);
+                queryPlan.getQueryRequest().keyConditionExpression(), attributeNames, attributeValues);
         assertAll(//
-                () -> assertThat(queryPlan.getQueryRequest().getTableName(),
+                () -> assertThat(queryPlan.getQueryRequest().tableName(),
                         equalTo(basicMappingSetup.tableMapping.getRemoteName())),
                 () -> assertThat(keyConditionExpression, anyOf(equalTo("(publisher = 'jb books' and (price <= 10.1))"),
                         equalTo("(price <= 10.1 and (publisher = 'jb books'))")))//
@@ -122,11 +123,11 @@ class DynamodbDocumentFetcherFactoryTest {
         final DynamodbScanDocumentFetcher scanPlan = (DynamodbScanDocumentFetcher) new DynamodbDocumentFetcherFactory(
                 null).buildDocumentFetcherForQuery(documentQuery, tableMetadata, 1).get(0);
         assertAll(//
-                () -> assertThat(scanPlan.getScanRequest().getTableName(),
+                () -> assertThat(scanPlan.getScanRequest().tableName(),
                         equalTo(basicMappingSetup.tableMapping.getRemoteName())),
-                () -> assertThat(scanPlan.getScanRequest().getFilterExpression(), equalTo("#0 > :0")),
-                () -> assertThat(scanPlan.getScanRequest().getExpressionAttributeNames().get("#0"), equalTo("price")),
-                () -> assertThat(scanPlan.getScanRequest().getExpressionAttributeValues().get(":0").getN(),
+                () -> assertThat(scanPlan.getScanRequest().filterExpression(), equalTo("#0 > :0")),
+                () -> assertThat(scanPlan.getScanRequest().expressionAttributeNames().get("#0"), equalTo("price")),
+                () -> assertThat(scanPlan.getScanRequest().expressionAttributeValues().get(":0").n(),
                         equalTo(String.valueOf(price))));
     }
 
@@ -141,17 +142,16 @@ class DynamodbDocumentFetcherFactoryTest {
         final DynamodbQueryDocumentFetcher queryPlan = (DynamodbQueryDocumentFetcher) new DynamodbDocumentFetcherFactory(
                 null).buildDocumentFetcherForQuery(documentQuery, tableMetadata, 1).get(0);
         assertAll(//
-                () -> assertThat(queryPlan.getQueryRequest().getTableName(),
+                () -> assertThat(queryPlan.getQueryRequest().tableName(),
                         equalTo(basicMappingSetup.tableMapping.getRemoteName())),
-                () -> assertThat(queryPlan.getQueryRequest().getKeyConditionExpression(), equalTo("#0 = :0")),
-                () -> assertThat(queryPlan.getQueryRequest().getExpressionAttributeValues().get(":0").getS(),
+                () -> assertThat(queryPlan.getQueryRequest().keyConditionExpression(), equalTo("#0 = :0")),
+                () -> assertThat(queryPlan.getQueryRequest().expressionAttributeValues().get(":0").s(),
                         equalTo(publisher)),
-                () -> assertThat(queryPlan.getQueryRequest().getExpressionAttributeNames().get("#0"),
+                () -> assertThat(queryPlan.getQueryRequest().expressionAttributeNames().get("#0"),
                         equalTo("publisher")),
-                () -> assertThat(queryPlan.getQueryRequest().getFilterExpression(), equalTo("#1 = :1")),
-                () -> assertThat(queryPlan.getQueryRequest().getExpressionAttributeNames().get("#1"), equalTo("name")),
-                () -> assertThat(queryPlan.getQueryRequest().getExpressionAttributeValues().get(":1").getS(),
-                        equalTo(name))//
+                () -> assertThat(queryPlan.getQueryRequest().filterExpression(), equalTo("#1 = :1")),
+                () -> assertThat(queryPlan.getQueryRequest().expressionAttributeNames().get("#1"), equalTo("name")),
+                () -> assertThat(queryPlan.getQueryRequest().expressionAttributeValues().get(":1").s(), equalTo(name))//
         );
     }
 
@@ -167,15 +167,15 @@ class DynamodbDocumentFetcherFactoryTest {
                 publisher);
         final DynamodbQueryDocumentFetcher queryPlan = (DynamodbQueryDocumentFetcher) new DynamodbDocumentFetcherFactory(
                 null).buildDocumentFetcherForQuery(documentQuery, tableMetadata, 1).get(0);
-        final Map<String, String> attributeNames = queryPlan.getQueryRequest().getExpressionAttributeNames();
-        final Map<String, AttributeValue> attributeValues = queryPlan.getQueryRequest().getExpressionAttributeValues();
-        final String filterExpression = replaceBackPlaceholders(queryPlan.getQueryRequest().getFilterExpression(),
+        final Map<String, String> attributeNames = queryPlan.getQueryRequest().expressionAttributeNames();
+        final Map<String, AttributeValue> attributeValues = queryPlan.getQueryRequest().expressionAttributeValues();
+        final String filterExpression = replaceBackPlaceholders(queryPlan.getQueryRequest().filterExpression(),
                 attributeNames, attributeValues);
         assertAll(//
-                () -> assertThat(queryPlan.getQueryRequest().getTableName(),
+                () -> assertThat(queryPlan.getQueryRequest().tableName(),
                         equalTo(basicMappingSetup.tableMapping.getRemoteName())),
-                () -> assertThat(queryPlan.getQueryRequest().getKeyConditionExpression(), equalTo("#0 = :0")),
-                () -> assertThat(attributeValues.get(":0").getS(), equalTo(publisher)),
+                () -> assertThat(queryPlan.getQueryRequest().keyConditionExpression(), equalTo("#0 = :0")),
+                () -> assertThat(attributeValues.get(":0").s(), equalTo(publisher)),
                 () -> assertThat(attributeNames.get("#0"), equalTo("publisher")),
                 () -> assertThat(filterExpression, anyOf(equalTo("(name = 'name1' or (name = 'name2'))"),
                         equalTo("(name = 'name2' or (name = 'name1'))"))));
@@ -190,14 +190,14 @@ class DynamodbDocumentFetcherFactoryTest {
                 isbn);
         final DynamodbQueryDocumentFetcher queryPlan = (DynamodbQueryDocumentFetcher) new DynamodbDocumentFetcherFactory(
                 null).buildDocumentFetcherForQuery(documentQuery, tableMetadata, 1).get(0);
-        final Map<String, String> attributeNames = queryPlan.getQueryRequest().getExpressionAttributeNames();
-        final Map<String, AttributeValue> attributeValues = queryPlan.getQueryRequest().getExpressionAttributeValues();
-        final String filterExpression = replaceBackPlaceholders(queryPlan.getQueryRequest().getFilterExpression(),
+        final Map<String, String> attributeNames = queryPlan.getQueryRequest().expressionAttributeNames();
+        final Map<String, AttributeValue> attributeValues = queryPlan.getQueryRequest().expressionAttributeValues();
+        final String filterExpression = replaceBackPlaceholders(queryPlan.getQueryRequest().filterExpression(),
                 attributeNames, attributeValues);
         final String keyConditionExpression = replaceBackPlaceholders(
-                queryPlan.getQueryRequest().getKeyConditionExpression(), attributeNames, attributeValues);
+                queryPlan.getQueryRequest().keyConditionExpression(), attributeNames, attributeValues);
         assertAll(//
-                () -> assertThat(queryPlan.getQueryRequest().getTableName(),
+                () -> assertThat(queryPlan.getQueryRequest().tableName(),
                         equalTo(basicMappingSetup.tableMapping.getRemoteName())),
                 () -> assertThat(keyConditionExpression, equalTo("isbn = '1234'")),
                 () -> assertThat(filterExpression, anyOf(equalTo("(publisher = 'jb books' and (price = 10.0))"),
@@ -213,10 +213,10 @@ class DynamodbDocumentFetcherFactoryTest {
         }
         for (final Map.Entry<String, AttributeValue> valuePlaceholder : values.entrySet()) {
             final AttributeValue value = valuePlaceholder.getValue();
-            if (value.getS() != null) {
-                result = result.replace(valuePlaceholder.getKey(), "'" + value.getS() + "'");
-            } else if (value.getN() != null) {
-                result = result.replace(valuePlaceholder.getKey(), value.getN());
+            if (value.s() != null) {
+                result = result.replace(valuePlaceholder.getKey(), "'" + value.s() + "'");
+            } else if (value.n() != null) {
+                result = result.replace(valuePlaceholder.getKey(), value.n());
             } else {
                 throw new UnsupportedOperationException("not yet implemented");
             }

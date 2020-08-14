@@ -13,11 +13,12 @@ import java.util.Map;
 
 import javax.net.ssl.*;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.xmlrpc.XmlRpcException;
 import org.apache.xmlrpc.client.XmlRpcClient;
 import org.apache.xmlrpc.client.XmlRpcClientConfigImpl;
 import org.apache.xmlrpc.client.XmlRpcClientException;
+
+import software.amazon.awssdk.utils.IoUtils;
 
 public class ExaOperationInterface {
     private final XmlRpcClient client;
@@ -57,7 +58,7 @@ public class ExaOperationInterface {
 
     private void uploadJdbcDriver(final String jdbcDriverId, final File file) throws IOException, XmlRpcException {
         try (final InputStream inputStream = new FileInputStream(file)) {
-            final byte[] driverBytes = IOUtils.toByteArray(inputStream);
+            final byte[] driverBytes = IoUtils.toByteArray(inputStream);
             this.client.execute(jdbcDriverId + ".uploadFile", new Object[] { driverBytes, file.getName() });
         } catch (final XmlRpcClientException exception) {
             // This exception happens always. I don't know why but it still works...
