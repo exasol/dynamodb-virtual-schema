@@ -1,8 +1,10 @@
 package com.exasol.adapter.dynamodb.querypredicate.normalizer;
 
+import static com.exasol.adapter.dynamodb.mapping.PropertyToColumnMappingBuilderQuickAccess.getColumnMappingExample;
+
 import java.util.Set;
 
-import com.exasol.adapter.dynamodb.mapping.PropertyToJsonColumnMapping;
+import com.exasol.adapter.dynamodb.mapping.MappingErrorBehaviour;
 import com.exasol.adapter.dynamodb.querypredicate.AbstractComparisonPredicate;
 import com.exasol.adapter.dynamodb.querypredicate.ColumnLiteralComparisonPredicate;
 import com.exasol.adapter.dynamodb.querypredicate.LogicalOperator;
@@ -20,12 +22,16 @@ class SelectionsConstants {
 
     static {
         EQUAL1 = new ColumnLiteralComparisonPredicate(AbstractComparisonPredicate.Operator.EQUAL,
-                new PropertyToJsonColumnMapping("isbn", null, null, 0, null), new SqlLiteralString("test"));
+                getColumnMappingExample().exasolColumnName("isbn").build(), new SqlLiteralString("test"));
         EQUAL2 = new ColumnLiteralComparisonPredicate(AbstractComparisonPredicate.Operator.EQUAL,
-                new PropertyToJsonColumnMapping("publisher", null, null, 1, null), new SqlLiteralString("test"));
+                getColumnMappingExample().exasolColumnName("publisher").lookupFailBehaviour(MappingErrorBehaviour.ABORT)
+                        .build(),
+                new SqlLiteralString("test"));
 
         EQUAL3 = new ColumnLiteralComparisonPredicate(AbstractComparisonPredicate.Operator.EQUAL,
-                new PropertyToJsonColumnMapping("publisher", null, null, 2, null), new SqlLiteralString("test2"));
+                getColumnMappingExample().exasolColumnName("publisher").lookupFailBehaviour(MappingErrorBehaviour.NULL)
+                        .build(),
+                new SqlLiteralString("test2"));
 
         AND_OF_TWO_DIFFERENT_PREDICATES = new LogicalOperator(Set.of(EQUAL1, EQUAL2), LogicalOperator.Operator.AND);
         OR_OF_TWO_DIFFERENT_PREDICATES = new LogicalOperator(Set.of(EQUAL1, EQUAL2), LogicalOperator.Operator.OR);

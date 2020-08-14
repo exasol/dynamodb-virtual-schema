@@ -9,7 +9,7 @@ import com.exasol.adapter.metadata.DataType;
  * This class defines a mapping that extracts a string from the remote document and maps it to an Exasol VARCHAR column.
  */
 public final class PropertyToVarcharColumnMapping extends AbstractPropertyToColumnMapping {
-    private static final long serialVersionUID = 3465558198156097064L;
+    private static final long serialVersionUID = 3465558198156097064L;//
     private final int varcharColumnSize;
     private final TruncateableMappingErrorBehaviour overflowBehaviour;
 
@@ -23,7 +23,7 @@ public final class PropertyToVarcharColumnMapping extends AbstractPropertyToColu
      * @param varcharColumnSize    Size of the Exasol VARCHAR column
      * @param overflowBehaviour    Behaviour if extracted string exceeds {@link #varcharColumnSize}
      */
-    public PropertyToVarcharColumnMapping(final String exasolColumnName,
+    private PropertyToVarcharColumnMapping(final String exasolColumnName,
             final DocumentPathExpression pathToSourceProperty, final MappingErrorBehaviour lookupFailBehaviour,
             final int varcharColumnSize, final TruncateableMappingErrorBehaviour overflowBehaviour) {
         super(exasolColumnName, pathToSourceProperty, lookupFailBehaviour);

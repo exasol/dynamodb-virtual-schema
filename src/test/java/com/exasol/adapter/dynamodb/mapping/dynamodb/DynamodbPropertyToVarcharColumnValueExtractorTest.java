@@ -14,6 +14,7 @@ import com.exasol.adapter.dynamodb.documentnode.dynamodb.DynamodbString;
 import com.exasol.adapter.dynamodb.documentpath.DocumentPathExpression;
 import com.exasol.adapter.dynamodb.mapping.MappingErrorBehaviour;
 import com.exasol.adapter.dynamodb.mapping.PropertyToVarcharColumnMapping;
+import com.exasol.adapter.dynamodb.mapping.TruncateableMappingErrorBehaviour;
 
 class DynamodbPropertyToVarcharColumnValueExtractorTest {
 
@@ -24,8 +25,14 @@ class DynamodbPropertyToVarcharColumnValueExtractorTest {
     private static final DocumentPathExpression TEST_SOURCE_COLUMN_PATH = DocumentPathExpression.builder()
             .addObjectLookup(TEST_SOURCE_COLUMN).build();
 
-    private static final PropertyToVarcharColumnMapping TO_STRING_PROPERTY_TO_COLUMN_MAPPING = new PropertyToVarcharColumnMapping(
-            DEST_COLUMN, TEST_SOURCE_COLUMN_PATH, MappingErrorBehaviour.NULL, 100, null);
+    private static final PropertyToVarcharColumnMapping TO_STRING_PROPERTY_TO_COLUMN_MAPPING = PropertyToVarcharColumnMapping
+            .builder()//
+            .exasolColumnName(DEST_COLUMN)//
+            .pathToSourceProperty(TEST_SOURCE_COLUMN_PATH)//
+            .lookupFailBehaviour(MappingErrorBehaviour.NULL)//
+            .varcharColumnSize(100)//
+            .overflowBehaviour(TruncateableMappingErrorBehaviour.ABORT)//
+            .build();
 
     @Test
     void testConvertStringRow() {

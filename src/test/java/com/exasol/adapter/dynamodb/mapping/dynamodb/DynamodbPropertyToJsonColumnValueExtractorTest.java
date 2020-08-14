@@ -1,5 +1,6 @@
 package com.exasol.adapter.dynamodb.mapping.dynamodb;
 
+import static com.exasol.adapter.dynamodb.mapping.PropertyToColumnMappingBuilderQuickAccess.configureExampleMapping;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 
@@ -20,9 +21,11 @@ class DynamodbPropertyToJsonColumnValueExtractorTest {
 
     @Test
     void testConvertRowBasic() {
-        final PropertyToJsonColumnMapping toStringColumnMappingDefinition = new PropertyToJsonColumnMapping(
-                DEST_COLUMN, DocumentPathExpression.empty(), MappingErrorBehaviour.ABORT, 100,
-                MappingErrorBehaviour.ABORT);
+        final PropertyToJsonColumnMapping toStringColumnMappingDefinition = configureExampleMapping(
+                PropertyToJsonColumnMapping.builder())//
+                        .pathToSourceProperty(DocumentPathExpression.empty()).varcharColumnSize(100)//
+                        .overflowBehaviour(MappingErrorBehaviour.ABORT)//
+                        .build();
         final DynamodbMap testData = new DynamodbMap(Map.of("key", AttributeValueQuickCreator.forString("value")));
         final ValueExpression exasolCellValue = new DynamodbPropertyToJsonColumnValueExtractor(
                 toStringColumnMappingDefinition).extractColumnValue(testData, new StaticDocumentPathIterator());

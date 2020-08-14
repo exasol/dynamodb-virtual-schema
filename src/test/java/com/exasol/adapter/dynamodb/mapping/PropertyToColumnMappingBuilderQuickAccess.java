@@ -14,4 +14,10 @@ public class PropertyToColumnMappingBuilderQuickAccess {
                 .pathToSourceProperty(DEFAULT_PATH);
         return builder;
     }
+
+    public static PropertyToColumnMapping.Builder getColumnMappingExample() {
+        return PropertyToJsonColumnMapping.builder().exasolColumnName("test")
+                .pathToSourceProperty(DocumentPathExpression.empty()).varcharColumnSize(10)
+                .lookupFailBehaviour(MappingErrorBehaviour.ABORT).overflowBehaviour(MappingErrorBehaviour.ABORT);
+    }
 }

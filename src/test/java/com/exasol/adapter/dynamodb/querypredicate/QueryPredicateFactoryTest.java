@@ -1,5 +1,6 @@
 package com.exasol.adapter.dynamodb.querypredicate;
 
+import static com.exasol.adapter.dynamodb.mapping.PropertyToColumnMappingBuilderQuickAccess.configureExampleMapping;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.instanceOf;
@@ -20,8 +21,8 @@ import com.exasol.adapter.metadata.ColumnMetadata;
 import com.exasol.adapter.sql.*;
 
 class QueryPredicateFactoryTest {
-    private static final ColumnMapping COLUMN_MAPPING = new PropertyToJsonColumnMapping("name", null, null, 0,
-            MappingErrorBehaviour.NULL);
+    private static final ColumnMapping COLUMN_MAPPING = configureExampleMapping(PropertyToJsonColumnMapping.builder())
+            .varcharColumnSize(0).overflowBehaviour(MappingErrorBehaviour.NULL).build();
     private static final SqlLiteralString LITERAL = new SqlLiteralString("test");
     private static final QueryPredicateFactory FACTORY = QueryPredicateFactory.getInstance();
     private static ColumnMetadata columnMetadata;
