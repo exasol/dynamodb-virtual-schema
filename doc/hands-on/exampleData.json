@@ -1,0 +1,100 @@
+{
+    "Books": [
+        {
+            "PutRequest": {
+                "Item": {
+                    "Title": {
+                        "S": "The picture of Dorian Gray"
+                    },
+                    "Authors": {
+                        "M": {
+                            "firstName": {"S" : "Oscar"},
+                            "lastName": {"S" : "Wilde"}
+                        }
+                    },
+                    "Price": {
+                        "N": "5.0"
+                    },
+                    "Pages":{
+                        "N": "253"
+                    },
+                    "Genre": {
+                        "S": "philosophical novel"
+                    },
+                    "Characters":{
+                        "L":[
+                          {"S" : "Dorian Gray"},
+                          {"S" : "Sibyl Vane"},
+                          {"S" : "Lady Victoria Wotton"},
+                          {"S" : "Lord Henry Wotton"},
+                          {"S" : "James Vane"},
+                          {"S" : "Basil Hallward"},
+                          {"S" : "Alan Campbell Dorian Gray"}
+                        ]
+                    }
+                }
+            }
+        },
+        
+        {
+            "PutRequest": {
+                "Item": {
+                    "Title": {
+                        "S": "1984"
+                    },
+                    "Author": {
+                        "M": {
+                            "firstName": {"S" : "George"},
+                            "lastName": {"S" : "Orwell"}
+                        }
+                    },
+                    "Cover":{
+                        "S": "https://example.com/cover1985.jpg"
+                    },
+                    "Price": {
+                        "N": "12.30"
+                    },
+                    "Pages":{
+                        "N": "384"
+                    },
+                    "Genre": {
+                        "S": "Science Fiction"
+                    },
+                    "Characters":{
+                        "L":[
+                          {"S" : "Big Brother"},
+                          {"S" : "Emmanuel Goldstein"},
+                          {"S" : "O'Brien"},
+                          {"S" : "Winston Smith"},
+                          {"S" : "Julia"},
+                          {"S" : "Syme"}
+                        ]
+                    }
+                }
+            }
+        },
+        
+        {
+            "PutRequest": {
+                "Item": {
+                    "Title": {
+                        "S": "Wuthering Heights"
+                    },
+                    "Author": {
+                        "M": {
+                            "firstName": {"S" : "Emily"},
+                            "lastName": {"S" : "Brontë"}
+                        }
+                    },
+                    "Price": {
+                        "N": "7.40"
+                    },
+                    "Genre": {
+                        "S": "Novel"
+                    }
+                }
+            }
+        }
+        
+    ]
+} 
