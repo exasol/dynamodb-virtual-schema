@@ -87,7 +87,21 @@ class DynamodbAdapterIT {
         createBasicMappingVirtualSchema();
         final Map<String, String> rowNames = exasolTestDatabaseBuilder.describeTable(TEST_SCHEMA, "BOOKS");
         assertThat(rowNames, equalTo(Map.of("ISBN", "VARCHAR(20) UTF8", "NAME", "VARCHAR(100) UTF8", "AUTHOR_NAME",
-                "VARCHAR(20) UTF8", "PUBLISHER", "VARCHAR(100) UTF8", "PRICE", "VARCHAR(10) UTF8")));
+                "VARCHAR(20) UTF8", "PUBLISHER", "VARCHAR(100) UTF8", "PRICE", "DECIMAL(8,2)")));
+    }
+
+    @Test
+    void testToDecimalMapping() throws SQLException, IOException {
+        createBasicMappingVirtualSchema();
+        dynamodbTestInterface.createTable(DYNAMO_BOOKS_TABLE, TestDocuments.BOOKS_ISBN_PROPERTY);
+        dynamodbTestInterface.importData(DYNAMO_BOOKS_TABLE, TestDocuments.BOOKS);
+        final String query = "SELECT PRICE FROM " + TEST_SCHEMA + ".BOOKS;";
+        final ResultSet actualResultSet = exasolTestDatabaseBuilder.getStatement().executeQuery(query);
+        final List<Double> result = new ArrayList<>();
+        while (actualResultSet.next()) {
+            result.add(actualResultSet.getDouble("PRICE"));
+        }
+        assertThat(result, containsInAnyOrder(10.0, 15.0, 21.12));
     }
 
     /**

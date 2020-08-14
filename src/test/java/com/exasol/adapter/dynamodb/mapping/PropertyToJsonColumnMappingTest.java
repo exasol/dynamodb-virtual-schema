@@ -2,38 +2,51 @@ package com.exasol.adapter.dynamodb.mapping;
 
 import static com.exasol.EqualityMatchers.assertSymmetricEqualWithHashAndEquals;
 import static com.exasol.EqualityMatchers.assertSymmetricNotEqualWithHashAndEquals;
+import static com.exasol.adapter.dynamodb.mapping.PropertyToColumnMappingBuilderQuickAccess.configureExampleMapping;
 
 import org.junit.jupiter.api.Test;
 
-import com.exasol.adapter.dynamodb.documentpath.DocumentPathExpression;
-
 class PropertyToJsonColumnMappingTest {
 
-    private static final PropertyToJsonColumnMapping TEST_OBJECT = new PropertyToJsonColumnMapping("name",
-            DocumentPathExpression.builder().addArrayAll().build(), MappingErrorBehaviour.ABORT, 10,
-            MappingErrorBehaviour.ABORT);
+    private static final PropertyToJsonColumnMapping TEST_OBJECT = getDefaultTestObjectBuilder().build();
+
+    private static PropertyToJsonColumnMapping.Builder getDefaultTestObjectBuilder() {
+        return configureExampleMapping(PropertyToJsonColumnMapping.builder())//
+                .varcharColumnSize(10)//
+                .overflowBehaviour(MappingErrorBehaviour.ABORT);
+    }
+
+    @Test
+    void testIdentical() {
+        assertSymmetricEqualWithHashAndEquals(TEST_OBJECT, TEST_OBJECT);
+    }
 
     @Test
     void testEqual() {
-        final PropertyToJsonColumnMapping other = new PropertyToJsonColumnMapping(TEST_OBJECT.getExasolColumnName(),
-                TEST_OBJECT.getPathToSourceProperty(), TEST_OBJECT.getMappingErrorBehaviour(), 10,
-                MappingErrorBehaviour.ABORT);
-        assertSymmetricEqualWithHashAndEquals(TEST_OBJECT, other);
+        assertSymmetricEqualWithHashAndEquals(TEST_OBJECT, getDefaultTestObjectBuilder().build());
     }
 
     @Test
     void testNotEqualWithDifferentName() {
-        final PropertyToJsonColumnMapping other = new PropertyToJsonColumnMapping("otherName",
-                TEST_OBJECT.getPathToSourceProperty(), TEST_OBJECT.getMappingErrorBehaviour(), 10,
-                MappingErrorBehaviour.ABORT);
+        final ColumnMapping other = TEST_OBJECT.withNewExasolName("different_name");
         assertSymmetricNotEqualWithHashAndEquals(TEST_OBJECT, other);
     }
 
     @Test
-    void testNotEqualWithDifferentColumn() {
-        final PropertyToJsonColumnMapping other = new PropertyToJsonColumnMapping(TEST_OBJECT.getExasolColumnName(),
-                DocumentPathExpression.empty(), TEST_OBJECT.getMappingErrorBehaviour(), 10,
-                MappingErrorBehaviour.ABORT);
+    void testNotEqualWithDifferentVarcharSize() {
+        final PropertyToJsonColumnMapping other = getDefaultTestObjectBuilder().varcharColumnSize(12).build();
         assertSymmetricNotEqualWithHashAndEquals(TEST_OBJECT, other);
+    }
+
+    @Test
+    void testNotEqualWithDifferentOverflowBehaviour() {
+        final PropertyToJsonColumnMapping other = getDefaultTestObjectBuilder()
+                .overflowBehaviour(MappingErrorBehaviour.NULL).build();
+        assertSymmetricNotEqualWithHashAndEquals(TEST_OBJECT, other);
+    }
+
+    @Test
+    void testNotEqualWithDifferentClass() {
+        assertSymmetricNotEqualWithHashAndEquals(TEST_OBJECT, new Object());
     }
 }

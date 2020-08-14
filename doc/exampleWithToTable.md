@@ -42,23 +42,23 @@ To achieve this we create the following mapping definition:
   "mapping": {
     "fields": {
       "isbn": {
-        "toStringMapping": {
-          "maxLength": 20,
-          "overflow": "ABORT",
+        "toVarcharMapping": {
+          "varcharColumnSize": 20,
+          "overflowBehaviour": "ABORT",
           "key": "global"
         }
       },
       "name": {
-        "toStringMapping": {
-          "maxLength": 100,
-          "overflow": "TRUNCATE"
+        "toVarcharMapping": {
+          "varcharColumnSize": 100,
+          "overflowBehaviour": "TRUNCATE"
         }
       },
       "topics": {
         "toTableMapping": {
           "mapping": {
-            "toStringMapping": {
-              "destName": "NAME"
+            "toVarcharMapping": {
+              "destinationName": "NAME"
             }
           }
         }

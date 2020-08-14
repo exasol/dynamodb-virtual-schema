@@ -35,7 +35,7 @@ public abstract class AbstractPropertyToColumnValueExtractor<DocumentVisitorType
                 this.column.getPathToSourceProperty(), arrayAllIterationState);
         final Optional<DocumentNode<DocumentVisitorType>> dynamodbProperty = walker.walkThroughDocument(document);
         if (dynamodbProperty.isEmpty()) {
-            if (this.column.getMappingErrorBehaviour() == MappingErrorBehaviour.NULL) {
+            if (this.column.getLookupFailBehaviour() == MappingErrorBehaviour.NULL) {
                 return NullLiteral.nullLiteral();
             } else {
                 throw new SchemaMappingException("Could not find required property ("

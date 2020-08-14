@@ -8,22 +8,22 @@
       "topics": {
         "toTableMapping": {
           "mapping": {
-            "toStringMapping": {
-              "destName": "NAME"
+            "toVarcharMapping": {
+              "destinationName": "NAME"
             }
           }
         }
       },
       "isbn": {
-        "toStringMapping": {
-          "maxLength": 20,
-          "overflow": "ABORT",
+        "toVarcharMapping": {
+          "varcharColumnSize": 20,
+          "overflowBehaviour": "ABORT",
           "required": true,
           "key": "global"
         }
       },
       "name": {
-        "toStringMapping": {
+        "toVarcharMapping": {
         }
       }
     }

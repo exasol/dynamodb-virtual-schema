@@ -54,26 +54,26 @@ In order to let this adapter create the described mapping we create the followin
   "mapping": {
     "fields": {
       "isbn": {
-        "toStringMapping": {
-          "maxLength": 20,
+        "toVarcharMapping": {
+          "varcharColumnSize": 20,
           "description": "The isbn is mapped to a string with max length of 20",
-          "overflow": "ABORT",
+          "overflowBehaviour": "ABORT",
           "required": true
         }
       },
       "name": {
-        "toStringMapping": {
-          "maxLength": 100,
+        "toVarcharMapping": {
+          "varcharColumnSize": 100,
           "description": "The name is mapped to a string with max length of 100",
-          "overflow": "TRUNCATE"
+          "overflowBehaviour": "TRUNCATE"
         }
       },
       "author": {
         "fields": {
           "name": {
-            "toStringMapping": {
-              "maxLength": 20,
-              "destName": "AUTHOR_NAME",
+            "toVarcharMapping": {
+              "varcharColumnSize": 20,
+              "destinationName": "AUTHOR_NAME",
               "description": "Maps the nested property authors.name to column authorName"
             }
           }

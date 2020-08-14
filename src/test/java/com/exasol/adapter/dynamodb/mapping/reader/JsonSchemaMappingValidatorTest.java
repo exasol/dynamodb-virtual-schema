@@ -105,10 +105,10 @@ class JsonSchemaMappingValidatorTest {
     void testInvalidUnknownMappingType() throws IOException {
         testInvalid(MappingTestFiles.BASIC_MAPPING_FILE, base -> {
             final JSONObject isbn = base.getJSONObject("mapping").getJSONObject("fields").getJSONObject("isbn");
-            isbn.remove("toStringMapping");
+            isbn.remove("toVarcharMapping");
             isbn.put("toStriiiiiiingMapping", "");
             return base;
-        }, "#/mapping/fields/isbn: extraneous key [toStriiiiiiingMapping] is not permitted, use one of the following mapping definitions: toTableMapping, toJsonMapping, fields, toStringMapping");
+        }, "#/mapping/fields/isbn: extraneous key [toStriiiiiiingMapping] is not permitted, use one of the following mapping definitions: toVarcharMapping, toTableMapping, toDecimalMapping, toJsonMapping, fields");
     }
 
     @Test
@@ -117,16 +117,17 @@ class JsonSchemaMappingValidatorTest {
             base.getJSONObject("mapping").getJSONObject("fields").getJSONObject("chapters")
                     .getJSONObject("toTableMapping").getJSONObject("mapping").remove("fields");
             return base;
-        }, "#/mapping/fields/chapters/toTableMapping/mapping Please specify at least one mapping. Possible are: toTableMapping, toJsonMapping, fields, toStringMapping");
+        }, "#/mapping/fields/chapters/toTableMapping/mapping Please specify at least one mapping. Possible are: toVarcharMapping, toTableMapping, toDecimalMapping, toJsonMapping, fields");
     }
 
     @Test
     void testInvalidKeyValue() throws IOException {
         testInvalid(MappingTestFiles.BASIC_MAPPING_FILE, base -> {
-            base.getJSONObject("mapping").getJSONObject("fields").getJSONObject("name").getJSONObject("toStringMapping")
+            base.getJSONObject("mapping").getJSONObject("fields").getJSONObject("name")
+                    .getJSONObject("toVarcharMapping")
                     .put("key", "");
             return base;
-        }, "#/mapping/fields/name/toStringMapping/key: Please set key property to 'local' or 'global'.");
+        }, "#/mapping/fields/name/toVarcharMapping/key: Please set key property to 'local' or 'global'.");
     }
 
     @Test
@@ -145,6 +146,6 @@ class JsonSchemaMappingValidatorTest {
             mapping.remove("fields");
             mapping.put("toStriiiiingMapping", "");
             return base;
-        }, "#/mapping/fields/chapters/toTableMapping/mapping: extraneous key [toStriiiiingMapping] is not permitted, use one of the following mapping definitions: toTableMapping, toJsonMapping, fields, toStringMapping");
+        }, "#/mapping/fields/chapters/toTableMapping/mapping: extraneous key [toStriiiiingMapping] is not permitted, use one of the following mapping definitions: toVarcharMapping, toTableMapping, toDecimalMapping, toJsonMapping, fields");
     }
 }

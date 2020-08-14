@@ -6,21 +6,21 @@
   "mapping": {
     "fields": {
       "isbn": {
-        "toStringMapping": {
-          "maxLength": 20,
-          "overflow": "ABORT"
+        "toVarcharMapping": {
+          "varcharColumnSize": 20,
+          "overflowBehaviour": "ABORT"
         }
       },
       "name": {
-        "toStringMapping": {
-          "maxLength": 100,
-          "overflow": "TRUNCATE"
+        "toVarcharMapping": {
+          "varcharColumnSize": 100,
+          "overflowBehaviour": "TRUNCATE"
         }
       },
       "topics": {
         "toJsonMapping": {
           "description": "Maps the sub document of this property to a JSON string",
-          "maxLength": 200
+          "varcharColumnSize": 200
         }
       }
     }

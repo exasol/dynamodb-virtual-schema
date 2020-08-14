@@ -68,5 +68,12 @@ CREATE VIRTUAL SCHEMA DYNAMODB_TEST USING ADAPTER.DYNAMODB_ADAPTER WITH
     SQL_DIALECT     = 'DYNAMO_DB'
     MAPPING         = '/bfsdefault/default/path/to/mappings/in/bucketfs';
 ```
+
+The CREATE VIRTUAL SCHEMA command accepts the following properties:
+
+| Property          | Mandatory   |  Default      |   Description                                                                 |
+|-------------------|-------------|---------------|-------------------------------------------------------------------------------|
+|`MAPPING`          | Yes         |               | Path to the mapping definition file(s)                                        |
+|`MAX_PARALLEL_UDFS`| No          | -1            | Maximum number of UDFs that are executed in parallel. -1 represents unlimited.|
  
-Now browse your data using you favorite SQL client.
+Now browse the data using your favorite SQL client.

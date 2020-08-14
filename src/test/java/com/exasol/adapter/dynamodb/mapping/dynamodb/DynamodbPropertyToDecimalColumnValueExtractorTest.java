@@ -26,7 +26,7 @@ class DynamodbPropertyToDecimalColumnValueExtractorTest {
                     .decimalPrecision(10)//
                     .decimalScale(2)//
                     .overflowBehaviour(MappingErrorBehaviour.ABORT)//
-                    .notANumberBehaviour(MappingErrorBehaviour.ABORT)//
+                    .notNumericBehaviour(MappingErrorBehaviour.ABORT)//
                     .build();
     public static final DynamodbPropertyToDecimalColumnValueExtractor EXTRACTOR = new DynamodbPropertyToDecimalColumnValueExtractor(
             MAPPING);

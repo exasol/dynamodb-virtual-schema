@@ -2,66 +2,69 @@ package com.exasol.adapter.dynamodb.mapping;
 
 import static com.exasol.EqualityMatchers.assertSymmetricEqualWithHashAndEquals;
 import static com.exasol.EqualityMatchers.assertSymmetricNotEqualWithHashAndEquals;
+import static com.exasol.adapter.dynamodb.mapping.PropertyToColumnMappingBuilderQuickAccess.configureExampleMapping;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 import org.junit.jupiter.api.Test;
 
-import com.exasol.adapter.dynamodb.documentpath.DocumentPathExpression;
-import com.exasol.adapter.metadata.DataType;
-
 class PropertyToVarcharColumnMappingTest {
-    private static final String COLUMN_NAME = "columnName";
     private static final int STRING_LENGTH = 10;
-    private static final PropertyToVarcharColumnMapping TEST_OBJECT = new PropertyToVarcharColumnMapping(COLUMN_NAME,
-            DocumentPathExpression.builder().addArrayAll().build(), MappingErrorBehaviour.NULL, STRING_LENGTH,
-            TruncateableMappingErrorBehaviour.TRUNCATE);
+
+    private static PropertyToVarcharColumnMapping.Builder getDefaultTestObjectBuilder() {
+        return configureExampleMapping(PropertyToVarcharColumnMapping.builder())//
+                .varcharColumnSize(STRING_LENGTH)//
+                .overflowBehaviour(TruncateableMappingErrorBehaviour.TRUNCATE);
+    }
 
     @Test
-    void testDestinationDataType() {
+    void testGetters() {
+        final PropertyToVarcharColumnMapping testObject = getDefaultTestObjectBuilder().build();
         assertAll(
-                () -> assertThat(TEST_OBJECT.getExasolDataType().getExaDataType(),
-                        equalTo(DataType.ExaDataType.VARCHAR)),
-                () -> assertThat(TEST_OBJECT.getExasolDataType().getSize(), equalTo(STRING_LENGTH))//
+                () -> assertThat(testObject.getExasolDataType().toString(), equalTo("VARCHAR(10) UTF8")),
+                () -> assertThat(testObject.isExasolColumnNullable(), equalTo(true)),
+                () -> assertThat(testObject.getOverflowBehaviour(), equalTo(TruncateableMappingErrorBehaviour.TRUNCATE))//
         );
     }
 
     @Test
-    void testIsDestinationNullable() {
-        assertThat(TEST_OBJECT.isExasolColumnNullable(), equalTo(true));
+    void testIdentical() {
+        final PropertyToVarcharColumnMapping testObject = getDefaultTestObjectBuilder().build();
+        assertSymmetricEqualWithHashAndEquals(testObject, testObject);
     }
 
     @Test
     void testEqual() {
-        final PropertyToVarcharColumnMapping other = new PropertyToVarcharColumnMapping(COLUMN_NAME,
-                TEST_OBJECT.getPathToSourceProperty(), TEST_OBJECT.getMappingErrorBehaviour(),
-                TEST_OBJECT.getVarcharColumnSize(), TEST_OBJECT.getOverflowBehaviour());
-        assertSymmetricEqualWithHashAndEquals(TEST_OBJECT, other);
+        assertSymmetricEqualWithHashAndEquals(getDefaultTestObjectBuilder().build(),
+                getDefaultTestObjectBuilder().build());
     }
 
     @Test
-    void testNotEqualWithDifferentName() {
-        final PropertyToVarcharColumnMapping other = new PropertyToVarcharColumnMapping("otherName",
-                TEST_OBJECT.getPathToSourceProperty(), TEST_OBJECT.getMappingErrorBehaviour(),
-                TEST_OBJECT.getVarcharColumnSize(), TEST_OBJECT.getOverflowBehaviour());
-        assertSymmetricNotEqualWithHashAndEquals(TEST_OBJECT, other);
+    void testNotEqualBySuper() {
+        final PropertyToVarcharColumnMapping testObject = getDefaultTestObjectBuilder().build();
+        final ColumnMapping other = testObject.withNewExasolName("otherName");
+        assertSymmetricNotEqualWithHashAndEquals(testObject, other);
     }
 
     @Test
-    void testNotEqualWithDifferentPath() {
-        final PropertyToVarcharColumnMapping other = new PropertyToVarcharColumnMapping(COLUMN_NAME,
-                DocumentPathExpression.empty(), TEST_OBJECT.getMappingErrorBehaviour(),
-                TEST_OBJECT.getVarcharColumnSize(),
-                TEST_OBJECT.getOverflowBehaviour());
-        assertSymmetricNotEqualWithHashAndEquals(TEST_OBJECT, other);
+    void testNotEqualByDifferentOverflowBehaviour() {
+        final PropertyToVarcharColumnMapping testObject = getDefaultTestObjectBuilder().build();
+        final PropertyToVarcharColumnMapping other = getDefaultTestObjectBuilder()
+                .overflowBehaviour(TruncateableMappingErrorBehaviour.ABORT).build();
+        assertSymmetricNotEqualWithHashAndEquals(testObject, other);
     }
 
     @Test
-    void testNotEqualWithDifferentStringSize() {
-        final PropertyToVarcharColumnMapping other = new PropertyToVarcharColumnMapping(COLUMN_NAME,
-                TEST_OBJECT.getPathToSourceProperty(), TEST_OBJECT.getMappingErrorBehaviour(), 123,
-                TEST_OBJECT.getOverflowBehaviour());
-        assertSymmetricNotEqualWithHashAndEquals(TEST_OBJECT, other);
+    void testNotEqualByDifferentStringSize() {
+        final PropertyToVarcharColumnMapping testObject = getDefaultTestObjectBuilder().build();
+        final PropertyToVarcharColumnMapping other = getDefaultTestObjectBuilder().varcharColumnSize(12).build();
+        assertSymmetricNotEqualWithHashAndEquals(testObject, other);
+    }
+
+    @Test
+    void testNotEqualByDifferentClass() {
+        final PropertyToVarcharColumnMapping testObject = getDefaultTestObjectBuilder().build();
+        assertSymmetricNotEqualWithHashAndEquals(testObject, new Object());
     }
 }

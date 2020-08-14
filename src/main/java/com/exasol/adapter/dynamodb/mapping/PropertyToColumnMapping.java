@@ -19,7 +19,7 @@ public interface PropertyToColumnMapping extends ColumnMapping {
      *
      * @return {@link MappingErrorBehaviour}
      */
-    public MappingErrorBehaviour getMappingErrorBehaviour();
+    public MappingErrorBehaviour getLookupFailBehaviour();
 
     public void accept(PropertyToColumnMappingVisitor visitor);
 
@@ -28,7 +28,9 @@ public interface PropertyToColumnMapping extends ColumnMapping {
         visitor.visit(this);
     }
 
-    // TODO use builder also for ToStringPropertyToColumnMapping and ToJsonPropertyToColumnMapping
+    /**
+     * Builder for {@link PropertyToJsonColumnMapping}.
+     */
     public interface Builder {
         /**
          * Set the name of the Exasol column
@@ -53,5 +55,12 @@ public interface PropertyToColumnMapping extends ColumnMapping {
          * @return self
          */
         public Builder lookupFailBehaviour(final MappingErrorBehaviour lookupFailBehaviour);
+
+        /**
+         * Build the {@link PropertyToColumnMapping}.
+         * 
+         * @return built {@link PropertyToColumnMapping}
+         */
+        public PropertyToColumnMapping build();
     }
 }

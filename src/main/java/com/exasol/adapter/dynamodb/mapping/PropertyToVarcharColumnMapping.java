@@ -61,7 +61,7 @@ public final class PropertyToVarcharColumnMapping extends AbstractPropertyToColu
 
     @Override
     public ColumnMapping withNewExasolName(final String newExasolName) {
-        return new PropertyToVarcharColumnMapping(newExasolName, getPathToSourceProperty(), getMappingErrorBehaviour(),
+        return new PropertyToVarcharColumnMapping(newExasolName, getPathToSourceProperty(), getLookupFailBehaviour(),
                 getVarcharColumnSize(), getOverflowBehaviour());
     }
 
@@ -85,4 +85,74 @@ public final class PropertyToVarcharColumnMapping extends AbstractPropertyToColu
         return Objects.hash(super.hashCode(), this.varcharColumnSize, this.overflowBehaviour);
     }
 
+    /**
+     * Get a builder for {@link PropertyToVarcharColumnMapping}.
+     * 
+     * @return builder for {@link PropertyToVarcharColumnMapping}
+     */
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    /**
+     * Builder for {@link PropertyToVarcharColumnMapping}.
+     */
+    public static class Builder implements PropertyToColumnMapping.Builder {
+        private String exasolColumnName;
+        private DocumentPathExpression pathToSourceProperty;
+        private MappingErrorBehaviour lookupFailBehaviour;
+        private int varcharColumnSize;
+
+        private TruncateableMappingErrorBehaviour overflowBehaviour;
+
+        @Override
+        public Builder exasolColumnName(final String exasolColumnName) {
+            this.exasolColumnName = exasolColumnName;
+            return this;
+        }
+
+        @Override
+        public Builder pathToSourceProperty(final DocumentPathExpression pathToSourceProperty) {
+            this.pathToSourceProperty = pathToSourceProperty;
+            return this;
+        }
+
+        @Override
+        public Builder lookupFailBehaviour(final MappingErrorBehaviour lookupFailBehaviour) {
+            this.lookupFailBehaviour = lookupFailBehaviour;
+            return this;
+        }
+
+        /**
+         * Set the size of the VARCHAR column.
+         *
+         * @param varcharColumnSize size
+         * @return self
+         */
+        public Builder varcharColumnSize(final int varcharColumnSize) {
+            this.varcharColumnSize = varcharColumnSize;
+            return this;
+        }
+
+        /**
+         * Set the behaviour to apply in case the value exceeds the size of the VARCHAR column.
+         * 
+         * @param overflowBehaviour Behaviour to apply in case the value exceeds the size of the VARCHAR column
+         * @return self
+         */
+        public Builder overflowBehaviour(final TruncateableMappingErrorBehaviour overflowBehaviour) {
+            this.overflowBehaviour = overflowBehaviour;
+            return this;
+        }
+
+        /**
+         * Build the {@link PropertyToVarcharColumnMapping}.
+         * 
+         * @return built {@link PropertyToVarcharColumnMapping}
+         */
+        public PropertyToVarcharColumnMapping build() {
+            return new PropertyToVarcharColumnMapping(this.exasolColumnName, this.pathToSourceProperty,
+                    this.lookupFailBehaviour, this.varcharColumnSize, this.overflowBehaviour);
+        }
+    }
 }

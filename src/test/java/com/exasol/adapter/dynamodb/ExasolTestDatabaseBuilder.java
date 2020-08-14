@@ -197,6 +197,9 @@ public class ExasolTestDatabaseBuilder {
         if (hostIp != null) {
             createStatement += "\n   DEBUG_ADDRESS   = '" + hostIp + ":" + LOGGER_PORT + "'\n"
                     + "   LOG_LEVEL       =  'ALL'";
+            if (isVirtualSchemaDebuggingEnabled()) {
+                createStatement += "\n   MAX_PARALLEL_UDFS   = '1'\n";
+            }
         }
         createStatement += ";";
         this.getStatement().execute(createStatement);
@@ -278,9 +281,9 @@ public class ExasolTestDatabaseBuilder {
         uploadMapping(name, "mappings/" + name);
     }
 
-    public void uploadMapping(final String name, final String destName)
+    public void uploadMapping(final String name, final String destinationName)
             throws InterruptedException, BucketAccessException, TimeoutException {
-        this.testInterface.uploadFileToBucketfs(Path.of("src", "test", "resources", name), destName);
+        this.testInterface.uploadFileToBucketfs(Path.of("src", "test", "resources", name), destinationName);
     }
 
     public void cleanup() throws SQLException {

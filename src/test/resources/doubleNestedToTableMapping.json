@@ -10,7 +10,7 @@
           "mapping": {
             "fields": {
               "name": {
-                "toStringMapping": {
+                "toVarcharMapping": {
                 }
               },
               "figures": {
@@ -18,8 +18,8 @@
                   "mapping": {
                     "fields": {
                       "name": {
-                        "toStringMapping": {
-                          "destName": "NAME"
+                        "toVarcharMapping": {
+                          "destinationName": "NAME"
                         }
                       }
                     }
@@ -31,14 +31,14 @@
         }
       },
       "isbn": {
-        "toStringMapping": {
-          "maxLength": 20,
-          "overflow": "ABORT",
+        "toVarcharMapping": {
+          "varcharColumnSize": 20,
+          "overflowBehaviour": "ABORT",
           "required": true
         }
       },
       "name": {
-        "toStringMapping": {
+        "toVarcharMapping": {
           "required": true
         }
       }
