@@ -68,7 +68,7 @@ class ColumnMappingReader {
     private PropertyToDecimalColumnMapping.Builder readToDecimalColumn(final JsonObject definition) {
         return PropertyToDecimalColumnMapping.builder()//
                 .decimalPrecision(definition.getInt(EDML.DECIMAL_PRECISION_KEY, EDML.DEFAULT_DECIMAL_PRECISION))//
-                .decimalScale(definition.getInt(EDML.DECIMAL_SCALE_KEY, EDML.DEFUALT_DECIMAL_SCALE))//
+                .decimalScale(definition.getInt(EDML.DECIMAL_SCALE_KEY, EDML.DEFAULT_DECIMAL_SCALE))//
                 .overflowBehaviour(
                         readMappingErrorBehaviour(EDML.OVERFLOW_BEHAVIOUR_KEY, MappingErrorBehaviour.ABORT, definition))//
                 .notNumericBehaviour(
@@ -144,7 +144,7 @@ class ColumnMappingReader {
         private static final MappingErrorBehaviour DEFAULT_LOOKUP_BEHAVIOUR = MappingErrorBehaviour.NULL;
         private static final String DECIMAL_PRECISION_KEY = "decimalPrecision";
         private static final String DECIMAL_SCALE_KEY = "decimalScale";
-        private static final int DEFUALT_DECIMAL_SCALE = 0;
+        private static final int DEFAULT_DECIMAL_SCALE = 0;
         private static final int DEFAULT_DECIMAL_PRECISION = 18;
         private static final String NOT_NUMERIC_BEHAVIOUR = "notNumericBehaviour";
     }
