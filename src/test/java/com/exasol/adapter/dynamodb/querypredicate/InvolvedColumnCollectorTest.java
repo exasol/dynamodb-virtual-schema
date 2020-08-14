@@ -1,5 +1,6 @@
 package com.exasol.adapter.dynamodb.querypredicate;
 
+import static com.exasol.adapter.dynamodb.mapping.PropertyToColumnMappingBuilderQuickAccess.getColumnMappingExample;
 import static java.util.Collections.emptyList;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
@@ -11,16 +12,15 @@ import java.util.Set;
 import org.junit.jupiter.api.Test;
 
 import com.exasol.adapter.dynamodb.mapping.ColumnMapping;
-import com.exasol.adapter.dynamodb.mapping.MappingErrorBehaviour;
-import com.exasol.adapter.dynamodb.mapping.PropertyToJsonColumnMapping;
+import com.exasol.adapter.dynamodb.mapping.PropertyToColumnMapping;
 import com.exasol.adapter.sql.SqlLiteralString;
 
 class InvolvedColumnCollectorTest {
     private static final InvolvedColumnCollector COLLECTOR = new InvolvedColumnCollector();
-    private static final PropertyToJsonColumnMapping COLUMN1 = new PropertyToJsonColumnMapping("column1", null,
-            null, 0, MappingErrorBehaviour.ABORT);
-    private static final PropertyToJsonColumnMapping COLUMN2 = new PropertyToJsonColumnMapping("column2", null,
-            null, 0, MappingErrorBehaviour.ABORT);
+    private static final PropertyToColumnMapping COLUMN1 = getColumnMappingExample().exasolColumnName("column1")
+            .build();
+    private static final PropertyToColumnMapping COLUMN2 = getColumnMappingExample().exasolColumnName("column2")
+            .build();
     private static final QueryPredicate COMPARISON1 = new ColumnLiteralComparisonPredicate(
             AbstractComparisonPredicate.Operator.EQUAL, COLUMN1, new SqlLiteralString(""));
     private static final QueryPredicate COMPARISON2 = new ColumnLiteralComparisonPredicate(

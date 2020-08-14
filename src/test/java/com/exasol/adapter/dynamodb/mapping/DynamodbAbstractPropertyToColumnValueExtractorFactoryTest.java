@@ -1,5 +1,6 @@
 package com.exasol.adapter.dynamodb.mapping;
 
+import static com.exasol.adapter.dynamodb.mapping.PropertyToColumnMappingBuilderQuickAccess.configureExampleMapping;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 
@@ -14,8 +15,8 @@ class DynamodbAbstractPropertyToColumnValueExtractorFactoryTest {
 
     @Test
     void testToStringMapping() {
-        final PropertyToVarcharColumnMapping mappingDefinition = new PropertyToVarcharColumnMapping("", null, null,
-                10, null);
+        final PropertyToVarcharColumnMapping mappingDefinition = configureExampleMapping(
+                PropertyToVarcharColumnMapping.builder()).build();
         final ColumnValueExtractor<DynamodbNodeVisitor> columnValueExtractor = new DynamodbPropertyToColumnValueExtractorFactory()
                 .getValueExtractorForColumn(mappingDefinition);
         assertThat(columnValueExtractor.getClass(), equalTo(DynamodbPropertyToVarcharColumnValueExtractor.class));
@@ -23,8 +24,8 @@ class DynamodbAbstractPropertyToColumnValueExtractorFactoryTest {
 
     @Test
     void testToJsonMapping() {
-        final PropertyToJsonColumnMapping mappingDefinition = new PropertyToJsonColumnMapping("", null, null, 0,
-                null);
+        final PropertyToJsonColumnMapping mappingDefinition = configureExampleMapping(
+                PropertyToJsonColumnMapping.builder()).build();
         final ColumnValueExtractor<DynamodbNodeVisitor> columnValueExtractor = new DynamodbPropertyToColumnValueExtractorFactory()
                 .getValueExtractorForColumn(mappingDefinition);
         assertThat(columnValueExtractor.getClass(), equalTo(DynamodbPropertyToJsonColumnValueExtractor.class));
