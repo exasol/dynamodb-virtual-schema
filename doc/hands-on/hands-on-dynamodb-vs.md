@@ -48,7 +48,7 @@ Steps for setup:
  
 1. Install DynamoDB:
     ```shell script
-    docker run -p 8000:8000 amazon/dynamodb-local
+    docker run -p 8000:8000 amazon/dynamodb-local -jar DynamoDBLocal.jar -sharedDb -dbPath .
     ``` 
 1. [Install AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2.html)
 1. create `~/.aws/credentials` and fill in:
@@ -129,11 +129,11 @@ In this step we are going to install the dynamodb-virtual-schema adapter.
 
 Steps:
 
-1. [Download latest adapter release]() **LINK MISSING**
+1. [Download latest adapter release (.jar)](https://github.com/exasol/dynamodb-virtual-schema/releases/)
 1. [Create a Bucket in BucketFS](https://docs.exasol.com/administration/on-premise/bucketfs/create_new_bucket_in_bucketfs_service.htm)
 1. Upload the adapter to the BucketFS:
     ``` shell script
-   curl -I -X PUT -T asdf http://w:writepw@<YOUR_DB_IP>:2580/default/dynamodb-virtual-schemas-adapter-dist-0.3.0.jar
+   curl -I -X PUT -T dynamodb-virtual-schemas-adapter-dist-0.3.0.jar http://w:writepw@<YOUR_DB_IP>:2580/default/dynamodb-virtual-schemas-adapter-dist-0.3.0.jar
    ```
 1. Create a schema to hold the adapter script:
     ```sql
@@ -173,7 +173,7 @@ You can cretae the file wherever you want. We will later upload it to BucketFS.
   "description": "Mapping for the Books table",
   "mapping": {
     "fields": {
-      "title": {
+      "Title": {
         "toStringMapping": {
           "maxLength": 254
         }
