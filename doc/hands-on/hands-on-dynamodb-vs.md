@@ -40,11 +40,16 @@ You can use both options to follow this guide.
 ### Local DynamoDB
 
 Amazon offers a local version of DynamoDB for testing purposes.
-You can run the local DynamoDB using plain Java, Maven or as a docker container.
+You can run the local DynamoDB using plain Java, Maven or as a docker container (see [AWS documentation]((https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/DynamoDBLocal.DownloadingAndRunning.html))).
+In this guide we will use the docker version.
+You can however also use a different method.
 
 Steps for setup:
  
-1. [Install local DynamoDB](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/DynamoDBLocal.DownloadingAndRunning.html)
+1. Install DynamoDB:
+    ```shell script
+    docker run -p 8000:8000 amazon/dynamodb-local
+    ``` 
 1. [Install AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2.html)
 1. create `~/.aws/credentials` and fill in:
    ```
@@ -100,20 +105,120 @@ aws dynamodb batch-write-item --request-items file://./exampleData.json
 ```  
 
 ## Setup an Exasol database
-Now we need an Exasol database.
-You can select between the following options:
+Now we need an Exasol database. In this guide we will use a local Exasol VM.
+Basically you can however select choose between the following options:
 
-* Local Exasol VM (recommended)
+* **Local Exasol VM (recommended)**
     * free
     * simple
-* Docker container
+* [Exasol docker-db](https://github.com/exasol/docker-db)
     * free
     * only runs on linux
-* Use the public demo db
+* [Exasol public demo](https://docs.exasol.com/get_started/publicdemo/publicdemosystem.htm)
     *  Only applicable with DynamoDB on AWS
-* Run DynamoDB on AWS
+* Run [Exasol in the Cloud](https://docs.exasol.com/cloud_platforms/aws/cloud_wizard.htm)
     * causes costs
     * Only applicable with DynamoDB on AWS
     
 Independent of which setup you choose it is important that the Exasol database can read the DynamoDB over network.
 Hence you can not use an Exasol DB running in the cloud in combination with an local DynamoDB (ok, it would be possible if you can open a port on your firewall, but probably you don't want to do so). 
+
+## Install the Virtual Schema Adapter
+
+In this step we are going to install the dynamodb-virtual-schema adapter.
+
+Steps:
+
+1. [Download latest adapter release]() **LINK MISSING**
+1. [Create a Bucket in BucketFS](https://docs.exasol.com/administration/on-premise/bucketfs/create_new_bucket_in_bucketfs_service.htm)
+1. Upload the adapter to the BucketFS:
+    ``` shell script
+   curl -I -X PUT -T asdf http://w:writepw@<YOUR_DB_IP>:2580/default/dynamodb-virtual-schemas-adapter-dist-0.3.0.jar
+   ```
+1. Create a schema to hold the adapter script:
+    ```sql
+   CREATE SCHEMA ADAPTER;
+   ```
+1. Create the Adapter Script:
+    ```sql
+    CREATE OR REPLACE JAVA ADAPTER SCRIPT ADAPTER.DYNAMODB_ADAPTER AS
+       %scriptclass com.exasol.adapter.RequestDispatcher;
+       %jar /buckets/bfsdefault/default/dynamodb-virtual-schemas-adapter-dist-0.3.0.jar;
+    /
+    ```
+1. Create UDF:
+    ```sql
+    CREATE OR REPLACE JAVA SET SCRIPT ADAPTER.IMPORT_DOCUMENT_DATA(
+      DOCUMENT_FETCHER VARCHAR(2000000),
+      REMOTE_TABLE_QUERY VARCHAR(2000000),
+      CONNECTION_NAME VARCHAR(500))
+      EMITS(...) AS
+        %scriptclass com.exasol.adapter.dynamodb.ImportDocumentData;
+        %jar /buckets/bfsdefault/default/dynamodb-virtual-schemas-adapter-dist-0.3.0.jar;
+    /
+   ```
+   
+## Create a Mapping Definition
+Now we need to tell the adapter how to map the DynamoDB documents to Exasol tables.
+For that we create a file with the [Exasol Document Mapping Language](../gettingStartedWithSchemaMappingLanguage.md).
+
+You can cretae the file wherever you want. We will later upload it to BucketFS. 
+
+`firstMapping.json`:
+```json
+{
+  "$schema": "../../main/resources/mappingLanguageSchema.json",
+  "srcTable": "Books",
+  "destTable": "BOOKS",
+  "description": "Mapping for the Books table",
+  "mapping": {
+    "fields": {
+      "title": {
+        "toStringMapping": {
+          "maxLength": 254
+        }
+      }
+    }
+  }
+}
+``` 
+
+Now upload the mapping to BucketFS:
+```shell script
+curl -I -X PUT -T firstMapping.json http://w:writepw@<YOUR_DB_IP>:2580/default/mappings/firstMapping.json
+```
+
+## Create Virtual Schema
+
+Nwo we can create the Virtual Schema.
+
+Steps:
+
+1. Create a connection to DynamoDB
+    * For DynamoDB on AWS use:
+       ```sql
+      CREATE CONNECTION DYNAMO_CONNECTION
+         TO 'aws:<REGION>'
+         USER '<AWS_ACCESS_KEY_ID>'
+         IDENTIFIED BY '<AWS_SECRET_ACCESS_KEY>';
+      ```
+    * For a local DynamoDB use:
+       ```sql
+      CREATE CONNECTION DYNAMO_CONNECTION
+          TO 'http://<YOUR_DYNAMODB_IP>:8000'
+          USER 'fakeMyKeyId'
+          IDENTIFIED BY 'fakeSecretAccessKey';
+      ```
+2. Create Virtual Schema:
+    ```sql
+   CREATE VIRTUAL SCHEMA DYNAMODB_TEST USING ADAPTER.DYNAMODB_ADAPTER WITH
+       CONNECTION_NAME = 'DYNAMO_CONNECTION'
+       SQL_DIALECT     = 'DYNAMO_DB'
+       MAPPING         = '/bfsdefault/default/mappings/firstMapping.json';
+   ```
+ 
+ ## First Results
+ 
+ ## Next Steps
+ In the next part of this series we will show how to create more complex mappings.
+ 
