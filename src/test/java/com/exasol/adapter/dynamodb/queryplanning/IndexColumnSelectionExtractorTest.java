@@ -25,9 +25,13 @@ class IndexColumnSelectionExtractorTest {
     private static final IndexColumnSelectionExtractor EXTRACTOR = new IndexColumnSelectionExtractor();
 
     private static ColumnLiteralComparisonPredicate buildNonIndexComparison(final String columnName) {
-        final PropertyToVarcharColumnMapping column = new PropertyToVarcharColumnMapping(columnName,
-                DocumentPathExpression.builder().addObjectLookup(columnName).build(), MappingErrorBehaviour.ABORT, 254,
-                TruncateableMappingErrorBehaviour.ABORT);
+        final PropertyToVarcharColumnMapping column = PropertyToVarcharColumnMapping.builder()//
+                .exasolColumnName(columnName)//
+                .pathToSourceProperty(DocumentPathExpression.builder().addObjectLookup(columnName).build())//
+                .lookupFailBehaviour(MappingErrorBehaviour.ABORT)//
+                .varcharColumnSize(254)//
+                .overflowBehaviour(TruncateableMappingErrorBehaviour.ABORT)//
+                .build();
         final SqlLiteralString literal = new SqlLiteralString("valueToCompareTo");
         return new ColumnLiteralComparisonPredicate(AbstractComparisonPredicate.Operator.EQUAL, column, literal);
     }
@@ -41,16 +45,14 @@ class IndexColumnSelectionExtractorTest {
 
     @Test
     void testExtractWithNoIndexColumn() {
-        final IndexColumnSelectionExtractor.Result result = EXTRACTOR
-                .extractIndexColumnSelection(NON_INDEX_COMPARISON);
+        final IndexColumnSelectionExtractor.Result result = EXTRACTOR.extractIndexColumnSelection(NON_INDEX_COMPARISON);
         assertAll(() -> assertThat(result.getSelectedSelection().asQueryPredicate(), equalTo(new NoPredicate())),
                 () -> assertThat(result.getRemainingSelection().asQueryPredicate(), equalTo(NON_INDEX_COMPARISON)));
     }
 
     @Test
     void testExtractOnlyIndexColumn() {
-        final IndexColumnSelectionExtractor.Result result = EXTRACTOR
-                .extractIndexColumnSelection(INDEX_COMPARISON);
+        final IndexColumnSelectionExtractor.Result result = EXTRACTOR.extractIndexColumnSelection(INDEX_COMPARISON);
         assertAll(() -> assertThat(result.getSelectedSelection().asQueryPredicate(), equalTo(INDEX_COMPARISON)),
                 () -> assertThat(result.getRemainingSelection().asQueryPredicate(), equalTo(new NoPredicate())));
     }
