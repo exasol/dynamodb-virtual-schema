@@ -5,8 +5,9 @@ import static org.hamcrest.Matchers.equalTo;
 
 import org.junit.jupiter.api.Test;
 
-import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.exasol.dynamodb.attributevalue.AttributeValueQuickCreator;
+
+import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 
 class DynamodbBooleanTest {
     private static final boolean TEST_VALUE = true;

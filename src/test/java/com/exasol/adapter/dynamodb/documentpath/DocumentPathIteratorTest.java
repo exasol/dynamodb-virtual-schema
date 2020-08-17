@@ -15,7 +15,7 @@ import com.exasol.adapter.dynamodb.documentnode.MockValueNode;
 
 class DocumentPathIteratorTest {
     private static final String KEY = "key";
-    private static final DocumentPathExpression SINGLE_NESTED_PATH = new DocumentPathExpression.Builder()
+    private static final DocumentPathExpression SINGLE_NESTED_PATH = DocumentPathExpression.builder()
             .addObjectLookup(KEY).addArrayAll().build();
 
     @Test
@@ -56,7 +56,7 @@ class DocumentPathIteratorTest {
     void testPathWithNoArrayAll() {
         final MockObjectNode testDocument = new MockObjectNode(
                 Map.of(KEY, new MockArrayNode(List.of(new MockValueNode("value1"), new MockValueNode("value2")))));
-        final DocumentPathExpression pathWithNoArrayAll = new DocumentPathExpression.Builder().addObjectLookup("key")
+        final DocumentPathExpression pathWithNoArrayAll = DocumentPathExpression.builder().addObjectLookup("key")
                 .build();
         final DocumentPathIteratorFactory<Object> iterable = new DocumentPathIteratorFactory<>(pathWithNoArrayAll,
                 testDocument);
@@ -73,7 +73,7 @@ class DocumentPathIteratorTest {
                 new MockArrayNode(List.of(new MockValueNode("v1"), new MockValueNode("v2"))), //
                 new MockArrayNode(List.of(new MockValueNode("v3")))//
         ))));
-        final DocumentPathExpression doubleNestedPath = new DocumentPathExpression.Builder().addObjectLookup("key")
+        final DocumentPathExpression doubleNestedPath = DocumentPathExpression.builder().addObjectLookup("key")
                 .addArrayAll().addArrayAll().build();
         final DocumentPathIteratorFactory<Object> iterable = new DocumentPathIteratorFactory<>(doubleNestedPath,
                 testDocument);
@@ -91,7 +91,7 @@ class DocumentPathIteratorTest {
 
     @Test
     void testUnfittingPathForGetIndexFor() {
-        final DocumentPathExpression otherPath = new DocumentPathExpression.Builder().addObjectLookup("other")
+        final DocumentPathExpression otherPath = DocumentPathExpression.builder().addObjectLookup("other")
                 .addArrayAll().build();
         final MockObjectNode testDocument = new MockObjectNode(
                 Map.of(KEY, new MockArrayNode(List.of(new MockValueNode("value1"), new MockValueNode("value2")))));
@@ -106,7 +106,7 @@ class DocumentPathIteratorTest {
 
     @Test
     void testTooLongPathForGetIndexFor() {
-        final DocumentPathExpression tooLongPath = new DocumentPathExpression.Builder().addObjectLookup(KEY)
+        final DocumentPathExpression tooLongPath = DocumentPathExpression.builder().addObjectLookup(KEY)
                 .addArrayAll().addArrayAll().build();
         final MockObjectNode testDocument = new MockObjectNode(
                 Map.of(KEY, new MockArrayNode(List.of(new MockValueNode("value1"), new MockValueNode("value2")))));

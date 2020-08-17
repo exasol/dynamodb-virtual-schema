@@ -8,8 +8,9 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
-import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.exasol.dynamodb.attributevalue.AttributeValueQuickCreator;
+
+import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 
 class DynamodbNumberSetTest {
     private static final String NUMBER_1 = "123";

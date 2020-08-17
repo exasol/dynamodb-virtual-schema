@@ -14,7 +14,7 @@ public class SchemaMapping {
      * 
      * @param tableMappings List of {@link TableMapping}s
      */
-    SchemaMapping(final List<TableMapping> tableMappings) {
+    public SchemaMapping(final List<TableMapping> tableMappings) {
         this.tableMappings = tableMappings;
     }
 

@@ -1,7 +1,8 @@
 package com.exasol.adapter.dynamodb.documentnode.dynamodb;
 
-import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.exasol.adapter.dynamodb.documentnode.DocumentNode;
+
+import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 
 /**
  * This class builds document nodes for a given {@link AttributeValue}. Whether an object, an array, or a value-node is
@@ -16,26 +17,26 @@ public class DynamodbDocumentNodeFactory {
      * @return object, array, or value-node
      */
     public DocumentNode<DynamodbNodeVisitor> buildDocumentNode(final AttributeValue attributeValue) {
-        if (attributeValue.getNULL() != null && attributeValue.getNULL()) {
+        if (attributeValue.nul() != null && attributeValue.nul()) {
             return new DynamodbNull();
-        } else if (attributeValue.getS() != null) {
-            return new DynamodbString(attributeValue.getS());
-        } else if (attributeValue.getN() != null) {
-            return new DynamodbNumber(attributeValue.getN());
-        } else if (attributeValue.getB() != null) {
-            return new DynamodbBinary(attributeValue.getB());
-        } else if (attributeValue.getBOOL() != null) {
-            return new DynamodbBoolean(attributeValue.getBOOL());
-        } else if (attributeValue.getM() != null) {
-            return new DynamodbMap(attributeValue.getM());
-        } else if (attributeValue.getBS() != null) {
-            return new DynamodbBinarySet(attributeValue.getBS());
-        } else if (attributeValue.getL() != null) {
-            return new DynamodbList(attributeValue.getL());
-        } else if (attributeValue.getNS() != null) {
-            return new DynamodbNumberSet(attributeValue.getNS());
-        } else if (attributeValue.getSS() != null) {
-            return new DynamodbStringSet(attributeValue.getSS());
+        } else if (attributeValue.s() != null) {
+            return new DynamodbString(attributeValue.s());
+        } else if (attributeValue.n() != null) {
+            return new DynamodbNumber(attributeValue.n());
+        } else if (attributeValue.b() != null) {
+            return new DynamodbBinary(attributeValue.b());
+        } else if (attributeValue.bool() != null) {
+            return new DynamodbBoolean(attributeValue.bool());
+        } else if (attributeValue.hasM()) {
+            return new DynamodbMap(attributeValue.m());
+        } else if (attributeValue.hasBs()) {
+            return new DynamodbBinarySet(attributeValue.bs());
+        } else if (attributeValue.hasL()) {
+            return new DynamodbList(attributeValue.l());
+        } else if (attributeValue.hasNs()) {
+            return new DynamodbNumberSet(attributeValue.ns());
+        } else if (attributeValue.hasSs()) {
+            return new DynamodbStringSet(attributeValue.ss());
         } else {
             throw new UnsupportedOperationException("Unsupported DynamoDB type.");
         }

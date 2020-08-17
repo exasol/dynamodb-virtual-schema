@@ -4,15 +4,13 @@ import java.util.Objects;
 
 import com.exasol.adapter.dynamodb.documentpath.DocumentPathExpression;
 import com.exasol.adapter.metadata.DataType;
-import com.exasol.sql.expression.IntegerLiteral;
-import com.exasol.sql.expression.ValueExpression;
 
 /**
  * This class defines a column that maps the array index of a nested list. Such columns are useful for nested tables
  * that do not have an key.
  */
 public final class IterationIndexColumnMapping extends AbstractColumnMapping {
-    private static final long serialVersionUID = -2526873217496416853L;
+    private static final long serialVersionUID = -2526873217496416853L;//
     private final DocumentPathExpression tablesPath;
 
     /**
@@ -29,11 +27,6 @@ public final class IterationIndexColumnMapping extends AbstractColumnMapping {
     @Override
     public DataType getExasolDataType() {
         return DataType.createDecimal(9, 0);
-    }
-
-    @Override
-    public ValueExpression getExasolDefaultValue() {
-        return IntegerLiteral.of(-1);// The default value is never used anyway
     }
 
     @Override

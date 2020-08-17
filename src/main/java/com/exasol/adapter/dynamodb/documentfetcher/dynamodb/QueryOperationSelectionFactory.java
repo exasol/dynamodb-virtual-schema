@@ -151,7 +151,7 @@ class QueryOperationSelectionFactory {
 
     private boolean isComparisonOnProperty(final ComparisonPredicate comparison,
             final String propertyName) {
-        final DocumentPathExpression keyPath = new DocumentPathExpression.Builder().addObjectLookup(propertyName)
+        final DocumentPathExpression keyPath = DocumentPathExpression.builder().addObjectLookup(propertyName)
                 .build();
         return comparison.getComparedColumns().stream().filter(column -> column instanceof PropertyToColumnMapping)
                 .map(column -> (PropertyToColumnMapping) column)

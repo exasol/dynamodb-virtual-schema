@@ -5,6 +5,7 @@ import java.util.Optional;
 import com.exasol.adapter.dynamodb.documentnode.DocumentNode;
 import com.exasol.adapter.dynamodb.documentpath.DocumentPathWalker;
 import com.exasol.adapter.dynamodb.documentpath.PathIterationStateProvider;
+import com.exasol.sql.expression.NullLiteral;
 import com.exasol.sql.expression.ValueExpression;
 
 /**
@@ -34,8 +35,8 @@ public abstract class AbstractPropertyToColumnValueExtractor<DocumentVisitorType
                 this.column.getPathToSourceProperty(), arrayAllIterationState);
         final Optional<DocumentNode<DocumentVisitorType>> dynamodbProperty = walker.walkThroughDocument(document);
         if (dynamodbProperty.isEmpty()) {
-            if (this.column.getLookupFailBehaviour() == LookupFailBehaviour.DEFAULT_VALUE) {
-                return this.column.getExasolDefaultValue();
+            if (this.column.getLookupFailBehaviour() == MappingErrorBehaviour.NULL) {
+                return NullLiteral.nullLiteral();
             } else {
                 throw new SchemaMappingException("Could not find required property ("
                         + this.column.getPathToSourceProperty() + ") in the source document.");

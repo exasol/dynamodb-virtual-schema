@@ -8,12 +8,12 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 
 class RedundantPathEliminatorTest {
-    private static final DocumentPathExpression A = new DocumentPathExpression.Builder().addObjectLookup("a").build();
-    private static final DocumentPathExpression AB = new DocumentPathExpression.Builder().addObjectLookup("a")
+    private static final DocumentPathExpression A = DocumentPathExpression.builder().addObjectLookup("a").build();
+    private static final DocumentPathExpression AB = DocumentPathExpression.builder().addObjectLookup("a")
             .addObjectLookup("b").build();
-    private static final DocumentPathExpression ABC = new DocumentPathExpression.Builder().addObjectLookup("a")
+    private static final DocumentPathExpression ABC = DocumentPathExpression.builder().addObjectLookup("a")
             .addObjectLookup("b").addObjectLookup("c").build();
-    private static final DocumentPathExpression D = new DocumentPathExpression.Builder().addObjectLookup("d").build();
+    private static final DocumentPathExpression D = DocumentPathExpression.builder().addObjectLookup("d").build();
 
     @Test
     void testDuplicates() {

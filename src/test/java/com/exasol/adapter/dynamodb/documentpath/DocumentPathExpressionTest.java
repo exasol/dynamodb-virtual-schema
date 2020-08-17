@@ -9,11 +9,11 @@ import org.junit.jupiter.api.Test;
 
 class DocumentPathExpressionTest {
 
-    private static final DocumentPathExpression TEST_PATH = new DocumentPathExpression.Builder().addObjectLookup("test")
+    private static final DocumentPathExpression TEST_PATH = DocumentPathExpression.builder().addObjectLookup("test")
             .build();
-    private static final DocumentPathExpression EQUAL_PATH = new DocumentPathExpression.Builder()
+    private static final DocumentPathExpression EQUAL_PATH = DocumentPathExpression.builder()
             .addObjectLookup("test").build();
-    private static final DocumentPathExpression OTHER_PATH = new DocumentPathExpression.Builder()
+    private static final DocumentPathExpression OTHER_PATH = DocumentPathExpression.builder()
             .addObjectLookup("other").build();
 
     @Test
@@ -26,7 +26,7 @@ class DocumentPathExpressionTest {
     void testAdd() {
         final ObjectLookupPathSegment pathSegment1 = new ObjectLookupPathSegment("key");
         final ObjectLookupPathSegment pathSegment2 = new ObjectLookupPathSegment("key2");
-        final DocumentPathExpression pathExpression = new DocumentPathExpression.Builder()//
+        final DocumentPathExpression pathExpression = DocumentPathExpression.builder()//
                 .addPathSegment(pathSegment1)//
                 .addPathSegment(pathSegment2)//
                 .build();
@@ -39,7 +39,7 @@ class DocumentPathExpressionTest {
 
     @Test
     void testAddObjectLookup() {
-        final DocumentPathExpression pathExpression = new DocumentPathExpression.Builder()//
+        final DocumentPathExpression pathExpression = DocumentPathExpression.builder()//
                 .addObjectLookup("key")//
                 .build();
         final ObjectLookupPathSegment objectLookup = (ObjectLookupPathSegment) pathExpression.getSegments().get(0);
@@ -48,7 +48,7 @@ class DocumentPathExpressionTest {
 
     @Test
     void testAddArrayLookup() {
-        final DocumentPathExpression pathExpression = new DocumentPathExpression.Builder()//
+        final DocumentPathExpression pathExpression = DocumentPathExpression.builder()//
                 .addArrayLookup(0).build();
         final ArrayLookupPathSegment objectLookup = (ArrayLookupPathSegment) pathExpression.getSegments().get(0);
         assertThat(objectLookup.getLookupIndex(), equalTo(0));
@@ -58,7 +58,7 @@ class DocumentPathExpressionTest {
     void testSubPath() {
         final ObjectLookupPathSegment pathSegment1 = new ObjectLookupPathSegment("key");
         final ObjectLookupPathSegment pathSegment2 = new ObjectLookupPathSegment("key2");
-        final DocumentPathExpression pathExpression = new DocumentPathExpression.Builder()//
+        final DocumentPathExpression pathExpression = DocumentPathExpression.builder()//
                 .addPathSegment(pathSegment1)//
                 .addPathSegment(pathSegment2)//
                 .build().getSubPath(0, 1);
@@ -91,9 +91,9 @@ class DocumentPathExpressionTest {
     @Test
     void testStartsWith() {
         final String key = "key";
-        final DocumentPathExpression pathA = new DocumentPathExpression.Builder().addObjectLookup(key).addArrayAll()
+        final DocumentPathExpression pathA = DocumentPathExpression.builder().addObjectLookup(key).addArrayAll()
                 .build();
-        final DocumentPathExpression pathB = new DocumentPathExpression.Builder().addObjectLookup(key).build();
+        final DocumentPathExpression pathB = DocumentPathExpression.builder().addObjectLookup(key).build();
         assertAll(//
                 () -> assertThat(pathA.startsWith(pathB), equalTo(true)),
                 () -> assertThat(pathB.startsWith(pathA), equalTo(false)),
