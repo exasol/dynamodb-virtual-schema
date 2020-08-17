@@ -2,9 +2,8 @@
 
 In this Hands on guide we show you how to explore the new Virtual Schema for DynamoDB.
 
-We will create a mapping from DynamoDB's semi structured documents to relational exasol tables like:
+We will create a mapping from DynamoDB's semi structured documents to a relational exasol table.
 
-**IMAGE- MISSING**
 
 ## DynamoDB Setup
 
