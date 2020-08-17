@@ -1,7 +1,7 @@
 package com.exasol.adapter.sql;
 
 import com.exasol.adapter.AdapterException;
-import com.exasol.adapter.dynamodb.queryplanning.RemoteTableQueryFactory;
+import com.exasol.adapter.document.queryplanning.RemoteTableQueryFactory;
 
 /**
  * Facade for the {@link SqlNodeVisitor} interface implementing all methods with unsupported exception. This class is
