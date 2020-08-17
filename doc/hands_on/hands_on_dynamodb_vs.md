@@ -2,12 +2,12 @@
 
 In this Hands on guide we show you how to explore the new Virtual Schema for DynamoDB.
 
-We will create a mapping from DynamoDB's semi structured documents to a relational exasol table.
+We will create a mapping from DynamoDB's semi-structured documents to a relational Exasol table.
 
 
 ## DynamoDB Setup
 
-First we need a DynamoDB.
+First, we need to set up the DynamoDB.
 For that there are two options:
 
 * DynamoDB on AWS
@@ -119,8 +119,8 @@ Basically you can however select choose between the following options:
     * causes costs
     * Only applicable with DynamoDB on AWS
     
-Independent of which setup you choose it is important that the Exasol database can read the DynamoDB over network.
-Hence you can not use an Exasol DB running in the cloud in combination with an local DynamoDB (ok, it would be possible if you can open a port on your firewall, but probably you don't want to do so). 
+Independent of which setup you choose it is important that the Exasol database can read the DynamoDB over the network.
+Hence you can not use an Exasol DB running in the cloud in combination with a local DynamoDB (ok, it would be possible if you can open a port on your firewall, but probably you don't want to do so). 
 
 ## Install the Virtual Schema Adapter
 
@@ -161,7 +161,7 @@ Steps:
 Now we need to tell the adapter how to map the DynamoDB documents to Exasol tables.
 For that we create a file with the [Exasol Document Mapping Language](../gettingStartedWithSchemaMappingLanguage.md).
 
-You can create the file wherever you want. We will later upload it to BucketFS. 
+You can create the file wherever you want. We will later upload it to the BucketFS. 
 
 `firstMapping.json`:
 ```json
