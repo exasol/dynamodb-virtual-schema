@@ -7,9 +7,9 @@ import javax.json.JsonObjectBuilder;
 import javax.json.JsonValue;
 import javax.json.spi.JsonProvider;
 
-import com.exasol.adapter.dynamodb.documentnode.DocumentArray;
-import com.exasol.adapter.dynamodb.documentnode.DocumentNode;
-import com.exasol.adapter.dynamodb.documentnode.dynamodb.*;
+import com.exasol.adapter.document.documentnode.DocumentArray;
+import com.exasol.adapter.document.documentnode.DocumentNode;
+import com.exasol.adapter.document.documentnode.dynamodb.*;
 
 /**
  * This class represents a converter from a DynamoDB {@link com.amazonaws.services.dynamodbv2.model.AttributeValue} to

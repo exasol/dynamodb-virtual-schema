@@ -11,7 +11,7 @@ import javax.json.JsonValue;
 
 import org.junit.jupiter.api.Test;
 
-import com.exasol.adapter.dynamodb.documentnode.dynamodb.*;
+import com.exasol.adapter.document.documentnode.dynamodb.*;
 import com.exasol.dynamodb.attributevalue.AttributeValueQuickCreator;
 
 import software.amazon.awssdk.core.SdkBytes;
