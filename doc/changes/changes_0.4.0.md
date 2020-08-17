@@ -1,4 +1,4 @@
-# dynamodb-virtual-schema 0.4.0, released 2020-08-XX
+# dynamodb-virtual-schema 0.4.0, released 2020-08-17
  
 ## Summary
 
