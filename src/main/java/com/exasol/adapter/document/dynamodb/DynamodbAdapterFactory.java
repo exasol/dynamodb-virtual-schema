@@ -1,11 +1,12 @@
-package com.exasol.adapter.document;
+package com.exasol.adapter.document.dynamodb;
+
+import static com.exasol.adapter.document.dynamodb.DynamodbAdapter.ADAPTER_NAME;
 
 import java.util.ServiceLoader;
 import java.util.Set;
 
 import com.exasol.adapter.AdapterFactory;
 import com.exasol.adapter.VirtualSchemaAdapter;
-import com.exasol.adapter.document.dynamodb.DynamodbAdapter;
 import com.exasol.logging.VersionCollector;
 
 /**
@@ -15,11 +16,10 @@ import com.exasol.logging.VersionCollector;
  * {@code META-INF/services/com.exasol.adapter.AdapterFactory} in order for the {@link ServiceLoader} to find it.
  */
 public class DynamodbAdapterFactory implements AdapterFactory {
-    private static final String ADAPTER_NAME = "DynamoDB Adapter";
 
     @Override
     public Set<String> getSupportedAdapterNames() {
-        return Set.of("DYNAMO_DB");
+        return Set.of(ADAPTER_NAME);
     }
 
     @Override

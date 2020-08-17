@@ -2,13 +2,13 @@ package com.exasol.adapter.document;
 
 import com.exasol.ExaIterator;
 import com.exasol.ExaMetadata;
-import com.exasol.adapter.document.dynamodb.DynamodbUdf;
+import com.exasol.adapter.AdapterRegistry;
 
 /**
  * Main UDF entry point.
  */
 public class ImportDocumentData {
-    public static final String UDF_NAME = "IMPORT_DOCUMENT_DATA";
+    public static final String UDF_PREFIX = "IMPORT_FROM_";
 
     /**
      * This method is called by the Exasol database when the ImportFromDynamodb UDF is called.
@@ -19,8 +19,13 @@ public class ImportDocumentData {
      */
     @SuppressWarnings("java:S112") // Exception is too generic. This signature is however given by the UDF framework
     public static void run(final ExaMetadata exaMetadata, final ExaIterator exaIterator) throws Exception {
-        // TODO dispatch
-        new DynamodbUdf().run(exaMetadata, exaIterator);
+        final String udfName = exaMetadata.getScriptName();
+        exaMetadata.getScriptName();
+        final String adapterName = udfName.replaceFirst(UDF_PREFIX, "");
+        final DataLoaderUdfFactory documentAdapter = (DataLoaderUdfFactory) AdapterRegistry.getInstance()
+                .getAdapterForName(adapterName);
+        final DataLoaderUdf dataLoaderUdf = documentAdapter.getDataLoaderUDF();
+        dataLoaderUdf.run(exaMetadata, exaIterator);
     }
 
     private ImportDocumentData() {

@@ -25,7 +25,7 @@ import com.exasol.adapter.response.*;
 import com.exasol.bucketfs.BucketfsFileFactory;
 
 @java.lang.SuppressWarnings("squid:S119") // DocumentVisitorType does not fit naming conventions.
-public abstract class DocumentAdapter<DocumentVisitorType> implements VirtualSchemaAdapter {
+public abstract class DocumentAdapter<DocumentVisitorType> implements VirtualSchemaAdapter, DataLoaderUdfFactory {
 
     @Override
     public final CreateVirtualSchemaResponse createVirtualSchema(final ExaMetadata exaMetadata,
@@ -137,8 +137,8 @@ public abstract class DocumentAdapter<DocumentVisitorType> implements VirtualSch
         final List<DocumentFetcher<DocumentVisitorType>> documentFetchers = documentFetcherFactory
                 .buildDocumentFetcherForQuery(remoteTableQuery, availableClusterCores);
         final String connectionName = getPropertiesFromRequest(request).getConnectionName();
-        return new UdfCallBuilder<DocumentVisitorType>().getUdfCallSql(documentFetchers, remoteTableQuery,
-                connectionName);
+        return new UdfCallBuilder<DocumentVisitorType>(connectionName, getAdapterName()).getUdfCallSql(documentFetchers,
+                remoteTableQuery);
     }
 
     /**
@@ -192,4 +192,11 @@ public abstract class DocumentAdapter<DocumentVisitorType> implements VirtualSch
         throw new UnsupportedOperationException(
                 "The current version of this Virtual Schema does not support SET PROPERTIES statement.");
     }
+
+    /**
+     * Get the name of the database specific adapter.
+     * 
+     * @return name of the database specific adapter
+     */
+    protected abstract String getAdapterName();
 }
