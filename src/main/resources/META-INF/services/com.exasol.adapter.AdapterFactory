@@ -1,1 +1,1 @@
-com.exasol.adapter.dynamodb.DynamodbAdapterFactory
+com.exasol.adapter.document.DynamodbAdapterFactory
