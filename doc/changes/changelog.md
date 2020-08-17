@@ -1,3 +1,3 @@
 # Changes
 
-* [0.3.0](changes_0.3.0.md)
+* [0.3.0](changes-0.3.0.md)

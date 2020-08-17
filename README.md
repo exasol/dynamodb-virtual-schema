@@ -33,7 +33,7 @@ It abstracts over the different interfaces so that you can access the document d
 
 ## Information for Users
 
-* [User Guide](doc/user-guide/user_guide.md)
+* [User Guide](doc/user-guide/user-guide.md)
 * [Schema mapping language reference](https://exasol.github.io/dynamodb-virtual-schema/schema_doc/index.html)
 
 ## Information for Developers
