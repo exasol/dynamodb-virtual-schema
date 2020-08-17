@@ -1,27 +1,56 @@
-# Hands on DynamoDB Virtual Schema
+# Hands-on DynamoDB Virtual Schema
 
-In this Hands on guide we show you how to explore the new Virtual Schema for DynamoDB.
+In this Hands-on guide, we will explore the new [Virtual Schema for Amazon DynamoDB](https://github.com/exasol/dynamodb-virtual-schema).
 
 We will create a mapping from DynamoDB's semi-structured documents to a relational Exasol table.
 
+## Amazon DynamoDB
+
+[Amazon DynamoDB](https://aws.amazon.com/dynamodb/) is a fully managed document database, offered by AWS. 
+You can use it for many different applications.
+For example as a database backend for an online bookshop.
+Like all document databases, it uses a document data model.
+If you now think of PDF documents or doc files, you will be surprised, when you see the DynamoDB data.
+In this context document data refers to documents like JSON documents. 
+
+For example:
+
+ ```json
+{
+  "Name": "The picture of Dorian Gray",
+  "Author": {
+    "FirstName":  "Oscar",
+    "LastName":  "Wilde"
+  } 
+}
+``` 
+
+Unlike relational databases like Exasol, document-databases do not enforce a schema for the data.
+Instead, each document stored in a document database could have different properties.
+
+For accessing the data from Exasol we have to extract a schema and map it to a relational table model.
+We will do so later in this tutorial.
 
 ## DynamoDB Setup
 
-First, we need to set up the DynamoDB.
-For that there are two options:
+To try out the new DynamoDB Virtual Schema we need a DynamoDB.
+Although DynamoDB is only offered as a cloud service, Amazon also provides a local version for local testing.
+
+So you have the choice which variant you want to use to follow this tutorial:
 
 * DynamoDB on AWS
   * free in [AWS Free Tier](https://aws.amazon.com/de/free/) (credit card required)
-* Local test DynamoDB
+* [Local test DynamoDB](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/DynamoDBLocal.DownloadingAndRunning.html)
   * free
   * for testing only
 
-You can use both options to follow this guide. 
-
 ### DynamoDB on AWS
+
+If you decided to use DynamoDB on AWS, let us show you how to set it up.
+
 1. Get an AWS Account ([AWS Free Tier](https://aws.amazon.com/de/free/))
 1. [Install AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2.html)
-1. [Create an access](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_access-keys.html#Using_CreateAccessKey) key for your AWS account
+1. [Create an access key](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_access-keys.html#Using_CreateAccessKey)  for your AWS account
 1. create `~/.aws/credentials` and fill in:
     ```
     [default]
@@ -39,8 +68,8 @@ You can use both options to follow this guide.
 ### Local DynamoDB
 
 Amazon offers a local version of DynamoDB for testing purposes.
-You can run the local DynamoDB using plain Java, Maven or as a docker container (see [AWS documentation]((https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/DynamoDBLocal.DownloadingAndRunning.html))).
-In this guide we will use the docker version.
+You can run the local DynamoDB using plain Java, Maven or as a docker container (see [AWS documentation](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/DynamoDBLocal.DownloadingAndRunning.html)).
+In this guide, we will use the docker version.
 You can however also use a different method.
 
 Steps for setup:
@@ -59,14 +88,14 @@ Steps for setup:
    ```
    *The local DynamoDB does not check credentials. So we just need to add something for passing the checks in the CLI.*
    
-In the following steps you have to append `aws help --endpoint-url http://localhost:8000` to all `aws dynamodb` commands. 
+In the following steps, you have to append `aws help --endpoint-url http://localhost:8000` to all `aws dynamodb` commands. 
 
 
 ## Setup sample data
 
 Now we are going to load some example data into the DynamoDB.
 For that we first of all need to create a DynamoDB table.
-We will do that suing the AWS CLI.
+We will do that using the AWS CLI.
 For DynamoDB on AWS there is also a GUI.
 
 You can create the table by simply running the following command in a shell.
@@ -92,7 +121,11 @@ The output should contain the `Books` table, we just created.
 
 ### Load example data
 
-Now we will load the example data into the newly created table.
+For testing the data access we will also need some example data.
+For that reason, we created an example data set that contains information about three books.
+DynamoDB, unfortunately, can't directly load regular JSON data.
+Instead, you have to use a special JSON structure, that contains the DynamoDB data types.
+We did already create the example data file in this DynamoDB specific format so that you can simply load it. 
 
 Steps:
 
@@ -104,27 +137,18 @@ aws dynamodb batch-write-item --request-items file://./exampleData.json
 ```  
 
 ## Setup an Exasol database
-Now we need an Exasol database. In this guide we will use a local Exasol VM.
-Basically you can however select choose between the following options:
-
-* **Local Exasol VM (recommended)**
-    * free
-    * simple
-* [Exasol docker-db](https://github.com/exasol/docker-db)
-    * free
-    * only runs on linux
-* [Exasol public demo](https://docs.exasol.com/get_started/publicdemo/publicdemosystem.htm)
-    *  Only applicable with DynamoDB on AWS
-* Run [Exasol in the Cloud](https://docs.exasol.com/cloud_platforms/aws/cloud_wizard.htm)
-    * causes costs
-    * Only applicable with DynamoDB on AWS
+Now we need an Exasol database. In this guide, we will use a local Exasol VM.
+Basically, you can however also use the [Exasol docker-db](https://github.com/exasol/docker-db), 
+the [Exasol public demo](https://docs.exasol.com/get_started/publicdemo/publicdemosystem.htm) or
+run [Exasol in the Cloud](https://docs.exasol.com/cloud_platforms/aws/cloud_wizard.htm).
     
-Independent of which setup you choose it is important that the Exasol database can read the DynamoDB over the network.
+Independent of which setup you choose it is important that the Exasol database can reach the DynamoDB over the network.
 Hence you can not use an Exasol DB running in the cloud in combination with a local DynamoDB (ok, it would be possible if you can open a port on your firewall, but probably you don't want to do so). 
 
 ## Install the Virtual Schema Adapter
 
-In this step we are going to install the dynamodb-virtual-schema adapter.
+So now we are going to install the dynamodb-virtual-schema adapter.
+The adapter is the software that translates between DynamoDB and Exasol.
 
 Steps:
 
@@ -158,8 +182,9 @@ Steps:
    ```
    
 ## Create a Mapping Definition
+
 Now we need to tell the adapter how to map the DynamoDB documents to Exasol tables.
-For that we create a file with the [Exasol Document Mapping Language](../gettingStartedWithSchemaMappingLanguage.md).
+For that, we create a file with the [Exasol Document Mapping Language](../gettingStartedWithSchemaMappingLanguage.md).
 
 You can create the file wherever you want. We will later upload it to the BucketFS. 
 
@@ -190,7 +215,7 @@ curl -I -X PUT -T firstMapping.json http://w:writepw@<YOUR_DB_IP>:2580/default/m
 
 ## Create Virtual Schema
 
-Nwo we can create the Virtual Schema.
+Now we can create the Virtual Schema.
 
 Steps:
 
@@ -224,6 +249,8 @@ Steps:
  
  ![alt text](result.png "Virtual Schema result")
  
+ You can see that the adapter mapped the title property of the documents to a column in the Exasol table.
+ 
  ## Next Steps
- In the next part of this series we will show how to create more complex mappings.
+ In the next part of this series, we will show how to create more complex mappings.
  

@@ -6,10 +6,10 @@
                     "Title": {
                         "S": "The picture of Dorian Gray"
                     },
-                    "Authors": {
+                    "Author": {
                         "M": {
-                            "firstName": {"S" : "Oscar"},
-                            "lastName": {"S" : "Wilde"}
+                            "FirstName": {"S" : "Oscar"},
+                            "LastName": {"S" : "Wilde"}
                         }
                     },
                     "Price": {
@@ -44,8 +44,8 @@
                     },
                     "Author": {
                         "M": {
-                            "firstName": {"S" : "George"},
-                            "lastName": {"S" : "Orwell"}
+                            "FirstName": {"S" : "George"},
+                            "LastName": {"S" : "Orwell"}
                         }
                     },
                     "Cover":{
@@ -82,8 +82,8 @@
                     },
                     "Author": {
                         "M": {
-                            "firstName": {"S" : "Emily"},
-                            "lastName": {"S" : "Brontë"}
+                            "FirstName": {"S" : "Emily"},
+                            "LastName": {"S" : "Brontë"}
                         }
                     },
                     "Price": {
