@@ -133,7 +133,7 @@ Steps:
 1. [Create a Bucket in BucketFS](https://docs.exasol.com/administration/on-premise/bucketfs/create_new_bucket_in_bucketfs_service.htm)
 1. Upload the adapter to the BucketFS:
     ``` shell script
-   curl -I -X PUT -T dynamodb-virtual-schemas-adapter-dist-0.4.0.jar
+   curl -I -X PUT -T dynamodb-virtual-schemas-adapter-dist-0.4.0.jar http://w:writepw@<YOUR_DB_IP>:2580/default/dynamodb-virtual-schemas-adapter-dist-0.4.0.jar
    ```
 1. Create a schema to hold the adapter script:
     ```sql
@@ -162,7 +162,7 @@ Steps:
 Now we need to tell the adapter how to map the DynamoDB documents to Exasol tables.
 For that we create a file with the [Exasol Document Mapping Language](../gettingStartedWithSchemaMappingLanguage.md).
 
-You can cretae the file wherever you want. We will later upload it to BucketFS. 
+You can create the file wherever you want. We will later upload it to BucketFS. 
 
 `firstMapping.json`:
 ```json
@@ -220,6 +220,10 @@ Steps:
    ```
  
  ## First Results
+ 
+ Now you can browse the newly created table `DYNAMODB_TEST.BOOKS`:
+ 
+ ![alt text](result.png "Virtual Schema result")
  
  ## Next Steps
  In the next part of this series we will show how to create more complex mappings.
