@@ -133,7 +133,7 @@ Steps:
 1. [Create a Bucket in BucketFS](https://docs.exasol.com/administration/on-premise/bucketfs/create_new_bucket_in_bucketfs_service.htm)
 1. Upload the adapter to the BucketFS:
     ``` shell script
-   curl -I -X PUT -T dynamodb-virtual-schemas-adapter-dist-0.3.0.jar http://w:writepw@<YOUR_DB_IP>:2580/default/dynamodb-virtual-schemas-adapter-dist-0.3.0.jar
+   curl -I -X PUT -T dynamodb-virtual-schemas-adapter-dist-0.4.0.jar
    ```
 1. Create a schema to hold the adapter script:
     ```sql
@@ -143,18 +143,18 @@ Steps:
     ```sql
     CREATE OR REPLACE JAVA ADAPTER SCRIPT ADAPTER.DYNAMODB_ADAPTER AS
        %scriptclass com.exasol.adapter.RequestDispatcher;
-       %jar /buckets/bfsdefault/default/dynamodb-virtual-schemas-adapter-dist-0.3.0.jar;
+       %jar /buckets/bfsdefault/default/dynamodb-virtual-schemas-adapter-dist-0.4.0.jar;
     /
     ```
 1. Create UDF:
     ```sql
-    CREATE OR REPLACE JAVA SET SCRIPT ADAPTER.IMPORT_DOCUMENT_DATA(
+    CREATE OR REPLACE JAVA SET SCRIPT ADAPTER.IMPORT_FROM_DYNAMODB(
       DOCUMENT_FETCHER VARCHAR(2000000),
       REMOTE_TABLE_QUERY VARCHAR(2000000),
       CONNECTION_NAME VARCHAR(500))
       EMITS(...) AS
         %scriptclass com.exasol.adapter.dynamodb.ImportDocumentData;
-        %jar /buckets/bfsdefault/default/dynamodb-virtual-schemas-adapter-dist-0.3.0.jar;
+        %jar /buckets/bfsdefault/default/dynamodb-virtual-schemas-adapter-dist-0.4.0.jar;
     /
    ```
    
@@ -174,8 +174,8 @@ You can cretae the file wherever you want. We will later upload it to BucketFS.
   "mapping": {
     "fields": {
       "Title": {
-        "toStringMapping": {
-          "maxLength": 254
+        "toVarcharMapping": {
+          "varcharColumnSize": 254
         }
       }
     }
@@ -184,6 +184,7 @@ You can cretae the file wherever you want. We will later upload it to BucketFS.
 ``` 
 
 Now upload the mapping to BucketFS:
+
 ```shell script
 curl -I -X PUT -T firstMapping.json http://w:writepw@<YOUR_DB_IP>:2580/default/mappings/firstMapping.json
 ```
@@ -209,6 +210,7 @@ Steps:
           USER 'fakeMyKeyId'
           IDENTIFIED BY 'fakeSecretAccessKey';
       ```
+      
 2. Create Virtual Schema:
     ```sql
    CREATE VIRTUAL SCHEMA DYNAMODB_TEST USING ADAPTER.DYNAMODB_ADAPTER WITH
