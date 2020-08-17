@@ -125,8 +125,7 @@ class ColumnMappingReader {
     }
 
     /**
-     * Constants defined by the Exasol Document Mapping Language (EDML) defined in
-     * /src/main/resources/mappingLanguageSchema.json
+     * Constants defined by the Exasol Document Mapping Language (EDML) defined in /src/main/resources/v1.json
      */
     private static class EDML {
         private static final ColumnMappingReader INSTANCE = new ColumnMappingReader();

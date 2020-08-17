@@ -22,7 +22,7 @@ import org.json.JSONTokener;
  * </p>
  */
 class JsonSchemaMappingValidator {
-    private static final String MAPPING_LANGUAGE_SCHEMA = "mappingLanguageSchema.json";
+    private static final String MAPPING_LANGUAGE_SCHEMA = "schemas/edml/v1.json";
     private final Schema schema;
 
     /**
@@ -98,7 +98,7 @@ class JsonSchemaMappingValidator {
         if (exception.getMessage().startsWith("#/$schema:")
                 && exception.getMessage().endsWith("is not a valid enum value")) {
             throwExceptionWithMappingName(fileName, exception.getPointerToViolation()
-                    + " $schema must be set  to https://github.com/exasol/dynamodb-virtual-schema/blob/develop/src/main/resources/mappingLanguageSchema.json");
+                    + " $schema must be set  to https://raw.githubusercontent.com/exasol/dynamodb-virtual-schema/master/src/main/resources/schemas/edml/v1.json");
         }
     }
 
