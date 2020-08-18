@@ -4,6 +4,12 @@ In this Hands-on guide, we will explore the new [Virtual Schema for Amazon Dynam
 
 We will create a mapping from DynamoDB's semi-structured documents to a relational Exasol table.
 
+Exasol's Virtual Schemas allow you to access external data just like regular tables using SQL.
+The existing Virtual Schemas all use a JDBC connector for accessing the external data.
+The Virtual Schema for DynamoDB is the first of a new category of Virtual Schemas, the Virtual Schemas for document data.
+These new Virtual Schemas directly use the native API of the external data source.
+By that, we can parallelize the data loading and so create a much better performance.  
+
 ## Amazon DynamoDB
 
 [Amazon DynamoDB](https://aws.amazon.com/dynamodb/) is a fully managed document database, offered by AWS. 
@@ -137,7 +143,7 @@ aws dynamodb batch-write-item --request-items file://./exampleData.json
 
 ## Setup an Exasol database
 Now we need an Exasol database. In this guide, we will use a local Exasol VM.
-Basically, you can however also use the [Exasol docker-db](https://github.com/exasol/docker-db), 
+You can however also use the [Exasol docker-db](https://github.com/exasol/docker-db), 
 the [Exasol public demo](https://docs.exasol.com/get_started/publicdemo/publicdemosystem.htm) or
 run [Exasol in the Cloud](https://docs.exasol.com/cloud_platforms/aws/cloud_wizard.htm).
     
@@ -183,7 +189,7 @@ Steps:
 ## Create a Mapping Definition
 
 Now we need to tell the adapter how to map the DynamoDB documents to Exasol tables.
-For that, we create a file with the [Exasol Document Mapping Language](../gettingStartedWithSchemaMappingLanguage.md).
+For that, we create a file with the [Exasol Document Mapping Language (EDML)](../gettingStartedWithSchemaMappingLanguage.md).
 
 You can create the file wherever you want. We will later upload it to the BucketFS. 
 
@@ -211,6 +217,12 @@ Now upload the mapping to BucketFS:
 ```shell script
 curl -I -X PUT -T firstMapping.json http://w:writepw@<YOUR_DB_IP>:2580/default/mappings/firstMapping.json
 ```
+
+Now you have created your first mapping definition.
+This one is very simple. We will cover more complex mappings in an upcoming article.
+If you don't want to wait until then you can also check out the [EDML documentation](../gettingStartedWithSchemaMappingLanguage.md) on your own.
+
+By the way, the EDML is universal over all document Virtual Schemas. So in the future, you can use the same language for defining mappings for DynamoDB, MongoDB, or JSON files.  
 
 ## Create Virtual Schema
 
@@ -252,4 +264,3 @@ Steps:
  
  ## Next Steps
  In the next part of this series, we will show how to create more complex mappings.
- 
