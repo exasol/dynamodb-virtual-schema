@@ -1,7 +1,7 @@
 #!/bin/bash
 
 readonly root_dir='dynamodb-virtual-schema'
-readonly schema_path='./src/main/resources/mappingLanguageSchema.json'
+readonly schema_path='./src/main/resources/v1.json'
 readonly doc_dir='/tmp/doc/'
 
 prepare() {

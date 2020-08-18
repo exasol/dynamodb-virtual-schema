@@ -90,7 +90,7 @@ class JsonSchemaMappingValidatorTest {
         testInvalid(MappingTestFiles.BASIC_MAPPING_FILE, base -> {
             base.put("$schema", "wrongSchema");
             return base;
-        }, "#/$schema $schema must be set  to https://github.com/exasol/dynamodb-virtual-schema/blob/develop/src/main/resources/mappingLanguageSchema.json");
+        }, "#/$schema $schema must be set  to https://raw.githubusercontent.com/exasol/dynamodb-virtual-schema/master/src/main/resources/schemas/edml/v1.json");
     }
 
     @Test
