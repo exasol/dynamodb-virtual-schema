@@ -15,7 +15,7 @@ import com.exasol.adapter.document.mapping.TableMapping;
  * {@link NestedTableMappingReader}.
  */
 abstract class AbstractTableMappingReader {
-    protected static final String DEST_TABLE_NAME_KEY = "destTable";
+    protected static final String DEST_TABLE_NAME_KEY = "destinationTable";
     private static final String MAPPING_KEY = "mapping";
     final List<TableMapping> tables = new ArrayList<>();
 
