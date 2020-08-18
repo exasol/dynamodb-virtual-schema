@@ -1,6 +1,6 @@
 {
   "$schema": "../../main/resources/schemas/edml/v1.json",
-  "srcTable": "DATA_TYPE_TEST",
+  "source": "DATA_TYPE_TEST",
   "destinationTable": "TEST",
   "mapping": {
     "fields": {

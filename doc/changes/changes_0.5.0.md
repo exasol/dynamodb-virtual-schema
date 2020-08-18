@@ -1,4 +1,5 @@
 
 * #113: Schema mapping language changes
-    *  destTable -> destinationTable
+    * `destTable` -> `destinationTable`
+    * `srcTable` -> `source`
 * #71: Allow underscores in Table names

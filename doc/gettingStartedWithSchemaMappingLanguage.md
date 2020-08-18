@@ -48,7 +48,7 @@ In order to let this adapter create the described mapping we create the followin
 ```
 {
   "$schema": "https://raw.githubusercontent.com/exasol/dynamodb-virtual-schema/master/src/main/resources/schemas/edml/v1.json",
-  "srcTable": "MY_BOOKS",
+  "source": "MY_BOOKS",
   "destinationTable": "BOOKS",
   "description": "Maps MY_BOOKS to BOOKS",
   "mapping": {

@@ -1,6 +1,6 @@
 {
   "$schema": "../../main/resources/schemas/edml/v1.json",
-  "srcTable": "open_library_test",
+  "source": "open_library_test",
   "destinationTable": "OPENLIBRARY",
   "description": "Maps MY_BOOKS to BOOKS",
   "mapping": {

@@ -183,7 +183,7 @@
   "additionalProperties": false,
   "required": [
     "$schema",
-    "srcTable",
+    "source",
     "destinationTable",
     "mapping"
   ],
@@ -196,7 +196,7 @@
         "../../main/resources/schemas/edml/v1.json"
       ]
     },
-    "srcTable": {
+    "source": {
       "type": "string",
       "title": "DynamoDB table name",
       "description": "The identifier of the DynamoDB table."

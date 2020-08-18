@@ -25,7 +25,7 @@ import com.exasol.adapter.sql.SqlTable;
 class RemoteTableQueryFactoryTest {
     @Test
     void testBuildSelectStar() throws IOException, AdapterException {
-        final TableMapping table = TableMapping.rootTableBuilder("testTable", "srcTable")
+        final TableMapping table = TableMapping.rootTableBuilder("testTable", "source")
                 .withColumnMappingDefinition(getColumnMappingExample().build()).build();
         final SchemaMapping schemaMapping = new SchemaMapping(List.of(table));
 

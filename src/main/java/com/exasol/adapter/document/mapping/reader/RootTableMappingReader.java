@@ -15,7 +15,7 @@ import com.exasol.adapter.document.mapping.TableMapping;
  * {@link NestedTableMappingReader} this class handles the whole definition object.
  */
 class RootTableMappingReader extends AbstractTableMappingReader {
-    private static final String SRC_TABLE_NAME_KEY = "srcTable";
+    private static final String SRC_TABLE_NAME_KEY = "source";
     private final TableKeyFetcher tableKeyFetcher;
     private final String exasolTableName;
     private final String remoteTableName;
