@@ -8,7 +8,7 @@ Exasol's Virtual Schemas allow you to access external data just like regular tab
 The existing Virtual Schemas all use a JDBC connector for accessing the external data.
 The Virtual Schema for DynamoDB is the first of a new category of Virtual Schemas, the Virtual Schemas for document data.
 These new Virtual Schemas directly use the native API of the external data source.
-By that, we can parallelize the data loading and so create a much better performance.  
+By that, we can parallelize the data loading and create a much better performance.  
 
 ## Amazon DynamoDB
 
