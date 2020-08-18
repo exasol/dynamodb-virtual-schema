@@ -7,8 +7,7 @@ We will create a mapping from DynamoDB's semi-structured documents to a relation
 ## Amazon DynamoDB
 
 [Amazon DynamoDB](https://aws.amazon.com/dynamodb/) is a fully managed document database, offered by AWS. 
-You can use it for many different applications.
-For example as a database backend for an online bookshop.
+You can use it, for example, as a database backend for an online bookshop.
 Like all document databases, it uses a document data model.
 If you now think of PDF documents or doc files, you will be surprised, when you see the DynamoDB data.
 In this context document data refers to documents like JSON documents. 
