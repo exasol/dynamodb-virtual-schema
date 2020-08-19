@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://raw.githubusercontent.com/exasol/dynamodb-virtual-schema/master/src/main/resources/mappingLanguageSchema.json",
+  "$id": "https://raw.githubusercontent.com/exasol/dynamodb-virtual-schema/master/src/main/resources/schemas/edml/v1.json",
   "definitions": {
     "varcharColumnSize": {
       "type": "integer",
@@ -192,8 +192,8 @@
       "type": "string",
       "description": "Reference to the mapping language schema. Setting this is required so that IDEs can help you when writing your definition.",
       "enum": [
-        "https://raw.githubusercontent.com/exasol/dynamodb-virtual-schema/master/src/main/resources/mappingLanguageSchema.json",
-        "../../main/resources/mappingLanguageSchema.json"
+        "https://raw.githubusercontent.com/exasol/dynamodb-virtual-schema/master/src/main/resources/schemas/edml/v1.json",
+        "../../main/resources/schemas/edml/v1.json"
       ]
     },
     "srcTable": {

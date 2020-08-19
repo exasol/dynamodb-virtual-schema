@@ -19,8 +19,8 @@ import com.exasol.adapter.document.mapping.TableMapping;
 /**
  * This class reads a {@link SchemaMapping} from JSON files.
  * <p>
- * The JSON files must follow the schema defined in {@code resources/mappingLanguageSchema.json}. Documentation of
- * schema mapping definitions can be found at {@code /doc/gettingStartedWithSchemaMappingLanguage.md}.
+ * The JSON files must follow the schema defined in {@code resources/schemas/edml/v1.json}. Documentation of schema
+ * mapping definitions can be found at {@code /doc/gettingStartedWithSchemaMappingLanguage.md}.
  * </p>
  */
 public class JsonSchemaMappingReader implements SchemaMappingReader {

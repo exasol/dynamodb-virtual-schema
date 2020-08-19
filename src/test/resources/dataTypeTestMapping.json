@@ -1,5 +1,5 @@
 {
-  "$schema": "../../main/resources/mappingLanguageSchema.json",
+  "$schema": "../../main/resources/schemas/edml/v1.json",
   "srcTable": "DATA_TYPE_TEST",
   "destTable": "TEST",
   "mapping": {

@@ -18,7 +18,7 @@ git config user.email "$committer_mail"
 git reset --hard "$(git rev-list --max-parents=0 --abbrev-commit HEAD)"
 
 #generate documentation
-readonly schema_path="$TRAVIS_BUILD_DIR/src/main/resources/mappingLanguageSchema.json"
+readonly schema_path="$TRAVIS_BUILD_DIR/src/main/resources/schemas/edml/v1.json"
 bootprint json-schema "$schema_path" ./schema_doc/
 
 
