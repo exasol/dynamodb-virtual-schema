@@ -28,7 +28,7 @@ CREATE OR REPLACE JAVA SET SCRIPT ADAPTER.IMPORT_FROM_DYNAMO_DB(
   REMOTE_TABLE_QUERY VARCHAR(2000000),
   CONNECTION_NAME VARCHAR(500))
   EMITS(...) AS
-    %scriptclass com.exasol.adapter.document.ImportDocumentData;
+    %scriptclass com.exasol.adapter.document.UdfRequestDispatcher;
     %jar /buckets/bfsdefault/default/dynamodb-virtual-schemas-adapter-dist-0.4.0.jar;
 /
 ```

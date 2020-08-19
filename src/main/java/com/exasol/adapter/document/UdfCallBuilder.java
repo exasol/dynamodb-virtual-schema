@@ -22,7 +22,7 @@ import com.exasol.sql.rendering.StringRendererConfig;
 import com.exasol.utils.StringSerializer;
 
 /**
- * This class builds push down SQL statement with a UDF call to {@link ImportDocumentData}.
+ * This class builds push down SQL statement with a UDF call to {@link UdfRequestDispatcher}.
  * 
  * @implNote the push down statement consists of three cascaded statements.
  * 
@@ -57,9 +57,11 @@ public class UdfCallBuilder<DocumentVisitorType> {
     }
 
     /**
-     * Build push down SQL statement with a UDF call to {@link ImportDocumentData}.
+     * Build push down SQL statement with a UDF call to {@link UdfRequestDispatcher}. Each document fetcher gets a row
+     * that is passed to a UDF. Since it is not possible to pass data to all UDF calls also the query is added to each
+     * row, even though it is the same for all rows.
      * 
-     * @param documentFetchers document fetchers. Each document fetcher gets a row that is passed to a UDF
+     * @param documentFetchers document fetchers that are passed to the UDF
      * @param query            document query that is passed to the UDF
      * @return built SQL statement
      * @throws IOException if serialization of a document fetcher or the query fails
@@ -96,19 +98,21 @@ public class UdfCallBuilder<DocumentVisitorType> {
      */
     private Select buildUdfCallStatement(final List<DocumentFetcher<DocumentVisitorType>> documentFetchers,
             final RemoteTableQuery query) throws IOException {
-        final Select doubleNestedSelect = StatementFactory.getInstance().select();
-        final List<Column> emitsColumns = query
-                .getRequiredColumns().stream().map(column -> new Column(doubleNestedSelect,
-                        column.getExasolColumnName(), convertDataType(column.getExasolDataType())))
-                .collect(Collectors.toList());
-        doubleNestedSelect.udf("Adapter." + ImportDocumentData.UDF_PREFIX + this.adapterName,
+        final Select udfCallSelect = StatementFactory.getInstance().select();
+        final List<Column> emitsColumns = buildRequiredColumns(query, udfCallSelect);
+        udfCallSelect.udf("Adapter." + UdfRequestDispatcher.UDF_PREFIX + this.adapterName,
                 new ColumnsDefinition(emitsColumns), column(DOCUMENT_FETCHER_PARAMETER),
                 column(REMOTE_TABLE_QUERY_PARAMETER), column(CONNECTION_NAME_PARAMETER));
-        final ValueTable valueTable = buildValueTable(documentFetchers, query, doubleNestedSelect);
-        doubleNestedSelect.from().valueTableAs(valueTable, "T", DOCUMENT_FETCHER_PARAMETER,
+        final ValueTable valueTable = buildValueTable(documentFetchers, query, udfCallSelect);
+        udfCallSelect.from().valueTableAs(valueTable, "T", DOCUMENT_FETCHER_PARAMETER,
                 REMOTE_TABLE_QUERY_PARAMETER, CONNECTION_NAME_PARAMETER, FRAGMENT_ID);
-        doubleNestedSelect.groupBy(column(FRAGMENT_ID));
-        return doubleNestedSelect;
+        udfCallSelect.groupBy(column(FRAGMENT_ID));
+        return udfCallSelect;
+    }
+
+    private List<Column> buildRequiredColumns(final RemoteTableQuery query, final Select udfCallSelect) {
+        return query.getRequiredColumns().stream().map(column -> new Column(udfCallSelect, column.getExasolColumnName(),
+                convertDataType(column.getExasolDataType()))).collect(Collectors.toList());
     }
 
     private ValueTable buildValueTable(final List<DocumentFetcher<DocumentVisitorType>> documentFetchers,

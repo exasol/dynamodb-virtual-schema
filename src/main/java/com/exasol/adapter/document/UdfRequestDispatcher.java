@@ -7,7 +7,7 @@ import com.exasol.adapter.AdapterRegistry;
 /**
  * Main UDF entry point.
  */
-public class ImportDocumentData {
+public class UdfRequestDispatcher {
     public static final String UDF_PREFIX = "IMPORT_FROM_";
 
     /**
@@ -28,7 +28,7 @@ public class ImportDocumentData {
         dataLoaderUdf.run(exaMetadata, exaIterator);
     }
 
-    private ImportDocumentData() {
+    private UdfRequestDispatcher() {
         // Intentionally empty. As this class is only accessed statical.
     }
 }
