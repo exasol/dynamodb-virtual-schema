@@ -194,9 +194,9 @@ public abstract class DocumentAdapter<DocumentVisitorType> implements VirtualSch
     }
 
     /**
-     * Get the name of the database specific adapter.
+     * Get the name of the database-specific adapter.
      * 
-     * @return name of the database specific adapter
+     * @return name of the database-specific adapter
      */
     protected abstract String getAdapterName();
 }

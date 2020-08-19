@@ -62,7 +62,7 @@ public class UdfCallBuilder<DocumentVisitorType> {
      * @param documentFetchers document fetchers. Each document fetcher gets a row that is passed to a UDF
      * @param query            document query that is passed to the UDF
      * @return built SQL statement
-     * @throws IOException if serialization of a documentFetcher or the query fails
+     * @throws IOException if serialization of a document fetcher or the query fails
      */
     public String getUdfCallSql(final List<DocumentFetcher<DocumentVisitorType>> documentFetchers,
             final RemoteTableQuery query) throws IOException {
@@ -119,8 +119,12 @@ public class UdfCallBuilder<DocumentVisitorType> {
             final String serializedDocumentFetcher = StringSerializer.serializeToString(documentFetcher);
             final String serializedRemoteTableQuery = StringSerializer.serializeToString(query);
             final ValueTableRow row = ValueTableRow.builder(select).add(serializedDocumentFetcher)
-                    .add(serializedRemoteTableQuery).add(this.connectionName).add(rowCounter++).build();
+                    .add(serializedRemoteTableQuery) //
+                    .add(this.connectionName) //
+                    .add(rowCounter) //
+                    .build();
             valueTable.appendRow(row);
+            ++rowCounter;
         }
         return valueTable;
     }
