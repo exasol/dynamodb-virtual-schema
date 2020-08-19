@@ -176,12 +176,12 @@ Steps:
     ```
 1. Create UDF:
     ```sql
-    CREATE OR REPLACE JAVA SET SCRIPT ADAPTER.IMPORT_DOCUMENT_DATA(
+    CREATE OR REPLACE JAVA SET SCRIPT ADAPTER.IMPORT_FROM_DYNAMO_DB(
       DOCUMENT_FETCHER VARCHAR(2000000),
       REMOTE_TABLE_QUERY VARCHAR(2000000),
       CONNECTION_NAME VARCHAR(500))
       EMITS(...) AS
-        %scriptclass com.exasol.adapter.dynamodb.ImportDocumentData;
+        %scriptclass com.exasol.adapter.document.UdfRequestDispatcher;
         %jar /buckets/bfsdefault/default/dynamodb-virtual-schemas-adapter-dist-0.4.0.jar;
     /
    ```

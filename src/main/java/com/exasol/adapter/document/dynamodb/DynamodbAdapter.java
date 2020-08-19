@@ -7,6 +7,7 @@ import com.exasol.adapter.capabilities.Capabilities;
 import com.exasol.adapter.capabilities.LiteralCapability;
 import com.exasol.adapter.capabilities.MainCapability;
 import com.exasol.adapter.capabilities.PredicateCapability;
+import com.exasol.adapter.document.DataLoaderUdf;
 import com.exasol.adapter.document.DocumentAdapter;
 import com.exasol.adapter.document.documentfetcher.DocumentFetcherFactory;
 import com.exasol.adapter.document.documentfetcher.dynamodb.DynamodbDocumentFetcherFactory;
@@ -24,6 +25,8 @@ import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
  * DynamoDB Virtual Schema adapter.
  */
 public class DynamodbAdapter extends DocumentAdapter<DynamodbNodeVisitor> {
+    public static final String ADAPTER_NAME = "DYNAMO_DB";
+
     private static final Capabilities CAPABILITIES = Capabilities.builder()
             .addMain(MainCapability.FILTER_EXPRESSIONS, MainCapability.SELECTLIST_PROJECTION)
             .addPredicate(PredicateCapability.EQUAL, PredicateCapability.LESS, PredicateCapability.LESSEQUAL)
@@ -62,5 +65,15 @@ public class DynamodbAdapter extends DocumentAdapter<DynamodbNodeVisitor> {
     protected DocumentFetcherFactory<DynamodbNodeVisitor> getDocumentFetcherFactory(
             final ExaConnectionInformation connectionInformation) throws AdapterException {
         return new DynamodbDocumentFetcherFactory(getDynamoDBClient(connectionInformation));
+    }
+
+    @Override
+    protected String getAdapterName() {
+        return ADAPTER_NAME;
+    }
+
+    @Override
+    public DataLoaderUdf getDataLoaderUDF() {
+        return new DynamodbDataLoaderUdf();
     }
 }
