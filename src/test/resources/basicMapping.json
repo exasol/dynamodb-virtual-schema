@@ -1,7 +1,7 @@
 {
   "$schema": "../../main/resources/schemas/edml/v1.json",
-  "srcTable": "MY_BOOKS",
-  "destTable": "BOOKS",
+  "source": "MY_BOOKS",
+  "destinationTable": "BOOKS",
   "description": "Maps MY_BOOKS to BOOKS",
   "mapping": {
     "fields": {

@@ -36,8 +36,8 @@ To achieve this we create the following mapping definition:
 ```
 {
   "$schema": "https://raw.githubusercontent.com/exasol/dynamodb-virtual-schema/master/src/main/resources/schemas/edml/v1.json",
-  "srcTable": "MY_BOOKS",
-  "destTable": "BOOKS",
+  "source": "MY_BOOKS",
+  "destinationTable": "BOOKS",
   "description": "Maps MY_BOOKS to BOOKS",
   "mapping": {
     "fields": {

@@ -72,9 +72,9 @@ class JsonSchemaMappingValidatorTest {
     @Test
     void testInvalidNoDestName() throws IOException {
         testInvalid(MappingTestFiles.BASIC_MAPPING_FILE, base -> {
-            base.remove("destTable");
+            base.remove("destinationTable");
             return base;
-        }, "#: required key [destTable] not found");
+        }, "#: required key [destinationTable] not found");
     }
 
     @Test

@@ -197,8 +197,8 @@ You can create the file wherever you want. We will later upload it to the Bucket
 ```json
 {
   "$schema": "../../main/resources/mappingLanguageSchema.json",
-  "srcTable": "Books",
-  "destTable": "BOOKS",
+  "source": "Books",
+  "destinationTable": "BOOKS",
   "description": "Mapping for the Books table",
   "mapping": {
     "fields": {
