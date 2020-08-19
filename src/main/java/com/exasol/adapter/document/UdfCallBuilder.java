@@ -22,7 +22,7 @@ import com.exasol.sql.rendering.StringRendererConfig;
 import com.exasol.utils.StringSerializer;
 
 /**
- * This class builds push down SQL statement with a UDF call to {@link ImportDocumentData}.
+ * This class builds push down SQL statement with a UDF call to {@link UdfRequestDispatcher}.
  * 
  * @implNote the push down statement consists of three cascaded statements.
  * 
@@ -42,19 +42,33 @@ public class UdfCallBuilder<DocumentVisitorType> {
     private static final String REMOTE_TABLE_QUERY_PARAMETER = "REMOTE_TABLE_QUERY";
     private static final String CONNECTION_NAME_PARAMETER = "CONNECTION_NAME";
     private static final String FRAGMENT_ID = "FRAGMENT_ID";
+    private final String connectionName;
+    private final String adapterName;
 
     /**
-     * Build push down SQL statement with a UDF call to {@link ImportDocumentData}.
+     * Create an instance of {@link UdfCallBuilder}.
      * 
-     * @param documentFetchers document fetchers. Each document fetcher gets a row that is passed to a UDF
+     * @param connectionName connectionName that is passed to the UDF
+     * @param adapterName    name of the adapter
+     */
+    public UdfCallBuilder(final String connectionName, final String adapterName) {
+        this.connectionName = connectionName;
+        this.adapterName = adapterName;
+    }
+
+    /**
+     * Build push down SQL statement with a UDF call to {@link UdfRequestDispatcher}. Each document fetcher gets a row
+     * that is passed to a UDF. Since it is not possible to pass data to all UDF calls also the query is added to each
+     * row, even though it is the same for all rows.
+     * 
+     * @param documentFetchers document fetchers that are passed to the UDF
      * @param query            document query that is passed to the UDF
-     * @param connectionName   connectionName that is passed to the UDF
      * @return built SQL statement
-     * @throws IOException if serialization of a documentFetcher or the query fails
+     * @throws IOException if serialization of a document fetcher or the query fails
      */
     public String getUdfCallSql(final List<DocumentFetcher<DocumentVisitorType>> documentFetchers,
-            final RemoteTableQuery query, final String connectionName) throws IOException {
-        final Select udfCallStatement = buildUdfCallStatement(documentFetchers, query, connectionName);
+            final RemoteTableQuery query) throws IOException {
+        final Select udfCallStatement = buildUdfCallStatement(documentFetchers, query);
         final Select pushDownSelect = wrapStatementInStatementWithPostSelectionAndProjection(query.getSelectList(),
                 query.getPostSelection(), udfCallStatement);
         return renderStatement(pushDownSelect);
@@ -83,32 +97,38 @@ public class UdfCallBuilder<DocumentVisitorType> {
      * statement.
      */
     private Select buildUdfCallStatement(final List<DocumentFetcher<DocumentVisitorType>> documentFetchers,
-            final RemoteTableQuery query, final String connectionName) throws IOException {
-        final Select doubleNestedSelect = StatementFactory.getInstance().select();
-        final List<Column> emitsColumns = query
-                .getRequiredColumns().stream().map(column -> new Column(doubleNestedSelect,
-                        column.getExasolColumnName(), convertDataType(column.getExasolDataType())))
-                .collect(Collectors.toList());
-        doubleNestedSelect.udf("Adapter." + ImportDocumentData.UDF_NAME, new ColumnsDefinition(emitsColumns),
-                column(DOCUMENT_FETCHER_PARAMETER), column(REMOTE_TABLE_QUERY_PARAMETER),
-                column(CONNECTION_NAME_PARAMETER));
-        final ValueTable valueTable = buildValueTable(documentFetchers, query, connectionName, doubleNestedSelect);
-        doubleNestedSelect.from().valueTableAs(valueTable, "T", DOCUMENT_FETCHER_PARAMETER,
+            final RemoteTableQuery query) throws IOException {
+        final Select udfCallSelect = StatementFactory.getInstance().select();
+        final List<Column> emitsColumns = buildRequiredColumns(query, udfCallSelect);
+        udfCallSelect.udf("Adapter." + UdfRequestDispatcher.UDF_PREFIX + this.adapterName,
+                new ColumnsDefinition(emitsColumns), column(DOCUMENT_FETCHER_PARAMETER),
+                column(REMOTE_TABLE_QUERY_PARAMETER), column(CONNECTION_NAME_PARAMETER));
+        final ValueTable valueTable = buildValueTable(documentFetchers, query, udfCallSelect);
+        udfCallSelect.from().valueTableAs(valueTable, "T", DOCUMENT_FETCHER_PARAMETER,
                 REMOTE_TABLE_QUERY_PARAMETER, CONNECTION_NAME_PARAMETER, FRAGMENT_ID);
-        doubleNestedSelect.groupBy(column(FRAGMENT_ID));
-        return doubleNestedSelect;
+        udfCallSelect.groupBy(column(FRAGMENT_ID));
+        return udfCallSelect;
+    }
+
+    private List<Column> buildRequiredColumns(final RemoteTableQuery query, final Select udfCallSelect) {
+        return query.getRequiredColumns().stream().map(column -> new Column(udfCallSelect, column.getExasolColumnName(),
+                convertDataType(column.getExasolDataType()))).collect(Collectors.toList());
     }
 
     private ValueTable buildValueTable(final List<DocumentFetcher<DocumentVisitorType>> documentFetchers,
-            final RemoteTableQuery query, final String connectionName, final Select select) throws IOException {
+            final RemoteTableQuery query, final Select select) throws IOException {
         final ValueTable valueTable = new ValueTable(select);
         int rowCounter = 0;
         for (final DocumentFetcher<DocumentVisitorType> documentFetcher : documentFetchers) {
             final String serializedDocumentFetcher = StringSerializer.serializeToString(documentFetcher);
             final String serializedRemoteTableQuery = StringSerializer.serializeToString(query);
             final ValueTableRow row = ValueTableRow.builder(select).add(serializedDocumentFetcher)
-                    .add(serializedRemoteTableQuery).add(connectionName).add(rowCounter++).build();
+                    .add(serializedRemoteTableQuery) //
+                    .add(this.connectionName) //
+                    .add(rowCounter) //
+                    .build();
             valueTable.appendRow(row);
+            ++rowCounter;
         }
         return valueTable;
     }

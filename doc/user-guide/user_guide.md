@@ -23,12 +23,12 @@ CREATE OR REPLACE JAVA ADAPTER SCRIPT ADAPTER.DYNAMODB_ADAPTER AS
 
 In addition to the adapter script we must create a UDF function that will handle the loading of the data:
 ```
-CREATE OR REPLACE JAVA SET SCRIPT ADAPTER.IMPORT_DOCUMENT_DATA(
+CREATE OR REPLACE JAVA SET SCRIPT ADAPTER.IMPORT_FROM_DYNAMO_DB(
   DOCUMENT_FETCHER VARCHAR(2000000),
   REMOTE_TABLE_QUERY VARCHAR(2000000),
   CONNECTION_NAME VARCHAR(500))
   EMITS(...) AS
-    %scriptclass com.exasol.adapter.document.ImportDocumentData;
+    %scriptclass com.exasol.adapter.document.UdfRequestDispatcher;
     %jar /buckets/bfsdefault/default/dynamodb-virtual-schemas-adapter-dist-0.4.0.jar;
 /
 ```
