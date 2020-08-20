@@ -31,8 +31,11 @@ class DynamodbTableKeyFetcherTest {
 
     @BeforeAll
     static void beforeAll() throws IOException, AdapterException {
-        COLUMNS = new JsonSchemaMappingReader(MappingTestFiles.BASIC_MAPPING_FILE, null).getSchemaMapping()
+        final MappingTestFiles mappingTestFiles = new MappingTestFiles();
+        COLUMNS = new JsonSchemaMappingReader(mappingTestFiles.getMappingAsFile(MappingTestFiles.BASIC_MAPPING), null)
+                .getSchemaMapping()
                 .getTableMappings().get(0).getColumns();
+        mappingTestFiles.deleteAllTempFiles();
         ISBN_COLUMN = COLUMNS.stream().filter(column -> column.getExasolColumnName().equals("ISBN")).findAny().get();
         PUBLISHER_COLUMN = COLUMNS.stream().filter(column -> column.getExasolColumnName().equals("PUBLISHER")).findAny()
                 .get();

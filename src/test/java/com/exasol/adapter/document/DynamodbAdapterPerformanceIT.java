@@ -44,7 +44,8 @@ class DynamodbAdapterPerformanceIT {
         exasolTestInterface = integrationTestSetup.getExasolTestInterface();
         exasolTestDatabaseBuilder = new ExasolTestDatabaseBuilder(exasolTestInterface);
         exasolTestDatabaseBuilder.uploadDynamodbAdapterJar();
-        exasolTestDatabaseBuilder.uploadMapping(MappingTestFiles.OPEN_LIBRARY_MAPPING_FILE_NAME);
+        exasolTestDatabaseBuilder.uploadMappingTestFile(MappingTestFiles.OPEN_LIBRARY_MAPPING,
+                MappingTestFiles.OPEN_LIBRARY_MAPPING);
         Thread.sleep(1000 * 5);// waiting for bucketfs to sync
         exasolTestDatabaseBuilder.dropConnection(DYNAMODB_CONNECTION);
         exasolTestDatabaseBuilder.dropVirtualSchema(TEST_SCHEMA);
@@ -54,7 +55,7 @@ class DynamodbAdapterPerformanceIT {
         exasolTestDatabaseBuilder.createAdapterScript();
         exasolTestDatabaseBuilder.createUdf();
         exasolTestDatabaseBuilder.createDynamodbVirtualSchema(TEST_SCHEMA, DYNAMODB_CONNECTION,
-                "/bfsdefault/default/mappings/" + MappingTestFiles.OPEN_LIBRARY_MAPPING_FILE_NAME);
+                "/bfsdefault/default/" + MappingTestFiles.OPEN_LIBRARY_MAPPING);
     }
 
     @AfterAll

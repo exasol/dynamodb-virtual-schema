@@ -16,7 +16,7 @@
         <junit.version>5.6.2</junit.version>
         <junit.platform.version>1.6.2</junit.platform.version>
         <jacoco.version>0.8.5</jacoco.version>
-        <vscommon.version>11.0.0</vscommon.version>
+        <vs-common-document.version>0.1.0</vs-common-document.version>
         <gpg.skip>true</gpg.skip>
         <org.testcontainers.version>1.14.3</org.testcontainers.version>
         <surefire.and.failsafe.plugin.version>3.0.0-M4</surefire.and.failsafe.plugin.version>
@@ -85,8 +85,15 @@
     <dependencies>
         <dependency>
             <groupId>com.exasol</groupId>
-            <artifactId>virtual-schema-common-java</artifactId>
-            <version>${vscommon.version}</version>
+            <artifactId>virtual-schema-common-document</artifactId>
+            <version>${vs-common-document.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.exasol</groupId>
+            <artifactId>virtual-schema-common-document</artifactId>
+            <version>${vs-common-document.version}</version>
+            <type>test-jar</type>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.hamcrest</groupId>

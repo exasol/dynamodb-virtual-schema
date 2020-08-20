@@ -70,8 +70,6 @@ Running the DynamoDB Virtual Schema requires a Java Runtime version 11 or later.
 ### CI Dependencies
 | Dependency                                                                          | Purpose                                                | License                          |
 |-------------------------------------------------------------------------------------|--------------------------------------------------------|----------------------------------|
-| [bootprint](https://www.npmjs.com/package/bootprint)                                | Generating [EDML documentation][edml-doc]              | MIT License                      |
-| [bootprint-json-schema](https://www.npmjs.com/package/bootprint-json-schema)        | Generating [EDML documentation][edml-doc]              | MIT License                      |
 | [shellcheck](https://www.shellcheck.net/)                                           | Detecting code smells in shell scripts                 | GPL v3                           |
 
 ### Maven Plug-ins

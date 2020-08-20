@@ -37,8 +37,7 @@ class DynamodbTestInterfaceTestIT {
     @Test
     void testImportData() throws IOException {
         dynamodbTestInterface.createTable(TABLE_NAME, TestDocuments.BOOKS_ISBN_PROPERTY);
-        final ClassLoader classLoader = DynamodbTestInterfaceTestIT.class.getClassLoader();
-        dynamodbTestInterface.importData(TABLE_NAME, TestDocuments.BOOKS);
+        dynamodbTestInterface.importData(TABLE_NAME, TestDocuments.books());
         assertThat(dynamodbTestInterface.scan(TABLE_NAME), equalTo(3));
     }
 

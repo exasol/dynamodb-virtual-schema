@@ -66,7 +66,7 @@ class DynamodbDocumentFetcherFactoryIT {
                 .indexName(INDEX_NAME).projection(Projection.builder().projectionType(ProjectionType.ALL).build())
                 .build());
         dynamodbTestInterface.createTable(requestBuilder.build());
-        dynamodbTestInterface.importData(basicMappingSetup.tableMapping.getRemoteName(), TestDocuments.BOOKS);
+        dynamodbTestInterface.importData(basicMappingSetup.tableMapping.getRemoteName(), TestDocuments.books());
     }
 
     @AfterAll

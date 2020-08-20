@@ -27,8 +27,11 @@ public class BasicMappingSetup {
     private final ColumnMapping isbnColumn;
 
     public BasicMappingSetup() throws IOException, AdapterException {
-        this.tableMapping = new JsonSchemaMappingReader(MappingTestFiles.BASIC_MAPPING_FILE, null).getSchemaMapping()
+        final MappingTestFiles mappingTestFiles = new MappingTestFiles();
+        this.tableMapping = new JsonSchemaMappingReader(
+                mappingTestFiles.getMappingAsFile(MappingTestFiles.BASIC_MAPPING), null).getSchemaMapping()
                 .getTableMappings().get(0);
+        mappingTestFiles.deleteAllTempFiles();
         this.publisherColumn = this.tableMapping.getColumns().stream()
                 .filter(column -> column.getExasolColumnName().equals("PUBLISHER")).findAny().get();
         this.priceColumn = this.tableMapping.getColumns().stream()
