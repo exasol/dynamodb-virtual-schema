@@ -3,7 +3,7 @@
 For creating a Virtual Schema for DynamoDB you have to define a mapping 
 of the DynamoDB document structure to a relational structure.
 This is done using the mapping language 
-([reference](https://exasol.github.io/dynamodb-virtual-schema/schema_doc/index.html)).
+([reference](https://exasol.github.io/virtual-schema-common-ducument/schema_doc/index.html)).
 You have to defined the mapping in a JSON document, upload it to a bucket in BucketFS and reference 
 in the `CREATE VIRTUAL SCHEMA` call.  
 For mapping multiple DynamoDB tables, you can create multiple files, 
@@ -98,4 +98,4 @@ SELECT * FROM BOOKSHOP.BOOKS;
 * [Example for toTableMapping](exampleWithToTable.md)
 
 ## Reference
-[Schema mapping language reference](https://exasol.github.io/dynamodb-virtual-schema/schema_doc/index.html)
+[Schema mapping language reference](https://exasol.github.io/virtual-schema-common-ducument/schema_doc/index.html)
