@@ -61,11 +61,7 @@ Running the DynamoDB Virtual Schema requires a Java Runtime version 11 or later.
 | [JUnit](https://junit.org/junit5)                                                   | Unit testing framework                                 | Eclipse Public License 1.0       |
 | [Testcontainers](https://www.testcontainers.org/)                                   | Container-based integration tests                      | MIT License                      |
 | [SLF4J](http://www.slf4j.org/)                                                      | Logging facade                                         | MIT License                      |
-
-### CI Dependencies
-| Dependency                                                                          | Purpose                                                | License                          |
-|-------------------------------------------------------------------------------------|--------------------------------------------------------|----------------------------------|
-| [shellcheck](https://www.shellcheck.net/)                                           | Detecting code smells in shell scripts                 | GPL v3                           |
+| [Apache XMLRPC](https://mvnrepository.com/artifact/org.apache.xmlrpc)               | Connecting to ExaOperation XMLRPC interface            | Apache License 2.0               |
 
 ### Maven Plug-ins
 
