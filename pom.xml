@@ -89,13 +89,6 @@
             <version>${vs-common-document.version}</version>
         </dependency>
         <dependency>
-            <groupId>com.exasol</groupId>
-            <artifactId>virtual-schema-common-document</artifactId>
-            <version>${vs-common-document.version}</version>
-            <type>test-jar</type>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
             <groupId>software.amazon.awssdk</groupId>
             <artifactId>dynamodb</artifactId>
         </dependency>
@@ -125,6 +118,13 @@
             <scope>test</scope>
         </dependency>
         <!--Integration test dependencies-->
+        <dependency>
+            <groupId>com.exasol</groupId>
+            <artifactId>virtual-schema-common-document</artifactId>
+            <version>${vs-common-document.version}</version>
+            <type>test-jar</type>
+            <scope>test</scope>
+        </dependency>
         <dependency>
             <groupId>com.exasol</groupId>
             <artifactId>exasol-testcontainers</artifactId>
