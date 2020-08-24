@@ -3,6 +3,7 @@ package com.exasol.adapter.document;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URISyntaxException;
 import java.util.*;
 
@@ -143,6 +144,13 @@ public abstract class DynamodbTestInterface {
      */
     public void importData(final String tableName, final File asset) throws IOException {
         try (final JsonReader jsonReader = Json.createReader(new FileReader(asset))) {
+            final String[] itemsJson = splitJsonArrayInArrayOfJsonStrings(jsonReader.readArray());
+            putJson(tableName, itemsJson);
+        }
+    }
+
+    public void importData(final String tableName, final InputStream stream) throws IOException {
+        try (final JsonReader jsonReader = Json.createReader(stream)) {
             final String[] itemsJson = splitJsonArrayInArrayOfJsonStrings(jsonReader.readArray());
             putJson(tableName, itemsJson);
         }
