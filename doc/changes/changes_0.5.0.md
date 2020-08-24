@@ -12,4 +12,5 @@
     * `destTable` -> `destinationTable`
     * `srcTable` -> `source`
 * #71: Allow underscores in Table names
+* #121: Updated version schema
  
