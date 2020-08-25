@@ -106,7 +106,7 @@ unify() {
 }
 
 update_documentation() {
-log "Checking all files matching \"$file_find_regex\""
+    log "Checking all files matching \"$file_find_regex\""
     find -type f -regextype posix-extended -regex "$file_find_regex" -not -path "./doc/changes/*" \
       -exec echo "Processing \"{}\"" \; \
       -exec sed -i s/"$vs_jar_pattern"/"$vs_jar_prefix-$dialects_version.$jar_suffix"/g {} \; \
