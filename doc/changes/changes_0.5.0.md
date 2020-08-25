@@ -12,4 +12,4 @@
     * `destTable` -> `destinationTable`
     * `srcTable` -> `source`
 * #71: Allow underscores in Table names
- 
+* #119: Removed XML-RPC dependency 

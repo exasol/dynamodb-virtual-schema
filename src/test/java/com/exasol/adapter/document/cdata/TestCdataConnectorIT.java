@@ -10,7 +10,6 @@ import java.security.NoSuchAlgorithmException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import org.apache.xmlrpc.XmlRpcException;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Tag;
@@ -19,7 +18,6 @@ import org.junit.jupiter.api.Test;
 import com.exasol.adapter.document.AwsExasolTestInterface;
 import com.exasol.adapter.document.ExasolTestDatabaseBuilder;
 import com.exasol.adapter.document.IntegrationTestSetup;
-import com.exasol.bucketfs.BucketAccessException;
 
 /*
  * This is an performance test for a Virtual Schema using the generic JDBC driver and the CData connector.
@@ -41,23 +39,15 @@ class TestCdataConnectorIT {
     private static ExasolTestDatabaseBuilder exasolTestSetup;
 
     @BeforeAll
-    static void beforeAll()
-            throws SQLException, BucketAccessException, InterruptedException, java.util.concurrent.TimeoutException,
-            IOException, NoSuchAlgorithmException, KeyManagementException, XmlRpcException {
+    static void beforeAll() throws SQLException, IOException, NoSuchAlgorithmException, KeyManagementException {
         final CdataCredentialProvider cdataCredentialProvider = new CdataCredentialProvider();
         final IntegrationTestSetup integrationTestSetup = new IntegrationTestSetup();
         exasolTestInterface = (AwsExasolTestInterface) integrationTestSetup.getExasolTestInterface();
         exasolTestSetup = new ExasolTestDatabaseBuilder(exasolTestInterface);
         exasolTestSetup.dropConnection(CONNECTION_NAME);
-        try {
-            exasolTestInterface.getExaOperationInterface().createAndUploadJdbcDriver("cdata",
-                    "cdata.jdbc.amazondynamodb.AmazonDynamoDBDriver", "jdbc:amazondynamodb:", true,
-                    PATH_TO_JDBC_ADAPTER_JAR.toFile());
-        } catch (final XmlRpcException exception) {
-            if (!exception.getMessage().equals("JDBC driver name is already used for another JDBC driver.")) {
-                throw exception;
-            }
-        }
+        exasolTestInterface.getExaOperationInterface().createAndUploadJdbcDriver("cdata",
+                "cdata.jdbc.amazondynamodb.AmazonDynamoDBDriver", "jdbc:amazondynamodb:", true,
+                PATH_TO_JDBC_ADAPTER_JAR.toFile());
         exasolTestSetup.createConnection(CONNECTION_NAME,
                 "jdbc:amazondynamodb:Access Key=" + cdataCredentialProvider.getAwsAccessKey() + ";Secret Key="
                         + cdataCredentialProvider.getAwsSecretKey()

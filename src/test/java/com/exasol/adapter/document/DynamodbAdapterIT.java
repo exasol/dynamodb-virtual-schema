@@ -16,7 +16,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeoutException;
 
-import org.apache.xmlrpc.XmlRpcException;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.Tag;
 import org.slf4j.Logger;
@@ -50,7 +49,7 @@ class DynamodbAdapterIT {
     @BeforeAll
     static void beforeAll() throws DynamodbTestInterface.NoNetworkFoundException, SQLException, InterruptedException,
             BucketAccessException, TimeoutException, IOException, NoSuchAlgorithmException, KeyManagementException,
-            XmlRpcException, URISyntaxException {
+            URISyntaxException {
         final IntegrationTestSetup integrationTestSetup = new IntegrationTestSetup();
         exasolTestInterface = integrationTestSetup.getExasolTestInterface();
         exasolTestDatabaseBuilder = new ExasolTestDatabaseBuilder(exasolTestInterface);
@@ -181,7 +180,8 @@ class DynamodbAdapterIT {
         createBasicMappingVirtualSchema();
         dynamodbTestInterface.createTable(DYNAMO_BOOKS_TABLE, TestDocuments.BOOKS_ISBN_PROPERTY);
         dynamodbTestInterface.importData(DYNAMO_BOOKS_TABLE, TestDocuments.books());
-        final ResultSet resultSet = exasolTestDatabaseBuilder.getStatement().executeQuery("SELECT COUNT(*) as NUMBER_OF_BOOKS FROM BOOKS;");
+        final ResultSet resultSet = exasolTestDatabaseBuilder.getStatement()
+                .executeQuery("SELECT COUNT(*) as NUMBER_OF_BOOKS FROM BOOKS;");
         resultSet.next();
         final int number_of_books = resultSet.getInt("NUMBER_OF_BOOKS");
         assertThat(number_of_books, equalTo(3));
