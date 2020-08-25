@@ -218,6 +218,16 @@ class DynamodbAdapterIT {
     }
 
     @Test
+    void testSelectionOnNestedTable() throws IOException, SQLException {
+        createNestedTableVirtualSchema();
+        final List<String> topics = runQueryAndExtractColumn(
+                "SELECT BOOKS_TOPICS.NAME as TOPIC FROM " + TEST_SCHEMA
+                        + ".\"BOOKS_TOPICS\" WHERE NAME =  'Exasol';",
+                "TOPIC");
+        assertThat(topics, containsInAnyOrder("Exasol"));
+    }
+
+    @Test
     void testJoinOnDoubleNestedTable() throws IOException, SQLException {
         createDoubleNestedTableVirtualSchema();
         final List<String> figures = runQueryAndExtractColumn("SELECT BOOKS_CHAPTERS_FIGURES.NAME as FIGURE FROM "
@@ -244,7 +254,7 @@ class DynamodbAdapterIT {
         assertThat(figures, containsInAnyOrder("Main Chapter", "chapter 1", "chapter 2"));
     }
 
-    // @Test //TODO reenable when fixed
+    @Test
     void testSelectOnIndexAndOtherColumn() throws SQLException, IOException {
         createDoubleNestedTableVirtualSchema();
         final List<String> figures = runQueryAndExtractColumn("SELECT NAME FROM " + TEST_SCHEMA + ".BOOKS_CHAPTERS "
