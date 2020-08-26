@@ -4,12 +4,11 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.exasol</groupId>
     <artifactId>dynamodb-virtual-schema</artifactId>
-    <version>${product.version}</version>
+    <version>0.5.0</version>
     <name>Virtual Schema for Amazon DynamoDB</name>
     <description>Adapter for DynamoDB data access from Virtual Schemas.</description>
     <url>https://github.com/exasol/dynamodb-virtual-schema</url>
     <properties>
-        <product.version>0.4.0</product.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <java.version>11</java.version>
@@ -252,7 +251,8 @@
                     <descriptors>
                         <descriptor>assembly/all-dependencies.xml</descriptor>
                     </descriptors>
-                    <finalName>dynamodb-virtual-schemas-adapter-dist-${product.version}</finalName>
+                    <finalName>document-virtual-schema-dist-${vs-common-document.version}-dynamodb-${product.version}
+                    </finalName>
                     <appendAssemblyId>false</appendAssemblyId>
                 </configuration>
                 <executions>
