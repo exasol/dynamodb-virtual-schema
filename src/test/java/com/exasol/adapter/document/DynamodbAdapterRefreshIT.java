@@ -12,7 +12,6 @@ import java.sql.SQLException;
 import java.util.Map;
 import java.util.concurrent.TimeoutException;
 
-import org.apache.xmlrpc.XmlRpcException;
 import org.junit.jupiter.api.*;
 
 import com.exasol.ExaMetadata;
@@ -42,7 +41,7 @@ class DynamodbAdapterRefreshIT {
     @BeforeAll
     static void beforeAll() throws DynamodbTestInterface.NoNetworkFoundException, SQLException, InterruptedException,
             BucketAccessException, TimeoutException, IOException, NoSuchAlgorithmException, KeyManagementException,
-            XmlRpcException, URISyntaxException {
+            URISyntaxException {
         final IntegrationTestSetup integrationTestSetup = new IntegrationTestSetup();
         exasolTestInterface = integrationTestSetup.getExasolTestInterface();
         exasolTestDatabaseBuilder = new ExasolTestDatabaseBuilder(exasolTestInterface);
