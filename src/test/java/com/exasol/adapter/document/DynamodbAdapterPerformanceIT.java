@@ -10,7 +10,6 @@ import java.security.NoSuchAlgorithmException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import org.apache.xmlrpc.XmlRpcException;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Tag;
@@ -38,7 +37,7 @@ class DynamodbAdapterPerformanceIT {
     @BeforeAll
     static void beforeAll() throws SQLException, BucketAccessException, InterruptedException,
             java.util.concurrent.TimeoutException, IOException, NoSuchAlgorithmException, KeyManagementException,
-            XmlRpcException, DynamodbTestInterface.NoNetworkFoundException, URISyntaxException {
+            DynamodbTestInterface.NoNetworkFoundException, URISyntaxException {
         final IntegrationTestSetup integrationTestSetup = new IntegrationTestSetup();
         dynamodbTestInterface = integrationTestSetup.getDynamodbTestInterface();
         exasolTestInterface = integrationTestSetup.getExasolTestInterface();
@@ -94,9 +93,8 @@ class DynamodbAdapterPerformanceIT {
 
     @Test
     void testSelectSingleRow() throws SQLException {
-        final ResultSet resultSet = exasolTestDatabaseBuilder.getStatement()
-                .executeQuery(
-                        "SELECT COUNT(\"KEY\") FROM OPENLIBRARY WHERE KEY = '/authors/OL13141A' AND REVISION = 1");
+        final ResultSet resultSet = exasolTestDatabaseBuilder.getStatement().executeQuery(
+                "SELECT COUNT(\"KEY\") FROM OPENLIBRARY WHERE KEY = '/authors/OL13141A' AND REVISION = 1");
         resultSet.next();
         final int count = resultSet.getInt(1);
         assertThat(count, equalTo(1));

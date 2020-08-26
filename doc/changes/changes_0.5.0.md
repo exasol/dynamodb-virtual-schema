@@ -3,7 +3,6 @@
 ## Summary
 
 
-
 ## Features / Enhancements
  
 * #45 Separated DynamoDB and document code 
@@ -12,5 +11,5 @@
     * `destTable` -> `destinationTable`
     * `srcTable` -> `source`
 * #71: Allow underscores in Table names
+* #119: Removed XML-RPC dependency 
 * #121: Updated version schema
- 

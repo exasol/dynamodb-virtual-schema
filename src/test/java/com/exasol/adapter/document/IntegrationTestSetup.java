@@ -6,7 +6,6 @@ import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.sql.SQLException;
 
-import org.apache.xmlrpc.XmlRpcException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,7 +27,7 @@ public class IntegrationTestSetup {
      * @return {@link ExasolTestInterface}
      */
     public ExasolTestInterface getExasolTestInterface()
-            throws IOException, SQLException, NoSuchAlgorithmException, KeyManagementException, XmlRpcException {
+            throws IOException, SQLException, NoSuchAlgorithmException, KeyManagementException {
         final String property = System.getProperty("tests.testSetup");
         if (property == null) {
             LOGGER.info("No tests setup was specified. Using defualt tescontainers test setup. " + TUTORIAL);
