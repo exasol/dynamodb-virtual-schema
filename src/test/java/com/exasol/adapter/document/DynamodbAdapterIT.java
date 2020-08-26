@@ -251,6 +251,14 @@ class DynamodbAdapterIT {
         assertThat(figures, containsInAnyOrder("Main Chapter"));
     }
 
+    @Test
+    void testNestedTableWithCompoundForeignKey() throws IOException, SQLException {
+        createDoubleNestedTableVirtualSchemaWithCompoundPrimaryKey();
+        final Map<String, String> rowNames = exasolTestDatabaseBuilder.describeTable(TEST_SCHEMA, "BOOKS_CHAPTERS");
+        assertThat(rowNames, equalTo(Map.of("NAME", "VARCHAR(254) UTF8", "BOOKS_ISBN", "VARCHAR(20) UTF8", "BOOKS_NAME",
+                "VARCHAR(254) UTF8", "INDEX", "DECIMAL(9,0)")));
+    }
+
     private List<String> runQueryAndExtractColumn(final String query, final String columnName) throws SQLException {
         final ResultSet actualResultSet = exasolTestDatabaseBuilder.getStatement().executeQuery(query);
         final List<String> topics = new ArrayList<>();
@@ -348,9 +356,28 @@ class DynamodbAdapterIT {
         dynamodbTestInterface.importData(DYNAMO_BOOKS_TABLE, TestDocuments.books());
     }
 
-    // TODO refactor to use static dynamodb tables
     private void createDoubleNestedTableVirtualSchema() throws SQLException, IOException {
         dynamodbTestInterface.createTable(DYNAMO_BOOKS_TABLE, TestDocuments.BOOKS_ISBN_PROPERTY);
+        dynamodbTestInterface.importData(DYNAMO_BOOKS_TABLE, TestDocuments.books());
+        exasolTestDatabaseBuilder.createDynamodbVirtualSchema(TEST_SCHEMA, DYNAMODB_CONNECTION,
+                BUCKETFS_PATH + MappingTestFiles.DOUBLE_NESTED_TO_TABLE_MAPPING);
+    }
+
+    private void createDoubleNestedTableVirtualSchemaWithCompoundPrimaryKey() throws SQLException, IOException {
+        final CreateTableRequest.Builder createTableRequestBuilder = CreateTableRequest.builder();
+        createTableRequestBuilder.tableName(DYNAMO_BOOKS_TABLE);
+        createTableRequestBuilder
+                .keySchema(
+                        KeySchemaElement.builder().attributeName(TestDocuments.BOOKS_ISBN_PROPERTY)
+                                .keyType(KeyType.HASH).build(),
+                        KeySchemaElement.builder().attributeName("name").keyType(KeyType.RANGE).build());
+        createTableRequestBuilder.attributeDefinitions(
+                AttributeDefinition.builder().attributeName(TestDocuments.BOOKS_ISBN_PROPERTY)
+                        .attributeType(ScalarAttributeType.S).build(),
+                AttributeDefinition.builder().attributeName("name").attributeType(ScalarAttributeType.S).build());
+        createTableRequestBuilder.provisionedThroughput(
+                ProvisionedThroughput.builder().readCapacityUnits(1L).writeCapacityUnits(1L).build());
+        dynamodbTestInterface.createTable(createTableRequestBuilder.build());
         dynamodbTestInterface.importData(DYNAMO_BOOKS_TABLE, TestDocuments.books());
         exasolTestDatabaseBuilder.createDynamodbVirtualSchema(TEST_SCHEMA, DYNAMODB_CONNECTION,
                 BUCKETFS_PATH + MappingTestFiles.DOUBLE_NESTED_TO_TABLE_MAPPING);
