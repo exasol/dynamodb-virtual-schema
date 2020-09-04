@@ -13,3 +13,4 @@
 * #71: Allow underscores in Table names
 * #119: Removed XML-RPC dependency 
 * #121: Updated version schema
+* #127: Fixed bug than hid failing tests and fixed failing tests

@@ -1,6 +1,7 @@
 package com.exasol.adapter.document.documentfetcher.dynamodb;
 
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.Set;
 
@@ -26,12 +27,10 @@ public class BasicMappingSetup {
     private final ColumnMapping nameColumn;
     private final ColumnMapping isbnColumn;
 
-    public BasicMappingSetup() throws IOException, AdapterException {
-        final MappingTestFiles mappingTestFiles = new MappingTestFiles();
+    public BasicMappingSetup(final Path tempDir) throws IOException, AdapterException {
         this.tableMapping = new JsonSchemaMappingReader(
-                mappingTestFiles.getMappingAsFile(MappingTestFiles.BASIC_MAPPING), null).getSchemaMapping()
+                MappingTestFiles.getMappingAsFile(MappingTestFiles.BASIC_MAPPING, tempDir), null).getSchemaMapping()
                 .getTableMappings().get(0);
-        mappingTestFiles.deleteAllTempFiles();
         this.publisherColumn = this.tableMapping.getColumns().stream()
                 .filter(column -> column.getExasolColumnName().equals("PUBLISHER")).findAny().get();
         this.priceColumn = this.tableMapping.getColumns().stream()

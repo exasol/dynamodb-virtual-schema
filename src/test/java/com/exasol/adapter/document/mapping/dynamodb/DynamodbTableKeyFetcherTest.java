@@ -1,17 +1,20 @@
 package com.exasol.adapter.document.mapping.dynamodb;
 
+import static com.exasol.adapter.document.mapping.MappingTestFiles.getMappingAsFile;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 import com.exasol.adapter.AdapterException;
 import com.exasol.adapter.document.dynamodbmetadata.DynamodbPrimaryIndex;
@@ -23,7 +26,8 @@ import com.exasol.adapter.document.mapping.TableKeyFetcher;
 import com.exasol.adapter.document.mapping.reader.JsonSchemaMappingReader;
 
 class DynamodbTableKeyFetcherTest {
-
+    @TempDir
+    static Path tempDir;
     private static final String TEST_TABLE_NAME = "testTableName";
     private static List<ColumnMapping> COLUMNS;
     private static ColumnMapping ISBN_COLUMN;
@@ -31,11 +35,9 @@ class DynamodbTableKeyFetcherTest {
 
     @BeforeAll
     static void beforeAll() throws IOException, AdapterException {
-        final MappingTestFiles mappingTestFiles = new MappingTestFiles();
-        COLUMNS = new JsonSchemaMappingReader(mappingTestFiles.getMappingAsFile(MappingTestFiles.BASIC_MAPPING), null)
+        COLUMNS = new JsonSchemaMappingReader(getMappingAsFile(MappingTestFiles.BASIC_MAPPING, tempDir), null)
                 .getSchemaMapping()
                 .getTableMappings().get(0).getColumns();
-        mappingTestFiles.deleteAllTempFiles();
         ISBN_COLUMN = COLUMNS.stream().filter(column -> column.getExasolColumnName().equals("ISBN")).findAny().get();
         PUBLISHER_COLUMN = COLUMNS.stream().filter(column -> column.getExasolColumnName().equals("PUBLISHER")).findAny()
                 .get();
