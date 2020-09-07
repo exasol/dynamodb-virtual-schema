@@ -18,6 +18,10 @@ Moved common document code to separate repository and some minor enhancements an
 * #121: Updated version schema
 * #127: Fixed bug than hid failing tests and fixed failing tests
 
+## Documentation
+
+* #132 Updated doc for changed EDML version
+
 ## Dependency updates
 
 * Added com.exasol:virtual-schema-common-document:0.3.0
