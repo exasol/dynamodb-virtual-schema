@@ -47,7 +47,7 @@ In order to let this adapter create the described mapping we create the followin
 
 ```
 {
-  "$schema": "https://raw.githubusercontent.com/exasol/virtual-schema-common-document/master/src/main/resources/schemas/edml/v1.0.0.json",
+  "$schema": "https://schemas.exasol.com/edml-1.0.0.json",
   "source": "MY_BOOKS",
   "destinationTable": "BOOKS",
   "description": "Maps MY_BOOKS to BOOKS",
