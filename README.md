@@ -77,7 +77,7 @@ Running the DynamoDB Virtual Schema requires a Java Runtime version 11 or later.
 | [Maven Dependency Plugin](https://maven.apache.org/plugins/maven-dependency-plugin/)| Unpacking jacoco agent                                 | Apache License 2.0               |
 | [Sonatype OSS Index Maven Plugin][sonatype-oss-index-maven-plugin]                  | Checking Dependencies Vulnerability                    | ASL2                             |
 | [Versions Maven Plugin][versions-maven-plugin]                                      | Checking if dependencies updates are available         | Apache License 2.0               |
-| [Artifact Reference Checker Plugin][artifact-reference-checker-plugin]              | Check if artifact is reference in correct version      | MIT License                      |
+| [Artifact Reference Checker Plugin][artifact-reference-checker-plugin]              | Check if artifact is referenced with correct version      | MIT License                      |
 
 [exasol-testcontainers]: https://github.com/exasol/exasol-testcontainers
 [maven-enforcer-plugin]: http://maven.apache.org/enforcer/maven-enforcer-plugin/
