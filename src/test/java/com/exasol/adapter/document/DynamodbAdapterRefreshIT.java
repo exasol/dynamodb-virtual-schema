@@ -33,7 +33,7 @@ class DynamodbAdapterRefreshIT {
     private static final String BUCKETFS_MAPPING_FULL_PATH = "/bfsdefault/default/" + BUCKETFS_MAPPING_FILE_NAME;
     private static ExasolTestInterface exasolTestInterface;
     private static DynamodbTestInterface dynamodbTestInterface;
-    private static ExasolTestDatabaseBuilder exasolTestDatabaseBuilder;
+    private static DynamodbVsExasolTestDatabaseBuilder exasolTestDatabaseBuilder;
 
     /**
      * Create a Virtual Schema in the Exasol test container accessing the local DynamoDB.
@@ -44,7 +44,7 @@ class DynamodbAdapterRefreshIT {
             URISyntaxException {
         final IntegrationTestSetup integrationTestSetup = new IntegrationTestSetup();
         exasolTestInterface = integrationTestSetup.getExasolTestInterface();
-        exasolTestDatabaseBuilder = new ExasolTestDatabaseBuilder(exasolTestInterface);
+        exasolTestDatabaseBuilder = new DynamodbVsExasolTestDatabaseBuilder(exasolTestInterface);
         exasolTestDatabaseBuilder.uploadDynamodbAdapterJar();
         exasolTestDatabaseBuilder.createAdapterScript();
         dynamodbTestInterface = integrationTestSetup.getDynamodbTestInterface();

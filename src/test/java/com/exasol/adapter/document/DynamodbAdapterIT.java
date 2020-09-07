@@ -6,15 +6,11 @@ import static org.hamcrest.collection.IsIterableContainingInAnyOrder.containsInA
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.io.IOException;
-import java.net.URISyntaxException;
-import java.security.KeyManagementException;
-import java.security.NoSuchAlgorithmException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.TimeoutException;
 
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.Tag;
@@ -24,7 +20,6 @@ import org.slf4j.LoggerFactory;
 import com.exasol.adapter.document.dynamodb.DynamodbAdapter;
 import com.exasol.adapter.document.mapping.MappingTestFiles;
 import com.exasol.adapter.document.mapping.TestDocuments;
-import com.exasol.bucketfs.BucketAccessException;
 
 import software.amazon.awssdk.services.dynamodb.model.*;
 
@@ -41,18 +36,16 @@ class DynamodbAdapterIT {
     public static final String BUCKETFS_PATH = "/bfsdefault/default/mappings/";
     private static ExasolTestInterface exasolTestInterface;
     private static DynamodbTestInterface dynamodbTestInterface;
-    private static ExasolTestDatabaseBuilder exasolTestDatabaseBuilder;
+    private static DynamodbVsExasolTestDatabaseBuilder exasolTestDatabaseBuilder;
 
     /**
      * Create a Virtual Schema in the Exasol test container accessing the local DynamoDB.
      */
     @BeforeAll
-    static void beforeAll() throws DynamodbTestInterface.NoNetworkFoundException, SQLException, InterruptedException,
-            BucketAccessException, TimeoutException, IOException, NoSuchAlgorithmException, KeyManagementException,
-            URISyntaxException {
+    static void beforeAll() throws Exception {
         final IntegrationTestSetup integrationTestSetup = new IntegrationTestSetup();
         exasolTestInterface = integrationTestSetup.getExasolTestInterface();
-        exasolTestDatabaseBuilder = new ExasolTestDatabaseBuilder(exasolTestInterface);
+        exasolTestDatabaseBuilder = new DynamodbVsExasolTestDatabaseBuilder(exasolTestInterface);
         dynamodbTestInterface = integrationTestSetup.getDynamodbTestInterface();
 
         exasolTestDatabaseBuilder.uploadDynamodbAdapterJar();
@@ -82,7 +75,7 @@ class DynamodbAdapterIT {
     }
 
     @AfterEach
-    void after() throws SQLException {
+    void afterEach() throws Exception {
         dynamodbTestInterface.deleteCreatedTables();
         exasolTestDatabaseBuilder.dropVirtualSchema(TEST_SCHEMA);
     }

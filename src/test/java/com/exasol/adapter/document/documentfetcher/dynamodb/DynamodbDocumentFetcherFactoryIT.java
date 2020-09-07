@@ -8,6 +8,7 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -15,6 +16,7 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 import com.exasol.adapter.AdapterException;
 import com.exasol.adapter.document.DynamodbTestInterface;
@@ -34,17 +36,19 @@ import software.amazon.awssdk.services.dynamodb.model.*;
 class DynamodbDocumentFetcherFactoryIT {
     private static DynamodbTestInterface dynamodbTestInterface;
     private static BasicMappingSetup basicMappingSetup;
+    @TempDir
+    static Path tempDir;
 
     @BeforeAll
     static void beforeAll()
             throws DynamodbTestInterface.NoNetworkFoundException, IOException, AdapterException, URISyntaxException {
         final IntegrationTestSetup integrationTestSetup = new IntegrationTestSetup();
         dynamodbTestInterface = integrationTestSetup.getDynamodbTestInterface();
-        basicMappingSetup = new BasicMappingSetup();
+        basicMappingSetup = new BasicMappingSetup(tempDir);
         setupTestDatabase();
     }
 
-    private static void setupTestDatabase() throws IOException, AdapterException {
+    private static void setupTestDatabase() throws IOException {
         final CreateTableRequest.Builder requestBuilder = CreateTableRequest.builder();
         requestBuilder.tableName(basicMappingSetup.tableMapping.getRemoteName());
         requestBuilder

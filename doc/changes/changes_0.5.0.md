@@ -1,7 +1,10 @@
 # dynamodb-virtual-schema 0.5.0, released 2020-08-XX
  
+Code name: Moved common document code to separate repository 
+ 
 ## Summary
 
+Moved common document code to separate repository and some minor enhancements and fixes
 
 ## Features / Enhancements
  
@@ -13,3 +16,8 @@
 * #71: Allow underscores in Table names
 * #119: Removed XML-RPC dependency 
 * #121: Updated version schema
+* #127: Fixed bug than hid failing tests and fixed failing tests
+
+## Dependency updates
+
+* Added com.exasol:virtual-schema-common-document:0.3.0

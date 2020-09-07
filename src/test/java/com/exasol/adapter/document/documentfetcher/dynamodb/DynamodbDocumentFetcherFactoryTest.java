@@ -6,12 +6,14 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 import com.exasol.adapter.AdapterException;
 import com.exasol.adapter.document.dynamodbmetadata.DynamodbPrimaryIndex;
@@ -27,10 +29,12 @@ class DynamodbDocumentFetcherFactoryTest {
             List.of(new DynamodbSecondaryIndex(BasicMappingSetup.INDEX_PARTITION_KEY,
                     Optional.of(BasicMappingSetup.INDEX_SORT_KEY), BasicMappingSetup.INDEX_NAME)));
     private static BasicMappingSetup basicMappingSetup;
+    @TempDir
+    static Path tempDir;
 
     @BeforeAll
     static void beforeAll() throws IOException, AdapterException {
-        basicMappingSetup = new BasicMappingSetup();
+        basicMappingSetup = new BasicMappingSetup(tempDir);
     }
 
     @Test

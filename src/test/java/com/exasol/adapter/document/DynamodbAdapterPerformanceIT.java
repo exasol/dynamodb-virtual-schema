@@ -29,7 +29,7 @@ class DynamodbAdapterPerformanceIT {
     private static final String DYNAMODB_CONNECTION = "DYNAMODB_CONNECTION";
     private static ExasolTestInterface exasolTestInterface;
     private static DynamodbTestInterface dynamodbTestInterface;
-    private static ExasolTestDatabaseBuilder exasolTestDatabaseBuilder;
+    private static DynamodbVsExasolTestDatabaseBuilder exasolTestDatabaseBuilder;
 
     /**
      * Create a Virtual Schema in the Exasol test container accessing DynamoDB on AWS.
@@ -41,7 +41,7 @@ class DynamodbAdapterPerformanceIT {
         final IntegrationTestSetup integrationTestSetup = new IntegrationTestSetup();
         dynamodbTestInterface = integrationTestSetup.getDynamodbTestInterface();
         exasolTestInterface = integrationTestSetup.getExasolTestInterface();
-        exasolTestDatabaseBuilder = new ExasolTestDatabaseBuilder(exasolTestInterface);
+        exasolTestDatabaseBuilder = new DynamodbVsExasolTestDatabaseBuilder(exasolTestInterface);
         exasolTestDatabaseBuilder.uploadDynamodbAdapterJar();
         exasolTestDatabaseBuilder.uploadMappingTestFile(MappingTestFiles.OPEN_LIBRARY_MAPPING,
                 MappingTestFiles.OPEN_LIBRARY_MAPPING);
