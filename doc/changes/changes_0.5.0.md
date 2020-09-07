@@ -17,7 +17,9 @@ Moved common document code to separate repository and some minor enhancements an
 * #119: Removed XML-RPC dependency 
 * #121: Updated version schema
 * #127: Fixed bug than hid failing tests and fixed failing tests
+* #130: Migrated from version.sh to artifact-reference-checker-maven-plugin
 
 ## Dependency updates
 
 * Added com.exasol:virtual-schema-common-document:0.3.0
+* Added com.exasol:artifact-reference-checker-maven-plugin:0.2.0
