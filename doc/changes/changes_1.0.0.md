@@ -1,6 +1,6 @@
-# dynamodb-virtual-schema 0.5.0, released 2020-08-XX
+# dynamodb-virtual-schema 1.0.0, released 2020-09-11
  
-Code name: Moved common document code to separate repository 
+Code name: First production ready release
  
 ## Summary
 
@@ -25,5 +25,5 @@ Moved common document code to separate repository and some minor enhancements an
 
 ## Dependency updates
 
-* Added com.exasol:virtual-schema-common-document:0.3.0
-* Added com.exasol:artifact-reference-checker-maven-plugin:0.2.0
+* Added com.exasol:virtual-schema-common-document:1.0.0
+* Added com.exasol:artifact-reference-checker-maven-plugin:0.3.1
