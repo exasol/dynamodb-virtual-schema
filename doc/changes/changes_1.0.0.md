@@ -1,4 +1,4 @@
-# dynamodb-virtual-schema 0.5.0, released 2020-09-10
+# dynamodb-virtual-schema 1.0.0, released 2020-09-11
  
 Code name: First production ready release
  
