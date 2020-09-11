@@ -28,6 +28,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ github.event.inputs.upload_url }}
-          asset_path: ./target/testing-release-robot-${{ github.event.inputs.version }}.jar
+          asset_path: ./target/document-virtual-schema-dist-1.0.0-dynamodb-${{ github.event.inputs.version }}.jar
           asset_name: testing-release-robot-${{ github.event.inputs.version }}.jar
           asset_content_type: application/java-archive
