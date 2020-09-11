@@ -161,7 +161,7 @@ Steps:
 1. [Create a Bucket in BucketFS](https://docs.exasol.com/administration/on-premise/bucketfs/create_new_bucket_in_bucketfs_service.htm)
 1. Upload the adapter to the BucketFS:
     ``` shell script
-   curl -I -X PUT -T dynamodb-virtual-schemas-adapter-dist-0.4.0.jar http://w:writepw@<YOUR_DB_IP>:2580/default/dynamodb-virtual-schemas-adapter-dist-0.4.0.jar
+   curl -I -X PUT -T document-virtual-schema-dist-1.0.0-dynamodb-1.0.0.jar
    ```
 1. Create a schema to hold the adapter script:
     ```sql
@@ -171,18 +171,18 @@ Steps:
     ```sql
     CREATE OR REPLACE JAVA ADAPTER SCRIPT ADAPTER.DYNAMODB_ADAPTER AS
        %scriptclass com.exasol.adapter.RequestDispatcher;
-       %jar /buckets/bfsdefault/default/dynamodb-virtual-schemas-adapter-dist-0.4.0.jar;
+       %jar /buckets/bfsdefault/default/document-virtual-schema-dist-1.0.0-dynamodb-1.0.0.jar;
     /
     ```
 1. Create UDF:
     ```sql
-    CREATE OR REPLACE JAVA SET SCRIPT ADAPTER.IMPORT_DOCUMENT_DATA(
+    CREATE OR REPLACE JAVA SET SCRIPT ADAPTER.IMPORT_FROM_DYNAMO_DB(
       DOCUMENT_FETCHER VARCHAR(2000000),
       REMOTE_TABLE_QUERY VARCHAR(2000000),
       CONNECTION_NAME VARCHAR(500))
       EMITS(...) AS
-        %scriptclass com.exasol.adapter.dynamodb.ImportDocumentData;
-        %jar /buckets/bfsdefault/default/dynamodb-virtual-schemas-adapter-dist-0.4.0.jar;
+        %scriptclass com.exasol.adapter.document.UdfRequestDispatcher;
+        %jar /buckets/bfsdefault/default/document-virtual-schema-dist-1.0.0-dynamodb-1.0.0.jar;
     /
    ```
    
@@ -196,9 +196,9 @@ You can create the file wherever you want. We will later upload it to the Bucket
 `firstMapping.json`:
 ```json
 {
-  "$schema": "../../main/resources/mappingLanguageSchema.json",
-  "srcTable": "Books",
-  "destTable": "BOOKS",
+  "$schema": "https://schemas.exasol.com/edml-1.0.0.json",
+  "source": "Books",
+  "destinationTable": "BOOKS",
   "description": "Mapping for the Books table",
   "mapping": {
     "fields": {

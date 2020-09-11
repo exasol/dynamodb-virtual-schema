@@ -3,7 +3,7 @@
 For creating a Virtual Schema for DynamoDB you have to define a mapping 
 of the DynamoDB document structure to a relational structure.
 This is done using the mapping language 
-([reference](https://exasol.github.io/dynamodb-virtual-schema/schema_doc/index.html)).
+([reference](https://exasol.github.io/virtual-schema-common-ducument/schema_doc/index.html)).
 You have to defined the mapping in a JSON document, upload it to a bucket in BucketFS and reference 
 in the `CREATE VIRTUAL SCHEMA` call.  
 For mapping multiple DynamoDB tables, you can create multiple files, 
@@ -47,9 +47,9 @@ In order to let this adapter create the described mapping we create the followin
 
 ```
 {
-  "$schema": "https://raw.githubusercontent.com/exasol/dynamodb-virtual-schema/master/src/main/resources/mappingLanguageSchema.json",
-  "srcTable": "MY_BOOKS",
-  "destTable": "BOOKS",
+  "$schema": "https://schemas.exasol.com/edml-1.0.0.json",
+  "source": "MY_BOOKS",
+  "destinationTable": "BOOKS",
   "description": "Maps MY_BOOKS to BOOKS",
   "mapping": {
     "fields": {
@@ -98,4 +98,4 @@ SELECT * FROM BOOKSHOP.BOOKS;
 * [Example for toTableMapping](exampleWithToTable.md)
 
 ## Reference
-[Schema mapping language reference](https://exasol.github.io/dynamodb-virtual-schema/schema_doc/index.html)
+[Schema mapping language reference](https://exasol.github.io/virtual-schema-common-ducument/schema_doc/index.html)

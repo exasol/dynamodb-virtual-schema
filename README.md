@@ -25,7 +25,7 @@ It abstracts over the different interfaces so that you can access the document d
 * Maps unstructured document data to Exasol tables that you can access using regular SQL statements
 * Pushes down queries to the remote source
 * Distributes the data loading over the whole Exasol Cluster, what makes queries more than six times faster compared to using a JDBC adapter
-* Flexible definition of the schema mapping using the [Exasol Document Mapping Language](https://exasol.github.io/dynamodb-virtual-schema/schema_doc/index.html)
+* Flexible definition of the schema mapping using the [Exasol Document Mapping Language](https://exasol.github.io/virtual-schema-common-ducument/schema_doc/index.html)
 
 ## Limitations
 
@@ -34,7 +34,7 @@ It abstracts over the different interfaces so that you can access the document d
 ## Information for Users
 
 * [User Guide](doc/user-guide/user_guide.md)
-* [Schema mapping language reference](https://exasol.github.io/dynamodb-virtual-schema/schema_doc/index.html)
+* [Schema mapping language reference](https://exasol.github.io/virtual-schema-common-ducument/schema_doc/index.html)
 
 ## Information for Developers
 
@@ -48,12 +48,8 @@ Running the DynamoDB Virtual Schema requires a Java Runtime version 11 or later.
 
 | Dependency                                                                          | Purpose                                                     | License                          |
 |-------------------------------------------------------------------------------------|-------------------------------------------------------------|----------------------------------|
-| [Exasol Script API](https://docs.exasol.com/database_concepts/udf_scripts.htm)      | Accessing Exasol features                                   | MIT License                      |
-| [Exasol Virtual Schema Common Java][exasol-virtual-schema-common-java]              | Common module of Exasol Virtual Schemas adapters            | MIT License  
+| [Exasol Virtual Schema Common Document][virtual-schema-common-document]                 | Common module of Exasol Virtual Schemas adapters            | MIT License  
 | [AWS SDK for Java](https://aws.amazon.com/de/sdk-for-java/)                         | DynamoDB interface                                          | Apache License 2.0
-| [JSON Schema Validator](https://github.com/everit-org/json-schema)                  | Validating the Exasol Document Mapping Language definitions | Apache License 2.0
-| [Exasol SQL statement builder](https://github.com/exasol/sql-statement-builder)     | Building pushdown SQL statements                            | MIT License
-| [LogicNG](https://github.com/logic-ng/LogicNG)                                      | DNF normalization                                           | Apache License 2.0
 
 ### Test Dependencies
 
@@ -65,14 +61,6 @@ Running the DynamoDB Virtual Schema requires a Java Runtime version 11 or later.
 | [JUnit](https://junit.org/junit5)                                                   | Unit testing framework                                 | Eclipse Public License 1.0       |
 | [Testcontainers](https://www.testcontainers.org/)                                   | Container-based integration tests                      | MIT License                      |
 | [SLF4J](http://www.slf4j.org/)                                                      | Logging facade                                         | MIT License                      |
-| [Apache XMLRPC](https://mvnrepository.com/artifact/org.apache.xmlrpc)               | Connecting to ExaOperation XMLRPC interface            | Apache License 2.0               |
-
-### CI Dependencies
-| Dependency                                                                          | Purpose                                                | License                          |
-|-------------------------------------------------------------------------------------|--------------------------------------------------------|----------------------------------|
-| [bootprint](https://www.npmjs.com/package/bootprint)                                | Generating [EDML documentation][edml-doc]              | MIT License                      |
-| [bootprint-json-schema](https://www.npmjs.com/package/bootprint-json-schema)        | Generating [EDML documentation][edml-doc]              | MIT License                      |
-| [shellcheck](https://www.shellcheck.net/)                                           | Detecting code smells in shell scripts                 | GPL v3                           |
 
 ### Maven Plug-ins
 
@@ -89,13 +77,12 @@ Running the DynamoDB Virtual Schema requires a Java Runtime version 11 or later.
 | [Maven Dependency Plugin](https://maven.apache.org/plugins/maven-dependency-plugin/)| Unpacking jacoco agent                                 | Apache License 2.0               |
 | [Sonatype OSS Index Maven Plugin][sonatype-oss-index-maven-plugin]                  | Checking Dependencies Vulnerability                    | ASL2                             |
 | [Versions Maven Plugin][versions-maven-plugin]                                      | Checking if dependencies updates are available         | Apache License 2.0               |
+| [Artifact Reference Checker Plugin][artifact-reference-checker-plugin]              | Check if artifact is referenced with correct version   | MIT License                      |
 
 [exasol-testcontainers]: https://github.com/exasol/exasol-testcontainers
 [maven-enforcer-plugin]: http://maven.apache.org/enforcer/maven-enforcer-plugin/
-[mysql-jdbc-driver]: https://dev.mysql.com/downloads/connector/j/
-[oracle-jdbc-driver]: https://www.oracle.com/database/technologies/appdev/jdbc.html
-[postgresql-jdbc-driver]: https://jdbc.postgresql.org/
 [sonatype-oss-index-maven-plugin]: https://sonatype.github.io/ossindex-maven/maven-plugin/
 [versions-maven-plugin]: https://www.mojohaus.org/versions-maven-plugin/
-[exasol-virtual-schema-common-java]: https://github.com/exasol/virtual-schema-common-java
-[edml-doc]: https://exasol.github.io/dynamodb-virtual-schema/schema_doc/index.html
+[edml-doc]: https://exasol.github.io/virtual-schema-common-ducument/schema_doc/index.html
+[virtual-schema-common-document]: https://github.com/exasol/virtual-schema-common-document
+[artifact-reference-checker-plugin]: https://github.com/exasol/artifact-reference-checker-maven-plugin
