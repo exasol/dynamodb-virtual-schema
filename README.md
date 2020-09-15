@@ -34,7 +34,7 @@ It abstracts over the different interfaces so that you can access the document d
 ## Information for Users
 
 * [User Guide](doc/user-guide/user_guide.md)
-* [Schema mapping language reference](https://exasol.github.io/virtual-schema-common-ducument/schema_doc/index.html)
+* [Schema mapping language reference](https://exasol.github.io/virtual-schema-common-document/schema_doc/index.html)
 
 ## Information for Developers
 
