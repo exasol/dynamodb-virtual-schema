@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.exasol</groupId>
     <artifactId>dynamodb-virtual-schema</artifactId>
-    <version>1.0.0</version>
+    <version>2.0.0</version>
     <name>Virtual Schema for Amazon DynamoDB</name>
     <description>Adapter for DynamoDB data access from Virtual Schemas.</description>
     <url>https://github.com/exasol/dynamodb-virtual-schema</url>
@@ -15,7 +15,7 @@
         <junit.version>5.6.2</junit.version>
         <junit.platform.version>1.6.2</junit.platform.version>
         <jacoco.version>0.8.5</jacoco.version>
-        <vs-common-document.version>1.0.0</vs-common-document.version>
+        <vs-common-document.version>2.0.0-SNAPSHOT</vs-common-document.version>
         <gpg.skip>true</gpg.skip>
         <org.testcontainers.version>1.14.3</org.testcontainers.version>
         <!--

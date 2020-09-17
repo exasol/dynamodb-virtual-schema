@@ -7,11 +7,8 @@ import com.exasol.adapter.capabilities.Capabilities;
 import com.exasol.adapter.capabilities.LiteralCapability;
 import com.exasol.adapter.capabilities.MainCapability;
 import com.exasol.adapter.capabilities.PredicateCapability;
-import com.exasol.adapter.document.DataLoaderUdf;
+import com.exasol.adapter.document.DataLoaderFactory;
 import com.exasol.adapter.document.DocumentAdapter;
-import com.exasol.adapter.document.documentfetcher.DocumentFetcherFactory;
-import com.exasol.adapter.document.documentfetcher.dynamodb.DynamodbDocumentFetcherFactory;
-import com.exasol.adapter.document.documentnode.dynamodb.DynamodbNodeVisitor;
 import com.exasol.adapter.document.dynamodbmetadata.BaseDynamodbTableMetadataFactory;
 import com.exasol.adapter.document.mapping.TableKeyFetcher;
 import com.exasol.adapter.document.mapping.dynamodb.DynamodbTableKeyFetcher;
@@ -24,7 +21,7 @@ import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 /**
  * DynamoDB Virtual Schema adapter.
  */
-public class DynamodbAdapter extends DocumentAdapter<DynamodbNodeVisitor> {
+public class DynamodbAdapter extends DocumentAdapter {
     public static final String ADAPTER_NAME = "DYNAMO_DB";
 
     private static final Capabilities CAPABILITIES = Capabilities.builder()
@@ -62,18 +59,13 @@ public class DynamodbAdapter extends DocumentAdapter<DynamodbNodeVisitor> {
     }
 
     @Override
-    protected DocumentFetcherFactory<DynamodbNodeVisitor> getDocumentFetcherFactory(
-            final ExaConnectionInformation connectionInformation) throws AdapterException {
-        return new DynamodbDocumentFetcherFactory(getDynamoDBClient(connectionInformation));
+    protected DataLoaderFactory getDataLoaderFactory(final ExaConnectionInformation connectionInformation)
+            throws AdapterException {
+        return new DynamodbDataLoaderFactory(getDynamoDBClient(connectionInformation));
     }
 
     @Override
     protected String getAdapterName() {
         return ADAPTER_NAME;
-    }
-
-    @Override
-    public DataLoaderUdf getDataLoaderUDF() {
-        return new DynamodbDataLoaderUdf();
     }
 }
