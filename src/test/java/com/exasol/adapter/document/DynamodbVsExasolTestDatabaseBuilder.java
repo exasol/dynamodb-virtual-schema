@@ -13,7 +13,7 @@ import com.exasol.bucketfs.BucketAccessException;
  * DynamoDB specific test database builder.
  */
 public class DynamodbVsExasolTestDatabaseBuilder extends ExasolTestDatabaseBuilder {
-    private static final String VIRTUAL_SCHEMAS_JAR_NAME_AND_VERSION = "document-virtual-schema-dist-2.0.0-SNAPSHOT-dynamodb-1.0.0.jar";
+    private static final String VIRTUAL_SCHEMAS_JAR_NAME_AND_VERSION = "document-virtual-schema-dist-2.0.0-SNAPSHOT-dynamodb-2.0.0.jar";
     private static final Path PATH_TO_VIRTUAL_SCHEMAS_JAR = Path.of("target", VIRTUAL_SCHEMAS_JAR_NAME_AND_VERSION);
 
     public DynamodbVsExasolTestDatabaseBuilder(final ExasolTestInterface testInterface)
