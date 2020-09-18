@@ -3,7 +3,6 @@ package com.exasol.adapter.document.documentfetcher.dynamodb;
 import java.util.List;
 
 import com.exasol.adapter.document.documentfetcher.DocumentFetcher;
-import com.exasol.adapter.document.documentfetcher.DocumentFetcherFactory;
 import com.exasol.adapter.document.documentnode.dynamodb.DynamodbNodeVisitor;
 import com.exasol.adapter.document.dynamodbmetadata.BaseDynamodbTableMetadataFactory;
 import com.exasol.adapter.document.dynamodbmetadata.DynamodbTableMetadata;
@@ -17,7 +16,7 @@ import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
  * {@link DynamodbQueryDocumentFetcher} or a {@link DynamodbScanDocumentFetcher} is built, depending on the selection of
  * the query.
  */
-public class DynamodbDocumentFetcherFactory implements DocumentFetcherFactory<DynamodbNodeVisitor> {
+public class DynamodbDocumentFetcherFactory {
     private final DynamodbTableMetadataFactory tableMetadataFactory;
 
     /**
@@ -29,7 +28,13 @@ public class DynamodbDocumentFetcherFactory implements DocumentFetcherFactory<Dy
         this.tableMetadataFactory = new BaseDynamodbTableMetadataFactory(dynamodbClient);
     }
 
-    @Override
+    /**
+     * Build a DynamoDB {@link DocumentFetcher}.
+     * 
+     * @param remoteTableQuery            query
+     * @param maxNumberOfParallelFetchers maximum number of parallel running fetchers
+     * @return built {@link DocumentFetcher}.
+     */
     public List<DocumentFetcher<DynamodbNodeVisitor>> buildDocumentFetcherForQuery(
             final RemoteTableQuery remoteTableQuery, final int maxNumberOfParallelFetchers) {
         final DynamodbTableMetadata tableMetadata = this.tableMetadataFactory
