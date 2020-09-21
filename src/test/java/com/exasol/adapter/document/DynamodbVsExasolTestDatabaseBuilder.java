@@ -1,6 +1,7 @@
 package com.exasol.adapter.document;
 
 import static com.exasol.adapter.document.UdfEntryPoint.*;
+import static com.exasol.adapter.document.dynamodb.DynamodbAdapter.ADAPTER_NAME;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -29,9 +30,10 @@ public class DynamodbVsExasolTestDatabaseBuilder extends ExasolTestDatabaseBuild
         uploadJacocoAgent();
     }
 
-    public void createUdf() throws SQLException {// TODO make DynamoDB independent
+    public void createUdf() throws SQLException {
         final StringBuilder statementBuilder = new StringBuilder("CREATE OR REPLACE JAVA SET SCRIPT " + ADAPTER_SCHEMA
-                + "." + UDF_NAME + "(" + PARAMETER_DATA_LOADER + " VARCHAR(2000000), " + PARAMETER_REMOTE_TABLE_QUERY
+                + "." + UDF_PREFIX + ADAPTER_NAME + "(" + PARAMETER_DATA_LOADER + " VARCHAR(2000000), "
+                + PARAMETER_REMOTE_TABLE_QUERY
                 + " VARCHAR(2000000), " + PARAMETER_CONNECTION_NAME + " VARCHAR(500)) EMITS(...) AS\n");
         statementBuilder.append(getDebuggerOptions(true));
         statementBuilder.append("    %scriptclass " + UdfEntryPoint.class.getName() + ";\n");
