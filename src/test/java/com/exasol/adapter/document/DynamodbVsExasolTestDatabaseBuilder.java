@@ -1,7 +1,6 @@
 package com.exasol.adapter.document;
 
-import static com.exasol.adapter.document.AbstractDataLoaderUdf.*;
-import static com.exasol.adapter.document.UdfRequestDispatcher.UDF_PREFIX;
+import static com.exasol.adapter.document.UdfEntryPoint.*;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -14,7 +13,7 @@ import com.exasol.bucketfs.BucketAccessException;
  * DynamoDB specific test database builder.
  */
 public class DynamodbVsExasolTestDatabaseBuilder extends ExasolTestDatabaseBuilder {
-    private static final String VIRTUAL_SCHEMAS_JAR_NAME_AND_VERSION = "document-virtual-schema-dist-1.0.0-dynamodb-1.0.0.jar";
+    private static final String VIRTUAL_SCHEMAS_JAR_NAME_AND_VERSION = "document-virtual-schema-dist-2.0.0-SNAPSHOT-dynamodb-2.0.0.jar";
     private static final Path PATH_TO_VIRTUAL_SCHEMAS_JAR = Path.of("target", VIRTUAL_SCHEMAS_JAR_NAME_AND_VERSION);
 
     public DynamodbVsExasolTestDatabaseBuilder(final ExasolTestInterface testInterface)
@@ -31,12 +30,11 @@ public class DynamodbVsExasolTestDatabaseBuilder extends ExasolTestDatabaseBuild
     }
 
     public void createUdf() throws SQLException {// TODO make DynamoDB independent
-        final StringBuilder statementBuilder = new StringBuilder(
-                "CREATE OR REPLACE JAVA SET SCRIPT " + ADAPTER_SCHEMA + "." + UDF_PREFIX + "DYNAMO_DB" + "("
-                        + PARAMETER_DOCUMENT_FETCHER + " VARCHAR(2000000), " + PARAMETER_REMOTE_TABLE_QUERY
-                        + " VARCHAR(2000000), " + PARAMETER_CONNECTION_NAME + " VARCHAR(500)) EMITS(...) AS\n");
+        final StringBuilder statementBuilder = new StringBuilder("CREATE OR REPLACE JAVA SET SCRIPT " + ADAPTER_SCHEMA
+                + "." + UDF_NAME + "(" + PARAMETER_DATA_LOADER + " VARCHAR(2000000), " + PARAMETER_REMOTE_TABLE_QUERY
+                + " VARCHAR(2000000), " + PARAMETER_CONNECTION_NAME + " VARCHAR(500)) EMITS(...) AS\n");
         statementBuilder.append(getDebuggerOptions(true));
-        statementBuilder.append("    %scriptclass " + UdfRequestDispatcher.class.getName() + ";\n");
+        statementBuilder.append("    %scriptclass " + UdfEntryPoint.class.getName() + ";\n");
         statementBuilder.append("    %jar /buckets/bfsdefault/default/" + VIRTUAL_SCHEMAS_JAR_NAME_AND_VERSION + ";\n");
         statementBuilder.append("/");
         final String sql = statementBuilder.toString();
