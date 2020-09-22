@@ -30,3 +30,4 @@ jobs:
           title: "Dependency updates"
           body: "This is an auto-generated pull request with dependency updates."
           commit-message: "dependency updates"
+          branch: automated-dependency-updates
