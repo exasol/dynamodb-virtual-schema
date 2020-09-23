@@ -189,7 +189,7 @@ Steps:
 ## Create a Mapping Definition
 
 Now we need to tell the adapter how to map the DynamoDB documents to Exasol tables.
-For that, we create a file with the [Exasol Document Mapping Language (EDML)](../gettingStartedWithSchemaMappingLanguage.md).
+For that, we create a file with the [Exasol Document Mapping Language (EDML)](https://github.com/exasol/virtual-schema-common-document/blob/master/doc/user_guide/edml_user_guide.md).
 
 You can create the file wherever you want. We will later upload it to the BucketFS. 
 
@@ -220,7 +220,7 @@ curl -I -X PUT -T firstMapping.json http://w:writepw@<YOUR_DB_IP>:2580/default/m
 
 Now you have created your first mapping definition.
 This one is very simple. We will cover more complex mappings in an upcoming article.
-If you don't want to wait until then you can also check out the [EDML documentation](../gettingStartedWithSchemaMappingLanguage.md) on your own.
+If you don't want to wait until then you can also check out the [EDML documentation](https://github.com/exasol/virtual-schema-common-document/blob/master/doc/user_guide/edml_user_guide.md) on your own.
 
 By the way, the EDML is universal over all document Virtual Schemas. So in the future, you can use the same language for defining mappings for DynamoDB, MongoDB, or JSON files.  
 

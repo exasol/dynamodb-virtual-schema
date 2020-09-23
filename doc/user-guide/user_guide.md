@@ -34,7 +34,7 @@ CREATE OR REPLACE JAVA SET SCRIPT ADAPTER.IMPORT_FROM_DYNAMO_DB(
 /
 ```
 
-## Creating a Virtual Schema
+## Creating a Connection
  
 For creating a Virtual Schema you need a connection either to AWS or to a local DynamoDB.
 
@@ -59,7 +59,17 @@ CREATE CONNECTION DYNAMO_CONNECTION
 
 ```
 
-Before creating a Virtual Schema you need to [create mapping definitions](../gettingStartedWithSchemaMappingLanguage.md) and upload them to a BucketFS bucket.
+## Defining the Schema Mapping
+
+Before creating a Virtual Schema you need to create a mapping definition that defines how the document data is mapped to Exasol tables.
+
+For that we use the Exasol Document Mapping Language (EDML). It is universal over all document virtual schemas. 
+To learn how to  define such EDML definitions check the [user guide in the common repository for all document virtual schemas](https://github.com/exasol/virtual-schema-common-document/doc/user_guide/edml_user_guide.md).
+
+In the definitions you have to define the `source` property.
+For DynamoDB you use the name of the DynamoDB table you want to map there.
+
+## Creating the Virtual Schema
 
 Finally create the Virtual Schema using:
 
