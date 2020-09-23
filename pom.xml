@@ -309,6 +309,9 @@
                         </goals>
                     </execution>
                 </executions>
+                <configuration>
+                    <rulesUri>file:///${project.basedir}/rules.xml</rulesUri>
+                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.sonatype.ossindex.maven</groupId>

@@ -1,0 +1,33 @@
+# This workflow will build a Java project with Maven
+# For more information see: https://help.github.com/actions/language-and-framework-guides/building-and-testing-java-with-maven
+
+name: Dependencies Update
+
+on:
+  schedule:
+    - cron: "0 2 * * *"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          ref: 'master'
+      - name: Set up JDK 11
+        uses: actions/setup-java@v1
+        with:
+          java-version: 11
+      - name: Update dependencies
+        run: mvn versions:use-latest-versions -f pom.xml
+      - name: Remove backup
+        run: rm -f pom.xml.versionsBackup
+      - uses: gr2m/create-or-update-pull-request-action@v1.x
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          title: "Dependency updates"
+          body: "This is an auto-generated pull request with dependency updates."
+          commit-message: "dependency updates"
+          branch: automated-dependency-updates
