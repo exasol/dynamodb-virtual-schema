@@ -7,7 +7,8 @@ addons:
   sonarcloud:
     organization: exasol
 install:
-- travis_retry mvn dependency:resolve
+  - rm -rf "$HOME/.m2/repository/com/exasol/virtual-schema-common-*" #clear cache for our repos since they change quickly
+  - travis_retry mvn dependency:resolve
 script:
 - mvn clean org.jacoco:jacoco-maven-plugin:prepare-agent org.jacoco:jacoco-maven-plugin:prepare-agent-integration
   verify sonar:sonar -Dsonar.login=${SONAR_TOKEN} -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml,target/site/jacoco-it/jacoco.xml,target/site/jacoco-udf/jacoco.xml

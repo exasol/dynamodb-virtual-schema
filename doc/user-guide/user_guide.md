@@ -17,23 +17,24 @@ Next create the Adapter Script:
  ```
 CREATE OR REPLACE JAVA ADAPTER SCRIPT ADAPTER.DYNAMODB_ADAPTER AS
     %scriptclass com.exasol.adapter.RequestDispatcher;
-    %jar /buckets/bfsdefault/default/document-virtual-schema-dist-2.0.0-SNAPSHOT-dynamodb-2.0.0.jar;
+    %jar /buckets/bfsdefault/default/document-virtual-schema-dist-2.0.0-dynamodb-2.0.0.jar;
 /
 ```
 
 In addition to the adapter script we must create a UDF function that will handle the loading of the data:
+The UDF must be defined in the same schema as the `ADAPTER SCRIPT` (e.g. `ADAPTER`). 
 ```
-CREATE OR REPLACE JAVA SET SCRIPT ADAPTER.IMPORT_FROM_DOCUMENT(
+CREATE OR REPLACE JAVA SET SCRIPT ADAPTER.IMPORT_FROM_DYNAMO_DB(
   DATA_LOADER VARCHAR(2000000),
   REMOTE_TABLE_QUERY VARCHAR(2000000),
   CONNECTION_NAME VARCHAR(500))
   EMITS(...) AS
     %scriptclass com.exasol.adapter.document.UdfEntryPoint;
-    %jar /buckets/bfsdefault/default/document-virtual-schema-dist-2.0.0-SNAPSHOT-dynamodb-2.0.0.jar;
+    %jar /buckets/bfsdefault/default/document-virtual-schema-dist-2.0.0-dynamodb-2.0.0.jar;
 /
 ```
 
-## Creating a Virtual Schema
+## Creating a Connection
  
 For creating a Virtual Schema you need a connection either to AWS or to a local DynamoDB.
 
@@ -58,7 +59,17 @@ CREATE CONNECTION DYNAMO_CONNECTION
 
 ```
 
-Before creating a Virtual Schema you need to [create mapping definitions](../gettingStartedWithSchemaMappingLanguage.md) and upload them to a BucketFS bucket.
+## Defining the Schema Mapping
+
+Before creating a Virtual Schema you need to create a mapping definition that defines how the document data is mapped to Exasol tables.
+
+For that we use the Exasol Document Mapping Language (EDML). It is universal over all document virtual schemas. 
+To learn how to  define such EDML definitions check the [user guide in the common repository for all document virtual schemas](https://github.com/exasol/virtual-schema-common-document/doc/user_guide/edml_user_guide.md).
+
+In the definitions you have to define the `source` property.
+For DynamoDB you use the name of the DynamoDB table you want to map there.
+
+## Creating the Virtual Schema
 
 Finally create the Virtual Schema using:
 

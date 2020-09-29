@@ -161,7 +161,7 @@ Steps:
 1. [Create a Bucket in BucketFS](https://docs.exasol.com/administration/on-premise/bucketfs/create_new_bucket_in_bucketfs_service.htm)
 1. Upload the adapter to the BucketFS:
     ``` shell script
-   curl -I -X PUT -T document-virtual-schema-dist-2.0.0-SNAPSHOT-dynamodb-2.0.0.jar
+   curl -I -X PUT -T document-virtual-schema-dist-2.0.0-dynamodb-2.0.0.jar
    ```
 1. Create a schema to hold the adapter script:
     ```sql
@@ -171,25 +171,25 @@ Steps:
     ```sql
     CREATE OR REPLACE JAVA ADAPTER SCRIPT ADAPTER.DYNAMODB_ADAPTER AS
        %scriptclass com.exasol.adapter.RequestDispatcher;
-       %jar /buckets/bfsdefault/default/document-virtual-schema-dist-2.0.0-SNAPSHOT-dynamodb-2.0.0.jar;
+       %jar /buckets/bfsdefault/default/document-virtual-schema-dist-2.0.0-dynamodb-2.0.0.jar;
     /
     ```
 1. Create UDF:
     ```sql
-    CREATE OR REPLACE JAVA SET SCRIPT ADAPTER.IMPORT_FROM_DOCUMENT(
+    CREATE OR REPLACE JAVA SET SCRIPT ADAPTER.IMPORT_FROM_DYNAMO_DB(
       DATA_LOADER VARCHAR(2000000),
       REMOTE_TABLE_QUERY VARCHAR(2000000),
       CONNECTION_NAME VARCHAR(500))
       EMITS(...) AS
         %scriptclass com.exasol.adapter.document.UdfEntryPoint;
-        %jar /buckets/bfsdefault/default/document-virtual-schema-dist-2.0.0-SNAPSHOT-dynamodb-2.0.0.jar;
+        %jar /buckets/bfsdefault/default/document-virtual-schema-dist-2.0.0-dynamodb-2.0.0.jar;
     /
    ```
    
 ## Create a Mapping Definition
 
 Now we need to tell the adapter how to map the DynamoDB documents to Exasol tables.
-For that, we create a file with the [Exasol Document Mapping Language (EDML)](../gettingStartedWithSchemaMappingLanguage.md).
+For that, we create a file with the [Exasol Document Mapping Language (EDML)](https://github.com/exasol/virtual-schema-common-document/blob/master/doc/user_guide/edml_user_guide.md).
 
 You can create the file wherever you want. We will later upload it to the BucketFS. 
 
@@ -220,7 +220,7 @@ curl -I -X PUT -T firstMapping.json http://w:writepw@<YOUR_DB_IP>:2580/default/m
 
 Now you have created your first mapping definition.
 This one is very simple. We will cover more complex mappings in an upcoming article.
-If you don't want to wait until then you can also check out the [EDML documentation](../gettingStartedWithSchemaMappingLanguage.md) on your own.
+If you don't want to wait until then you can also check out the [EDML documentation](https://github.com/exasol/virtual-schema-common-document/blob/master/doc/user_guide/edml_user_guide.md) on your own.
 
 By the way, the EDML is universal over all document Virtual Schemas. So in the future, you can use the same language for defining mappings for DynamoDB, MongoDB, or JSON files.  
 
