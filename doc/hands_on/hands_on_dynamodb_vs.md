@@ -161,7 +161,7 @@ Steps:
 1. [Create a Bucket in BucketFS](https://docs.exasol.com/administration/on-premise/bucketfs/create_new_bucket_in_bucketfs_service.htm)
 1. Upload the adapter to the BucketFS:
     ``` shell script
-   curl -I -X PUT -T document-virtual-schema-dist-2.0.0-dynamodb-2.0.0.jar
+   curl -I -X PUT -T document-virtual-schema-dist-2.0.0-dynamodb-2.0.0.jar http://w:writepw@<YOUR_DB_IP>:2580/default/
    ```
 1. Create a schema to hold the adapter script:
     ```sql
