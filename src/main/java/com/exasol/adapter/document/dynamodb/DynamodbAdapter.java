@@ -59,7 +59,7 @@ public class DynamodbAdapter extends DocumentAdapter {
     }
 
     @Override
-    protected QueryPlanner getDataLoaderFactory(final ExaConnectionInformation connectionInformation)
+    protected QueryPlanner getQueryPlanner(final ExaConnectionInformation connectionInformation)
             throws AdapterException {
         return new DynamodbQueryPlanner(getDynamoDBClient(connectionInformation));
     }
