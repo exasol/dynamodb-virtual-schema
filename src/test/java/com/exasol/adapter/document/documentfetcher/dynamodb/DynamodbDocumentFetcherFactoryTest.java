@@ -1,8 +1,7 @@
 package com.exasol.adapter.document.documentfetcher.dynamodb;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.anyOf;
-import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.io.IOException;
@@ -20,6 +19,7 @@ import com.exasol.adapter.document.dynamodbmetadata.DynamodbPrimaryIndex;
 import com.exasol.adapter.document.dynamodbmetadata.DynamodbSecondaryIndex;
 import com.exasol.adapter.document.dynamodbmetadata.DynamodbTableMetadata;
 import com.exasol.adapter.document.queryplanning.RemoteTableQuery;
+import com.exasol.adapter.document.querypredicate.QueryPredicate;
 
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 
@@ -41,7 +41,7 @@ class DynamodbDocumentFetcherFactoryTest {
     void testSelectAll() {
         final RemoteTableQuery documentQuery = basicMappingSetup.getSelectAllQuery();
         final DynamodbScanDocumentFetcher scanPlan = (DynamodbScanDocumentFetcher) new DynamodbDocumentFetcherFactory(
-                null).buildDocumentFetcherForQuery(documentQuery, tableMetadata, 1).get(0);
+                null).buildDocumentFetcherForQuery(documentQuery, tableMetadata, 1).getDocumentFetchers().get(0);
         assertThat(scanPlan.getScanRequest().tableName(), equalTo(basicMappingSetup.tableMapping.getRemoteName()));
     }
 
@@ -49,7 +49,7 @@ class DynamodbDocumentFetcherFactoryTest {
     void testSelectAllWithProjection() {
         final RemoteTableQuery documentQuery = basicMappingSetup.getSelectAllQueryWithNameColumnProjected();
         final DynamodbScanDocumentFetcher scanPlan = (DynamodbScanDocumentFetcher) new DynamodbDocumentFetcherFactory(
-                null).buildDocumentFetcherForQuery(documentQuery, tableMetadata, 1).get(0);
+                null).buildDocumentFetcherForQuery(documentQuery, tableMetadata, 1).getDocumentFetchers().get(0);
         assertAll(//
                 () -> assertThat(scanPlan.getScanRequest().tableName(),
                         equalTo(basicMappingSetup.tableMapping.getRemoteName())),
@@ -63,7 +63,7 @@ class DynamodbDocumentFetcherFactoryTest {
         final String publisher = "jb books";
         final RemoteTableQuery documentQuery = basicMappingSetup.getQueryForPublisher(publisher);
         final DynamodbQueryDocumentFetcher queryPlan = (DynamodbQueryDocumentFetcher) new DynamodbDocumentFetcherFactory(
-                null).buildDocumentFetcherForQuery(documentQuery, tableMetadata, 1).get(0);
+                null).buildDocumentFetcherForQuery(documentQuery, tableMetadata, 1).getDocumentFetchers().get(0);
         assertAll(//
                 () -> assertThat(queryPlan.getQueryRequest().tableName(),
                         equalTo(basicMappingSetup.tableMapping.getRemoteName())),
@@ -85,7 +85,7 @@ class DynamodbDocumentFetcherFactoryTest {
 
         final RemoteTableQuery documentQuery = basicMappingSetup.getQueryForMinPriceAndPublisher(price, publisher);
         final DynamodbQueryDocumentFetcher queryPlan = (DynamodbQueryDocumentFetcher) new DynamodbDocumentFetcherFactory(
-                null).buildDocumentFetcherForQuery(documentQuery, tableMetadata, 1).get(0);
+                null).buildDocumentFetcherForQuery(documentQuery, tableMetadata, 1).getDocumentFetchers().get(0);
         final Map<String, String> attributeNames = queryPlan.getQueryRequest().expressionAttributeNames();
         final Map<String, AttributeValue> attributeValues = queryPlan.getQueryRequest().expressionAttributeValues();
         final String keyConditionExpression = replaceBackPlaceholders(
@@ -107,7 +107,7 @@ class DynamodbDocumentFetcherFactoryTest {
 
         final RemoteTableQuery documentQuery = basicMappingSetup.getQueryForMaxPriceAndPublisher(price, publisher);
         final DynamodbQueryDocumentFetcher queryPlan = (DynamodbQueryDocumentFetcher) new DynamodbDocumentFetcherFactory(
-                null).buildDocumentFetcherForQuery(documentQuery, tableMetadata, 1).get(0);
+                null).buildDocumentFetcherForQuery(documentQuery, tableMetadata, 1).getDocumentFetchers().get(0);
         final Map<String, String> attributeNames = queryPlan.getQueryRequest().expressionAttributeNames();
         final Map<String, AttributeValue> attributeValues = queryPlan.getQueryRequest().expressionAttributeValues();
         final String keyConditionExpression = replaceBackPlaceholders(
@@ -125,7 +125,7 @@ class DynamodbDocumentFetcherFactoryTest {
         final double price = 10.1;
         final RemoteTableQuery documentQuery = basicMappingSetup.getQueryForMinPrice(price);
         final DynamodbScanDocumentFetcher scanPlan = (DynamodbScanDocumentFetcher) new DynamodbDocumentFetcherFactory(
-                null).buildDocumentFetcherForQuery(documentQuery, tableMetadata, 1).get(0);
+                null).buildDocumentFetcherForQuery(documentQuery, tableMetadata, 1).getDocumentFetchers().get(0);
         assertAll(//
                 () -> assertThat(scanPlan.getScanRequest().tableName(),
                         equalTo(basicMappingSetup.tableMapping.getRemoteName())),
@@ -144,7 +144,7 @@ class DynamodbDocumentFetcherFactoryTest {
 
         final RemoteTableQuery documentQuery = basicMappingSetup.getQueryForNameAndPublisher(name, publisher);
         final DynamodbQueryDocumentFetcher queryPlan = (DynamodbQueryDocumentFetcher) new DynamodbDocumentFetcherFactory(
-                null).buildDocumentFetcherForQuery(documentQuery, tableMetadata, 1).get(0);
+                null).buildDocumentFetcherForQuery(documentQuery, tableMetadata, 1).getDocumentFetchers().get(0);
         assertAll(//
                 () -> assertThat(queryPlan.getQueryRequest().tableName(),
                         equalTo(basicMappingSetup.tableMapping.getRemoteName())),
@@ -170,7 +170,7 @@ class DynamodbDocumentFetcherFactoryTest {
         final RemoteTableQuery documentQuery = basicMappingSetup.getQueryForTwoNamesAndPublisher(name1, name2,
                 publisher);
         final DynamodbQueryDocumentFetcher queryPlan = (DynamodbQueryDocumentFetcher) new DynamodbDocumentFetcherFactory(
-                null).buildDocumentFetcherForQuery(documentQuery, tableMetadata, 1).get(0);
+                null).buildDocumentFetcherForQuery(documentQuery, tableMetadata, 1).getDocumentFetchers().get(0);
         final Map<String, String> attributeNames = queryPlan.getQueryRequest().expressionAttributeNames();
         final Map<String, AttributeValue> attributeValues = queryPlan.getQueryRequest().expressionAttributeValues();
         final String filterExpression = replaceBackPlaceholders(queryPlan.getQueryRequest().filterExpression(),
@@ -193,7 +193,7 @@ class DynamodbDocumentFetcherFactoryTest {
         final RemoteTableQuery documentQuery = basicMappingSetup.getQueryForPriceAndPublisherAndIsbn(price, publisher,
                 isbn);
         final DynamodbQueryDocumentFetcher queryPlan = (DynamodbQueryDocumentFetcher) new DynamodbDocumentFetcherFactory(
-                null).buildDocumentFetcherForQuery(documentQuery, tableMetadata, 1).get(0);
+                null).buildDocumentFetcherForQuery(documentQuery, tableMetadata, 1).getDocumentFetchers().get(0);
         final Map<String, String> attributeNames = queryPlan.getQueryRequest().expressionAttributeNames();
         final Map<String, AttributeValue> attributeValues = queryPlan.getQueryRequest().expressionAttributeValues();
         final String filterExpression = replaceBackPlaceholders(queryPlan.getQueryRequest().filterExpression(),
@@ -207,6 +207,14 @@ class DynamodbDocumentFetcherFactoryTest {
                 () -> assertThat(filterExpression, anyOf(equalTo("(publisher = 'jb books' and (price = 10.0))"),
                         equalTo("(price = 10.0 and (publisher = 'jb books'))")))//
         );
+    }
+
+    @Test
+    void testPostSelectionIsExtracted() {
+        final RemoteTableQuery documentQuery = basicMappingSetup.getFilterSourceReferenceQuery();
+        final QueryPredicate postSelection = new DynamodbDocumentFetcherFactory(null)
+                .buildDocumentFetcherForQuery(documentQuery, tableMetadata, 1).getPostSelection();
+        assertThat(postSelection.toString(), containsString("SOURCE_REFERENCE"));
     }
 
     private String replaceBackPlaceholders(final String expression, final Map<String, String> names,
