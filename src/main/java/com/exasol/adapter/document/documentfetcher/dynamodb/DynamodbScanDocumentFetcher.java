@@ -17,7 +17,7 @@ import software.amazon.awssdk.services.dynamodb.model.ScanResponse;
  * This class represents a DynamoDB {@code SCAN} operation.
  */
 class DynamodbScanDocumentFetcher extends AbstractDynamodbDocumentFetcher {
-    private static final long serialVersionUID = -4833355898811576425L;
+    private static final long serialVersionUID = -1736328886687353837L;
     private final GenericTableAccessParameters genericParameters;
     private final int totalSegments;
     private final int segment;
@@ -61,6 +61,11 @@ class DynamodbScanDocumentFetcher extends AbstractDynamodbDocumentFetcher {
     @Override
     public Stream<Map<String, AttributeValue>> run(final DynamoDbClient client) {
         return StreamSupport.stream(new ScannerFactory(client, this.getScanRequest()).spliterator(), false);
+    }
+
+    @Override
+    protected String getTableName() {
+        return this.genericParameters.getTableName();
     }
 
     private static class ScannerFactory implements Iterable<Map<String, AttributeValue>> {

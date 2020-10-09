@@ -7,8 +7,8 @@ import com.exasol.adapter.capabilities.Capabilities;
 import com.exasol.adapter.capabilities.LiteralCapability;
 import com.exasol.adapter.capabilities.MainCapability;
 import com.exasol.adapter.capabilities.PredicateCapability;
-import com.exasol.adapter.document.DataLoaderFactory;
 import com.exasol.adapter.document.DocumentAdapter;
+import com.exasol.adapter.document.QueryPlanner;
 import com.exasol.adapter.document.dynamodbmetadata.BaseDynamodbTableMetadataFactory;
 import com.exasol.adapter.document.mapping.TableKeyFetcher;
 import com.exasol.adapter.document.mapping.dynamodb.DynamodbTableKeyFetcher;
@@ -59,9 +59,9 @@ public class DynamodbAdapter extends DocumentAdapter {
     }
 
     @Override
-    protected DataLoaderFactory getDataLoaderFactory(final ExaConnectionInformation connectionInformation)
+    protected QueryPlanner getDataLoaderFactory(final ExaConnectionInformation connectionInformation)
             throws AdapterException {
-        return new DynamodbDataLoaderFactory(getDynamoDBClient(connectionInformation));
+        return new DynamodbQueryPlanner(getDynamoDBClient(connectionInformation));
     }
 
     @Override

@@ -8,7 +8,9 @@ import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 
+import com.exasol.adapter.document.documentfetcher.FetchedDocument;
 import com.exasol.adapter.document.documentnode.dynamodb.DynamodbMap;
+import com.exasol.adapter.document.documentnode.dynamodb.DynamodbNodeVisitor;
 import com.exasol.adapter.document.documentpath.DocumentPathExpression;
 import com.exasol.adapter.document.documentpath.StaticDocumentPathIterator;
 import com.exasol.adapter.document.mapping.MappingErrorBehaviour;
@@ -26,7 +28,8 @@ class DynamodbPropertyToJsonColumnValueExtractorTest {
                         .pathToSourceProperty(DocumentPathExpression.empty()).varcharColumnSize(100)//
                         .overflowBehaviour(MappingErrorBehaviour.ABORT)//
                         .build();
-        final DynamodbMap testData = new DynamodbMap(Map.of("key", AttributeValueQuickCreator.forString("value")));
+        final FetchedDocument<DynamodbNodeVisitor> testData = new FetchedDocument<>(
+                new DynamodbMap(Map.of("key", AttributeValueQuickCreator.forString("value"))), "");
         final ValueExpression exasolCellValue = new DynamodbPropertyToJsonColumnValueExtractor(
                 toStringColumnMappingDefinition).extractColumnValue(testData, new StaticDocumentPathIterator());
         assertThat(exasolCellValue.toString(), equalTo("{\"key\":\"value\"}"));
