@@ -26,6 +26,7 @@ public class BasicMappingSetup {
     private final ColumnMapping priceColumn;
     private final ColumnMapping nameColumn;
     private final ColumnMapping isbnColumn;
+    private final ColumnMapping sourceReferenceColumn;
 
     public BasicMappingSetup(final Path tempDir) throws IOException, AdapterException {
         this.tableMapping = new JsonSchemaMappingReader(
@@ -39,15 +40,22 @@ public class BasicMappingSetup {
                 .filter(column -> column.getExasolColumnName().equals("NAME")).findAny().get();
         this.isbnColumn = this.tableMapping.getColumns().stream()
                 .filter(column -> column.getExasolColumnName().equals("ISBN")).findAny().get();
+        this.sourceReferenceColumn = this.tableMapping.getColumns().stream()
+                .filter(column -> column.getExasolColumnName().equals("SOURCE_REFERENCE")).findAny().get();
     }
 
     public RemoteTableQuery getSelectAllQuery() {
-        return new RemoteTableQuery(this.tableMapping, this.tableMapping.getColumns(), new NoPredicate(),
-                new NoPredicate());
+        return new RemoteTableQuery(this.tableMapping, this.tableMapping.getColumns(), new NoPredicate());
+    }
+
+    public RemoteTableQuery getFilterSourceReferenceQuery() {
+        final ColumnLiteralComparisonPredicate selection = new ColumnLiteralComparisonPredicate(
+                AbstractComparisonPredicate.Operator.EQUAL, this.sourceReferenceColumn, new SqlLiteralString("BOOKS"));
+        return new RemoteTableQuery(this.tableMapping, this.tableMapping.getColumns(), selection);
     }
 
     public RemoteTableQuery getSelectAllQueryWithNameColumnProjected() {
-        return new RemoteTableQuery(this.tableMapping, List.of(this.nameColumn), new NoPredicate(), new NoPredicate());
+        return new RemoteTableQuery(this.tableMapping, List.of(this.nameColumn), new NoPredicate());
     }
 
     /**
@@ -59,7 +67,7 @@ public class BasicMappingSetup {
     public RemoteTableQuery getQueryForIsbn(final String isbn) {
         final ColumnLiteralComparisonPredicate selection = new ColumnLiteralComparisonPredicate(
                 AbstractComparisonPredicate.Operator.EQUAL, this.isbnColumn, new SqlLiteralString(isbn));
-        return new RemoteTableQuery(this.tableMapping, this.tableMapping.getColumns(), selection, new NoPredicate());
+        return new RemoteTableQuery(this.tableMapping, this.tableMapping.getColumns(), selection);
     }
 
     /**
@@ -71,7 +79,7 @@ public class BasicMappingSetup {
     public RemoteTableQuery getQueryForNotIsbn(final String isbn) {
         final QueryPredicate selection = new NotPredicate(new ColumnLiteralComparisonPredicate(
                 AbstractComparisonPredicate.Operator.EQUAL, this.isbnColumn, new SqlLiteralString(isbn)));
-        return new RemoteTableQuery(this.tableMapping, this.tableMapping.getColumns(), selection, new NoPredicate());
+        return new RemoteTableQuery(this.tableMapping, this.tableMapping.getColumns(), selection);
     }
 
     /**
@@ -84,7 +92,7 @@ public class BasicMappingSetup {
     public RemoteTableQuery getQueryForPublisher(final String publisher) {
         final ColumnLiteralComparisonPredicate selection = new ColumnLiteralComparisonPredicate(
                 AbstractComparisonPredicate.Operator.EQUAL, this.publisherColumn, new SqlLiteralString(publisher));
-        return new RemoteTableQuery(this.tableMapping, this.tableMapping.getColumns(), selection, new NoPredicate());
+        return new RemoteTableQuery(this.tableMapping, this.tableMapping.getColumns(), selection);
     }
 
     /**
@@ -96,7 +104,7 @@ public class BasicMappingSetup {
     public RemoteTableQuery getQueryForMinPrice(final double price) {
         final QueryPredicate selection = new ColumnLiteralComparisonPredicate(
                 AbstractComparisonPredicate.Operator.GREATER, this.priceColumn, new SqlLiteralDouble(price));
-        return new RemoteTableQuery(this.tableMapping, this.tableMapping.getColumns(), selection, new NoPredicate());
+        return new RemoteTableQuery(this.tableMapping, this.tableMapping.getColumns(), selection);
     }
 
     /**
@@ -113,7 +121,7 @@ public class BasicMappingSetup {
                 new ColumnLiteralComparisonPredicate(AbstractComparisonPredicate.Operator.EQUAL, this.publisherColumn,
                         new SqlLiteralString(publisher))),
                 LogicalOperator.Operator.AND);
-        return new RemoteTableQuery(this.tableMapping, this.tableMapping.getColumns(), selection, new NoPredicate());
+        return new RemoteTableQuery(this.tableMapping, this.tableMapping.getColumns(), selection);
     }
 
     /**
@@ -130,7 +138,7 @@ public class BasicMappingSetup {
                 new ColumnLiteralComparisonPredicate(AbstractComparisonPredicate.Operator.EQUAL, this.publisherColumn,
                         new SqlLiteralString(publisher))),
                 LogicalOperator.Operator.AND);
-        return new RemoteTableQuery(this.tableMapping, this.tableMapping.getColumns(), selection, new NoPredicate());
+        return new RemoteTableQuery(this.tableMapping, this.tableMapping.getColumns(), selection);
     }
 
     /**
@@ -147,7 +155,7 @@ public class BasicMappingSetup {
                 new ColumnLiteralComparisonPredicate(AbstractComparisonPredicate.Operator.EQUAL, this.publisherColumn,
                         new SqlLiteralString(String.valueOf(publisher)))),
                 LogicalOperator.Operator.AND);
-        return new RemoteTableQuery(this.tableMapping, this.tableMapping.getColumns(), selection, new NoPredicate());
+        return new RemoteTableQuery(this.tableMapping, this.tableMapping.getColumns(), selection);
     }
 
     /**
@@ -171,7 +179,7 @@ public class BasicMappingSetup {
                 new ColumnLiteralComparisonPredicate(AbstractComparisonPredicate.Operator.EQUAL, this.publisherColumn,
                         new SqlLiteralString(String.valueOf(publisher)))),
                 LogicalOperator.Operator.AND);
-        return new RemoteTableQuery(this.tableMapping, this.tableMapping.getColumns(), selection, new NoPredicate());
+        return new RemoteTableQuery(this.tableMapping, this.tableMapping.getColumns(), selection);
     }
 
     /**
@@ -193,6 +201,6 @@ public class BasicMappingSetup {
                         new ColumnLiteralComparisonPredicate(AbstractComparisonPredicate.Operator.EQUAL,
                                 this.publisherColumn, new SqlLiteralString(String.valueOf(publisher)))),
                 LogicalOperator.Operator.AND);
-        return new RemoteTableQuery(this.tableMapping, this.tableMapping.getColumns(), selection, new NoPredicate());
+        return new RemoteTableQuery(this.tableMapping, this.tableMapping.getColumns(), selection);
     }
 }

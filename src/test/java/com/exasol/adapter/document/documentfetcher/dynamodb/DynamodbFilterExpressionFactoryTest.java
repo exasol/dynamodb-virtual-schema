@@ -1,9 +1,11 @@
 package com.exasol.adapter.document.documentfetcher.dynamodb;
 
 import static com.exasol.adapter.document.mapping.PropertyToColumnMappingBuilderQuickAccess.getColumnMappingExample;
+import static com.exasol.adapter.document.querypredicate.AbstractComparisonPredicate.Operator.EQUAL;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -11,11 +13,13 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
 
 import com.exasol.adapter.document.documentnode.dynamodb.DynamodbString;
 import com.exasol.adapter.document.documentpath.DocumentPathExpression;
 import com.exasol.adapter.document.mapping.PropertyToColumnMapping;
+import com.exasol.adapter.document.mapping.SourceReferenceColumnMapping;
 import com.exasol.adapter.document.querypredicate.*;
 import com.exasol.adapter.sql.SqlLiteralString;
 
@@ -24,8 +28,7 @@ class DynamodbFilterExpressionFactoryTest {
     @Test
     void testEqualityComparison() {
         final String literal = "test";
-        final ColumnLiteralComparisonPredicate predicate = getComparison(literal,
-                AbstractComparisonPredicate.Operator.EQUAL);
+        final ColumnLiteralComparisonPredicate predicate = getComparison(literal, EQUAL);
         assertFilterExpression(predicate, "#0 = :0", Map.of("#0", "key"), Map.of(":0", literal));
     }
 
@@ -40,8 +43,7 @@ class DynamodbFilterExpressionFactoryTest {
     @Test
     void testNot() {
         final String literal = "test";
-        final NotPredicate predicate = new NotPredicate(
-                getComparison(literal, AbstractComparisonPredicate.Operator.EQUAL));
+        final NotPredicate predicate = new NotPredicate(getComparison(literal, EQUAL));
         assertFilterExpression(predicate, "NOT (#0 = :0)", Map.of("#0", "key"), Map.of(":0", literal));
     }
 
@@ -81,10 +83,8 @@ class DynamodbFilterExpressionFactoryTest {
     void testAndWithTwoOperands() {
         final String literal1 = "test1";
         final String literal2 = "test2";
-        final ColumnLiteralComparisonPredicate comparison1 = getComparison(literal1,
-                AbstractComparisonPredicate.Operator.EQUAL);
-        final ColumnLiteralComparisonPredicate comparison2 = getComparison(literal2,
-                AbstractComparisonPredicate.Operator.EQUAL);
+        final ColumnLiteralComparisonPredicate comparison1 = getComparison(literal1, EQUAL);
+        final ColumnLiteralComparisonPredicate comparison2 = getComparison(literal2, EQUAL);
         final LogicalOperator and = new LogicalOperator(Set.of(comparison1, comparison2), LogicalOperator.Operator.AND);
         assertFilterExpression(and, "(#0 = :0 and (#0 = :1))", Set.of("key"), Set.of(literal1, literal2));
     }
@@ -94,16 +94,43 @@ class DynamodbFilterExpressionFactoryTest {
         final String literal1 = "test1";
         final String literal2 = "test2";
         final String literal3 = "test3";
-        final ColumnLiteralComparisonPredicate comparison1 = getComparison(literal1,
-                AbstractComparisonPredicate.Operator.EQUAL);
-        final ColumnLiteralComparisonPredicate comparison2 = getComparison(literal2,
-                AbstractComparisonPredicate.Operator.EQUAL);
-        final ColumnLiteralComparisonPredicate comparison3 = getComparison(literal3,
-                AbstractComparisonPredicate.Operator.EQUAL);
+        final ColumnLiteralComparisonPredicate comparison1 = getComparison(literal1, EQUAL);
+        final ColumnLiteralComparisonPredicate comparison2 = getComparison(literal2, EQUAL);
+        final ColumnLiteralComparisonPredicate comparison3 = getComparison(literal3, EQUAL);
         final LogicalOperator and = new LogicalOperator(Set.of(comparison1, comparison2, comparison3),
                 LogicalOperator.Operator.AND);
         assertFilterExpression(and, "(#0 = :0 and ((#0 = :1 and (#0 = :2))))", Set.of("key"),
                 Set.of(literal1, literal2, literal3));
+    }
+
+    @Test
+    void testNonDynamoDBColumn() {
+        final ColumnLiteralComparisonPredicate comparison = getComparisonOnUnsupportedColumn();
+        final DynamodbAttributeNamePlaceholderMapBuilder namePlaceholderMapBuilder = new DynamodbAttributeNamePlaceholderMapBuilder();
+        final DynamodbAttributeValuePlaceholderMapBuilder valuePlaceholderMapBuilder = new DynamodbAttributeValuePlaceholderMapBuilder();
+        final DynamodbFilterExpressionFactory factory = new DynamodbFilterExpressionFactory(namePlaceholderMapBuilder,
+                valuePlaceholderMapBuilder);
+        final UnsupportedOperationException exception = assertThrows(UnsupportedOperationException.class,
+                () -> factory.buildFilterExpression(comparison));
+        assertThat(exception.getMessage(), equalTo(
+                "This column has no corresponding DynamoDB column. Hence it can't be part of a filter expression."));
+    }
+
+    @Test
+    void testCanNotConvert() {
+        final ColumnLiteralComparisonPredicate comparison = getComparisonOnUnsupportedColumn();
+        assertThat(DynamodbFilterExpressionFactory.canConvert(comparison), equalTo(false));
+    }
+
+    @Test
+    void testCanConvert() {
+        assertThat(DynamodbFilterExpressionFactory.canConvert(getComparison("test", EQUAL)), equalTo(true));
+    }
+
+    @NotNull
+    private ColumnLiteralComparisonPredicate getComparisonOnUnsupportedColumn() {
+        final SourceReferenceColumnMapping column = new SourceReferenceColumnMapping();
+        return new ColumnLiteralComparisonPredicate(EQUAL, column, new SqlLiteralString(""));
     }
 
     @Test

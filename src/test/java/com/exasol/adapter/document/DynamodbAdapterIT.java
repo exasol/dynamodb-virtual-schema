@@ -85,7 +85,8 @@ class DynamodbAdapterIT {
         createBasicMappingVirtualSchema();
         final Map<String, String> rowNames = exasolTestDatabaseBuilder.describeTable(TEST_SCHEMA, "BOOKS");
         assertThat(rowNames, equalTo(Map.of("ISBN", "VARCHAR(20) UTF8", "NAME", "VARCHAR(100) UTF8", "AUTHOR_NAME",
-                "VARCHAR(20) UTF8", "PUBLISHER", "VARCHAR(100) UTF8", "PRICE", "DECIMAL(8,2)")));
+                "VARCHAR(20) UTF8", "SOURCE_REFERENCE", "VARCHAR(2000) UTF8", "PUBLISHER", "VARCHAR(100) UTF8", "PRICE",
+                "DECIMAL(8,2)")));
     }
 
     @Test

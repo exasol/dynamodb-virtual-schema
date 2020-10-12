@@ -10,7 +10,9 @@ import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 
+import com.exasol.adapter.document.documentfetcher.FetchedDocument;
 import com.exasol.adapter.document.documentnode.dynamodb.DynamodbMap;
+import com.exasol.adapter.document.documentnode.dynamodb.DynamodbNodeVisitor;
 import com.exasol.adapter.document.documentpath.StaticDocumentPathIterator;
 import com.exasol.adapter.document.mapping.ColumnValueExtractorException;
 import com.exasol.adapter.document.mapping.MappingErrorBehaviour;
@@ -33,7 +35,8 @@ class DynamodbPropertyToDecimalColumnValueExtractorTest {
 
     @Test
     void testDecimal() {
-        final DynamodbMap testData = new DynamodbMap(Map.of("key", AttributeValueQuickCreator.forNumber("1234.45")));
+        final FetchedDocument<DynamodbNodeVisitor> testData = new FetchedDocument<>(
+                new DynamodbMap(Map.of("key", AttributeValueQuickCreator.forNumber("1234.45"))), "");
         final BigDecimalLiteral valueExpression = (BigDecimalLiteral) EXTRACTOR.extractColumnValue(testData,
                 new StaticDocumentPathIterator());
         assertThat(valueExpression.getValue(), equalTo(BigDecimal.valueOf(1234.45)));
@@ -41,12 +44,12 @@ class DynamodbPropertyToDecimalColumnValueExtractorTest {
 
     @Test
     void testNotANumber() {
-        final DynamodbMap testData = new DynamodbMap(
-                Map.of("key", AttributeValueQuickCreator.forString("not a number")));
+        final FetchedDocument<DynamodbNodeVisitor> testData = new FetchedDocument<>(
+                new DynamodbMap(Map.of("key", AttributeValueQuickCreator.forString("not a number"))), "");
         final StaticDocumentPathIterator iterationState = new StaticDocumentPathIterator();
         final ColumnValueExtractorException exception = assertThrows(ColumnValueExtractorException.class,
                 () -> EXTRACTOR.extractColumnValue(testData, iterationState));
-        assertThat(exception.getMessage(),
-                equalTo("The input value was no number. Try using a different mapping or ignore this error by setting notNumericBehaviour = \"null\"."));
+        assertThat(exception.getMessage(), equalTo(
+                "The input value was no number. Try using a different mapping or ignore this error by setting notNumericBehaviour = \"null\"."));
     }
 }

@@ -31,6 +31,17 @@ public class DynamodbFilterExpressionFactory {
         this.valuePlaceholderMapBuilder = valuePlaceholderMapBuilder;
     }
 
+    public static boolean canConvert(final QueryPredicate queryPredicate) {
+        final DynamodbFilterExpressionFactory factory = new DynamodbFilterExpressionFactory(
+                new DynamodbAttributeNamePlaceholderMapBuilder(), new DynamodbAttributeValuePlaceholderMapBuilder());
+        try {
+            factory.buildFilterExpression(queryPredicate);
+            return true;
+        } catch (final UnsupportedOperationException exception) {
+            return false;
+        }
+    }
+
     /**
      * Build a DynamoDB filter expression for the given predicate.
      * 

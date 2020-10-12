@@ -14,7 +14,7 @@ import software.amazon.awssdk.services.dynamodb.model.QueryRequest;
  * This class represents a DynamoDB {@code QUERY} operation.
  */
 public class DynamodbQueryDocumentFetcher extends AbstractDynamodbDocumentFetcher {
-    private static final long serialVersionUID = -810868396675247321L;
+    private static final long serialVersionUID = -1878226665086284375L;
 
     private final GenericTableAccessParameters genericParameters;
     private final String indexName;
@@ -62,6 +62,11 @@ public class DynamodbQueryDocumentFetcher extends AbstractDynamodbDocumentFetche
     @Override
     public Stream<Map<String, AttributeValue>> run(final DynamoDbClient client) {
         return client.query(this.getQueryRequest()).items().stream();
+    }
+
+    @Override
+    protected String getTableName() {
+        return this.genericParameters.getTableName();
     }
 
     /**
