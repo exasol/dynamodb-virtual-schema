@@ -13,40 +13,42 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.jetbrains.annotations.NotNull;
-import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
 import com.exasol.adapter.AdapterException;
-import com.exasol.adapter.document.DynamodbTestInterface;
-import com.exasol.adapter.document.IntegrationTestSetup;
+import com.exasol.adapter.document.DynamodbTestDbBuilder;
+import com.exasol.adapter.document.TestDocuments;
+import com.exasol.adapter.document.TestcontainerDynamodbTestDbBuilder;
 import com.exasol.adapter.document.documentfetcher.DocumentFetcher;
 import com.exasol.adapter.document.documentfetcher.FetchedDocument;
 import com.exasol.adapter.document.documentnode.DocumentNode;
 import com.exasol.adapter.document.documentnode.DocumentObject;
 import com.exasol.adapter.document.documentnode.dynamodb.DynamodbNodeVisitor;
 import com.exasol.adapter.document.documentnode.dynamodb.DynamodbString;
-import com.exasol.adapter.document.mapping.TestDocuments;
 import com.exasol.adapter.document.queryplanning.RemoteTableQuery;
+import com.exasol.dynamodb.DynamodbContainer;
 
 import software.amazon.awssdk.services.dynamodb.model.*;
 
 @Tag("integration")
 @Tag("quick")
+@Testcontainers
 class DynamodbDocumentFetcherFactoryIT {
-    private static DynamodbTestInterface dynamodbTestInterface;
+    @Container
+    private static final DynamodbContainer DYNAMODB = new DynamodbContainer();
     private static BasicMappingSetup basicMappingSetup;
     @TempDir
     static Path tempDir;
+    private static DynamodbTestDbBuilder dynamodbTestDbBuilder;
 
     @BeforeAll
-    static void beforeAll()
-            throws DynamodbTestInterface.NoNetworkFoundException, IOException, AdapterException, URISyntaxException {
-        final IntegrationTestSetup integrationTestSetup = new IntegrationTestSetup();
-        dynamodbTestInterface = integrationTestSetup.getDynamodbTestInterface();
+    static void beforeAll() throws IOException, AdapterException, URISyntaxException {
+        dynamodbTestDbBuilder = new TestcontainerDynamodbTestDbBuilder(DYNAMODB);
         basicMappingSetup = new BasicMappingSetup(tempDir);
         setupTestDatabase();
     }
@@ -72,13 +74,8 @@ class DynamodbDocumentFetcherFactoryIT {
                         ProvisionedThroughput.builder().readCapacityUnits(1L).writeCapacityUnits(1L).build())
                 .indexName(INDEX_NAME).projection(Projection.builder().projectionType(ProjectionType.ALL).build())
                 .build());
-        dynamodbTestInterface.createTable(requestBuilder.build());
-        dynamodbTestInterface.importData(basicMappingSetup.tableMapping.getRemoteName(), TestDocuments.books());
-    }
-
-    @AfterAll
-    static void afterAll() {
-        dynamodbTestInterface.teardown();
+        dynamodbTestDbBuilder.createTable(requestBuilder.build());
+        dynamodbTestDbBuilder.importData(basicMappingSetup.tableMapping.getRemoteName(), TestDocuments.books());
     }
 
     private List<DocumentNode<DynamodbNodeVisitor>> runQueryAndExtractDocuments(final RemoteTableQuery query)
@@ -87,16 +84,15 @@ class DynamodbDocumentFetcherFactoryIT {
         return fetchedDocuments.map(FetchedDocument::getRootDocumentNode).collect(Collectors.toList());
     }
 
-    @NotNull
     private Stream<FetchedDocument<DynamodbNodeVisitor>> runQuery(final RemoteTableQuery query)
             throws URISyntaxException {
         final DynamodbDocumentFetcherFactory fetcherFactory = new DynamodbDocumentFetcherFactory(
-                dynamodbTestInterface.getDynamodbLowLevelConnection());
+                dynamodbTestDbBuilder.getDynamodbLowLevelConnection());
         final List<DocumentFetcher<DynamodbNodeVisitor>> documentFetchers = fetcherFactory
                 .buildDocumentFetcherForQuery(query, 2).getDocumentFetchers();
         return documentFetchers.stream()
                 .flatMap((DocumentFetcher<DynamodbNodeVisitor> documentFetcher) -> documentFetcher
-                        .run(dynamodbTestInterface.getExaConnectionInformationForDynamodb()));
+                        .run(dynamodbTestDbBuilder.getExaConnectionInformationForDynamodb()));
     }
 
     @Test

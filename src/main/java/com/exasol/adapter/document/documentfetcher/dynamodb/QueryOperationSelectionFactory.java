@@ -1,5 +1,7 @@
 package com.exasol.adapter.document.documentfetcher.dynamodb;
 
+import static com.exasol.adapter.document.querypredicate.AbstractComparisonPredicate.Operator.*;
+
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -7,7 +9,7 @@ import java.util.stream.Collectors;
 import com.exasol.adapter.document.documentpath.DocumentPathExpression;
 import com.exasol.adapter.document.dynamodbmetadata.DynamodbIndex;
 import com.exasol.adapter.document.mapping.PropertyToColumnMapping;
-import com.exasol.adapter.document.querypredicate.AbstractComparisonPredicate;
+import com.exasol.adapter.document.querypredicate.AbstractComparisonPredicate.Operator;
 import com.exasol.adapter.document.querypredicate.ColumnLiteralComparisonPredicate;
 import com.exasol.adapter.document.querypredicate.ComparisonPredicate;
 import com.exasol.adapter.document.querypredicate.normalizer.DnfAnd;
@@ -18,28 +20,22 @@ import com.exasol.adapter.document.querypredicate.normalizer.DnfOr;
  * This Factory builds {@link QueryOperationSelection}s for given selection predicate and DynamoDB index.
  */
 class QueryOperationSelectionFactory {
+    private static final ComparisonNegator NEGATOR = new ComparisonNegator();
+    private static final Set<Operator> SUPPORTED_OPERATORS_FOR_KEY_COLUMNS = Set.of(EQUAL, LESS, LESS_EQUAL, GREATER,
+            GREATER_EQUAL);
 
     /**
      * Build {@link QueryOperationSelection}s for given selection predicate and DynamoDB index.
-     * 
+     *
      * @param dnfOr selection predicate
      * @param index DynamoDB index for the query operation
      * @return {@link QueryOperationSelection}
      */
     public QueryOperationSelection build(final DnfOr dnfOr, final DynamodbIndex index) {
-        final ColumnLiteralComparisonPredicate partitionKeyCondition = extractPartitionKeyCondition(
-                dnfOr, index);
-        final Optional<ColumnLiteralComparisonPredicate> sortKeyCondition = extractSortKeyCondition(
-                dnfOr, index);
+        final ColumnLiteralComparisonPredicate partitionKeyCondition = extractPartitionKeyCondition(dnfOr, index);
+        final Optional<ColumnLiteralComparisonPredicate> sortKeyCondition = extractSortKeyCondition(dnfOr, index);
         final DnfOr nonIndexSelection = extractNonIndexSelection(dnfOr, index);
         return new QueryOperationSelection(partitionKeyCondition, sortKeyCondition, nonIndexSelection, index);
-    }
-
-    private DnfOr extractNonIndexSelection(final DnfOr dnfOr,
-            final DynamodbIndex index) {
-        final Set<DnfAnd> operands = dnfOr.getOperands().stream()
-                .map(and -> getAndOfNonIndexComparisons(index, and)).collect(Collectors.toSet());
-        return new DnfOr(operands);
     }
 
     private DnfAnd getAndOfNonIndexComparisons(final DynamodbIndex index, final DnfAnd and) {
@@ -49,10 +45,16 @@ class QueryOperationSelectionFactory {
                 .collect(Collectors.toSet()));
     }
 
+    private DnfOr extractNonIndexSelection(final DnfOr dnfOr, final DynamodbIndex index) {
+        final Set<DnfAnd> operands = dnfOr.getOperands().stream().map(and -> getAndOfNonIndexComparisons(index, and))
+                .collect(Collectors.toSet());
+        return new DnfOr(operands);
+    }
+
     private ColumnLiteralComparisonPredicate extractPartitionKeyCondition(final DnfOr dnfOr,
             final DynamodbIndex index) {
-        final Set<ColumnLiteralComparisonPredicate> partitionKeyConditions = dnfOr.getOperands()
-                .stream().map(dnfAnd -> extractPartitionKeyConditionsFromAnd(index, dnfAnd))
+        final Set<ColumnLiteralComparisonPredicate> partitionKeyConditions = dnfOr.getOperands().stream()
+                .map(dnfAnd -> extractPartitionKeyConditionsFromAnd(index, dnfAnd))
                 .filter(this::hasOnlyOnePartitionKeyCondition).filter(this::abortIfOneAndHasNoPartitionKey)
                 .map(set -> set.iterator().next()).collect(Collectors.toSet());
         if (partitionKeyConditions.size() > 1) {
@@ -68,9 +70,8 @@ class QueryOperationSelectionFactory {
 
     private Optional<ColumnLiteralComparisonPredicate> extractSortKeyCondition(final DnfOr dnfOr,
             final DynamodbIndex index) {
-        final Set<Optional<ColumnLiteralComparisonPredicate>> andsSortKeyConditions = dnfOr
-                .getOperands().stream().map(dnfAnd -> extractSortKeyConditionsFromAnd(index, dnfAnd))
-                .collect(Collectors.toSet());
+        final Set<Optional<ColumnLiteralComparisonPredicate>> andsSortKeyConditions = dnfOr.getOperands().stream()
+                .map(dnfAnd -> extractSortKeyConditionsFromAnd(index, dnfAnd)).collect(Collectors.toSet());
         if (andsSortKeyConditions.isEmpty()) {
             return Optional.empty();
         } else if (andsSortKeyConditions.size() > 1) {
@@ -80,15 +81,6 @@ class QueryOperationSelectionFactory {
         } else {
             return andsSortKeyConditions.iterator().next();
         }
-    }
-
-    private boolean abortIfOneAndHasNoPartitionKey(
-            final Set<ColumnLiteralComparisonPredicate> andsPartitionKeys) {
-        if (andsPartitionKeys.isEmpty()) {
-            throw new PlanDoesNotFitException(
-                    "One ore mote predicates does not specify a partiton key. Therefore this Query requires a SCAN operation.");
-        }
-        return true;
     }
 
     /**
@@ -125,11 +117,20 @@ class QueryOperationSelectionFactory {
         }
     }
 
+    private boolean abortIfOneAndHasNoPartitionKey(final Set<ColumnLiteralComparisonPredicate> andsPartitionKeys) {
+        if (andsPartitionKeys.isEmpty()) {
+            throw new PlanDoesNotFitException(
+                    "One ore mote predicates does not specify a partiton key. Therefore this Query requires a SCAN operation.");
+        }
+        return true;
+    }
+
     private ComparisonPredicate extractComparisonPredicate(final DnfComparison comparison) {
         if (comparison.isNegated()) {
-            final ComparisonPredicate negated = comparison.getComparisonPredicate().negate();
-            if (negated.getOperator().equals(AbstractComparisonPredicate.Operator.NOT_EQUAL)) {
-                throw new PlanDoesNotFitException("DynamoDB does not support the <> operator for key conditions.");
+            final ComparisonPredicate negated = NEGATOR.negate(comparison.getComparisonPredicate());
+            if (!SUPPORTED_OPERATORS_FOR_KEY_COLUMNS.contains(negated.getOperator())) {
+                throw new PlanDoesNotFitException(
+                        "DynamoDB does not support the " + negated.getOperator() + " operator for key conditions.");
             }
             return negated;
         } else {
@@ -144,23 +145,19 @@ class QueryOperationSelectionFactory {
      * As the input value is a set it only contains distinct values. That means, if there are more then two input
      * values, there are different comparisons on the partition key.
      */
-    private boolean hasOnlyOnePartitionKeyCondition(
-            final Set<ColumnLiteralComparisonPredicate> partitionKeyValues) {
+    private boolean hasOnlyOnePartitionKeyCondition(final Set<ColumnLiteralComparisonPredicate> partitionKeyValues) {
         return partitionKeyValues.size() <= 1;
     }
 
-    private boolean isComparisonOnProperty(final ComparisonPredicate comparison,
-            final String propertyName) {
-        final DocumentPathExpression keyPath = DocumentPathExpression.builder().addObjectLookup(propertyName)
-                .build();
+    private boolean isComparisonOnProperty(final ComparisonPredicate comparison, final String propertyName) {
+        final DocumentPathExpression keyPath = DocumentPathExpression.builder().addObjectLookup(propertyName).build();
         return comparison.getComparedColumns().stream().filter(column -> column instanceof PropertyToColumnMapping)
                 .map(column -> (PropertyToColumnMapping) column)
                 .anyMatch(column -> column.getPathToSourceProperty().equals(keyPath));
     }
 
     private boolean abortIfNotEqualityComparison(final DnfComparison comparison) {
-        if (comparison.getComparisonPredicate().getOperator().equals(AbstractComparisonPredicate.Operator.EQUAL)
-                && !comparison.isNegated()) {
+        if (comparison.getComparisonPredicate().getOperator().equals(EQUAL) && !comparison.isNegated()) {
             return true;
         } else {
             throw new PlanDoesNotFitException("Dynamodb does only support equality comparisons on the primary key.");

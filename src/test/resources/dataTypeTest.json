@@ -1,0 +1,16 @@
+[
+  {
+    "stringValue": "test",
+    "boolValue": true,
+    "doubleValue": 1.2,
+    "integerValue": 1,
+    "nullValue": null
+  },
+  {
+    "stringValue": "other",
+    "boolValue": false,
+    "doubleValue": 0.5,
+    "integerValue": 2,
+    "nullValue": "not null"
+  }
+]

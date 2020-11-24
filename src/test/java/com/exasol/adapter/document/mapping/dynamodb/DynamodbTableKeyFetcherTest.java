@@ -1,11 +1,11 @@
 package com.exasol.adapter.document.mapping.dynamodb;
 
-import static com.exasol.adapter.document.mapping.MappingTestFiles.getMappingAsFile;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Collections;
@@ -35,9 +35,9 @@ class DynamodbTableKeyFetcherTest {
 
     @BeforeAll
     static void beforeAll() throws IOException, AdapterException {
-        COLUMNS = new JsonSchemaMappingReader(getMappingAsFile(MappingTestFiles.BASIC_MAPPING, tempDir), null)
-                .getSchemaMapping()
-                .getTableMappings().get(0).getColumns();
+        COLUMNS = new JsonSchemaMappingReader(new File(
+                DynamodbTableKeyFetcher.class.getClassLoader().getResource(MappingTestFiles.BASIC_MAPPING).getFile()),
+                null).getSchemaMapping().getTableMappings().get(0).getColumns();
         ISBN_COLUMN = COLUMNS.stream().filter(column -> column.getExasolColumnName().equals("ISBN")).findAny().get();
         PUBLISHER_COLUMN = COLUMNS.stream().filter(column -> column.getExasolColumnName().equals("PUBLISHER")).findAny()
                 .get();
