@@ -11,6 +11,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
 import com.exasol.dynamodb.DynamodbContainer;
 
@@ -19,6 +20,7 @@ import com.exasol.dynamodb.DynamodbContainer;
  */
 @Tag("integration")
 @Tag("quick")
+@Testcontainers
 class DynamodbTestDbBuilderIT {
     private static final String TABLE_NAME = "TEST";
     @Container
@@ -26,7 +28,7 @@ class DynamodbTestDbBuilderIT {
     private static DynamodbTestDbBuilder dynamodbTestDbBuilder;
 
     @BeforeAll
-    static void beforeAll() throws DynamodbTestDbBuilder.NoNetworkFoundException, IOException, URISyntaxException {
+    static void beforeAll() throws URISyntaxException {
         dynamodbTestDbBuilder = new TestcontainerDynamodbTestDbBuilder(DYNAMODB);
     }
 
