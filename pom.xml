@@ -144,7 +144,7 @@
             <artifactId>org.jacoco.agent</artifactId>
             <version>${jacoco.version}</version>
             <classifier>runtime</classifier>
-            <scope>test</scope>
+            <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>org.jacoco</groupId>
@@ -202,6 +202,9 @@
                         <exclude>TestCdataConnectorIT</exclude>
                     </excludes>
                     <failIfNoTests>true</failIfNoTests>
+                    <systemPropertyVariables>
+                        <test.coverage>true</test.coverage>
+                    </systemPropertyVariables>
                 </configuration>
                 <executions>
                     <execution>
@@ -236,8 +239,10 @@
                             <goal>report</goal>
                         </goals>
                     </execution>
+
+
                     <execution>
-                        <id>merge-results</id>
+                        <id>merge-it-results</id>
                         <phase>verify</phase>
                         <goals>
                             <goal>merge</goal>
@@ -252,7 +257,7 @@
                                     </includes>
                                 </fileSet>
                             </fileSets>
-                            <destFile>${project.reporting.outputDirectory}/aggregate-it.exec</destFile>
+                            <destFile>${project.build.directory}/aggregate-it.exec</destFile>
                         </configuration>
                     </execution>
                     <execution>
@@ -265,13 +270,6 @@
                             <dataFile>${project.build.directory}/aggregate-it.exec</dataFile>
                         </configuration>
                     </execution>
-                    <execution>
-                        <id>report-integration</id>
-                        <phase>verify</phase>
-                        <goals>
-                            <goal>report-integration</goal>
-                        </goals>
-                    </execution>
                 </executions>
             </plugin>
             <plugin>
@@ -279,7 +277,7 @@
                 <version>3.3.0</version>
                 <configuration>
                     <descriptors>
-                        <descriptor>assembly/all-dependencies.xml</descriptor>
+                        <descriptor>src/assembly/all-dependencies.xml</descriptor>
                     </descriptors>
                     <finalName>document-virtual-schema-dist-${vs-common-document.version}-dynamodb-${version}
                     </finalName>
@@ -395,7 +393,7 @@
             <plugin>
                 <groupId>com.exasol</groupId>
                 <artifactId>project-keeper-maven-plugin</artifactId>
-                <version>0.3.0</version>
+                <version>0.4.0</version>
                 <executions>
                     <execution>
                         <goals>
@@ -407,6 +405,7 @@
                     <modules>
                         <module>integration_tests</module>
                         <module>jar_artifact</module>
+                        <module>udf_coverage</module>
                     </modules>
                 </configuration>
             </plugin>

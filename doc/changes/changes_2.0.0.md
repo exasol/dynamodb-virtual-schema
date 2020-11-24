@@ -8,6 +8,10 @@ The dependency update of virtual-schema-common-document cause the following API 
 
 * The UDF definition changed (see [user_guide.md](../user-guide/user_guide.md))
 
+## Features / Enhancements
+
+* #148: Use virtual-schema-common-documents 3.0.0
+
 ## Refactoring
 
 * #149: Refactored integration tests
@@ -21,3 +25,4 @@ The dependency update of virtual-schema-common-document cause the following API 
 * Added `com.exasol:test-db-builder-java:2.0.0` 
 * Added `com.exasol:hamcrest-resultset-matcher:1.2.1`
 * Updated to `org.testcontainers:junit-jupiter:1.15.0` (was. 1.14.3)
+* Added `com.exasol:project-keeper:0.4.0`
