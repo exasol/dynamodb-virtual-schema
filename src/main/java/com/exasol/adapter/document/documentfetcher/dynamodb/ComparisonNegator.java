@@ -52,7 +52,7 @@ public class ComparisonNegator {
             case NOT_LIKE:
                 return LIKE;
             default:
-                throw new UnsupportedOperationException();// All possible operators are implemented and check by
+                throw new UnsupportedOperationException();// All possible operators are implemented and checked by
                                                           // unit-test
             }
         }

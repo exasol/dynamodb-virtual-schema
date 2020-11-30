@@ -120,7 +120,7 @@ class QueryOperationSelectionFactory {
     private boolean abortIfOneAndHasNoPartitionKey(final Set<ColumnLiteralComparisonPredicate> andsPartitionKeys) {
         if (andsPartitionKeys.isEmpty()) {
             throw new PlanDoesNotFitException(
-                    "One ore mote predicates does not specify a partiton key. Therefore this Query requires a SCAN operation.");
+                    "One or more predicates does not specify a partiton key. Therefore this Query requires a SCAN operation.");
         }
         return true;
     }

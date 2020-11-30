@@ -14,7 +14,7 @@ public class DynamodbContainer extends GenericContainer<DynamodbContainer> {
     /**
      * Get the port under which DynamoDB is reachable at the host
      * 
-     * @return port dynamodb is maped to
+     * @return port DynamoDB is mapped to
      */
     public int getPort() {
         return getMappedPort(DYNAMODB_PORT);
