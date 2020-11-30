@@ -25,4 +25,4 @@ The dependency update of virtual-schema-common-document cause the following API 
 * Added `com.exasol:test-db-builder-java:2.0.0` 
 * Added `com.exasol:hamcrest-resultset-matcher:1.2.1`
 * Updated to `org.testcontainers:junit-jupiter:1.15.0` (was. 1.14.3)
-* Added `com.exasol:project-keeper:0.4.0`
+* Added `com.exasol:project-keeper:0.4.1`

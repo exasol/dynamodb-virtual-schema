@@ -274,6 +274,7 @@
             </plugin>
             <plugin>
                 <artifactId>maven-assembly-plugin</artifactId>
+                <groupId>org.apache.maven.plugins</groupId>
                 <version>3.3.0</version>
                 <configuration>
                     <descriptors>
@@ -292,7 +293,6 @@
                         </goals>
                     </execution>
                 </executions>
-                <groupId>org.apache.maven.plugins</groupId>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -393,7 +393,7 @@
             <plugin>
                 <groupId>com.exasol</groupId>
                 <artifactId>project-keeper-maven-plugin</artifactId>
-                <version>0.4.0</version>
+                <version>0.4.1</version>
                 <executions>
                     <execution>
                         <goals>
