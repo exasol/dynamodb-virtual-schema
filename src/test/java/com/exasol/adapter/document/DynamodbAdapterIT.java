@@ -1,25 +1,40 @@
 package com.exasol.adapter.document;
 
+import static com.exasol.adapter.document.UdfEntryPoint.*;
+import static com.exasol.matcher.ResultSetStructureMatcher.table;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.endsWith;
 import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.collection.IsIterableContainingInAnyOrder.containsInAnyOrder;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.io.IOException;
+import java.nio.file.Path;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
+import java.sql.Statement;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeoutException;
 
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Tag;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.junit.jupiter.api.Test;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
 import com.exasol.adapter.document.dynamodb.DynamodbAdapter;
 import com.exasol.adapter.document.mapping.MappingTestFiles;
-import com.exasol.adapter.document.mapping.TestDocuments;
+import com.exasol.bucketfs.Bucket;
+import com.exasol.bucketfs.BucketAccessException;
+import com.exasol.containers.ExasolContainer;
+import com.exasol.dbbuilder.dialects.exasol.*;
+import com.exasol.dbbuilder.dialects.exasol.udf.UdfScript;
+import com.exasol.dynamodb.DynamodbContainer;
+import com.exasol.udfdebugging.PushDownTesting;
+import com.exasol.udfdebugging.UdfTestSetup;
+import com.github.dockerjava.api.model.ContainerNetwork;
 
 import software.amazon.awssdk.services.dynamodb.model.*;
 
@@ -27,300 +42,284 @@ import software.amazon.awssdk.services.dynamodb.model.*;
  * Tests the {@link DynamodbAdapter} using a local docker version of DynamoDB and a local docker version of exasol.
  **/
 @Tag("integration")
+@Testcontainers
 class DynamodbAdapterIT {
-    private static final Logger LOGGER = LoggerFactory.getLogger(DynamodbAdapterIT.class);
+    public static final String BUCKETS_BFSDEFAULT_DEFAULT = "/buckets/bfsdefault/default/";
+    private static final String JAR_NAME_AND_VERSION = "document-virtual-schema-dist-3.0.0-dynamodb-2.0.0.jar";
+    private static final Path PATH_TO_VIRTUAL_SCHEMAS_JAR = Path.of("target", JAR_NAME_AND_VERSION);
+    private static final String LOCAL_DYNAMO_USER = "fakeMyKeyId";
+    private static final String LOCAL_DYNAMO_PASS = "fakeSecretAccessKey";
+    @Container
+    private static final ExasolContainer<? extends ExasolContainer<?>> EXASOL = new ExasolContainer<>().withReuse(true);
+    @Container
+    private static final DynamodbContainer DYNAMODB = new DynamodbContainer();
 
     private static final String TEST_SCHEMA = "TEST";
-    private static final String DYNAMODB_CONNECTION = "DYNAMODB_CONNECTION";
+    private static final String LIST_TABLES_QUERY = "SELECT TABLE_NAME FROM EXA_ALL_VIRTUAL_TABLES WHERE TABLE_SCHEMA = '"
+            + TEST_SCHEMA + "'";
     private static final String DYNAMO_BOOKS_TABLE = "MY_BOOKS";
-    public static final String BUCKETFS_PATH = "/bfsdefault/default/mappings/";
-    private static ExasolTestInterface exasolTestInterface;
-    private static DynamodbTestInterface dynamodbTestInterface;
-    private static DynamodbVsExasolTestDatabaseBuilder exasolTestDatabaseBuilder;
+    private static final String DIFFERENT_RESULT_TYPE_MAPPING = "differentResultTypesMapping.json";
+    public static final List<String> REQUIRED_MAPPINGS = List.of(MappingTestFiles.BASIC_MAPPING,
+            MappingTestFiles.SINGLE_COLUMN_TO_TABLE_MAPPING, MappingTestFiles.DATA_TYPE_TEST_MAPPING,
+            MappingTestFiles.DOUBLE_NESTED_TO_TABLE_MAPPING, MappingTestFiles.TO_JSON_MAPPING,
+            DIFFERENT_RESULT_TYPE_MAPPING);
+    private static DynamodbTestDbBuilder dynamodbTestDbBuilder;
+    private static Statement statement;
+    private static ExasolObjectFactory testDbBuilder;
+    private static AdapterScript adapterScript;
+    private static ConnectionDefinition connectionDefinition;
+    private final List<VirtualSchema> createdVirtualSchemas = new LinkedList<>();
+
+    private static void uploadAdapter() throws InterruptedException, BucketAccessException, TimeoutException {
+        EXASOL.getDefaultBucket().uploadFile(PATH_TO_VIRTUAL_SCHEMAS_JAR, JAR_NAME_AND_VERSION);
+    }
 
     /**
      * Create a Virtual Schema in the Exasol test container accessing the local DynamoDB.
      */
     @BeforeAll
     static void beforeAll() throws Exception {
-        final IntegrationTestSetup integrationTestSetup = new IntegrationTestSetup();
-        exasolTestInterface = integrationTestSetup.getExasolTestInterface();
-        exasolTestDatabaseBuilder = new DynamodbVsExasolTestDatabaseBuilder(exasolTestInterface);
-        dynamodbTestInterface = integrationTestSetup.getDynamodbTestInterface();
+        dynamodbTestDbBuilder = new TestcontainerDynamodbTestDbBuilder(DYNAMODB);
+        uploadAdapter();
+        final UdfTestSetup udfTestSetup = new UdfTestSetup(getTestHostIpFromInsideExasol(), EXASOL.getDefaultBucket());
+        testDbBuilder = new ExasolObjectFactory(EXASOL.createConnection(),
+                ExasolObjectConfiguration.builder().withJvmOptions(udfTestSetup.getJvmOptions()).build());
+        final ExasolSchema adapterSchema = testDbBuilder.createSchema("ADAPTER");
+        adapterScript = adapterSchema.createAdapterScriptBuilder("DYNAMODB_ADAPTER")
+                .bucketFsContent("com.exasol.adapter.RequestDispatcher",
+                        BUCKETS_BFSDEFAULT_DEFAULT + JAR_NAME_AND_VERSION)
+                .language(AdapterScript.Language.JAVA).build();
+        adapterSchema.createUdfBuilder("IMPORT_FROM_DYNAMO_DB").language(UdfScript.Language.JAVA)
+                .inputType(UdfScript.InputType.SET).parameter(PARAMETER_DATA_LOADER, "VARCHAR(2000000)")
+                .parameter(PARAMETER_SCHEMA_MAPPING_REQUEST, "VARCHAR(2000000)")
+                .parameter(PARAMETER_CONNECTION_NAME, "VARCHAR(500)").emits()
+                .bucketFsContent(UdfEntryPoint.class.getName(), "/buckets/bfsdefault/default/" + JAR_NAME_AND_VERSION)
+                .build();
+        connectionDefinition = testDbBuilder.createConnectionDefinition("DYNAMODB_CONNECTION",
+                "http://" + getTestHostIpFromInsideExasol() + ":" + DYNAMODB.getPort(), LOCAL_DYNAMO_USER,
+                LOCAL_DYNAMO_PASS);
 
-        exasolTestDatabaseBuilder.uploadDynamodbAdapterJar();
-        exasolTestDatabaseBuilder.uploadMappingTestFile(MappingTestFiles.BASIC_MAPPING,
-                "mappings/" + MappingTestFiles.BASIC_MAPPING);
-        exasolTestDatabaseBuilder.uploadMappingTestFile(MappingTestFiles.SINGLE_COLUMN_TO_TABLE_MAPPING,
-                "mappings/" + MappingTestFiles.SINGLE_COLUMN_TO_TABLE_MAPPING);
-        exasolTestDatabaseBuilder.uploadMappingTestFile(MappingTestFiles.DATA_TYPE_TEST_MAPPING,
-                "mappings/" + MappingTestFiles.DATA_TYPE_TEST_MAPPING);
-        exasolTestDatabaseBuilder.uploadMappingTestFile(MappingTestFiles.DOUBLE_NESTED_TO_TABLE_MAPPING,
-                "mappings/" + MappingTestFiles.DOUBLE_NESTED_TO_TABLE_MAPPING);
-        exasolTestDatabaseBuilder.uploadMappingTestFile(MappingTestFiles.TO_JSON_MAPPING,
-                "mappings/" + MappingTestFiles.TO_JSON_MAPPING);
-        Thread.sleep(3000); // Wait for BucketFS to sync
-        exasolTestDatabaseBuilder.createAdapterScript();
-        exasolTestDatabaseBuilder.createUdf();
-        LOGGER.info("created adapter script");
-        exasolTestDatabaseBuilder.createConnection(DYNAMODB_CONNECTION, dynamodbTestInterface.getDynamoUrl(),
-                dynamodbTestInterface.getDynamoUser(), dynamodbTestInterface.getDynamoPass());
-        LOGGER.info("created connection");
+        for (final String mapping : REQUIRED_MAPPINGS) {
+            EXASOL.getDefaultBucket().uploadInputStream(
+                    () -> DynamodbAdapterIT.class.getClassLoader().getResourceAsStream(mapping), mapping);
+        }
+        statement = EXASOL.createConnection().createStatement();
     }
 
-    @AfterAll
-    static void afterAll() {
-        exasolTestInterface.teardown();
-        dynamodbTestInterface.teardown();
+    private static String getTestHostIpFromInsideExasol() {
+        final Map<String, ContainerNetwork> networks = EXASOL.getContainerInfo().getNetworkSettings().getNetworks();
+        if (networks.size() == 0) {
+            return null;
+        }
+        return networks.values().iterator().next().getGateway();
     }
 
     @AfterEach
-    void afterEach() throws Exception {
-        dynamodbTestInterface.deleteCreatedTables();
-        exasolTestDatabaseBuilder.dropVirtualSchema(TEST_SCHEMA);
-    }
-
-    @Test
-    void testSchemaDefinition() throws SQLException {
-        createBasicMappingVirtualSchema();
-        final Map<String, String> rowNames = exasolTestDatabaseBuilder.describeTable(TEST_SCHEMA, "BOOKS");
-        assertThat(rowNames, equalTo(Map.of("ISBN", "VARCHAR(20) UTF8", "NAME", "VARCHAR(100) UTF8", "AUTHOR_NAME",
-                "VARCHAR(20) UTF8", "SOURCE_REFERENCE", "VARCHAR(2000) UTF8", "PUBLISHER", "VARCHAR(100) UTF8", "PRICE",
-                "DECIMAL(8,2)")));
-    }
-
-    @Test
-    void testToDecimalMapping() throws SQLException, IOException {
-        createBasicMappingVirtualSchema();
-        dynamodbTestInterface.createTable(DYNAMO_BOOKS_TABLE, TestDocuments.BOOKS_ISBN_PROPERTY);
-        dynamodbTestInterface.importData(DYNAMO_BOOKS_TABLE, TestDocuments.books());
-        final String query = "SELECT PRICE FROM " + TEST_SCHEMA + ".BOOKS;";
-        final ResultSet actualResultSet = exasolTestDatabaseBuilder.getStatement().executeQuery(query);
-        final List<Double> result = new ArrayList<>();
-        while (actualResultSet.next()) {
-            result.add(actualResultSet.getDouble("PRICE"));
+    void afterEach() {
+        dynamodbTestDbBuilder.deleteCreatedTables();
+        for (final VirtualSchema virtualSchema : this.createdVirtualSchemas) {
+            virtualSchema.drop();
         }
-        assertThat(result, containsInAnyOrder(10.0, 15.0, 21.12));
-    }
-
-    /**
-     * Helper function that runs a {@code SELECT *} and return a single string column. In addition the execution time is
-     * measured.
-     */
-    private SelectStringArrayResult selectStringArray() throws SQLException {
-        final long start = System.currentTimeMillis();
-        final ResultSet actualResultSet = exasolTestDatabaseBuilder.getStatement()
-                .executeQuery("SELECT * FROM " + TEST_SCHEMA + ".\"BOOKS\";");
-        final long duration = System.currentTimeMillis() - start;
-        final List<String> result = new ArrayList<>();
-        while (actualResultSet.next()) {
-            result.add(actualResultSet.getString("ISBN"));
-        }
-        LOGGER.info("query execution time was: {}", duration);
-        return new SelectStringArrayResult(result, duration);
-    }
-
-    /**
-     * Tests an {@code SELECT *} from an empty DynamoDB table.
-     */
-    @Test
-    void testEmptySelect() throws SQLException {
-        createBasicMappingVirtualSchema();
-        dynamodbTestInterface.createTable(DYNAMO_BOOKS_TABLE, TestDocuments.BOOKS_ISBN_PROPERTY);
-        final List<String> result = selectStringArray().rows;
-        assertThat(result.size(), equalTo(0));
-    }
-
-    /**
-     * Tests an {@code SELECT *} from an DynamoDB table with a single line.
-     */
-    @Test
-    void testSingleLineSelect() throws SQLException {
-        createBasicMappingVirtualSchema();
-        dynamodbTestInterface.createTable(DYNAMO_BOOKS_TABLE, TestDocuments.BOOKS_ISBN_PROPERTY);
-        final String Isbn = "12398439493";
-        dynamodbTestInterface.putItem(DYNAMO_BOOKS_TABLE, Isbn, "test name");
-        final SelectStringArrayResult result = selectStringArray();
-        assertThat(result.rows, containsInAnyOrder(Isbn));
-    }
-
-    /**
-     * Tests an {@code SELECT *} from an DynamoDB table with a single line with string result.
-     */
-    @Test
-    void testSingleLineSelectWithStringResult() throws SQLException {
-        createBasicMappingVirtualSchema();
-        dynamodbTestInterface.createTable(DYNAMO_BOOKS_TABLE, TestDocuments.BOOKS_ISBN_PROPERTY);
-        final String Isbn = "abc";
-        dynamodbTestInterface.putItem(DYNAMO_BOOKS_TABLE, Isbn, "test name");
-        final SelectStringArrayResult result = selectStringArray();
-        assertThat(result.rows, containsInAnyOrder(Isbn));
+        this.createdVirtualSchemas.clear();
     }
 
     /**
      * Tests a {@code SELECT *} from a DynamoDB table with multiple lines.
      */
     @Test
-    void testMultiLineSelect() throws IOException, SQLException {
+    void testDataLoading() throws IOException, SQLException {
         createBasicMappingVirtualSchema();
-        dynamodbTestInterface.createTable(DYNAMO_BOOKS_TABLE, TestDocuments.BOOKS_ISBN_PROPERTY);
-        dynamodbTestInterface.importData(DYNAMO_BOOKS_TABLE, TestDocuments.books());
-        final List<String> result = selectStringArray().rows;
-        assertThat(result, containsInAnyOrder("123567", "123254545", "1235673"));
+        dynamodbTestDbBuilder.createTable(DYNAMO_BOOKS_TABLE, TestDocuments.BOOKS_ISBN_PROPERTY);
+        dynamodbTestDbBuilder.importData(DYNAMO_BOOKS_TABLE, TestDocuments.books());
+        final ResultSet result = statement
+                .executeQuery("SELECT ISBN, NAME, AUTHOR_NAME, SOURCE_REFERENCE, PUBLISHER, PRICE FROM " + TEST_SCHEMA
+                        + ".\"BOOKS\" ORDER BY PRICE ASC;");
+        assertThat(result,
+                table().row("123254545", "bad book 2", "Jakob Braun", "MY_BOOKS", "jb books", 10)
+                        .row("123567", "bad book 1", "Jakob Braun", "MY_BOOKS", "jb books", 15)
+                        .row("1235673", "boring book", "Jakob Braun", "MY_BOOKS", "no name", 21.12).matchesFuzzily());
+    }
+
+    @Test
+    void testResultHasCorrectDataTypes() throws SQLException {
+        createDynamodbVirtualSchema(DIFFERENT_RESULT_TYPE_MAPPING);
+        final ResultSet resultSet = statement.executeQuery(
+                "SELECT COLUMN_NAME, COLUMN_TYPE FROM SYS.EXA_ALL_COLUMNS WHERE COLUMN_TABLE = 'DIFFERENT_RESULT_TYPE_TABLE' ORDER BY COLUMN_NAME ASC");
+        assertThat(resultSet, table().row("DECIMAL_COLUMN", "DECIMAL(11,3)")//
+                .row("JSON_COLUMN", "VARCHAR(1000) UTF8")//
+                .row("VARCHAR_COLUMN", "VARCHAR(20) UTF8").matches());
     }
 
     @Test
     void testAnyColumnProjection() throws SQLException, IOException {
         createBasicMappingVirtualSchema();
-        dynamodbTestInterface.createTable(DYNAMO_BOOKS_TABLE, TestDocuments.BOOKS_ISBN_PROPERTY);
-        dynamodbTestInterface.importData(DYNAMO_BOOKS_TABLE, TestDocuments.books());
-        final ResultSet resultSet = exasolTestDatabaseBuilder.getStatement()
-                .executeQuery("SELECT COUNT(*) as NUMBER_OF_BOOKS FROM BOOKS;");
-        resultSet.next();
-        final int number_of_books = resultSet.getInt("NUMBER_OF_BOOKS");
-        assertThat(number_of_books, equalTo(3));
-    }
-
-    @Test
-    void testSelectNestedTableSchema() throws SQLException, IOException {
-        createNestedTableVirtualSchema();
-        final Map<String, String> rowNames = exasolTestDatabaseBuilder.describeTable(TEST_SCHEMA, "BOOKS_TOPICS");
-        assertThat(rowNames, equalTo(Map.of("NAME", "VARCHAR(254) UTF8", "BOOKS_ISBN", "VARCHAR(20) UTF8")));
+        dynamodbTestDbBuilder.createTable(DYNAMO_BOOKS_TABLE, TestDocuments.BOOKS_ISBN_PROPERTY);
+        dynamodbTestDbBuilder.importData(DYNAMO_BOOKS_TABLE, TestDocuments.books());
+        final ResultSet result = statement
+                .executeQuery("SELECT COUNT(*) as NUMBER_OF_BOOKS FROM " + TEST_SCHEMA + ".BOOKS;");
+        assertThat(result, table().row(3L).matchesFuzzily());
     }
 
     @Test
     void testSelectNestedTableResult() throws SQLException, IOException {
         createNestedTableVirtualSchema();
-        final ResultSet actualResultSet = exasolTestDatabaseBuilder.getStatement()
-                .executeQuery("SELECT NAME FROM " + TEST_SCHEMA + ".\"BOOKS_TOPICS\";");
-        final List<String> topics = new ArrayList<>();
-        while (actualResultSet.next()) {
-            topics.add(actualResultSet.getString("NAME"));
-        }
-        assertThat(topics, containsInAnyOrder("Exasol", "DynamoDB", "Virtual Schema", "Fantasy", "Birds", "Nature"));
+        final ResultSet result = statement
+                .executeQuery("SELECT BOOKS_ISBN, NAME FROM " + TEST_SCHEMA + ".\"BOOKS_TOPICS\" ORDER BY NAME ASC;");
+        assertThat(result, table().row("1235673", "Birds").row("123567", "DynamoDB").row("123567", "Exasol")
+                .row("123254545", "Fantasy").row("1235673", "Nature").row("123567", "Virtual Schema").matches());
     }
 
+    // TODO refactor
     @Test
     void testJoinOnNestedTable() throws IOException, SQLException {
         createNestedTableVirtualSchema();
-        final List<String> topics = runQueryAndExtractColumn(
-                "SELECT BOOKS_TOPICS.NAME as TOPIC FROM " + TEST_SCHEMA + ".BOOKS JOIN " + TEST_SCHEMA
-                        + ".\"BOOKS_TOPICS\" ON ISBN = BOOKS_ISBN WHERE BOOKS.NAME = 'bad book 1';",
-                "TOPIC");
-        assertThat(topics, containsInAnyOrder("Exasol", "DynamoDB", "Virtual Schema"));
+        final ResultSet result = statement.executeQuery("SELECT BOOKS_TOPICS.NAME FROM " + TEST_SCHEMA + ".BOOKS JOIN "
+                + TEST_SCHEMA + ".\"BOOKS_TOPICS\" ON ISBN = BOOKS_ISBN WHERE BOOKS.NAME = 'bad book 1';");
+        assertThat(result, table().row("Exasol").row("DynamoDB").row("Virtual Schema").matches());
     }
 
     @Test
-    void testSelectionOnNestedTable() throws IOException, SQLException {
+    void testSelectionOnNestedTable() throws IOException {
         createNestedTableVirtualSchema();
-        final List<String> topics = runQueryAndExtractColumn(
-                "SELECT BOOKS_TOPICS.NAME as TOPIC FROM " + TEST_SCHEMA
-                        + ".\"BOOKS_TOPICS\" WHERE NAME =  'Exasol';",
-                "TOPIC");
-        assertThat(topics, containsInAnyOrder("Exasol"));
+        final String query = "SELECT BOOKS_TOPICS.NAME as TOPIC FROM " + TEST_SCHEMA
+                + ".\"BOOKS_TOPICS\" WHERE NAME =  'Exasol'";
+        assertAll(//
+                () -> assertThat(PushDownTesting.getSelectionThatIsSentToTheAdapter(statement, query),
+                        equalTo("BOOKS_TOPICS.NAME='Exasol'")),
+                () -> assertThat(PushDownTesting.getPushDownSql(statement, query), endsWith("\"NAME\" = 'Exasol'")),
+                () -> assertThat(statement.executeQuery(query), table().row("Exasol").matches())//
+        );
     }
 
+    // TODO refactor
     @Test
     void testJoinOnDoubleNestedTable() throws IOException, SQLException {
         createDoubleNestedTableVirtualSchema();
-        final List<String> figures = runQueryAndExtractColumn("SELECT BOOKS_CHAPTERS_FIGURES.NAME as FIGURE FROM "
-                + TEST_SCHEMA + ".BOOKS JOIN " + TEST_SCHEMA
-                + ".\"BOOKS_CHAPTERS\" ON ISBN = BOOKS_CHAPTERS.BOOKS_ISBN " + "JOIN " + TEST_SCHEMA
+        final ResultSet result = statement.executeQuery("SELECT BOOKS_CHAPTERS_FIGURES.NAME FROM " + TEST_SCHEMA
+                + ".BOOKS JOIN " + TEST_SCHEMA + ".\"BOOKS_CHAPTERS\" ON ISBN = BOOKS_CHAPTERS.BOOKS_ISBN " + "JOIN "
+                + TEST_SCHEMA
                 + ".BOOKS_CHAPTERS_FIGURES ON BOOKS_CHAPTERS.INDEX = BOOKS_CHAPTERS_INDEX AND ISBN = BOOKS_CHAPTERS_FIGURES.BOOKS_ISBN "
-                + "WHERE BOOKS.NAME = 'bad book 1';", "FIGURE");
-        assertThat(figures, containsInAnyOrder("Image of the Author", "figure 2", "figure 3"));
+                + "WHERE BOOKS.NAME = 'bad book 1';");
+        assertThat(result, table().row("Image of the Author").row("figure 2").row("figure 3").matches());
     }
 
     @Test
-    void testSelectOnIndexColumn() throws SQLException, IOException {
+    void testSelectOnIndexColumn() throws IOException {
         createDoubleNestedTableVirtualSchema();
-        final List<String> figures = runQueryAndExtractColumn(
-                "SELECT NAME FROM " + TEST_SCHEMA + ".BOOKS_CHAPTERS " + "WHERE \"INDEX\" = 0;", "NAME");
-        assertThat(figures, containsInAnyOrder("Main Chapter", "chapter 1"));
+        final String query = "SELECT NAME FROM " + TEST_SCHEMA + ".BOOKS_CHAPTERS "
+                + "WHERE \"INDEX\"=0 ORDER BY NAME ASC";
+        assertAll(//
+                () -> assertThat(PushDownTesting.getSelectionThatIsSentToTheAdapter(statement, query),
+                        equalTo("BOOKS_CHAPTERS.INDEX=0")),
+                () -> assertThat(PushDownTesting.getPushDownSql(statement, query), endsWith("WHERE \"INDEX\" = 0")),
+                () -> assertThat(statement.executeQuery(query), table().row("Main Chapter").row("chapter 1").matches())//
+        );
     }
 
     @Test
     void testProjectionOnPropertyInList() throws SQLException, IOException {
         createDoubleNestedTableVirtualSchema();
-        final List<String> figures = runQueryAndExtractColumn("SELECT NAME FROM " + TEST_SCHEMA + ".BOOKS_CHAPTERS",
-                "NAME");
-        assertThat(figures, containsInAnyOrder("Main Chapter", "chapter 1", "chapter 2"));
+        final ResultSet result = statement
+                .executeQuery("SELECT NAME FROM " + TEST_SCHEMA + ".BOOKS_CHAPTERS ORDER BY NAME ASC");
+        assertThat(result, table().row("Main Chapter").row("chapter 1").row("chapter 2").matches());
     }
 
     @Test
-    void testSelectOnIndexAndOtherColumn() throws SQLException, IOException {
+    void testSelectOnIndexAndOtherColumn() throws IOException {
         createDoubleNestedTableVirtualSchema();
-        final List<String> figures = runQueryAndExtractColumn("SELECT NAME FROM " + TEST_SCHEMA + ".BOOKS_CHAPTERS "
-                + "WHERE \"INDEX\" = 0 AND NAME = 'Main Chapter';", "NAME");
-        assertThat(figures, containsInAnyOrder("Main Chapter"));
+        final String query = "SELECT NAME FROM " + TEST_SCHEMA + ".BOOKS_CHAPTERS "
+                + "WHERE \"INDEX\" = 0 AND NAME = 'Main Chapter'";
+        assertAll(//
+                () -> assertThat(PushDownTesting.getSelectionThatIsSentToTheAdapter(statement, query),
+                        equalTo("(BOOKS_CHAPTERS.INDEX=0) AND (BOOKS_CHAPTERS.NAME='Main Chapter')")),
+                () -> assertThat(PushDownTesting.getPushDownSql(statement, query),
+                        endsWith("(\"INDEX\" = 0) AND (\"NAME\" = 'Main Chapter')")),
+                () -> assertThat(statement.executeQuery(query), table().row("Main Chapter").matches())//
+        );
     }
 
     @Test
     void testNestedTableWithCompoundForeignKey() throws IOException, SQLException {
         createDoubleNestedTableVirtualSchemaWithCompoundPrimaryKey();
-        final Map<String, String> rowNames = exasolTestDatabaseBuilder.describeTable(TEST_SCHEMA, "BOOKS_CHAPTERS");
-        assertThat(rowNames, equalTo(Map.of("NAME", "VARCHAR(254) UTF8", "BOOKS_ISBN", "VARCHAR(20) UTF8", "BOOKS_NAME",
-                "VARCHAR(254) UTF8", "INDEX", "DECIMAL(9,0)")));
+        final String query = "SELECT NAME, BOOKS_ISBN, BOOKS_NAME, \"INDEX\" FROM " + TEST_SCHEMA
+                + ".BOOKS_CHAPTERS ORDER BY NAME ASC;";
+        assertThat(statement.executeQuery(query), table("VARCHAR", "VARCHAR", "VARCHAR", "INTEGER")//
+                .row("Main Chapter", "123254545", "bad book 2", 0)//
+                .row("chapter 1", "123567", "bad book 1", 0)//
+                .row("chapter 2", "123567", "bad book 1", 1)//
+                .matches());
     }
 
-    private List<String> runQueryAndExtractColumn(final String query, final String columnName) throws SQLException {
-        final ResultSet actualResultSet = exasolTestDatabaseBuilder.getStatement().executeQuery(query);
-        final List<String> topics = new ArrayList<>();
-        while (actualResultSet.next()) {
-            topics.add(actualResultSet.getString(columnName));
-        }
-        return topics;
+    /**
+     * Test that the WHERE claus filters as expected and that the adapter filters it-self and does not send delegates
+     * the selection to the database.
+     * 
+     * @throws IOException if upload fails
+     */
+    @Test
+    void testSelection() throws IOException {
+        final String selectedIsbn = "123567";
+        createBasicMappingVirtualSchema();
+        dynamodbTestDbBuilder.createTable(DYNAMO_BOOKS_TABLE, TestDocuments.BOOKS_ISBN_PROPERTY);
+        dynamodbTestDbBuilder.importData(DYNAMO_BOOKS_TABLE, TestDocuments.books());
+        final String query = "SELECT ISBN FROM " + TEST_SCHEMA + ".\"BOOKS\" WHERE ISBN = '" + selectedIsbn + "'";
+        assertAll(//
+                () -> assertThat(PushDownTesting.getSelectionThatIsSentToTheAdapter(statement, query),
+                        endsWith("BOOKS.ISBN='123567'")),
+                () -> assertThat(PushDownTesting.getPushDownSql(statement, query), endsWith("WHERE TRUE")),
+                () -> assertThat(statement.executeQuery(query), table().row(selectedIsbn).matchesFuzzily())//
+        );
     }
 
     @Test
-    void testSelection() throws SQLException, IOException {
-        final String selectedIsbn = "123567";
+    void testNotSelection() throws IOException {
         createBasicMappingVirtualSchema();
-        dynamodbTestInterface.createTable(DYNAMO_BOOKS_TABLE, TestDocuments.BOOKS_ISBN_PROPERTY);
-        dynamodbTestInterface.importData(DYNAMO_BOOKS_TABLE, TestDocuments.books());
-        final ResultSet actualResultSet = exasolTestDatabaseBuilder.getStatement()
-                .executeQuery("SELECT ISBN FROM " + TEST_SCHEMA + ".\"BOOKS\" WHERE ISBN = '" + selectedIsbn + "';");
-        final List<String> isbns = new ArrayList<>();
-        while (actualResultSet.next()) {
-            isbns.add(actualResultSet.getString("ISBN"));
-        }
-        assertThat(isbns, containsInAnyOrder(selectedIsbn));
+        dynamodbTestDbBuilder.createTable(DYNAMO_BOOKS_TABLE, TestDocuments.BOOKS_ISBN_PROPERTY);
+        dynamodbTestDbBuilder.importData(DYNAMO_BOOKS_TABLE, TestDocuments.books());
+        final String query = "SELECT ISBN FROM " + TEST_SCHEMA
+                + ".\"BOOKS\" WHERE NOT(ISBN = '123567') ORDER BY ISBN ASC";
+        assertAll(//
+                () -> assertThat(PushDownTesting.getSelectionThatIsSentToTheAdapter(statement, query),
+                        endsWith("NOT (BOOKS.ISBN='123567')")),
+                () -> assertThat(PushDownTesting.getPushDownSql(statement, query), endsWith("WHERE TRUE")),
+                () -> assertThat(statement.executeQuery(query),
+                        table().row("123254545").row("1235673").matchesFuzzily())//
+        );
     }
 
     @Test
     void testGreaterSelectionWithSortKey() throws SQLException, IOException {
         createBasicMappingVirtualSchema();
         createTableBooksTableWithPublisherPriceKey();
-        final ResultSet actualResultSet = exasolTestDatabaseBuilder.getStatement().executeQuery(
+        final ResultSet actualResultSet = statement.executeQuery(
                 "SELECT ISBN FROM " + TEST_SCHEMA + ".\"BOOKS\" WHERE PUBLISHER = 'jb books' AND PRICE > 10;");
-        final List<String> isbns = new ArrayList<>();
-        while (actualResultSet.next()) {
-            isbns.add(actualResultSet.getString("ISBN"));
-        }
-        assertThat(isbns, containsInAnyOrder("123567"));
+        assertThat(actualResultSet, table().row("123567").matchesFuzzily());
     }
 
     @Test
     void testLessSelectionWithSortKey() throws SQLException, IOException {
         createBasicMappingVirtualSchema();
         createTableBooksTableWithPublisherPriceKey();
-        final ResultSet actualResultSet = exasolTestDatabaseBuilder.getStatement().executeQuery(
-                "SELECT ISBN FROM " + TEST_SCHEMA + ".\"BOOKS\" WHERE PUBLISHER = 'jb books' AND PRICE < 11;");
-        final List<String> isbns = new ArrayList<>();
-        while (actualResultSet.next()) {
-            isbns.add(actualResultSet.getString("ISBN"));
-        }
-        assertThat(isbns, containsInAnyOrder("123254545"));
+        final String query = "SELECT ISBN FROM " + TEST_SCHEMA
+                + ".\"BOOKS\" WHERE PUBLISHER = 'jb books' AND PRICE < 11";
+        final ResultSet actualResultSet = statement.executeQuery(query);
+        assertAll(//
+                () -> assertThat(PushDownTesting.getSelectionThatIsSentToTheAdapter(statement, query),
+                        equalTo("(BOOKS.PUBLISHER='jb books') AND (BOOKS.PRICE<11)")),
+                () -> assertThat(PushDownTesting.getPushDownSql(statement, query), endsWith("WHERE TRUE")),
+                () -> assertThat(actualResultSet, table().row("123254545").matchesFuzzily())//
+        );
     }
 
     @Test
     void testToJsonMapping() throws IOException, SQLException {
         createToJsonMappingVirtualSchema();
-        dynamodbTestInterface.createTable(DYNAMO_BOOKS_TABLE, TestDocuments.BOOKS_ISBN_PROPERTY);
-        dynamodbTestInterface.importData(DYNAMO_BOOKS_TABLE, TestDocuments.books());
-        final List<String> result = runQueryAndExtractColumn("SELECT TOPICS FROM " + TEST_SCHEMA + ".BOOKS", "TOPICS");
-        assertThat(result, containsInAnyOrder("[\"Exasol\",\"DynamoDB\",\"Virtual Schema\"]", "[\"Fantasy\"]",
-                "[\"Birds\",\"Nature\"]"));
+        dynamodbTestDbBuilder.createTable(DYNAMO_BOOKS_TABLE, TestDocuments.BOOKS_ISBN_PROPERTY);
+        dynamodbTestDbBuilder.importData(DYNAMO_BOOKS_TABLE, TestDocuments.books());
+        final ResultSet result = statement
+                .executeQuery("SELECT TOPICS FROM " + TEST_SCHEMA + ".BOOKS ORDER BY TOPICS ASC");
+        assertThat(result, table("VARCHAR").row("[\"Birds\",\"Nature\"]")
+                .row("[\"Exasol\",\"DynamoDB\",\"Virtual Schema\"]").row("[\"Fantasy\"]").matches());
     }
 
     private void createTableBooksTableWithPublisherPriceKey() throws IOException {
@@ -334,16 +333,15 @@ class DynamodbAdapterIT {
                 AttributeDefinition.builder().attributeName("price").attributeType(ScalarAttributeType.N).build()));
         requestBuilder.provisionedThroughput(
                 ProvisionedThroughput.builder().readCapacityUnits(100L).writeCapacityUnits(100L).build());
-        dynamodbTestInterface.createTable(requestBuilder.build());
-        dynamodbTestInterface.importData(DYNAMO_BOOKS_TABLE, TestDocuments.books());
+        dynamodbTestDbBuilder.createTable(requestBuilder.build());
+        dynamodbTestDbBuilder.importData(DYNAMO_BOOKS_TABLE, TestDocuments.books());
     }
 
     @Test
-    void testDataTypes() throws IOException, SQLException {
+    void testConvertDifferentDynamodbTypesToVarchar() throws IOException, SQLException {
         createDataTypesVirtualSchema();
-        final ResultSet actualResultSet = exasolTestDatabaseBuilder.getStatement()
-                .executeQuery("SELECT * FROM " + TEST_SCHEMA + "." + MappingTestFiles.DATA_TYPE_TEST_EXASOL_TABLE_NAME
-                        + " WHERE STRINGVALUE = 'test';");
+        final ResultSet actualResultSet = statement.executeQuery("SELECT * FROM " + TEST_SCHEMA + "."
+                + MappingTestFiles.DATA_TYPE_TEST_EXASOL_TABLE_NAME + " WHERE STRINGVALUE = 'test';");
         actualResultSet.next();
         assertAll(() -> assertThat(actualResultSet.getString("STRINGVALUE"), equalTo("test")),
                 () -> assertThat(actualResultSet.getString("BOOLVALUE"), equalTo("true")),
@@ -353,21 +351,58 @@ class DynamodbAdapterIT {
         );
     }
 
-    private void createNestedTableVirtualSchema() throws SQLException, IOException {
-        exasolTestDatabaseBuilder.createDynamodbVirtualSchema(TEST_SCHEMA, DYNAMODB_CONNECTION,
-                BUCKETFS_PATH + MappingTestFiles.SINGLE_COLUMN_TO_TABLE_MAPPING);
-        dynamodbTestInterface.createTable(DYNAMO_BOOKS_TABLE, TestDocuments.BOOKS_ISBN_PROPERTY);
-        dynamodbTestInterface.importData(DYNAMO_BOOKS_TABLE, TestDocuments.books());
+    @Test
+    void testSchemaDefinitionDoesNotChangeUntilRefresh()
+            throws InterruptedException, BucketAccessException, TimeoutException, SQLException {
+        final String mappingName = "mappingForReplaceTest.json";
+        uploadEmptyMappingWithTable(mappingName, "T1");
+        createDynamodbVirtualSchema(mappingName);
+        assertThat(statement.executeQuery(LIST_TABLES_QUERY), table().row("T1").matches());
+        uploadEmptyMappingWithTable(mappingName, "T2");
+        assertThat(statement.executeQuery(LIST_TABLES_QUERY), table().row("T1").matches());
     }
 
-    private void createDoubleNestedTableVirtualSchema() throws SQLException, IOException {
-        dynamodbTestInterface.createTable(DYNAMO_BOOKS_TABLE, TestDocuments.BOOKS_ISBN_PROPERTY);
-        dynamodbTestInterface.importData(DYNAMO_BOOKS_TABLE, TestDocuments.books());
-        exasolTestDatabaseBuilder.createDynamodbVirtualSchema(TEST_SCHEMA, DYNAMODB_CONNECTION,
-                BUCKETFS_PATH + MappingTestFiles.DOUBLE_NESTED_TO_TABLE_MAPPING);
+    @Test
+    void testSchemaDefinitionChangesOnRefresh()
+            throws InterruptedException, BucketAccessException, TimeoutException, SQLException {
+        final String mappingName = "mappingForReplaceTest.json";
+        uploadEmptyMappingWithTable(mappingName, "T1");
+        createDynamodbVirtualSchema(mappingName);
+        assertThat(statement.executeQuery(LIST_TABLES_QUERY), table().row("T1").matches());
+        uploadEmptyMappingWithTable(mappingName, "T2");
+        statement.executeUpdate("ALTER VIRTUAL SCHEMA " + TEST_SCHEMA + " REFRESH");
+        assertThat(statement.executeQuery(LIST_TABLES_QUERY), table().row("T2").matches());
     }
 
-    private void createDoubleNestedTableVirtualSchemaWithCompoundPrimaryKey() throws SQLException, IOException {
+    private void uploadEmptyMappingWithTable(final String mappingName, final String tableName)
+            throws InterruptedException, BucketAccessException, TimeoutException {
+        final Bucket bucket = EXASOL.getDefaultBucket();
+        bucket.uploadStringContent(
+                "{\"$schema\": \"../../main/resources/schemas/edml-1.2.0.json\", \"source\": \"TEST\", \"destinationTable\": \""
+                        + tableName + "\", \"mapping\":{ \"toJsonMapping\":{\"destinationName\":\"test\"}}}",
+                mappingName);
+    }
+
+    private void createNestedTableVirtualSchema() throws IOException {
+        createDynamodbVirtualSchema(MappingTestFiles.SINGLE_COLUMN_TO_TABLE_MAPPING);
+        dynamodbTestDbBuilder.createTable(DYNAMO_BOOKS_TABLE, TestDocuments.BOOKS_ISBN_PROPERTY);
+        dynamodbTestDbBuilder.importData(DYNAMO_BOOKS_TABLE, TestDocuments.books());
+    }
+
+    private void createDynamodbVirtualSchema(final String mappingName) {
+        this.createdVirtualSchemas.add(testDbBuilder.createVirtualSchemaBuilder(TEST_SCHEMA)
+                .adapterScript(adapterScript).connectionDefinition(connectionDefinition)
+                .properties(Map.of("MAPPING", "/bfsdefault/default/" + mappingName, "SQL_DIALECT", "DYNAMO_DB"))
+                .build());
+    }
+
+    private void createDoubleNestedTableVirtualSchema() throws IOException {
+        dynamodbTestDbBuilder.createTable(DYNAMO_BOOKS_TABLE, TestDocuments.BOOKS_ISBN_PROPERTY);
+        dynamodbTestDbBuilder.importData(DYNAMO_BOOKS_TABLE, TestDocuments.books());
+        createDynamodbVirtualSchema(MappingTestFiles.DOUBLE_NESTED_TO_TABLE_MAPPING);
+    }
+
+    private void createDoubleNestedTableVirtualSchemaWithCompoundPrimaryKey() throws IOException {
         final CreateTableRequest.Builder createTableRequestBuilder = CreateTableRequest.builder();
         createTableRequestBuilder.tableName(DYNAMO_BOOKS_TABLE);
         createTableRequestBuilder
@@ -381,37 +416,23 @@ class DynamodbAdapterIT {
                 AttributeDefinition.builder().attributeName("name").attributeType(ScalarAttributeType.S).build());
         createTableRequestBuilder.provisionedThroughput(
                 ProvisionedThroughput.builder().readCapacityUnits(1L).writeCapacityUnits(1L).build());
-        dynamodbTestInterface.createTable(createTableRequestBuilder.build());
-        dynamodbTestInterface.importData(DYNAMO_BOOKS_TABLE, TestDocuments.books());
-        exasolTestDatabaseBuilder.createDynamodbVirtualSchema(TEST_SCHEMA, DYNAMODB_CONNECTION,
-                BUCKETFS_PATH + MappingTestFiles.DOUBLE_NESTED_TO_TABLE_MAPPING);
+        dynamodbTestDbBuilder.createTable(createTableRequestBuilder.build());
+        dynamodbTestDbBuilder.importData(DYNAMO_BOOKS_TABLE, TestDocuments.books());
+        createDynamodbVirtualSchema(MappingTestFiles.DOUBLE_NESTED_TO_TABLE_MAPPING);
     }
 
-    void createBasicMappingVirtualSchema() throws SQLException {
-        exasolTestDatabaseBuilder.createDynamodbVirtualSchema(TEST_SCHEMA, DYNAMODB_CONNECTION,
-                BUCKETFS_PATH + MappingTestFiles.BASIC_MAPPING);
+    void createBasicMappingVirtualSchema() {
+        createDynamodbVirtualSchema(MappingTestFiles.BASIC_MAPPING);
     }
 
-    void createDataTypesVirtualSchema() throws SQLException, IOException {
-        exasolTestDatabaseBuilder.createDynamodbVirtualSchema(TEST_SCHEMA, DYNAMODB_CONNECTION,
-                BUCKETFS_PATH + MappingTestFiles.DATA_TYPE_TEST_MAPPING);
-        dynamodbTestInterface.createTable(MappingTestFiles.DATA_TYPE_TEST_SRC_TABLE_NAME,
+    void createDataTypesVirtualSchema() throws IOException {
+        createDynamodbVirtualSchema(MappingTestFiles.DATA_TYPE_TEST_MAPPING);
+        dynamodbTestDbBuilder.createTable(MappingTestFiles.DATA_TYPE_TEST_SRC_TABLE_NAME,
                 TestDocuments.DATA_TYPE_TEST_STRING_VALUE);
-        dynamodbTestInterface.importData(MappingTestFiles.DATA_TYPE_TEST_SRC_TABLE_NAME, TestDocuments.dataTypeTest());
+        dynamodbTestDbBuilder.importData(MappingTestFiles.DATA_TYPE_TEST_SRC_TABLE_NAME, TestDocuments.dataTypeTest());
     }
 
-    void createToJsonMappingVirtualSchema() throws SQLException {
-        exasolTestDatabaseBuilder.createDynamodbVirtualSchema(TEST_SCHEMA, DYNAMODB_CONNECTION,
-                BUCKETFS_PATH + MappingTestFiles.TO_JSON_MAPPING);
-    }
-
-    private static final class SelectStringArrayResult {
-        public final List<String> rows;
-        public final long duration;
-
-        public SelectStringArrayResult(final List<String> rows, final long duration) {
-            this.rows = rows;
-            this.duration = duration;
-        }
+    void createToJsonMappingVirtualSchema() {
+        createDynamodbVirtualSchema(MappingTestFiles.TO_JSON_MAPPING);
     }
 }

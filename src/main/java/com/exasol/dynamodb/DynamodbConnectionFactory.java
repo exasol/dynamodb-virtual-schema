@@ -5,6 +5,7 @@ import java.net.URISyntaxException;
 import java.util.Optional;
 
 import com.exasol.ExaConnectionInformation;
+import com.exasol.errorreporting.ExaError;
 
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.AwsCredentials;
@@ -38,18 +39,30 @@ public class DynamodbConnectionFactory {
      * @return {@link DynamoDbClient}
      */
     public DynamoDbClient getConnection(final String uri, final String user, final String key,
-            final Optional<String> sessionToken) throws URISyntaxException {
+            final Optional<String> sessionToken) {
 
         final DynamoDbClientBuilder clientBuilder = DynamoDbClient.builder();
         if (uri.startsWith(AWS_PREFIX)) {
             clientBuilder.region(Region.of(uri.replace(AWS_PREFIX, "")));
         } else {
             clientBuilder.region(Region.EU_CENTRAL_1);// for a local DynamoDB region does not matter anyway
-            clientBuilder.endpointOverride(new URI(uri));
+            clientBuilder.endpointOverride(parseDynamodbUri(uri));
         }
         final AwsCredentials awsCredentials = getAwsCredentials(user, key, sessionToken);
         clientBuilder.credentialsProvider(StaticCredentialsProvider.create(awsCredentials));
         return clientBuilder.build();
+    }
+
+    private URI parseDynamodbUri(final String uri) {
+        try {
+            return new URI(uri);
+        } catch (final URISyntaxException exception) {
+            throw new IllegalArgumentException(ExaError.messageBuilder("E-VSDY-1")
+                    .message("Invalid DynamoDB URI {{URI}}.").parameter("URI", uri)
+                    .mitigation(
+                            "Please set a valid DynamoDB connection string in the CONNECTION TO field. Either use aws:<REGION> or http://HOST:PORT for a local DynamoDB.")
+                    .toString(), exception);
+        }
     }
 
     private AwsCredentials getAwsCredentials(final String user, final String key, final Optional<String> sessionToken) {
@@ -75,8 +88,7 @@ public class DynamodbConnectionFactory {
      * @param exaConnectionInformation connection settings
      * @return {@link DynamoDbClient} (low level api client)
      */
-    public DynamoDbClient getConnection(final ExaConnectionInformation exaConnectionInformation)
-            throws URISyntaxException {
+    public DynamoDbClient getConnection(final ExaConnectionInformation exaConnectionInformation) {
         return getConnection(exaConnectionInformation.getAddress(), exaConnectionInformation.getUser(),
                 exaConnectionInformation.getPassword(), Optional.empty());
     }

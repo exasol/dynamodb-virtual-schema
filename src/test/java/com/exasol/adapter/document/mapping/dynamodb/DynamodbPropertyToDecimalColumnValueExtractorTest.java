@@ -3,22 +3,25 @@ package com.exasol.adapter.document.mapping.dynamodb;
 import static com.exasol.adapter.document.mapping.PropertyToColumnMappingBuilderQuickAccess.configureExampleMapping;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
-import com.exasol.adapter.document.documentfetcher.FetchedDocument;
-import com.exasol.adapter.document.documentnode.dynamodb.DynamodbMap;
-import com.exasol.adapter.document.documentnode.dynamodb.DynamodbNodeVisitor;
-import com.exasol.adapter.document.documentpath.StaticDocumentPathIterator;
-import com.exasol.adapter.document.mapping.ColumnValueExtractorException;
+import com.exasol.adapter.document.documentnode.DocumentNode;
+import com.exasol.adapter.document.documentnode.dynamodb.*;
 import com.exasol.adapter.document.mapping.MappingErrorBehaviour;
 import com.exasol.adapter.document.mapping.PropertyToDecimalColumnMapping;
-import com.exasol.dynamodb.attributevalue.AttributeValueQuickCreator;
-import com.exasol.sql.expression.BigDecimalLiteral;
+import com.exasol.adapter.document.mapping.PropertyToDecimalColumnValueExtractor.ConvertedResult;
+import com.exasol.adapter.document.mapping.PropertyToDecimalColumnValueExtractor.NotNumericResult;
+
+import software.amazon.awssdk.core.SdkBytes;
 
 class DynamodbPropertyToDecimalColumnValueExtractorTest {
 
@@ -33,23 +36,31 @@ class DynamodbPropertyToDecimalColumnValueExtractorTest {
     public static final DynamodbPropertyToDecimalColumnValueExtractor EXTRACTOR = new DynamodbPropertyToDecimalColumnValueExtractor(
             MAPPING);
 
-    @Test
-    void testDecimal() {
-        final FetchedDocument<DynamodbNodeVisitor> testData = new FetchedDocument<>(
-                new DynamodbMap(Map.of("key", AttributeValueQuickCreator.forNumber("1234.45"))), "");
-        final BigDecimalLiteral valueExpression = (BigDecimalLiteral) EXTRACTOR.extractColumnValue(testData,
-                new StaticDocumentPathIterator());
-        assertThat(valueExpression.getValue(), equalTo(BigDecimal.valueOf(1234.45)));
+    private static Stream<Arguments> expectedNoNumericMapping() {
+        return Stream.of(//
+                Arguments.of(new DynamodbString("test"), "test"), //
+                Arguments.of(new DynamodbList(List.of()), "<list>"), //
+                Arguments.of(new DynamodbStringSet(List.of()), "<string set>"), //
+                Arguments.of(new DynamodbNumberSet(List.of()), "<number set>"), //
+                Arguments.of(new DynamodbBinarySet(List.of()), "<binary set>"), //
+                Arguments.of(new DynamodbBoolean(true), "<true>"), //
+                Arguments.of(new DynamodbBoolean(false), "<false>"), //
+                Arguments.of(new DynamodbNull(), "<null>"), //
+                Arguments.of(new DynamodbBinary(SdkBytes.fromByteArray("".getBytes())), "<binary>"), //
+                Arguments.of(new DynamodbMap(Map.of()), "<map>")//
+        );
     }
 
     @Test
-    void testNotANumber() {
-        final FetchedDocument<DynamodbNodeVisitor> testData = new FetchedDocument<>(
-                new DynamodbMap(Map.of("key", AttributeValueQuickCreator.forString("not a number"))), "");
-        final StaticDocumentPathIterator iterationState = new StaticDocumentPathIterator();
-        final ColumnValueExtractorException exception = assertThrows(ColumnValueExtractorException.class,
-                () -> EXTRACTOR.extractColumnValue(testData, iterationState));
-        assertThat(exception.getMessage(), equalTo(
-                "The input value was no number. Try using a different mapping or ignore this error by setting notNumericBehaviour = \"null\"."));
+    void testDecimal() {
+        final ConvertedResult result = (ConvertedResult) EXTRACTOR.mapValueToDecimal(new DynamodbNumber("1234.45"));
+        assertThat(result.getResult(), equalTo(BigDecimal.valueOf(1234.45)));
+    }
+
+    @ParameterizedTest
+    @MethodSource("expectedNoNumericMapping")
+    void testNotNumerics(final DocumentNode<DynamodbNodeVisitor> input, final String expectedValueDescription) {
+        final NotNumericResult result = (NotNumericResult) EXTRACTOR.mapValueToDecimal(input);
+        assertThat(result.getValue(), equalTo(expectedValueDescription));
     }
 }

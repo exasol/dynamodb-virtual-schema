@@ -1,0 +1,72 @@
+[
+  {
+    "isbn": "123567",
+    "name": "bad book 1",
+    "author": {
+      "name": "Jakob Braun"
+    },
+    "topics": [
+      "Exasol",
+      "DynamoDB",
+      "Virtual Schema"
+    ],
+    "publisher": "jb books",
+    "price": 15,
+    "chapters": [
+      {
+        "name": "chapter 1",
+        "figures": [
+          {
+            "name": "Image of the Author"
+          },
+          {
+            "name": "figure 2"
+          }
+        ]
+      },
+      {
+        "name": "chapter 2",
+        "figures": [
+          {
+            "name": "figure 3"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "isbn": "123254545",
+    "name": "bad book 2",
+    "author": {
+      "name": "Jakob Braun"
+    },
+    "publisher": "jb books",
+    "price": 10,
+    "topics": [
+      "Fantasy"
+    ],
+    "chapters": [
+      {
+        "name": "Main Chapter",
+        "figures": [
+          {
+            "name": "Fancy Image"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "isbn": "1235673",
+    "name": "boring book",
+    "author": {
+      "name": "Jakob Braun"
+    },
+    "publisher": "no name",
+    "price": 21.12,
+    "topics": [
+      "Birds",
+      "Nature"
+    ]
+  }
+]

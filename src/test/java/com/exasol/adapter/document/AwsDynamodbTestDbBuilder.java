@@ -10,25 +10,20 @@ import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider;
 /**
  * DynamoDB test interface using a DynamoDB running on AWS.
  */
-public class AwsDynamodbTestInterface extends DynamodbTestInterface {
+public class AwsDynamodbTestDbBuilder extends DynamodbTestDbBuilder {
 
-    private AwsDynamodbTestInterface(final String dynamoUrl, final String user, final String pass,
+    private AwsDynamodbTestDbBuilder(final String dynamoUrl, final String user, final String pass,
             final Optional<String> sessionToken) throws URISyntaxException {
         super(dynamoUrl, user, pass, sessionToken);
-    }
-
-    @Override
-    public void teardown() {
-
     }
 
     public static class Builder {
         private static final String DEFAULT_REGION = "aws:eu-central-1";
 
-        public DynamodbTestInterface build() throws URISyntaxException {
+        public DynamodbTestDbBuilder build() throws URISyntaxException {
             final AwsCredentials awsCredentials = DefaultCredentialsProvider.create().resolveCredentials();
 
-            return new AwsDynamodbTestInterface(DEFAULT_REGION, awsCredentials.accessKeyId(),
+            return new AwsDynamodbTestDbBuilder(DEFAULT_REGION, awsCredentials.accessKeyId(),
                     awsCredentials.secretAccessKey(), getSessionTokenIfPossible(awsCredentials));
         }
 

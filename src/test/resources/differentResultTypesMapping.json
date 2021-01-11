@@ -1,0 +1,28 @@
+{
+  "$schema": "https://schemas.exasol.com/edml-1.1.0.json",
+  "source": "NON_EXISTENT",
+  "destinationTable": "DIFFERENT_RESULT_TYPE_TABLE",
+  "mapping": {
+    "fields": {
+      "c1": {
+        "toVarcharMapping": {
+          "varcharColumnSize": 20,
+          "destinationName": "VARCHAR_COLUMN"
+        }
+      },
+      "c2": {
+        "toDecimalMapping": {
+          "decimalScale": 3,
+          "decimalPrecision": 11,
+          "destinationName": "DECIMAL_COLUMN"
+        }
+      },
+      "c3": {
+        "toJsonMapping": {
+          "varcharColumnSize": 1000,
+          "destinationName": "JSON_COLUMN"
+        }
+      }
+    }
+  }
+}

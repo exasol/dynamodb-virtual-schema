@@ -13,7 +13,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
 
 import com.exasol.adapter.document.documentnode.dynamodb.DynamodbString;
@@ -127,7 +126,6 @@ class DynamodbFilterExpressionFactoryTest {
         assertThat(DynamodbFilterExpressionFactory.canConvert(getComparison("test", EQUAL)), equalTo(true));
     }
 
-    @NotNull
     private ColumnLiteralComparisonPredicate getComparisonOnUnsupportedColumn() {
         final SourceReferenceColumnMapping column = new SourceReferenceColumnMapping();
         return new ColumnLiteralComparisonPredicate(EQUAL, column, new SqlLiteralString(""));

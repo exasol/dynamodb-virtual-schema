@@ -1,22 +1,18 @@
 package com.exasol.adapter.document.mapping.dynamodb;
 
-import static com.exasol.adapter.document.mapping.MappingTestFiles.getMappingAsFile;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import java.io.IOException;
-import java.nio.file.Path;
+import java.io.File;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.io.TempDir;
 
-import com.exasol.adapter.AdapterException;
 import com.exasol.adapter.document.dynamodbmetadata.DynamodbPrimaryIndex;
 import com.exasol.adapter.document.dynamodbmetadata.DynamodbTableMetadata;
 import com.exasol.adapter.document.dynamodbmetadata.DynamodbTableMetadataFactory;
@@ -26,18 +22,16 @@ import com.exasol.adapter.document.mapping.TableKeyFetcher;
 import com.exasol.adapter.document.mapping.reader.JsonSchemaMappingReader;
 
 class DynamodbTableKeyFetcherTest {
-    @TempDir
-    static Path tempDir;
     private static final String TEST_TABLE_NAME = "testTableName";
     private static List<ColumnMapping> COLUMNS;
     private static ColumnMapping ISBN_COLUMN;
     private static ColumnMapping PUBLISHER_COLUMN;
 
     @BeforeAll
-    static void beforeAll() throws IOException, AdapterException {
-        COLUMNS = new JsonSchemaMappingReader(getMappingAsFile(MappingTestFiles.BASIC_MAPPING, tempDir), null)
-                .getSchemaMapping()
-                .getTableMappings().get(0).getColumns();
+    static void beforeAll() {
+        COLUMNS = new JsonSchemaMappingReader(new File(
+                DynamodbTableKeyFetcher.class.getClassLoader().getResource(MappingTestFiles.BASIC_MAPPING).getFile()),
+                null).getSchemaMapping().getTableMappings().get(0).getColumns();
         ISBN_COLUMN = COLUMNS.stream().filter(column -> column.getExasolColumnName().equals("ISBN")).findAny().get();
         PUBLISHER_COLUMN = COLUMNS.stream().filter(column -> column.getExasolColumnName().equals("PUBLISHER")).findAny()
                 .get();
@@ -62,7 +56,7 @@ class DynamodbTableKeyFetcherTest {
     }
 
     @Test
-    void testKeyFetchFails() throws TableKeyFetcher.NoKeyFoundException {
+    void testKeyFetchFails() {
         final DynamodbTableMetadataFactory metadataFactoryStub = getStubTableMetadataFactoryForPrimaryIndex(
                 new DynamodbPrimaryIndex("nonMappedColumn", Optional.empty()));
         final DynamodbTableKeyFetcher keyFetcher = new DynamodbTableKeyFetcher(metadataFactoryStub);
