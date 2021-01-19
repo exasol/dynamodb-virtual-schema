@@ -1,29 +1,5 @@
 package com.exasol.adapter.document;
 
-import static com.exasol.adapter.document.UdfEntryPoint.*;
-import static com.exasol.matcher.ResultSetStructureMatcher.table;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.endsWith;
-import static org.hamcrest.Matchers.equalTo;
-import static org.junit.jupiter.api.Assertions.assertAll;
-
-import java.io.IOException;
-import java.nio.file.Path;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.TimeoutException;
-
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Tag;
-import org.junit.jupiter.api.Test;
-import org.testcontainers.junit.jupiter.Container;
-import org.testcontainers.junit.jupiter.Testcontainers;
-
 import com.exasol.adapter.document.dynamodb.DynamodbAdapter;
 import com.exasol.adapter.document.mapping.MappingTestFiles;
 import com.exasol.bucketfs.Bucket;
@@ -35,8 +11,23 @@ import com.exasol.dynamodb.DynamodbContainer;
 import com.exasol.udfdebugging.PushDownTesting;
 import com.exasol.udfdebugging.UdfTestSetup;
 import com.github.dockerjava.api.model.ContainerNetwork;
-
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.*;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 import software.amazon.awssdk.services.dynamodb.model.*;
+
+import java.io.IOException;
+import java.nio.file.Path;
+import java.sql.*;
+import java.util.*;
+import java.util.concurrent.TimeoutException;
+
+import static com.exasol.adapter.document.UdfEntryPoint.*;
+import static com.exasol.matcher.ResultSetStructureMatcher.table;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.*;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 /**
  * Tests the {@link DynamodbAdapter} using a local docker version of DynamoDB and a local docker version of exasol.
@@ -233,7 +224,7 @@ class DynamodbAdapterIT {
                 () -> assertThat(PushDownTesting.getSelectionThatIsSentToTheAdapter(statement, query),
                         equalTo("(BOOKS_CHAPTERS.INDEX=0) AND (BOOKS_CHAPTERS.NAME='Main Chapter')")),
                 () -> assertThat(PushDownTesting.getPushDownSql(statement, query),
-                        endsWith("(\"INDEX\" = 0) AND (\"NAME\" = 'Main Chapter')")),
+                        anyOf(endsWith("(\"INDEX\" = 0) AND (\"NAME\" = 'Main Chapter')"), endsWith("(\"NAME\" = 'Main Chapter') AND (\"INDEX\" = 0)"))),
                 () -> assertThat(statement.executeQuery(query), table().row("Main Chapter").matches())//
         );
     }
@@ -253,7 +244,7 @@ class DynamodbAdapterIT {
     /**
      * Test that the WHERE claus filters as expected and that the adapter filters it-self and does not send delegates
      * the selection to the database.
-     * 
+     *
      * @throws IOException if upload fails
      */
     @Test
