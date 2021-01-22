@@ -1,20 +1,18 @@
 package com.exasol.adapter.document.documentfetcher.dynamodb;
 
-import static com.exasol.adapter.document.querypredicate.AbstractComparisonPredicate.Operator.*;
-
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
-
 import com.exasol.adapter.document.documentpath.DocumentPathExpression;
 import com.exasol.adapter.document.dynamodbmetadata.DynamodbIndex;
 import com.exasol.adapter.document.mapping.PropertyToColumnMapping;
 import com.exasol.adapter.document.querypredicate.AbstractComparisonPredicate.Operator;
 import com.exasol.adapter.document.querypredicate.ColumnLiteralComparisonPredicate;
 import com.exasol.adapter.document.querypredicate.ComparisonPredicate;
-import com.exasol.adapter.document.querypredicate.normalizer.DnfAnd;
-import com.exasol.adapter.document.querypredicate.normalizer.DnfComparison;
-import com.exasol.adapter.document.querypredicate.normalizer.DnfOr;
+import com.exasol.adapter.document.querypredicate.normalizer.*;
+
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import static com.exasol.adapter.document.querypredicate.AbstractComparisonPredicate.Operator.*;
 
 /**
  * This Factory builds {@link QueryOperationSelection}s for given selection predicate and DynamoDB index.
@@ -52,7 +50,7 @@ class QueryOperationSelectionFactory {
     }
 
     private ColumnLiteralComparisonPredicate extractPartitionKeyCondition(final DnfOr dnfOr,
-            final DynamodbIndex index) {
+                                                                          final DynamodbIndex index) {
         final Set<ColumnLiteralComparisonPredicate> partitionKeyConditions = dnfOr.getOperands().stream()
                 .map(dnfAnd -> extractPartitionKeyConditionsFromAnd(index, dnfAnd))
                 .filter(this::hasOnlyOnePartitionKeyCondition).filter(this::abortIfOneAndHasNoPartitionKey)
@@ -69,7 +67,7 @@ class QueryOperationSelectionFactory {
     }
 
     private Optional<ColumnLiteralComparisonPredicate> extractSortKeyCondition(final DnfOr dnfOr,
-            final DynamodbIndex index) {
+                                                                               final DynamodbIndex index) {
         final Set<Optional<ColumnLiteralComparisonPredicate>> andsSortKeyConditions = dnfOr.getOperands().stream()
                 .map(dnfAnd -> extractSortKeyConditionsFromAnd(index, dnfAnd)).collect(Collectors.toSet());
         if (andsSortKeyConditions.isEmpty()) {
@@ -85,7 +83,7 @@ class QueryOperationSelectionFactory {
 
     /**
      * Extract partition key values from and AND in the DNF.
-     *
+     * <p>
      * example: {@code dnfAnd: {@code isbn = 123 AND price > 10} index: (partitionKey = isbn) --> Set(isbn = 23) }
      *
      * @param index  DynamoDB index defining the partition key name
@@ -93,7 +91,7 @@ class QueryOperationSelectionFactory {
      * @return Set of conditions that involve the partition key.
      */
     private Set<ColumnLiteralComparisonPredicate> extractPartitionKeyConditionsFromAnd(final DynamodbIndex index,
-            final DnfAnd dnfAnd) {
+                                                                                       final DnfAnd dnfAnd) {
         return dnfAnd.getOperands().stream()
                 .filter(comparisonPredicate -> isComparisonOnProperty(comparisonPredicate.getComparisonPredicate(),
                         index.getPartitionKey()))
@@ -102,7 +100,7 @@ class QueryOperationSelectionFactory {
     }
 
     private Optional<ColumnLiteralComparisonPredicate> extractSortKeyConditionsFromAnd(final DynamodbIndex index,
-            final DnfAnd dnfAnd) {
+                                                                                       final DnfAnd dnfAnd) {
         final Set<ColumnLiteralComparisonPredicate> conditions = dnfAnd.getOperands().stream()
                 .map(this::extractComparisonPredicate)
                 .filter(comparisonPredicate -> isComparisonOnProperty(comparisonPredicate, index.getSortKey()))
@@ -141,7 +139,7 @@ class QueryOperationSelectionFactory {
     /**
      * If a AND specifies more that values for an equality comparison for the partition key, the AND is equal to false
      * and so can be left out as X OR false --> X. e.g. isbn = 123 AND isbn = 456 --> false
-     *
+     * <p>
      * As the input value is a set it only contains distinct values. That means, if there are more then two input
      * values, there are different comparisons on the partition key.
      */
@@ -152,7 +150,7 @@ class QueryOperationSelectionFactory {
     private boolean isComparisonOnProperty(final ComparisonPredicate comparison, final String propertyName) {
         final DocumentPathExpression keyPath = DocumentPathExpression.builder().addObjectLookup(propertyName).build();
         return comparison.getComparedColumns().stream().filter(column -> column instanceof PropertyToColumnMapping)
-                .map(column -> (PropertyToColumnMapping) column)
+                .map(PropertyToColumnMapping.class::cast)
                 .anyMatch(column -> column.getPathToSourceProperty().equals(keyPath));
     }
 
