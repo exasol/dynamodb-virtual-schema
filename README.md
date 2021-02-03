@@ -25,7 +25,7 @@ It abstracts over the different interfaces so that you can access the document d
 * Maps unstructured document data to Exasol tables that you can access using regular SQL statements
 * Pushes down queries to the remote source
 * Distributes the data loading over the whole Exasol Cluster, what makes queries more than six times faster compared to using a JDBC adapter
-* Flexible definition of the schema mapping using the [Exasol Document Mapping Language](https://exasol.github.io/virtual-schema-common-ducument/schema_doc/index.html)
+* Flexible definition of the schema mapping using the [Exasol Document Mapping Language](https://github.com/exasol/virtual-schema-common-document/blob/main/doc/user_guide/edml_user_guide.md)
 
 ## Limitations
 
