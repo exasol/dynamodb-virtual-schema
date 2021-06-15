@@ -7,13 +7,11 @@ import java.util.stream.Stream;
 import com.exasol.adapter.document.documentfetcher.DocumentFetcher;
 import com.exasol.adapter.document.documentnode.dynamodb.DynamodbNodeVisitor;
 import com.exasol.adapter.document.documentpath.DocumentPathExpression;
-import com.exasol.adapter.document.dynamodbmetadata.DynamodbIndex;
-import com.exasol.adapter.document.dynamodbmetadata.DynamodbPrimaryIndex;
-import com.exasol.adapter.document.dynamodbmetadata.DynamodbSecondaryIndex;
-import com.exasol.adapter.document.dynamodbmetadata.DynamodbTableMetadata;
+import com.exasol.adapter.document.dynamodbmetadata.*;
 import com.exasol.adapter.document.mapping.ColumnMapping;
 import com.exasol.adapter.document.queryplanning.RequiredPathExpressionExtractor;
 import com.exasol.adapter.document.querypredicate.normalizer.DnfOr;
+import com.exasol.errorreporting.ExaError;
 
 /**
  * This factory builds {@link DynamodbQueryDocumentFetcher}s for a given query. If the query can't be solved by a single
@@ -67,7 +65,8 @@ class DynamodbQueryDocumentFetcherFactory {
             }
         }
         if (bestQueryOperationSelection == null) {
-            throw new PlanDoesNotFitException("Could not find any Query operation plan");
+            throw new PlanDoesNotFitException(ExaError.messageBuilder("E-VS-DY-14")
+                    .message("Could not find any Query operation plan").toString());
         }
         return bestQueryOperationSelection;
     }

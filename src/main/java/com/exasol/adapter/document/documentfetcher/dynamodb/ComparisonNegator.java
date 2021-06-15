@@ -2,10 +2,9 @@ package com.exasol.adapter.document.documentfetcher.dynamodb;
 
 import static com.exasol.adapter.document.querypredicate.AbstractComparisonPredicate.Operator.*;
 
+import com.exasol.adapter.document.querypredicate.*;
 import com.exasol.adapter.document.querypredicate.AbstractComparisonPredicate.Operator;
-import com.exasol.adapter.document.querypredicate.ColumnLiteralComparisonPredicate;
-import com.exasol.adapter.document.querypredicate.ComparisonPredicate;
-import com.exasol.adapter.document.querypredicate.ComparisonPredicateVisitor;
+import com.exasol.errorreporting.ExaError;
 
 /**
  * This class negates a {@link ComparisonPredicate}.
@@ -14,7 +13,7 @@ public class ComparisonNegator {
 
     /**
      * Negate a {@link ComparisonPredicate}.
-     * 
+     *
      * @param predicate comparison predicate to negate
      * @return negated comparison.
      */
@@ -52,8 +51,16 @@ public class ComparisonNegator {
             case NOT_LIKE:
                 return LIKE;
             default:
-                throw new UnsupportedOperationException();// All possible operators are implemented and checked by
-                                                          // unit-test
+                throw new UnsupportedOperationException(ExaError.messageBuilder("E-VS-DY-2")
+                        .message("Unsupported operator {{operator}}.", operator).ticketMitigation().toString());// All
+                                                                                                                // possible
+                                                                                                                // operators
+                                                                                                                // are
+                                                                                                                // implemented
+                                                                                                                // and
+                                                                                                                // checked
+                                                                                                                // by
+            // unit-test
             }
         }
 

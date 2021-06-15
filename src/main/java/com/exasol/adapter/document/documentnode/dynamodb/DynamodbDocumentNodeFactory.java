@@ -1,6 +1,7 @@
 package com.exasol.adapter.document.documentnode.dynamodb;
 
 import com.exasol.adapter.document.documentnode.DocumentNode;
+import com.exasol.errorreporting.ExaError;
 
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 
@@ -12,7 +13,7 @@ public class DynamodbDocumentNodeFactory {
 
     /**
      * Builds a document node for a given {@link AttributeValue}.
-     * 
+     *
      * @param attributeValue {@link AttributeValue} to wrap
      * @return object, array, or value-node
      */
@@ -38,7 +39,9 @@ public class DynamodbDocumentNodeFactory {
         } else if (attributeValue.hasSs()) {
             return new DynamodbStringSet(attributeValue.ss());
         } else {
-            throw new UnsupportedOperationException("Unsupported DynamoDB type.");
+            throw new UnsupportedOperationException(ExaError.messageBuilder("F-VS-DY-7").message(
+                    "The type of the DynamoDB node {{node}} is not supported in this version of the dynamodb-virtual-schema.",
+                    attributeValue).ticketMitigation().toString());
         }
     }
 }

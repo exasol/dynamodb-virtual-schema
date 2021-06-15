@@ -11,6 +11,7 @@ import com.exasol.adapter.document.literalconverter.dynamodb.SqlLiteralToDynamod
 import com.exasol.adapter.document.mapping.ColumnMapping;
 import com.exasol.adapter.document.mapping.PropertyToColumnMapping;
 import com.exasol.adapter.document.querypredicate.*;
+import com.exasol.errorreporting.ExaError;
 
 /**
  * This class builds a DynamoDB filter expression for a given selection.
@@ -21,7 +22,7 @@ public class DynamodbFilterExpressionFactory {
 
     /**
      * Create an instance of {@link DynamodbFilterExpressionFactory}.
-     * 
+     *
      * @param namePlaceholderMapBuilder  builder that takes attribute names and gives placeholders for them
      * @param valuePlaceholderMapBuilder builder that takes literals and gives placeholders for them.
      */
@@ -44,7 +45,7 @@ public class DynamodbFilterExpressionFactory {
 
     /**
      * Build a DynamoDB filter expression for the given predicate.
-     * 
+     *
      * @param predicate predicate that will be converted into a filter expression
      * @return DynamoDB filter expression
      */
@@ -77,8 +78,9 @@ public class DynamodbFilterExpressionFactory {
         public void visit(final LogicalOperator logicalOperator) {
             final Set<QueryPredicate> operands = logicalOperator.getOperands();
             if (operands.isEmpty()) {
-                throw new IllegalArgumentException(
-                        "Empty logic expressions must be removed before converting to FilterExpression.");
+                throw new IllegalArgumentException(ExaError.messageBuilder("E-VS-DY-8")
+                        .message("Empty logic expressions must be removed before converting to FilterExpression.")
+                        .ticketMitigation().toString());
             } else if (operands.size() == 1) {
                 this.filterExpression = convertPredicateRecursively(operands.iterator().next());
             } else {
@@ -158,8 +160,12 @@ public class DynamodbFilterExpressionFactory {
                         + convertComparisonOperator(columnLiteralComparisonPredicate.getOperator()) + " "
                         + valuePlaceholder;
             } else {
-                throw new UnsupportedOperationException("This column has no corresponding DynamoDB column. "
-                        + "Hence it can't be part of a filter expression.");
+                throw new UnsupportedOperationException(ExaError.messageBuilder("E-VS-DY-9")
+                        .message(
+                                "The column {{column}} has no corresponding DynamoDB column. "
+                                        + "Hence it can't be part of a filter expression.",
+                                column.getExasolColumnName())
+                        .toString());
             }
         }
 
@@ -168,7 +174,8 @@ public class DynamodbFilterExpressionFactory {
             try {
                 return new SqlLiteralToDynamodbValueConverter().convert(columnLiteralComparisonPredicate.getLiteral());
             } catch (final NotLiteralException exception) {
-                throw new UnsupportedOperationException("Invalid comparison to a non literal.");
+                throw new UnsupportedOperationException(ExaError.messageBuilder("E-VS-DY-11")
+                        .message("Invalid comparison to a non literal.").toString());
             }
         }
 
@@ -187,7 +194,8 @@ public class DynamodbFilterExpressionFactory {
             case GREATER_EQUAL:
                 return ">=";
             default:
-                throw new UnsupportedOperationException("This operator has no equivalent in DynamoDB.");
+                throw new UnsupportedOperationException(ExaError.messageBuilder("E-VS-DY-12")
+                        .message("The operator {{operator}} has no equivalent in DynamoDB.", operator).toString());
             }
         }
     }

@@ -7,10 +7,7 @@ import java.util.Optional;
 import com.exasol.ExaConnectionInformation;
 import com.exasol.errorreporting.ExaError;
 
-import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
-import software.amazon.awssdk.auth.credentials.AwsCredentials;
-import software.amazon.awssdk.auth.credentials.AwsSessionCredentials;
-import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
+import software.amazon.awssdk.auth.credentials.*;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClientBuilder;
@@ -57,7 +54,7 @@ public class DynamodbConnectionFactory {
         try {
             return new URI(uri);
         } catch (final URISyntaxException exception) {
-            throw new IllegalArgumentException(ExaError.messageBuilder("E-VSDY-1")
+            throw new IllegalArgumentException(ExaError.messageBuilder("E-VS-DY-1")
                     .message("Invalid DynamoDB URI {{URI}}.").parameter("URI", uri)
                     .mitigation(
                             "Please set a valid DynamoDB connection string in the CONNECTION TO field. Either use aws:<REGION> or http://HOST:PORT for a local DynamoDB.")
@@ -71,7 +68,10 @@ public class DynamodbConnectionFactory {
                 final String[] parts = key.split(TOKEN_SEPARATOR);
                 if (parts.length != 2) {
                     throw new IllegalArgumentException(
-                            TOKEN_SEPARATOR + " must be used like: <PASS>" + TOKEN_SEPARATOR + "<TOKEN>");
+                            ExaError.messageBuilder("E-VS-DY-5").message("Invalid password string {{password}}.", key)
+                                    .mitigation("Format the password like: '<PASS>" + TOKEN_SEPARATOR
+                                            + "<TOKEN>' or simply '<PASS>'.")
+                                    .toString());
                 }
                 return getAwsCredentials(user, parts[0], Optional.of(parts[1]));
             }

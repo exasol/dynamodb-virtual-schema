@@ -15,6 +15,7 @@ The dependency update of virtual-schema-common-document cause the following API 
 ## Refactoring
 
 * #149: Refactored integration tests
+* #152: Added error-codes to error messages
 
 ## Dependency updates
 

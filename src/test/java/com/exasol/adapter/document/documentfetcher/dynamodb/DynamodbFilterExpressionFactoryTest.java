@@ -7,10 +7,7 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Test;
@@ -112,7 +109,7 @@ class DynamodbFilterExpressionFactoryTest {
         final UnsupportedOperationException exception = assertThrows(UnsupportedOperationException.class,
                 () -> factory.buildFilterExpression(comparison));
         assertThat(exception.getMessage(), equalTo(
-                "This column has no corresponding DynamoDB column. Hence it can't be part of a filter expression."));
+                "E-VS-DY-9: The column 'SOURCE_REFERENCE' has no corresponding DynamoDB column. Hence it can't be part of a filter expression."));
     }
 
     @Test

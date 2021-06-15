@@ -7,11 +7,10 @@ import java.util.stream.StreamSupport;
 
 import com.exasol.adapter.document.documentnode.DocumentValue;
 import com.exasol.adapter.document.documentnode.dynamodb.DynamodbNodeVisitor;
+import com.exasol.errorreporting.ExaError;
 
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
-import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
-import software.amazon.awssdk.services.dynamodb.model.ScanRequest;
-import software.amazon.awssdk.services.dynamodb.model.ScanResponse;
+import software.amazon.awssdk.services.dynamodb.model.*;
 
 /**
  * This class represents a DynamoDB {@code SCAN} operation.
@@ -24,7 +23,7 @@ class DynamodbScanDocumentFetcher extends AbstractDynamodbDocumentFetcher {
 
     /**
      * Create an instance of {@link DynamodbScanDocumentFetcher}.
-     * 
+     *
      * @param genericParameters generic parameters (not scan specific)
      * @param totalSegments     number of segments for the parallel scan
      * @param segment           segment to scan
@@ -125,6 +124,7 @@ class DynamodbScanDocumentFetcher extends AbstractDynamodbDocumentFetcher {
      * Builder for {@link DynamodbScanDocumentFetcher}.
      */
     public static final class Builder {
+        public static final String BUILD_FAILED_MESSAGE = "Failed to build DynamodbScanDocumentFetcher:";
         private final GenericTableAccessParameters.Builder genericParametersBuilder;
         private int totalSegments = -1;
         private int segment = -1;
@@ -217,13 +217,22 @@ class DynamodbScanDocumentFetcher extends AbstractDynamodbDocumentFetcher {
          * @return {@link DynamodbScanDocumentFetcher}
          */
         public DynamodbScanDocumentFetcher build() {
-            if(this.totalSegments == -1){
-                throw new IllegalStateException("totalSegments was not set but is a mandatory field.");
+            if (this.totalSegments == -1) {
+                throw new IllegalStateException(ExaError.messageBuilder("F-VS-DY-15")
+                        .message(BUILD_FAILED_MESSAGE + " TotalSegments was not set but is a mandatory field.")
+                        .mitigation(
+                                "Invoke the totalSegments(totalSegments) method on this builder before calling build().")
+                        .ticketMitigation().toString());
             }
-            if(this.segment == -1){
-                throw new IllegalStateException("segment was not set but is a mandatory field.");
+            if (this.segment == -1) {
+                throw new IllegalStateException(ExaError.messageBuilder("F-VS-DY-16")
+                        .message(BUILD_FAILED_MESSAGE + " Segment was not set but is a mandatory field.")
+                        .mitigation(
+                                "Invoke the totalSegments(totalSegments) method on this builder before calling build().")
+                        .ticketMitigation().toString());
             }
-            return new DynamodbScanDocumentFetcher(this.genericParametersBuilder.build(), this.totalSegments, this.segment);
+            return new DynamodbScanDocumentFetcher(this.genericParametersBuilder.build(), this.totalSegments,
+                    this.segment);
         }
     }
 }

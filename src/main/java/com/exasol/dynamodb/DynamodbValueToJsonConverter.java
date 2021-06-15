@@ -2,14 +2,13 @@ package com.exasol.dynamodb;
 
 import java.util.Map;
 
-import javax.json.JsonArrayBuilder;
-import javax.json.JsonObjectBuilder;
-import javax.json.JsonValue;
+import javax.json.*;
 import javax.json.spi.JsonProvider;
 
 import com.exasol.adapter.document.documentnode.DocumentArray;
 import com.exasol.adapter.document.documentnode.DocumentNode;
 import com.exasol.adapter.document.documentnode.dynamodb.*;
+import com.exasol.errorreporting.ExaError;
 
 /**
  * This class represents a converter from a DynamoDB values to the JSON format.
@@ -55,8 +54,9 @@ public class DynamodbValueToJsonConverter {
 
         @Override
         public void defaultVisit(final String typeName) {
-            throw new UnsupportedOperationException("The DynamoDB type " + typeName
-                    + " cant't be converted to JSON string. Try using a different mapping.");
+            throw new UnsupportedOperationException(ExaError.messageBuilder("E-VS-DY-31").message(
+                    "This version opf the virtual-schema can't convert the DynamoDB type {{typeName}} to JSON string.",
+                    typeName).mitigation("Try using a different mapping.").toString());
         }
 
         @Override
