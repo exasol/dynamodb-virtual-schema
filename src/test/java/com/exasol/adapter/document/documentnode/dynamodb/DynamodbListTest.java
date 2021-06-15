@@ -6,6 +6,7 @@ import static org.hamcrest.Matchers.equalTo;
 
 import java.util.List;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import com.exasol.dynamodb.attributevalue.AttributeValueQuickCreator;
@@ -50,7 +51,7 @@ class DynamodbListTest {
 
         @Override
         public void defaultVisit(final String typeName) {
-            throw new IllegalStateException("Should not be called");
+            Assertions.fail("Wrong visit method was called.");
         }
     }
 }

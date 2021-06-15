@@ -6,6 +6,7 @@ import com.exasol.adapter.document.documentnode.dynamodb.*;
 import com.exasol.adapter.document.literalconverter.NotLiteralException;
 import com.exasol.adapter.document.literalconverter.SqlLiteralToDocumentValueConverter;
 import com.exasol.adapter.sql.*;
+import com.exasol.errorreporting.ExaError;
 
 public class SqlLiteralToDynamodbValueConverter implements SqlLiteralToDocumentValueConverter<DynamodbNodeVisitor> {
     @Override
@@ -16,7 +17,8 @@ public class SqlLiteralToDynamodbValueConverter implements SqlLiteralToDocumentV
             return converter.getDynamodbValue();
         } catch (final AdapterException exception) {
             // This should never happen, as we do not throw adapter exceptions in the visitor.
-            throw new IllegalStateException("An unexpected adapter exception occurred", exception);
+            throw new IllegalStateException(ExaError.messageBuilder("F-VS-DY-28")
+                    .message("An unexpected adapter exception occurred.").ticketMitigation().toString(), exception);
         } catch (final NotLiteralExceptionWrapper wrapper) {
             throw wrapper.getException();
         }
@@ -85,8 +87,9 @@ public class SqlLiteralToDynamodbValueConverter implements SqlLiteralToDocumentV
         }
 
         public UnsupportedOperationException buildUnsupportedTypeException(final String type) {
-            return new UnsupportedOperationException("DynamoDB has no corresponding literal for Exasol's " + type
-                    + " literal. Please remove this literal from the capabilities.");
+            return new UnsupportedOperationException(ExaError.messageBuilder("E-VS-DY-29").message(
+                    "DynamoDB has no corresponding literal for Exasol's {{exasol literal}} literal. Please remove this literal from the capabilities.",
+                    type).toString());
         }
     }
 

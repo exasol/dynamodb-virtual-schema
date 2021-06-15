@@ -1,0 +1,51 @@
+{
+  "$schema": "../../main/resources/schemas/edml-1.2.0.json",
+  "source": "MY_BOOKS",
+  "destinationTable": "BOOKS",
+  "description": "Maps MY_BOOKS to BOOKS",
+  "addSourceReferenceColumn": true,
+  "mapping": {
+    "fields": {
+      "isbn": {
+        "toVarcharMapping": {
+          "varcharColumnSize": 20,
+          "description": "The isbn is mapped to a string with max length of 20",
+          "overflowBehaviour": "ABORT",
+          "required": true,
+          "key": "global"
+        }
+      },
+      "name": {
+        "toVarcharMapping": {
+          "varcharColumnSize": 100,
+          "description": "The name is mapped to a string with max length of 100",
+          "overflowBehaviour": "TRUNCATE"
+        }
+      },
+      "publisher": {
+        "toVarcharMapping": {
+          "varcharColumnSize": 100,
+          "description": "The name is mapped to a string with max length of 100",
+          "overflowBehaviour": "TRUNCATE"
+        }
+      },
+      "price": {
+        "toDecimalMapping": {
+          "decimalPrecision": 8,
+          "decimalScale": 2
+        }
+      },
+      "author": {
+        "fields": {
+          "name": {
+            "toVarcharMapping": {
+              "varcharColumnSize": 20,
+              "destinationName": "AUTHOR_NAME",
+              "description": "Maps the nested property authors.name to column authorName"
+            }
+          }
+        }
+      }
+    }
+  }
+}

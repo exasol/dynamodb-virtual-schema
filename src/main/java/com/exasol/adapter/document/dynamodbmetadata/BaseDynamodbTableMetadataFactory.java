@@ -1,9 +1,9 @@
 package com.exasol.adapter.document.dynamodbmetadata;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
+
+import com.exasol.errorreporting.ExaError;
 
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 import software.amazon.awssdk.services.dynamodb.model.*;
@@ -47,8 +47,10 @@ public class BaseDynamodbTableMetadataFactory implements DynamodbTableMetadataFa
                 return keySchemaElement.attributeName();
             }
         }
-        throw new IllegalStateException("Could not find partition key. "
-                + "This should not happen because each Dynamodb table must define a partition key.");
+        throw new IllegalStateException(ExaError.messageBuilder("F-VS-DY-30")
+                .message("Could not find partition key. "
+                        + "This should never happen because each Dynamodb table must define a partition key.")
+                .ticketMitigation().toString());
     }
 
     private Optional<String> extractSortKey(final List<KeySchemaElement> keySchema) {
@@ -72,8 +74,7 @@ public class BaseDynamodbTableMetadataFactory implements DynamodbTableMetadataFa
     }
 
     private List<DynamodbSecondaryIndex> extractGlobalSecondaryIndex(final TableDescription tableDescription) {
-        final List<GlobalSecondaryIndexDescription> globalSecondaryIndexes = tableDescription
-                .globalSecondaryIndexes();
+        final List<GlobalSecondaryIndexDescription> globalSecondaryIndexes = tableDescription.globalSecondaryIndexes();
         if (globalSecondaryIndexes != null) {
             return globalSecondaryIndexes.stream()
                     .map(index -> extractSecondaryIndex(index.keySchema(), index.indexName()))

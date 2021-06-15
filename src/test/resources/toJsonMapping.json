@@ -1,0 +1,28 @@
+{
+  "$schema": "../../main/resources/schemas/edml-1.0.0.json",
+  "source": "MY_BOOKS",
+  "destinationTable": "BOOKS",
+  "description": "Maps MY_BOOKS to BOOKS with toJSON",
+  "mapping": {
+    "fields": {
+      "isbn": {
+        "toVarcharMapping": {
+          "varcharColumnSize": 20,
+          "overflowBehaviour": "ABORT"
+        }
+      },
+      "name": {
+        "toVarcharMapping": {
+          "varcharColumnSize": 100,
+          "overflowBehaviour": "TRUNCATE"
+        }
+      },
+      "topics": {
+        "toJsonMapping": {
+          "description": "Maps the sub document of this property to a JSON string",
+          "varcharColumnSize": 200
+        }
+      }
+    }
+  }
+}

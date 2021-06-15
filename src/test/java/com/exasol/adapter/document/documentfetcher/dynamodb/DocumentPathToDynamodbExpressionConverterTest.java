@@ -17,8 +17,8 @@ class DocumentPathToDynamodbExpressionConverterTest {
 
     @Test
     void testConvertPath() {
-        final DocumentPathExpression path = DocumentPathExpression.builder().addObjectLookup("key")
-                .addArrayLookup(2).addObjectLookup("nestedKey").build();
+        final DocumentPathExpression path = DocumentPathExpression.builder().addObjectLookup("key").addArrayLookup(2)
+                .addObjectLookup("nestedKey").build();
         final DynamodbAttributeNamePlaceholderMapBuilder namePlaceholderMapBuilder = new DynamodbAttributeNamePlaceholderMapBuilder();
         final String result = CONVERTER.convert(path, namePlaceholderMapBuilder);
 
@@ -35,7 +35,7 @@ class DocumentPathToDynamodbExpressionConverterTest {
         final DynamodbAttributeNamePlaceholderMapBuilder namePlaceholderMapBuilder = new DynamodbAttributeNamePlaceholderMapBuilder();
         final UnsupportedOperationException exception = assertThrows(UnsupportedOperationException.class,
                 () -> CONVERTER.convert(path, namePlaceholderMapBuilder));
-        assertThat(exception.getMessage(),
-                equalTo("ArrayAll path segments can't be converted to DynamoDB path expressions."));
+        assertThat(exception.getMessage(), equalTo(
+                "F-VS-DY-4: ArrayAll path segments can't be converted to DynamoDB path expressions. This is an internal error that should not happen. Please report it by opening a GitHub issue."));
     }
 }

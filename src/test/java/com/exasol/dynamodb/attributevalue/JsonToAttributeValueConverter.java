@@ -7,6 +7,8 @@ import java.util.stream.Collectors;
 
 import javax.json.*;
 
+import com.exasol.errorreporting.ExaError;
+
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 
 public class JsonToAttributeValueConverter {
@@ -51,8 +53,9 @@ public class JsonToAttributeValueConverter {
             final JsonObject jsonObject = (JsonObject) value;
             return AttributeValue.builder().m(convertJsonObject(jsonObject)).build();
         default:
-            throw new UnsupportedOperationException(
-                    "Unimplemented JSON type (" + value.getValueType().toString() + ").");
+            throw new UnsupportedOperationException(ExaError.messageBuilder("F-VS-DY-18").message(
+                    "Failed to convert JSON value of type {{type}} to DynamoDB attribute value. This conversion is not yet implemented.",
+                    value.getValueType().toString()).ticketMitigation().toString());
         }
     }
 

@@ -1,0 +1,29 @@
+{
+  "$schema": "../../main/resources/schemas/edml-1.0.0.json",
+  "source": "DATA_TYPE_TEST",
+  "destinationTable": "TEST",
+  "mapping": {
+    "fields": {
+      "stringValue": {
+        "toVarcharMapping": {
+        }
+      },
+      "boolValue": {
+        "toVarcharMapping": {
+        }
+      },
+      "doubleValue": {
+        "toVarcharMapping": {
+        }
+      },
+      "integerValue": {
+        "toVarcharMapping": {
+        }
+      },
+      "nullValue": {
+        "toVarcharMapping": {
+        }
+      }
+    }
+  }
+}

@@ -26,8 +26,8 @@ import software.amazon.awssdk.services.dynamodb.model.*;
  * Using is the abstract basis for DynamoDB test interfaces. The test interfaces offers convenience methods for creating
  * test setups for a DynamoDB.
  */
-public abstract class DynamodbTestInterface {
-    private static final Logger LOGGER = LoggerFactory.getLogger(DynamodbTestInterface.class);
+public abstract class DynamodbTestDbBuilder {
+    private static final Logger LOGGER = LoggerFactory.getLogger(DynamodbTestDbBuilder.class);
     private final DynamoDbClient dynamoClient;
     private final String dynamoUrl;
     private final String dynamoUser;
@@ -38,7 +38,7 @@ public abstract class DynamodbTestInterface {
     /**
      * Constructor called by all other constructors.
      */
-    protected DynamodbTestInterface(final String dynamoUrl, final String user, final String pass,
+    protected DynamodbTestDbBuilder(final String dynamoUrl, final String user, final String pass,
             final Optional<String> sessionToken) throws URISyntaxException {
         this.dynamoUrl = dynamoUrl;
         this.dynamoUser = user;
@@ -46,8 +46,6 @@ public abstract class DynamodbTestInterface {
         this.sessionToken = sessionToken;
         this.dynamoClient = new DynamodbConnectionFactory().getConnection(dynamoUrl, user, pass, sessionToken);
     }
-
-    public abstract void teardown();
 
     public DynamoDbClient getDynamodbLowLevelConnection() throws URISyntaxException {
         return new DynamodbConnectionFactory().getConnection(this.getDynamoUrl(), this.getDynamoUser(),
@@ -187,17 +185,17 @@ public abstract class DynamodbTestInterface {
 
             @Override
             public String getAddress() {
-                return DynamodbTestInterface.this.getDynamoUrl();
+                return DynamodbTestDbBuilder.this.getDynamoUrl();
             }
 
             @Override
             public String getUser() {
-                return DynamodbTestInterface.this.getDynamoUser();
+                return DynamodbTestDbBuilder.this.getDynamoUser();
             }
 
             @Override
             public String getPassword() {
-                return DynamodbTestInterface.this.getDynamoPass();
+                return DynamodbTestDbBuilder.this.getDynamoPass();
             }
         };
     }

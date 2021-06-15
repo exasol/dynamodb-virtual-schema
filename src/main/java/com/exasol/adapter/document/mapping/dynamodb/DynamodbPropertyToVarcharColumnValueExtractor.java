@@ -20,7 +20,7 @@ public class DynamodbPropertyToVarcharColumnValueExtractor
     }
 
     @Override
-    protected String mapStringValue(final DocumentNode<DynamodbNodeVisitor> dynamodbProperty) {
+    protected MappedStringResult mapStringValue(final DocumentNode<DynamodbNodeVisitor> dynamodbProperty) {
         final ToStringVisitor visitor = new ToStringVisitor();
         dynamodbProperty.accept(visitor);
         return visitor.getResult();
@@ -31,35 +31,34 @@ public class DynamodbPropertyToVarcharColumnValueExtractor
      * {@link UnsupportedOperationException} is thrown.
      */
     private static class ToStringVisitor implements IncompleteDynamodbNodeVisitor {
-        private String result;
+        private MappedStringResult result;
 
         @Override
         public void visit(final DynamodbString string) {
-            this.result = string.getValue();
+            this.result = new MappedStringResult(string.getValue(), false);
         }
 
         @Override
         public void visit(final DynamodbNumber number) {
-            this.result = number.getValue();
+            this.result = new MappedStringResult(number.getValue(), true);
         }
 
         @Override
         public void visit(final DynamodbBoolean bool) {
-            this.result = Boolean.TRUE.equals(bool.getValue()) ? "true" : "false";
+            this.result = new MappedStringResult(Boolean.TRUE.equals(bool.getValue()) ? "true" : "false", true);
         }
 
         @Override
         public void visit(final DynamodbNull nullValue) {
-            this.result = null;
+            this.result = new MappedStringResult(null, false);
         }
 
         @Override
         public void defaultVisit(final String typeName) {
-            throw new UnsupportedOperationException(
-                    "The DynamoDB type " + typeName + " cant't be converted to string. Try using a different mapping.");
+            this.result = null;
         }
 
-        public String getResult() {
+        public MappedStringResult getResult() {
             return this.result;
         }
     }

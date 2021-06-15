@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 import com.exasol.adapter.document.documentnode.DocumentValue;
 import com.exasol.adapter.document.documentnode.dynamodb.DynamodbNodeToAttributeValueConverter;
 import com.exasol.adapter.document.documentnode.dynamodb.DynamodbNodeVisitor;
+import com.exasol.errorreporting.ExaError;
 
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 
@@ -206,23 +207,30 @@ public class GenericTableAccessParameters implements Serializable {
         }
 
         public GenericTableAccessParameters build() {
-            if(this.tableName == null){
-                throw new IllegalStateException("tableName was not set but is a mandatory field.");
+            if (this.tableName == null) {
+                throw getUnsetParameterException("tableName");
             }
-            if(this.expressionAttributeNames == null){
-                throw new IllegalStateException("expressionAttributeNames  was not set but is a mandatory field.");
+            if (this.expressionAttributeNames == null) {
+                throw getUnsetParameterException("expressionAttributeNames");
             }
-            if(this.expressionAttributeValues == null){
-                throw new IllegalStateException("expressionAttributeValues  was not set but is a mandatory field.");
+            if (this.expressionAttributeValues == null) {
+                throw getUnsetParameterException("expressionAttributeValues");
             }
-            if(this.filterExpression == null){
-                throw new IllegalStateException("filterExpression  was not set but is a mandatory field.");
+            if (this.filterExpression == null) {
+                throw getUnsetParameterException("filterExpression");
             }
-            if(this.projectionExpression == null){
-                throw new IllegalStateException("projectionExpression  was not set but is a mandatory field.");
+            if (this.projectionExpression == null) {
+                throw getUnsetParameterException("projectionExpression");
             }
             return new GenericTableAccessParameters(this.tableName, this.expressionAttributeNames,
                     this.expressionAttributeValues, this.filterExpression, this.projectionExpression);
+        }
+
+        private IllegalStateException getUnsetParameterException(final String field) {
+            return new IllegalStateException(ExaError.messageBuilder("F-VS-DY-17")
+                    .message("Can not GenericTableAccessParameters since the required field {{field}} was not set.",
+                            field)
+                    .ticketMitigation().toString());
         }
     }
 }

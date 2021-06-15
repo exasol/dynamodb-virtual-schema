@@ -4,6 +4,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.instanceOf;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import com.exasol.adapter.document.documentnode.DocumentNode;
@@ -38,7 +39,7 @@ class DynamodbNullTest {
 
         @Override
         public void defaultVisit(final String typeName) {
-            throw new IllegalStateException("Should not be called");
+            Assertions.fail("Wrong visit method was called.");
         }
     }
 }
