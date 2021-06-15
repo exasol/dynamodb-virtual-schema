@@ -1,5 +1,11 @@
 package com.exasol.adapter.document.documentfetcher.dynamodb;
 
+import static com.exasol.adapter.document.querypredicate.AbstractComparisonPredicate.Operator.*;
+
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 import com.exasol.adapter.document.documentpath.DocumentPathExpression;
 import com.exasol.adapter.document.dynamodbmetadata.DynamodbIndex;
 import com.exasol.adapter.document.mapping.PropertyToColumnMapping;
@@ -7,12 +13,7 @@ import com.exasol.adapter.document.querypredicate.AbstractComparisonPredicate.Op
 import com.exasol.adapter.document.querypredicate.ColumnLiteralComparisonPredicate;
 import com.exasol.adapter.document.querypredicate.ComparisonPredicate;
 import com.exasol.adapter.document.querypredicate.normalizer.*;
-
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
-
-import static com.exasol.adapter.document.querypredicate.AbstractComparisonPredicate.Operator.*;
+import com.exasol.errorreporting.ExaError;
 
 /**
  * This Factory builds {@link QueryOperationSelection}s for given selection predicate and DynamoDB index.
@@ -50,32 +51,34 @@ class QueryOperationSelectionFactory {
     }
 
     private ColumnLiteralComparisonPredicate extractPartitionKeyCondition(final DnfOr dnfOr,
-                                                                          final DynamodbIndex index) {
+            final DynamodbIndex index) {
         final Set<ColumnLiteralComparisonPredicate> partitionKeyConditions = dnfOr.getOperands().stream()
                 .map(dnfAnd -> extractPartitionKeyConditionsFromAnd(index, dnfAnd))
                 .filter(this::hasOnlyOnePartitionKeyCondition).filter(this::abortIfOneAndHasNoPartitionKey)
                 .map(set -> set.iterator().next()).collect(Collectors.toSet());
         if (partitionKeyConditions.size() > 1) {
-            throw new PlanDoesNotFitException("This query specifies more than one partition key. "
-                    + "This could be solved by multiple query operations, but is not implemented yet.");
+            throw new PlanDoesNotFitException(ExaError.messageBuilder("E-VS-DY-19")
+                    .message("This query specifies more than one partition key. "
+                            + "This could be solved by multiple query operations, but is not implemented yet.")
+                    .toString());
         }
         if (partitionKeyConditions.isEmpty()) {
-            throw new PlanDoesNotFitException(
-                    "This query does not specify a partition key. Use a SCAN operation instead.");
+            throw new PlanDoesNotFitException(ExaError.messageBuilder("E-VS-DY-20")
+                    .message("This query does not specify a partition key. Use a SCAN operation instead.").toString());
         }
         return partitionKeyConditions.iterator().next();
     }
 
     private Optional<ColumnLiteralComparisonPredicate> extractSortKeyCondition(final DnfOr dnfOr,
-                                                                               final DynamodbIndex index) {
+            final DynamodbIndex index) {
         final Set<Optional<ColumnLiteralComparisonPredicate>> andsSortKeyConditions = dnfOr.getOperands().stream()
                 .map(dnfAnd -> extractSortKeyConditionsFromAnd(index, dnfAnd)).collect(Collectors.toSet());
         if (andsSortKeyConditions.isEmpty()) {
             return Optional.empty();
         } else if (andsSortKeyConditions.size() > 1) {
             // TODO optimization: split query
-            throw new PlanDoesNotFitException(
-                    "This is not a Query operation as different sort key conditions are used.");
+            throw new PlanDoesNotFitException(ExaError.messageBuilder("E-VS-DY-21")
+                    .message("This is not a Query operation as different sort key conditions are used.").toString());
         } else {
             return andsSortKeyConditions.iterator().next();
         }
@@ -91,7 +94,7 @@ class QueryOperationSelectionFactory {
      * @return Set of conditions that involve the partition key.
      */
     private Set<ColumnLiteralComparisonPredicate> extractPartitionKeyConditionsFromAnd(final DynamodbIndex index,
-                                                                                       final DnfAnd dnfAnd) {
+            final DnfAnd dnfAnd) {
         return dnfAnd.getOperands().stream()
                 .filter(comparisonPredicate -> isComparisonOnProperty(comparisonPredicate.getComparisonPredicate(),
                         index.getPartitionKey()))
@@ -100,14 +103,15 @@ class QueryOperationSelectionFactory {
     }
 
     private Optional<ColumnLiteralComparisonPredicate> extractSortKeyConditionsFromAnd(final DynamodbIndex index,
-                                                                                       final DnfAnd dnfAnd) {
+            final DnfAnd dnfAnd) {
         final Set<ColumnLiteralComparisonPredicate> conditions = dnfAnd.getOperands().stream()
                 .map(this::extractComparisonPredicate)
                 .filter(comparisonPredicate -> isComparisonOnProperty(comparisonPredicate, index.getSortKey()))
                 .map(this::castToColumnLiteralComparisonWithAbortIfNotPossible).collect(Collectors.toSet());
         if (conditions.size() > 1) {
             // TODO optimization: try to merge conditions
-            throw new PlanDoesNotFitException("Different sort key conditions are not supported in a single AND.");
+            throw new PlanDoesNotFitException(ExaError.messageBuilder("E-VS-DY-22")
+                    .message("Different sort key conditions are not supported in a single AND.").toString());
         } else if (conditions.size() == 1) {
             return Optional.of(conditions.iterator().next());
         } else {
@@ -117,8 +121,9 @@ class QueryOperationSelectionFactory {
 
     private boolean abortIfOneAndHasNoPartitionKey(final Set<ColumnLiteralComparisonPredicate> andsPartitionKeys) {
         if (andsPartitionKeys.isEmpty()) {
-            throw new PlanDoesNotFitException(
-                    "One or more predicates does not specify a partiton key. Therefore this Query requires a SCAN operation.");
+            throw new PlanDoesNotFitException(ExaError.messageBuilder("E-VS-DY-23").message(
+                    "One or more predicates does not specify a partiton key. Therefore this Query requires a SCAN operation.")
+                    .toString());
         }
         return true;
     }
@@ -127,8 +132,10 @@ class QueryOperationSelectionFactory {
         if (comparison.isNegated()) {
             final ComparisonPredicate negated = NEGATOR.negate(comparison.getComparisonPredicate());
             if (!SUPPORTED_OPERATORS_FOR_KEY_COLUMNS.contains(negated.getOperator())) {
-                throw new PlanDoesNotFitException(
-                        "DynamoDB does not support the " + negated.getOperator() + " operator for key conditions.");
+                throw new PlanDoesNotFitException(ExaError.messageBuilder("E-VS-DY-24")
+                        .message("DynamoDB does not support the {{operator}} operator for key conditions.",
+                                negated.getOperator())
+                        .toString());
             }
             return negated;
         } else {
@@ -158,7 +165,8 @@ class QueryOperationSelectionFactory {
         if (comparison.getComparisonPredicate().getOperator().equals(EQUAL) && !comparison.isNegated()) {
             return true;
         } else {
-            throw new PlanDoesNotFitException("Dynamodb does only support equality comparisons on the primary key.");
+            throw new PlanDoesNotFitException(ExaError.messageBuilder("E-VS-DY-25")
+                    .message("DynamoDB does only support equality comparisons on the primary key.").toString());
         }
     }
 
@@ -167,7 +175,8 @@ class QueryOperationSelectionFactory {
         if (comparisonPredicate instanceof ColumnLiteralComparisonPredicate) {
             return (ColumnLiteralComparisonPredicate) comparisonPredicate;
         } else {
-            throw new PlanDoesNotFitException("Dynmaodb does only support comparisons to a literal for key columns.");
+            throw new PlanDoesNotFitException(ExaError.messageBuilder("E-VS-DY-26")
+                    .message("DynamoDB does only support comparisons to a literal for key columns.").toString());
         }
     }
 }

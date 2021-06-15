@@ -10,10 +10,7 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
-import com.exasol.adapter.document.documentnode.dynamodb.DynamodbBoolean;
-import com.exasol.adapter.document.documentnode.dynamodb.DynamodbNull;
-import com.exasol.adapter.document.documentnode.dynamodb.DynamodbNumber;
-import com.exasol.adapter.document.documentnode.dynamodb.DynamodbString;
+import com.exasol.adapter.document.documentnode.dynamodb.*;
 import com.exasol.adapter.document.literalconverter.NotLiteralException;
 import com.exasol.adapter.sql.*;
 
@@ -62,7 +59,8 @@ class SqlLiteralToDynamodbValueConverterTest {
         for (final SqlNode unsupportedLiteral : unsupportedLiterals) {
             final UnsupportedOperationException exception = assertThrows(UnsupportedOperationException.class,
                     () -> CONVERTER.convert(unsupportedLiteral));
-            assertThat(exception.getMessage(), startsWith("DynamoDB has no corresponding literal for Exasol's"));
+            assertThat(exception.getMessage(),
+                    startsWith("E-VS-DY-29: DynamoDB has no corresponding literal for Exasol's "));
         }
     }
 

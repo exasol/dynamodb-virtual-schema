@@ -5,6 +5,7 @@ import java.util.stream.Stream;
 
 import com.exasol.adapter.document.documentnode.DocumentValue;
 import com.exasol.adapter.document.documentnode.dynamodb.DynamodbNodeVisitor;
+import com.exasol.errorreporting.ExaError;
 
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
@@ -165,8 +166,10 @@ public class DynamodbQueryDocumentFetcher extends AbstractDynamodbDocumentFetche
          * @return {@link DynamodbQueryDocumentFetcher}
          */
         public DynamodbQueryDocumentFetcher build() {
-            if(this.keyConditionExpression == null){
-                throw new IllegalStateException("keyConditionExpression was not set but is a mandatory field.");
+            if (this.keyConditionExpression == null) {
+                throw new IllegalStateException(ExaError.messageBuilder("E-VS-DY-13").message(
+                        "Can not build DynamodbQueryDocumentFetcher: keyConditionExpression was not set but is a mandatory field.")
+                        .toString());
             }
             return new DynamodbQueryDocumentFetcher(this.genericParametersBuilder.build(), this.indexName,
                     this.keyConditionExpression);

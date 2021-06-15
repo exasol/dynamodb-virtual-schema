@@ -86,6 +86,11 @@
     <dependencies>
         <dependency>
             <groupId>com.exasol</groupId>
+            <artifactId>error-reporting-java</artifactId>
+            <version>0.4.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.exasol</groupId>
             <artifactId>virtual-schema-common-document</artifactId>
             <version>${vs-common-document.version}</version>
         </dependency>
@@ -93,6 +98,7 @@
             <groupId>software.amazon.awssdk</groupId>
             <artifactId>dynamodb</artifactId>
         </dependency>
+
         <!-- Test dependencies -->
         <dependency>
             <groupId>org.hamcrest</groupId>
@@ -279,7 +285,7 @@
                     <descriptors>
                         <descriptor>src/assembly/all-dependencies.xml</descriptor>
                     </descriptors>
-                    <finalName>document-virtual-schema-dist-${vs-common-document.version}-dynamodb-${version}
+                    <finalName>document-virtual-schema-dist-${vs-common-document.version}-dynamodb-${project.version}
                     </finalName>
                     <appendAssemblyId>false</appendAssemblyId>
                 </configuration>
@@ -401,6 +407,18 @@
                         <module>udf_coverage</module>
                     </modules>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>com.exasol</groupId>
+                <artifactId>error-code-crawler-maven-plugin</artifactId>
+                <version>0.4.0</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>verify</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>

@@ -6,20 +6,17 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
 import com.exasol.adapter.AdapterException;
-import com.exasol.adapter.document.dynamodbmetadata.DynamodbPrimaryIndex;
-import com.exasol.adapter.document.dynamodbmetadata.DynamodbSecondaryIndex;
-import com.exasol.adapter.document.dynamodbmetadata.DynamodbTableMetadata;
+import com.exasol.adapter.document.dynamodbmetadata.*;
 import com.exasol.adapter.document.queryplanning.RemoteTableQuery;
 import com.exasol.adapter.document.querypredicate.QueryPredicate;
+import com.exasol.errorreporting.ExaError;
 
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 
@@ -88,8 +85,8 @@ class DynamodbDocumentFetcherFactoryTest {
                 null).buildDocumentFetcherForQuery(documentQuery, tableMetadata, 1).getDocumentFetchers().get(0);
         final Map<String, String> attributeNames = queryPlan.getQueryRequest().expressionAttributeNames();
         final Map<String, AttributeValue> attributeValues = queryPlan.getQueryRequest().expressionAttributeValues();
-        final String keyConditionExpression = replaceBackPlaceholders(
-                queryPlan.getQueryRequest().keyConditionExpression(), attributeNames, attributeValues);
+        final String keyConditionExpression = fillPlaceholders(queryPlan.getQueryRequest().keyConditionExpression(),
+                attributeNames, attributeValues);
         assertAll(//
                 () -> assertThat(queryPlan.getQueryRequest().tableName(),
                         equalTo(basicMappingSetup.tableMapping.getRemoteName())),
@@ -110,8 +107,8 @@ class DynamodbDocumentFetcherFactoryTest {
                 null).buildDocumentFetcherForQuery(documentQuery, tableMetadata, 1).getDocumentFetchers().get(0);
         final Map<String, String> attributeNames = queryPlan.getQueryRequest().expressionAttributeNames();
         final Map<String, AttributeValue> attributeValues = queryPlan.getQueryRequest().expressionAttributeValues();
-        final String keyConditionExpression = replaceBackPlaceholders(
-                queryPlan.getQueryRequest().keyConditionExpression(), attributeNames, attributeValues);
+        final String keyConditionExpression = fillPlaceholders(queryPlan.getQueryRequest().keyConditionExpression(),
+                attributeNames, attributeValues);
         assertAll(//
                 () -> assertThat(queryPlan.getQueryRequest().tableName(),
                         equalTo(basicMappingSetup.tableMapping.getRemoteName())),
@@ -173,8 +170,8 @@ class DynamodbDocumentFetcherFactoryTest {
                 null).buildDocumentFetcherForQuery(documentQuery, tableMetadata, 1).getDocumentFetchers().get(0);
         final Map<String, String> attributeNames = queryPlan.getQueryRequest().expressionAttributeNames();
         final Map<String, AttributeValue> attributeValues = queryPlan.getQueryRequest().expressionAttributeValues();
-        final String filterExpression = replaceBackPlaceholders(queryPlan.getQueryRequest().filterExpression(),
-                attributeNames, attributeValues);
+        final String filterExpression = fillPlaceholders(queryPlan.getQueryRequest().filterExpression(), attributeNames,
+                attributeValues);
         assertAll(//
                 () -> assertThat(queryPlan.getQueryRequest().tableName(),
                         equalTo(basicMappingSetup.tableMapping.getRemoteName())),
@@ -196,10 +193,10 @@ class DynamodbDocumentFetcherFactoryTest {
                 null).buildDocumentFetcherForQuery(documentQuery, tableMetadata, 1).getDocumentFetchers().get(0);
         final Map<String, String> attributeNames = queryPlan.getQueryRequest().expressionAttributeNames();
         final Map<String, AttributeValue> attributeValues = queryPlan.getQueryRequest().expressionAttributeValues();
-        final String filterExpression = replaceBackPlaceholders(queryPlan.getQueryRequest().filterExpression(),
+        final String filterExpression = fillPlaceholders(queryPlan.getQueryRequest().filterExpression(), attributeNames,
+                attributeValues);
+        final String keyConditionExpression = fillPlaceholders(queryPlan.getQueryRequest().keyConditionExpression(),
                 attributeNames, attributeValues);
-        final String keyConditionExpression = replaceBackPlaceholders(
-                queryPlan.getQueryRequest().keyConditionExpression(), attributeNames, attributeValues);
         assertAll(//
                 () -> assertThat(queryPlan.getQueryRequest().tableName(),
                         equalTo(basicMappingSetup.tableMapping.getRemoteName())),
@@ -217,7 +214,7 @@ class DynamodbDocumentFetcherFactoryTest {
         assertThat(postSelection.toString(), containsString("SOURCE_REFERENCE"));
     }
 
-    private String replaceBackPlaceholders(final String expression, final Map<String, String> names,
+    private String fillPlaceholders(final String expression, final Map<String, String> names,
             final Map<String, AttributeValue> values) {
         String result = expression;
         for (final Map.Entry<String, String> namePlaceholder : names.entrySet()) {
@@ -230,7 +227,9 @@ class DynamodbDocumentFetcherFactoryTest {
             } else if (value.n() != null) {
                 result = result.replace(valuePlaceholder.getKey(), value.n());
             } else {
-                throw new UnsupportedOperationException("not yet implemented");
+                throw new IllegalStateException(ExaError.messageBuilder("E-VS-DY-6").message(
+                        "Filling in a placeholder of this type is not yet implemented. Value for the placeholder: {{value}}.",
+                        value).toString());
             }
         }
         return result;

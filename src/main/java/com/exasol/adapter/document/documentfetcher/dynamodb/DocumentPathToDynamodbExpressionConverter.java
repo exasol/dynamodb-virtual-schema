@@ -1,6 +1,7 @@
 package com.exasol.adapter.document.documentfetcher.dynamodb;
 
 import com.exasol.adapter.document.documentpath.*;
+import com.exasol.errorreporting.ExaError;
 
 /**
  * This class builds DynamoDB path expressions
@@ -28,7 +29,7 @@ public class DocumentPathToDynamodbExpressionConverter {
 
     /**
      * Converts the given {@link DocumentPathExpression} into a DynamoDB path expression.
-     * 
+     *
      * @param pathToConvert path to be converted
      * @return DynamoDB path expression
      */
@@ -69,8 +70,9 @@ public class DocumentPathToDynamodbExpressionConverter {
 
         @Override
         public void visit(final ArrayAllPathSegment arrayAllPathSegment) {
-            throw new UnsupportedOperationException(
-                    "ArrayAll path segments can't be converted to DynamoDB path expressions.");
+            throw new UnsupportedOperationException(ExaError.messageBuilder("F-VS-DY-4")
+                    .message("ArrayAll path segments can't be converted to DynamoDB path expressions.")
+                    .ticketMitigation().toString());
         }
 
         public String getPathExpression() {
