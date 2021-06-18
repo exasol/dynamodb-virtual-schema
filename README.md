@@ -1,6 +1,6 @@
 # Virtual Schema for AWS DynamoDB
 
-[![Build Status](https://travis-ci.com/exasol/dynamodb-virtual-schema.svg?branch=master)](https://travis-ci.com/exasol/dynamodb-virtual-schema)
+[![Build Status](https://travis-ci.com/exasol/dynamodb-virtual-schema.svg?branch=main)](https://travis-ci.com/exasol/dynamodb-virtual-schema)
 
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=com.exasol%3Adynamodb-virtual-schema&metric=alert_status)](https://sonarcloud.io/dashboard?id=com.exasol%3Adynamodb-virtual-schema)
 
