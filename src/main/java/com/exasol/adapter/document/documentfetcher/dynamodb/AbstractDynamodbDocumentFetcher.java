@@ -1,13 +1,14 @@
 package com.exasol.adapter.document.documentfetcher.dynamodb;
 
+import java.util.Iterator;
 import java.util.Map;
-import java.util.stream.Stream;
 
 import com.exasol.ExaConnectionInformation;
 import com.exasol.adapter.document.documentfetcher.DocumentFetcher;
 import com.exasol.adapter.document.documentfetcher.FetchedDocument;
 import com.exasol.adapter.document.documentnode.dynamodb.DynamodbMap;
-import com.exasol.adapter.document.documentnode.dynamodb.DynamodbNodeVisitor;
+import com.exasol.adapter.document.iterators.AfterAllCallbackIterator;
+import com.exasol.adapter.document.iterators.TransformingIterator;
 import com.exasol.dynamodb.DynamodbConnectionFactory;
 
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
@@ -16,14 +17,18 @@ import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 /**
  * This class is the abstract basis for DynamoDB {@link DocumentFetcher}s.
  */
-abstract class AbstractDynamodbDocumentFetcher implements DocumentFetcher<DynamodbNodeVisitor> {
+abstract class AbstractDynamodbDocumentFetcher implements DocumentFetcher {
     private static final long serialVersionUID = 1110930661591665420L;
 
     @Override
-    public Stream<FetchedDocument<DynamodbNodeVisitor>> run(final ExaConnectionInformation connectionInformation) {
+    public Iterator<FetchedDocument> run(final ExaConnectionInformation connectionInformation) {
         final String tableName = getTableName();
-        return this.run(new DynamodbConnectionFactory().getConnection(connectionInformation)).map(DynamodbMap::new)
-                .map(document -> new FetchedDocument<>(document, tableName));
+        final DynamoDbClient connection = new DynamodbConnectionFactory().getConnection(connectionInformation);
+        final Iterator<Map<String, AttributeValue>> dynamodbResults = this.run(connection);
+        final Iterator<Map<String, AttributeValue>> resultsWithCloseDecorator = new AfterAllCallbackIterator<>(
+                dynamodbResults, connection::close);
+        return new TransformingIterator<>(resultsWithCloseDecorator,
+                dynamodbEntry -> new FetchedDocument(new DynamodbMap(dynamodbEntry), tableName));
     }
 
     /**
@@ -32,7 +37,7 @@ abstract class AbstractDynamodbDocumentFetcher implements DocumentFetcher<Dynamo
      * @param client DynamoDB client
      * @return result of the operation.
      */
-    protected abstract Stream<Map<String, AttributeValue>> run(final DynamoDbClient client);
+    protected abstract Iterator<Map<String, AttributeValue>> run(final DynamoDbClient client);
 
     /**
      * Get the name of the DynamoDB table.

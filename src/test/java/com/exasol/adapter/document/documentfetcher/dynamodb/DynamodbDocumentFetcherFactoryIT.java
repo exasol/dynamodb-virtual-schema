@@ -9,27 +9,21 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.Tag;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import com.exasol.adapter.AdapterException;
-import com.exasol.adapter.document.DynamodbTestDbBuilder;
-import com.exasol.adapter.document.TestDocuments;
-import com.exasol.adapter.document.TestcontainerDynamodbTestDbBuilder;
+import com.exasol.adapter.document.*;
 import com.exasol.adapter.document.documentfetcher.DocumentFetcher;
 import com.exasol.adapter.document.documentfetcher.FetchedDocument;
-import com.exasol.adapter.document.documentnode.DocumentNode;
-import com.exasol.adapter.document.documentnode.DocumentObject;
-import com.exasol.adapter.document.documentnode.dynamodb.DynamodbNodeVisitor;
-import com.exasol.adapter.document.documentnode.dynamodb.DynamodbString;
+import com.exasol.adapter.document.documentnode.*;
 import com.exasol.adapter.document.queryplanning.RemoteTableQuery;
 import com.exasol.dynamodb.DynamodbContainer;
 
@@ -78,37 +72,39 @@ class DynamodbDocumentFetcherFactoryIT {
         dynamodbTestDbBuilder.importData(basicMappingSetup.tableMapping.getRemoteName(), TestDocuments.books());
     }
 
-    private List<DocumentNode<DynamodbNodeVisitor>> runQueryAndExtractDocuments(final RemoteTableQuery query)
-            throws URISyntaxException {
-        final Stream<FetchedDocument<DynamodbNodeVisitor>> fetchedDocuments = runQuery(query);
-        return fetchedDocuments.map(FetchedDocument::getRootDocumentNode).collect(Collectors.toList());
+    private List<DocumentNode> runQueryAndExtractDocuments(final RemoteTableQuery query) throws URISyntaxException {
+        final List<FetchedDocument> fetchedDocuments = runQuery(query);
+        return fetchedDocuments.stream().map(FetchedDocument::getRootDocumentNode).collect(Collectors.toList());
     }
 
-    private Stream<FetchedDocument<DynamodbNodeVisitor>> runQuery(final RemoteTableQuery query)
-            throws URISyntaxException {
+    private List<FetchedDocument> runQuery(final RemoteTableQuery query) throws URISyntaxException {
         final DynamodbDocumentFetcherFactory fetcherFactory = new DynamodbDocumentFetcherFactory(
                 dynamodbTestDbBuilder.getDynamodbLowLevelConnection());
-        final List<DocumentFetcher<DynamodbNodeVisitor>> documentFetchers = fetcherFactory
-                .buildDocumentFetcherForQuery(query, 2).getDocumentFetchers();
-        return documentFetchers.stream()
-                .flatMap((DocumentFetcher<DynamodbNodeVisitor> documentFetcher) -> documentFetcher
-                        .run(dynamodbTestDbBuilder.getExaConnectionInformationForDynamodb()));
+        final List<DocumentFetcher> documentFetchers = fetcherFactory.buildDocumentFetcherForQuery(query, 2)
+                .getDocumentFetchers();
+        final List<FetchedDocument> result = new ArrayList<>();
+        for (final DocumentFetcher documentFetcher : documentFetchers) {
+            documentFetcher.run(dynamodbTestDbBuilder.getExaConnectionInformationForDynamodb())
+                    .forEachRemaining(result::add);
+        }
+        return result;
     }
 
     @Test
     void testSourcePath() throws URISyntaxException {
         final RemoteTableQuery remoteTableQuery = basicMappingSetup.getSelectAllQuery();
-        final Stream<FetchedDocument<DynamodbNodeVisitor>> fetchedDocuments = runQuery(remoteTableQuery);
-        final String firstSourcePath = fetchedDocuments.map(FetchedDocument::getSourcePath).findFirst().orElseThrow();
+        final List<FetchedDocument> fetchedDocuments = runQuery(remoteTableQuery);
+        final String firstSourcePath = fetchedDocuments.stream().map(FetchedDocument::getSourcePath).findFirst()
+                .orElseThrow();
         assertThat(firstSourcePath, equalTo(basicMappingSetup.tableMapping.getRemoteName()));
     }
 
     @Test
     void testSelectAll() throws URISyntaxException {
         final RemoteTableQuery remoteTableQuery = basicMappingSetup.getSelectAllQuery();
-        final List<DocumentNode<DynamodbNodeVisitor>> result = runQueryAndExtractDocuments(remoteTableQuery);
+        final List<DocumentNode> result = runQueryAndExtractDocuments(remoteTableQuery);
         assertThat(result.size(), equalTo(3));
-        final DocumentObject<DynamodbNodeVisitor> first = (DocumentObject<DynamodbNodeVisitor>) result.get(0);
+        final DocumentObject first = (DocumentObject) result.get(0);
         assertThat(first.hasKey("author"), equalTo(true));
     }
 
@@ -116,18 +112,18 @@ class DynamodbDocumentFetcherFactoryIT {
     void testRequestSingleItem() throws URISyntaxException {
         final String isbn = "123567";
         final RemoteTableQuery documentQuery = basicMappingSetup.getQueryForIsbn(isbn);
-        final List<DocumentNode<DynamodbNodeVisitor>> result = runQueryAndExtractDocuments(documentQuery);
+        final List<DocumentNode> result = runQueryAndExtractDocuments(documentQuery);
         assertThat(result.size(), equalTo(1));
-        final DocumentObject<DynamodbNodeVisitor> first = (DocumentObject<DynamodbNodeVisitor>) result.get(0);
+        final DocumentObject first = (DocumentObject) result.get(0);
         assertThat(getItemsIsbn(first), equalTo(isbn));
     }
 
     @Test
     void testSelectAllButASingleItem() throws URISyntaxException {
         final RemoteTableQuery documentQuery = basicMappingSetup.getQueryForNotIsbn("123567");
-        final List<DocumentNode<DynamodbNodeVisitor>> result = runQueryAndExtractDocuments(documentQuery);
-        final List<String> resultsIsbns = result.stream()
-                .map(x -> getItemsIsbn((DocumentObject<DynamodbNodeVisitor>) x)).collect(Collectors.toList());
+        final List<DocumentNode> result = runQueryAndExtractDocuments(documentQuery);
+        final List<String> resultsIsbns = result.stream().map(x -> getItemsIsbn((DocumentObject) x))
+                .collect(Collectors.toList());
         assertThat(resultsIsbns, containsInAnyOrder("1235673", "123254545"));
     }
 
@@ -135,10 +131,10 @@ class DynamodbDocumentFetcherFactoryIT {
     void testSecondaryIndexQuery() throws URISyntaxException {
         final String publisher = "jb books";
         final RemoteTableQuery documentQuery = basicMappingSetup.getQueryForPublisher(publisher);
-        final List<DocumentNode<DynamodbNodeVisitor>> result = runQueryAndExtractDocuments(documentQuery);
+        final List<DocumentNode> result = runQueryAndExtractDocuments(documentQuery);
         assertThat(result.size(), equalTo(2));
-        final DocumentObject<DynamodbNodeVisitor> first = (DocumentObject<DynamodbNodeVisitor>) result.get(0);
-        final DynamodbString resultsPublisher = (DynamodbString) first.get("publisher");
+        final DocumentObject first = (DocumentObject) result.get(0);
+        final DocumentStringValue resultsPublisher = (DocumentStringValue) first.get("publisher");
         assertThat(resultsPublisher.getValue(), equalTo(publisher));
     }
 
@@ -146,9 +142,9 @@ class DynamodbDocumentFetcherFactoryIT {
     void testSortKeyIndexQuery() throws URISyntaxException {
         final String publisher = "jb books";
         final RemoteTableQuery query = basicMappingSetup.getQueryForMinPriceAndPublisher(11, publisher);
-        final List<DocumentNode<DynamodbNodeVisitor>> result = runQueryAndExtractDocuments(query);
+        final List<DocumentNode> result = runQueryAndExtractDocuments(query);
         assertThat(result.size(), equalTo(1));
-        final DocumentObject<DynamodbNodeVisitor> first = (DocumentObject<DynamodbNodeVisitor>) result.get(0);
+        final DocumentObject first = (DocumentObject) result.get(0);
         assertThat(getItemsIsbn(first), equalTo("123567"));
     }
 
@@ -156,9 +152,9 @@ class DynamodbDocumentFetcherFactoryIT {
     void testSortKeyIndexQueryWithNot() throws URISyntaxException {
         final String publisher = "jb books";
         final RemoteTableQuery query = basicMappingSetup.getQueryForMaxPriceAndPublisher(11, publisher);
-        final List<DocumentNode<DynamodbNodeVisitor>> result = runQueryAndExtractDocuments(query);
+        final List<DocumentNode> result = runQueryAndExtractDocuments(query);
         assertThat(result.size(), equalTo(1));
-        final DocumentObject<DynamodbNodeVisitor> first = (DocumentObject<DynamodbNodeVisitor>) result.get(0);
+        final DocumentObject first = (DocumentObject) result.get(0);
         assertThat(getItemsIsbn(first), equalTo("123254545"));
     }
 
@@ -167,11 +163,11 @@ class DynamodbDocumentFetcherFactoryIT {
         final String publisher = "jb books";
         final String name = "bad book 1";
         final RemoteTableQuery documentQuery = basicMappingSetup.getQueryForNameAndPublisher(name, publisher);
-        final List<DocumentNode<DynamodbNodeVisitor>> result = runQueryAndExtractDocuments(documentQuery);
+        final List<DocumentNode> result = runQueryAndExtractDocuments(documentQuery);
         assertThat(result.size(), equalTo(1));
-        final DocumentObject<DynamodbNodeVisitor> first = (DocumentObject<DynamodbNodeVisitor>) result.get(0);
-        final DynamodbString resultsPublisher = (DynamodbString) first.get("publisher");
-        final DynamodbString resultsName = (DynamodbString) first.get("name");
+        final DocumentObject first = (DocumentObject) result.get(0);
+        final DocumentStringValue resultsPublisher = (DocumentStringValue) first.get("publisher");
+        final DocumentStringValue resultsName = (DocumentStringValue) first.get("name");
         assertAll(//
                 () -> assertThat(resultsPublisher.getValue(), equalTo(publisher)),
                 () -> assertThat(resultsName.getValue(), equalTo(name))//
@@ -185,11 +181,11 @@ class DynamodbDocumentFetcherFactoryIT {
         final String name2 = "bad book 2";
         final RemoteTableQuery documentQuery = basicMappingSetup.getQueryForTwoNamesAndPublisher(name1, name2,
                 publisher);
-        final List<DocumentNode<DynamodbNodeVisitor>> result = runQueryAndExtractDocuments(documentQuery);
-        final DocumentObject<DynamodbNodeVisitor> first = (DocumentObject<DynamodbNodeVisitor>) result.get(0);
-        final DynamodbString resultsPublisher = (DynamodbString) first.get("publisher");
+        final List<DocumentNode> result = runQueryAndExtractDocuments(documentQuery);
+        final DocumentObject first = (DocumentObject) result.get(0);
+        final DocumentStringValue resultsPublisher = (DocumentStringValue) first.get("publisher");
         final List<String> resultsNames = result.stream()
-                .map(each -> ((DynamodbString) ((DocumentObject<DynamodbNodeVisitor>) each).get("name")).getValue())
+                .map(each -> ((DocumentStringValue) ((DocumentObject) each).get("name")).getValue())
                 .collect(Collectors.toList());
         assertAll(//
                 () -> assertThat(resultsPublisher.getValue(), equalTo(publisher)),
@@ -200,9 +196,9 @@ class DynamodbDocumentFetcherFactoryIT {
     @Test
     void testRangeQuery() throws URISyntaxException {
         final RemoteTableQuery documentQuery = basicMappingSetup.getQueryForMinPrice(16);
-        final List<DocumentNode<DynamodbNodeVisitor>> result = runQueryAndExtractDocuments(documentQuery);
+        final List<DocumentNode> result = runQueryAndExtractDocuments(documentQuery);
         assertThat(result.size(), equalTo(1));
-        final DocumentObject<DynamodbNodeVisitor> first = (DocumentObject<DynamodbNodeVisitor>) result.get(0);
+        final DocumentObject first = (DocumentObject) result.get(0);
         assertThat(getItemsIsbn(first), equalTo("1235673"));
     }
 
@@ -211,13 +207,13 @@ class DynamodbDocumentFetcherFactoryIT {
         final String isbn = "123567";
         final RemoteTableQuery documentQuery = basicMappingSetup.getQueryForPriceAndPublisherAndIsbn(15, "jb books",
                 isbn);
-        final List<DocumentNode<DynamodbNodeVisitor>> result = runQueryAndExtractDocuments(documentQuery);
+        final List<DocumentNode> result = runQueryAndExtractDocuments(documentQuery);
         assertThat(result.size(), equalTo(1));
-        final DocumentObject<DynamodbNodeVisitor> first = (DocumentObject<DynamodbNodeVisitor>) result.get(0);
+        final DocumentObject first = (DocumentObject) result.get(0);
         assertThat(getItemsIsbn(first), equalTo(isbn));
     }
 
-    private String getItemsIsbn(final DocumentObject<DynamodbNodeVisitor> first) {
-        return ((DynamodbString) first.get("isbn")).getValue();
+    private String getItemsIsbn(final DocumentObject first) {
+        return ((DocumentStringValue) first.get("isbn")).getValue();
     }
 }

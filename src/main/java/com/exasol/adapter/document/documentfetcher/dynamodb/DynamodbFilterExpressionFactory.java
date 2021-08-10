@@ -3,14 +3,11 @@ package com.exasol.adapter.document.documentfetcher.dynamodb;
 import java.util.HashSet;
 import java.util.Set;
 
-import com.exasol.adapter.document.documentnode.DocumentValue;
-import com.exasol.adapter.document.documentnode.dynamodb.DynamodbNodeVisitor;
 import com.exasol.adapter.document.documentpath.DocumentPathExpression;
-import com.exasol.adapter.document.literalconverter.NotLiteralException;
-import com.exasol.adapter.document.literalconverter.dynamodb.SqlLiteralToDynamodbValueConverter;
 import com.exasol.adapter.document.mapping.ColumnMapping;
 import com.exasol.adapter.document.mapping.PropertyToColumnMapping;
 import com.exasol.adapter.document.querypredicate.*;
+import com.exasol.adapter.sql.SqlNode;
 import com.exasol.errorreporting.ExaError;
 
 /**
@@ -154,7 +151,7 @@ public class DynamodbFilterExpressionFactory {
                 final DocumentPathExpression columnsPath = columnMapping.getPathToSourceProperty();
                 final String columnPathExpression = DocumentPathToDynamodbExpressionConverter.getInstance()
                         .convert(columnsPath, this.namePlaceholderMapBuilder);
-                final DocumentValue<DynamodbNodeVisitor> literal = getLiteral(columnLiteralComparisonPredicate);
+                final SqlNode literal = columnLiteralComparisonPredicate.getLiteral();
                 final String valuePlaceholder = this.valuePlaceholderMapBuilder.addValue(literal);
                 this.filterExpression = columnPathExpression + " "
                         + convertComparisonOperator(columnLiteralComparisonPredicate.getOperator()) + " "
@@ -166,16 +163,6 @@ public class DynamodbFilterExpressionFactory {
                                         + "Hence it can't be part of a filter expression.",
                                 column.getExasolColumnName())
                         .toString());
-            }
-        }
-
-        private DocumentValue<DynamodbNodeVisitor> getLiteral(
-                final ColumnLiteralComparisonPredicate columnLiteralComparisonPredicate) {
-            try {
-                return new SqlLiteralToDynamodbValueConverter().convert(columnLiteralComparisonPredicate.getLiteral());
-            } catch (final NotLiteralException exception) {
-                throw new UnsupportedOperationException(ExaError.messageBuilder("E-VS-DY-11")
-                        .message("Invalid comparison to a non literal.").toString());
             }
         }
 

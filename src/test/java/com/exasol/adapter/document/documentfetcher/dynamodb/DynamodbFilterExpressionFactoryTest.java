@@ -12,7 +12,6 @@ import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Test;
 
-import com.exasol.adapter.document.documentnode.dynamodb.DynamodbString;
 import com.exasol.adapter.document.documentpath.DocumentPathExpression;
 import com.exasol.adapter.document.mapping.PropertyToColumnMapping;
 import com.exasol.adapter.document.mapping.SourceReferenceColumnMapping;
@@ -147,7 +146,8 @@ class DynamodbFilterExpressionFactoryTest {
         final String result = new DynamodbFilterExpressionFactory(namePlaceholderMapBuilder, valuePlaceholderMapBuilder)
                 .buildFilterExpression(predicateToTest);
         final Map<String, String> valuesStrings = valuePlaceholderMapBuilder.getPlaceholderMap().entrySet().stream()
-                .collect(Collectors.toMap(Map.Entry::getKey, entry -> ((DynamodbString) entry.getValue()).getValue()));
+                .collect(
+                        Collectors.toMap(Map.Entry::getKey, entry -> ((SqlLiteralString) entry.getValue()).getValue()));
         assertAll(//
                 () -> assertThat(result, equalTo(expectedExpression)),
                 () -> assertThat(valuesStrings, equalTo(expectedValueMap)),
@@ -162,7 +162,8 @@ class DynamodbFilterExpressionFactoryTest {
         final String result = new DynamodbFilterExpressionFactory(namePlaceholderMapBuilder, valuePlaceholderMapBuilder)
                 .buildFilterExpression(predicateToTest);
         final Map<String, String> valuesStrings = valuePlaceholderMapBuilder.getPlaceholderMap().entrySet().stream()
-                .collect(Collectors.toMap(Map.Entry::getKey, entry -> ((DynamodbString) entry.getValue()).getValue()));
+                .collect(
+                        Collectors.toMap(Map.Entry::getKey, entry -> ((SqlLiteralString) entry.getValue()).getValue()));
         assertAll(//
                 () -> assertThat(result, equalTo(expectedExpression)),
                 () -> assertThat(new HashSet<>(valuesStrings.values()), equalTo(expectedValues)),

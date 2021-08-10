@@ -5,7 +5,6 @@ import java.util.Set;
 import java.util.stream.Stream;
 
 import com.exasol.adapter.document.documentfetcher.DocumentFetcher;
-import com.exasol.adapter.document.documentnode.dynamodb.DynamodbNodeVisitor;
 import com.exasol.adapter.document.documentpath.DocumentPathExpression;
 import com.exasol.adapter.document.dynamodbmetadata.*;
 import com.exasol.adapter.document.mapping.ColumnMapping;
@@ -37,7 +36,7 @@ class DynamodbQueryDocumentFetcherFactory {
      * @param projection        projection
      * @return List of {@link DocumentFetcher}s
      */
-    public List<DocumentFetcher<DynamodbNodeVisitor>> buildDocumentFetcherForQuery(final String tableName,
+    public List<DocumentFetcher> buildDocumentFetcherForQuery(final String tableName,
             final DynamodbTableMetadata tableMetadata, final DnfOr pushDownSelection,
             final List<ColumnMapping> projection) {
         final QueryOperationSelection selection = findMostSelectiveIndexSelection(tableMetadata, pushDownSelection);

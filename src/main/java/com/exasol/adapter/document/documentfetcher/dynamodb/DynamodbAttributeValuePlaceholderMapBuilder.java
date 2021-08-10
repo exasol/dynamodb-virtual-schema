@@ -1,13 +1,11 @@
 package com.exasol.adapter.document.documentfetcher.dynamodb;
 
-import com.exasol.adapter.document.documentnode.DocumentValue;
-import com.exasol.adapter.document.documentnode.dynamodb.DynamodbNodeVisitor;
+import com.exasol.adapter.sql.SqlNode;
 
 /**
  * This class builds a placeholder map for DynamoDB values.
  */
-public class DynamodbAttributeValuePlaceholderMapBuilder
-        extends AbstractDynamodbPlaceholderMapBuilder<DocumentValue<DynamodbNodeVisitor>> {
+public class DynamodbAttributeValuePlaceholderMapBuilder extends AbstractDynamodbPlaceholderMapBuilder<SqlNode> {
 
     @Override
     protected String getPlaceholderCharacter() {

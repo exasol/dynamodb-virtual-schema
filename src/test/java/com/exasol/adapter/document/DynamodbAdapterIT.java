@@ -1,5 +1,23 @@
 package com.exasol.adapter.document;
 
+import static com.exasol.adapter.document.UdfEntryPoint.*;
+import static com.exasol.matcher.ResultSetStructureMatcher.table;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.*;
+import static org.junit.jupiter.api.Assertions.assertAll;
+
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.sql.*;
+import java.util.*;
+import java.util.concurrent.TimeoutException;
+
+import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.Tag;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
+
 import com.exasol.adapter.document.dynamodb.DynamodbAdapter;
 import com.exasol.adapter.document.mapping.MappingTestFiles;
 import com.exasol.bucketfs.Bucket;
@@ -11,23 +29,8 @@ import com.exasol.dynamodb.DynamodbContainer;
 import com.exasol.udfdebugging.PushDownTesting;
 import com.exasol.udfdebugging.UdfTestSetup;
 import com.github.dockerjava.api.model.ContainerNetwork;
-import org.junit.jupiter.api.Tag;
-import org.junit.jupiter.api.*;
-import org.testcontainers.junit.jupiter.Container;
-import org.testcontainers.junit.jupiter.Testcontainers;
+
 import software.amazon.awssdk.services.dynamodb.model.*;
-
-import java.io.IOException;
-import java.nio.file.Path;
-import java.sql.*;
-import java.util.*;
-import java.util.concurrent.TimeoutException;
-
-import static com.exasol.adapter.document.UdfEntryPoint.*;
-import static com.exasol.matcher.ResultSetStructureMatcher.table;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
-import static org.junit.jupiter.api.Assertions.assertAll;
 
 /**
  * Tests the {@link DynamodbAdapter} using a local docker version of DynamoDB and a local docker version of exasol.
@@ -36,7 +39,7 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 @Testcontainers
 class DynamodbAdapterIT {
     public static final String BUCKETS_BFSDEFAULT_DEFAULT = "/buckets/bfsdefault/default/";
-    private static final String JAR_NAME_AND_VERSION = "document-virtual-schema-dist-3.0.0-dynamodb-2.0.0.jar";
+    private static final String JAR_NAME_AND_VERSION = "document-virtual-schema-dist-5.0.0-SNAPSHOT-dynamodb-2.0.0.jar";
     private static final Path PATH_TO_VIRTUAL_SCHEMAS_JAR = Path.of("target", JAR_NAME_AND_VERSION);
     private static final String LOCAL_DYNAMO_USER = "fakeMyKeyId";
     private static final String LOCAL_DYNAMO_PASS = "fakeSecretAccessKey";
@@ -61,7 +64,7 @@ class DynamodbAdapterIT {
     private static ConnectionDefinition connectionDefinition;
     private final List<VirtualSchema> createdVirtualSchemas = new LinkedList<>();
 
-    private static void uploadAdapter() throws InterruptedException, BucketAccessException, TimeoutException {
+    private static void uploadAdapter() throws BucketAccessException, TimeoutException, FileNotFoundException {
         EXASOL.getDefaultBucket().uploadFile(PATH_TO_VIRTUAL_SCHEMAS_JAR, JAR_NAME_AND_VERSION);
     }
 
@@ -81,7 +84,7 @@ class DynamodbAdapterIT {
                         BUCKETS_BFSDEFAULT_DEFAULT + JAR_NAME_AND_VERSION)
                 .language(AdapterScript.Language.JAVA).build();
         adapterSchema.createUdfBuilder("IMPORT_FROM_DYNAMO_DB").language(UdfScript.Language.JAVA)
-                .inputType(UdfScript.InputType.SET).parameter(PARAMETER_DATA_LOADER, "VARCHAR(2000000)")
+                .inputType(UdfScript.InputType.SET).parameter(PARAMETER_DOCUMENT_FETCHER, "VARCHAR(2000000)")
                 .parameter(PARAMETER_SCHEMA_MAPPING_REQUEST, "VARCHAR(2000000)")
                 .parameter(PARAMETER_CONNECTION_NAME, "VARCHAR(500)").emits()
                 .bucketFsContent(UdfEntryPoint.class.getName(), "/buckets/bfsdefault/default/" + JAR_NAME_AND_VERSION)
@@ -224,7 +227,8 @@ class DynamodbAdapterIT {
                 () -> assertThat(PushDownTesting.getSelectionThatIsSentToTheAdapter(statement, query),
                         equalTo("(BOOKS_CHAPTERS.INDEX=0) AND (BOOKS_CHAPTERS.NAME='Main Chapter')")),
                 () -> assertThat(PushDownTesting.getPushDownSql(statement, query),
-                        anyOf(endsWith("(\"INDEX\" = 0) AND (\"NAME\" = 'Main Chapter')"), endsWith("(\"NAME\" = 'Main Chapter') AND (\"INDEX\" = 0)"))),
+                        anyOf(endsWith("(\"INDEX\" = 0) AND (\"NAME\" = 'Main Chapter')"),
+                                endsWith("(\"NAME\" = 'Main Chapter') AND (\"INDEX\" = 0)"))),
                 () -> assertThat(statement.executeQuery(query), table().row("Main Chapter").matches())//
         );
     }
