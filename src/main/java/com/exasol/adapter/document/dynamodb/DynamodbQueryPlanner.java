@@ -1,7 +1,5 @@
 package com.exasol.adapter.document.dynamodb;
 
-import java.util.stream.Collectors;
-
 import com.exasol.adapter.document.QueryPlanner;
 import com.exasol.adapter.document.documentfetcher.dynamodb.DynamodbDocumentFetcherFactory;
 import com.exasol.adapter.document.queryplan.FetchQueryPlan;
@@ -24,7 +22,6 @@ public class DynamodbQueryPlanner implements QueryPlanner {
     public QueryPlan planQuery(final RemoteTableQuery remoteTableQuery, final int maxNumberOfParallelFetchers) {
         final DynamodbDocumentFetcherFactory.Result documentFetcherPlan = this.documentFetcherFactory
                 .buildDocumentFetcherForQuery(remoteTableQuery, maxNumberOfParallelFetchers);
-        return new FetchQueryPlan(documentFetcherPlan.getDocumentFetchers().stream().map(DynamodbDataLoader::new)
-                .collect(Collectors.toList()), documentFetcherPlan.getPostSelection());
+        return new FetchQueryPlan(documentFetcherPlan.getDocumentFetchers(), documentFetcherPlan.getPostSelection());
     }
 }

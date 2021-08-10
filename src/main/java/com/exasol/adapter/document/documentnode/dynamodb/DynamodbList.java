@@ -11,8 +11,7 @@ import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 /**
  * This class represents a DynamoDB list value.
  */
-public class DynamodbList implements DocumentArray<DynamodbNodeVisitor> {
-    private static final long serialVersionUID = 4513516964977921365L;
+public class DynamodbList implements DocumentArray {
     private final List<AttributeValue> value;
 
     /**
@@ -25,27 +24,18 @@ public class DynamodbList implements DocumentArray<DynamodbNodeVisitor> {
     }
 
     @Override
-    public List<DocumentNode<DynamodbNodeVisitor>> getValuesList() {
+    public List<DocumentNode> getValuesList() {
         final DynamodbDocumentNodeFactory nodeFactory = new DynamodbDocumentNodeFactory();
         return this.value.stream().map(nodeFactory::buildDocumentNode).collect(Collectors.toList());
     }
 
     @Override
-    public DocumentNode<DynamodbNodeVisitor> getValue(final int index) {
+    public DocumentNode getValue(final int index) {
         return new DynamodbDocumentNodeFactory().buildDocumentNode(this.value.get(index));
     }
 
     @Override
     public int size() {
         return this.value.size();
-    }
-
-    @Override
-    public void accept(final DynamodbNodeVisitor visitor) {
-        visitor.visit(this);
-    }
-
-    List<AttributeValue> getValue() {
-        return this.value;
     }
 }

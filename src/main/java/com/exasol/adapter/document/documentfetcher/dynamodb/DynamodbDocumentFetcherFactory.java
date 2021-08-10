@@ -6,10 +6,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import com.exasol.adapter.document.documentfetcher.DocumentFetcher;
-import com.exasol.adapter.document.documentnode.dynamodb.DynamodbNodeVisitor;
-import com.exasol.adapter.document.dynamodbmetadata.BaseDynamodbTableMetadataFactory;
-import com.exasol.adapter.document.dynamodbmetadata.DynamodbTableMetadata;
-import com.exasol.adapter.document.dynamodbmetadata.DynamodbTableMetadataFactory;
+import com.exasol.adapter.document.dynamodbmetadata.*;
 import com.exasol.adapter.document.mapping.ColumnMapping;
 import com.exasol.adapter.document.queryplanning.RemoteTableQuery;
 import com.exasol.adapter.document.queryplanning.selectionextractor.SelectionExtractor;
@@ -43,8 +40,8 @@ public class DynamodbDocumentFetcherFactory {
      * @param maxNumberOfParallelFetchers maximum number of parallel running fetchers
      * @return {@link Result}.
      */
-    public Result buildDocumentFetcherForQuery(
-            final RemoteTableQuery remoteTableQuery, final int maxNumberOfParallelFetchers) {
+    public Result buildDocumentFetcherForQuery(final RemoteTableQuery remoteTableQuery,
+            final int maxNumberOfParallelFetchers) {
         final DynamodbTableMetadata tableMetadata = this.tableMetadataFactory
                 .buildMetadataForTable(remoteTableQuery.getFromTable().getRemoteName());
         return buildDocumentFetcherForQuery(remoteTableQuery, tableMetadata, maxNumberOfParallelFetchers);
@@ -59,12 +56,12 @@ public class DynamodbDocumentFetcherFactory {
                 .extractIndexColumnSelection(remoteTableQuery.getSelection());
         final DnfOr pushDownSelection = result.getSelectedSelection();
         final List<ColumnMapping> projection = getProjection(remoteTableQuery, result.getRemainingSelection());
-        final List<DocumentFetcher<DynamodbNodeVisitor>> documentFetchers = buildDocumentFetchers(tableMetadata,
-                maxNumberOfParallelFetchers, tableName, pushDownSelection, projection);
+        final List<DocumentFetcher> documentFetchers = buildDocumentFetchers(tableMetadata, maxNumberOfParallelFetchers,
+                tableName, pushDownSelection, projection);
         return new Result(documentFetchers, result.getRemainingSelection().asQueryPredicate());
     }
 
-    private List<DocumentFetcher<DynamodbNodeVisitor>> buildDocumentFetchers(final DynamodbTableMetadata tableMetadata,
+    private List<DocumentFetcher> buildDocumentFetchers(final DynamodbTableMetadata tableMetadata,
             final int maxNumberOfParallelFetchers, final String tableName, final DnfOr pushDownSelection,
             final List<ColumnMapping> projection) {
         try {
@@ -88,11 +85,10 @@ public class DynamodbDocumentFetcherFactory {
      * Result of the {@link DynamodbFilterExpressionFactory}.
      */
     public static class Result {
-        private final List<DocumentFetcher<DynamodbNodeVisitor>> documentFetchers;
+        private final List<DocumentFetcher> documentFetchers;
         private final QueryPredicate postSelection;
 
-        private Result(final List<DocumentFetcher<DynamodbNodeVisitor>> documentFetchers,
-                final QueryPredicate postSelection) {
+        private Result(final List<DocumentFetcher> documentFetchers, final QueryPredicate postSelection) {
             this.documentFetchers = documentFetchers;
             this.postSelection = postSelection;
         }
@@ -102,7 +98,7 @@ public class DynamodbDocumentFetcherFactory {
          * 
          * @return built {@link DocumentFetcher}s
          */
-        public List<DocumentFetcher<DynamodbNodeVisitor>> getDocumentFetchers() {
+        public List<DocumentFetcher> getDocumentFetchers() {
             return this.documentFetchers;
         }
 

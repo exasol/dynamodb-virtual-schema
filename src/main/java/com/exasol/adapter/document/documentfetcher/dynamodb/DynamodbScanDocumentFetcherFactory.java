@@ -1,12 +1,9 @@
 package com.exasol.adapter.document.documentfetcher.dynamodb;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Stream;
 
 import com.exasol.adapter.document.documentfetcher.DocumentFetcher;
-import com.exasol.adapter.document.documentnode.dynamodb.DynamodbNodeVisitor;
 import com.exasol.adapter.document.documentpath.DocumentPathExpression;
 import com.exasol.adapter.document.mapping.ColumnMapping;
 import com.exasol.adapter.document.queryplanning.RequiredPathExpressionExtractor;
@@ -34,9 +31,8 @@ class DynamodbScanDocumentFetcherFactory {
      * @param maxNumberOfParallelFetchers maximum number of parallel running {@link DocumentFetcher}s
      * @return list of {@link DynamodbScanDocumentFetcher}s
      */
-    public List<DocumentFetcher<DynamodbNodeVisitor>> buildDocumentFetcherForQuery(final String tableName,
-            final QueryPredicate selection, final List<ColumnMapping> projection,
-            final int maxNumberOfParallelFetchers) {
+    public List<DocumentFetcher> buildDocumentFetcherForQuery(final String tableName, final QueryPredicate selection,
+            final List<ColumnMapping> projection, final int maxNumberOfParallelFetchers) {
         final DynamodbScanDocumentFetcher.Builder documentFetcherBuilder = buildScanRequest(tableName, selection,
                 projection.stream());
         return parallelizeScan(documentFetcherBuilder, maxNumberOfParallelFetchers);
@@ -58,11 +54,10 @@ class DynamodbScanDocumentFetcherFactory {
                 .filterExpression(filterExpression).projectionExpression(projectionExpression);
     }
 
-    private List<DocumentFetcher<DynamodbNodeVisitor>> parallelizeScan(
-            final DynamodbScanDocumentFetcher.Builder documentFetcherBuilder, final int maxNumberOfParallelFetchers) {
+    private List<DocumentFetcher> parallelizeScan(final DynamodbScanDocumentFetcher.Builder documentFetcherBuilder,
+            final int maxNumberOfParallelFetchers) {
         documentFetcherBuilder.totalSegments(maxNumberOfParallelFetchers);
-        final List<DocumentFetcher<DynamodbNodeVisitor>> documentFetchers = new ArrayList<>(
-                maxNumberOfParallelFetchers);
+        final List<DocumentFetcher> documentFetchers = new ArrayList<>(maxNumberOfParallelFetchers);
         for (int segmentCounter = 0; segmentCounter < maxNumberOfParallelFetchers; segmentCounter++) {
             documentFetcherBuilder.segment(segmentCounter);
             documentFetchers.add(documentFetcherBuilder.build());

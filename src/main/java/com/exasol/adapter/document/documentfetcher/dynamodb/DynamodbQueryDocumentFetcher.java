@@ -1,10 +1,9 @@
 package com.exasol.adapter.document.documentfetcher.dynamodb;
 
+import java.util.Iterator;
 import java.util.Map;
-import java.util.stream.Stream;
 
-import com.exasol.adapter.document.documentnode.DocumentValue;
-import com.exasol.adapter.document.documentnode.dynamodb.DynamodbNodeVisitor;
+import com.exasol.adapter.sql.SqlNode;
 import com.exasol.errorreporting.ExaError;
 
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
@@ -61,8 +60,8 @@ public class DynamodbQueryDocumentFetcher extends AbstractDynamodbDocumentFetche
     }
 
     @Override
-    public Stream<Map<String, AttributeValue>> run(final DynamoDbClient client) {
-        return client.query(this.getQueryRequest()).items().stream();
+    public Iterator<Map<String, AttributeValue>> run(final DynamoDbClient client) {
+        return client.query(this.getQueryRequest()).items().iterator();
     }
 
     @Override
@@ -110,8 +109,7 @@ public class DynamodbQueryDocumentFetcher extends AbstractDynamodbDocumentFetche
          * @param expressionAttributeValues placeholder map for attribute values
          * @return self
          */
-        public Builder expressionAttributeValues(
-                final Map<String, DocumentValue<DynamodbNodeVisitor>> expressionAttributeValues) {
+        public Builder expressionAttributeValues(final Map<String, SqlNode> expressionAttributeValues) {
             this.genericParametersBuilder.expressionAttributeValues(expressionAttributeValues);
             return this;
         }

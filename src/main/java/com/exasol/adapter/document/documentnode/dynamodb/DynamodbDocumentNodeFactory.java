@@ -1,6 +1,9 @@
 package com.exasol.adapter.document.documentnode.dynamodb;
 
+import java.math.BigDecimal;
+
 import com.exasol.adapter.document.documentnode.DocumentNode;
+import com.exasol.adapter.document.documentnode.holder.*;
 import com.exasol.errorreporting.ExaError;
 
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
@@ -17,17 +20,17 @@ public class DynamodbDocumentNodeFactory {
      * @param attributeValue {@link AttributeValue} to wrap
      * @return object, array, or value-node
      */
-    public DocumentNode<DynamodbNodeVisitor> buildDocumentNode(final AttributeValue attributeValue) {
+    public DocumentNode buildDocumentNode(final AttributeValue attributeValue) {
         if (attributeValue.nul() != null && attributeValue.nul()) {
-            return new DynamodbNull();
+            return new NullHolderNode();
         } else if (attributeValue.s() != null) {
-            return new DynamodbString(attributeValue.s());
+            return new StringHolderNode(attributeValue.s());
         } else if (attributeValue.n() != null) {
-            return new DynamodbNumber(attributeValue.n());
+            return new BigDecimalHolderNode(new BigDecimal(attributeValue.n()));
         } else if (attributeValue.b() != null) {
-            return new DynamodbBinary(attributeValue.b());
+            return new BinaryHolderNode(attributeValue.b().asByteArray());
         } else if (attributeValue.bool() != null) {
-            return new DynamodbBoolean(attributeValue.bool());
+            return new BooleanHolderNode(attributeValue.bool());
         } else if (attributeValue.hasM()) {
             return new DynamodbMap(attributeValue.m());
         } else if (attributeValue.hasBs()) {
