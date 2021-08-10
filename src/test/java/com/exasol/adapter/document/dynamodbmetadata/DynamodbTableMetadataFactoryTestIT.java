@@ -11,44 +11,47 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
-import com.exasol.adapter.document.DynamodbTestInterface;
-import com.exasol.adapter.document.IntegrationTestSetup;
+import com.exasol.adapter.document.DynamodbTestDbBuilder;
+import com.exasol.adapter.document.TestcontainerDynamodbTestDbBuilder;
+import com.exasol.dynamodb.DynamodbContainer;
 
 import software.amazon.awssdk.services.dynamodb.model.*;
 
 @Tag("integration")
 @Tag("quick")
+@Testcontainers
 class DynamodbTableMetadataFactoryTestIT {
     private static final String TABLE_NAME = "test";
-    private static DynamodbTestInterface dynamodbTestInterface;
+    @Container
+    private static final DynamodbContainer DYNAMODB = new DynamodbContainer();
     private static DynamodbTableMetadataFactory tableMetadataFactory;
     private static final String PARTITION_KEY = "partition_key";
     private static final String SORT_KEY = "sort_key";
+    private static DynamodbTestDbBuilder dynamodbTestDbBuilder;
 
     @BeforeAll
-    static void beforeAll() throws DynamodbTestInterface.NoNetworkFoundException, IOException, URISyntaxException {
-        dynamodbTestInterface = new IntegrationTestSetup().getDynamodbTestInterface();
+    static void beforeAll() throws DynamodbTestDbBuilder.NoNetworkFoundException, IOException, URISyntaxException {
+        dynamodbTestDbBuilder = new TestcontainerDynamodbTestDbBuilder(DYNAMODB);
         tableMetadataFactory = new BaseDynamodbTableMetadataFactory(
-                dynamodbTestInterface.getDynamodbLowLevelConnection());
-    }
-
-    @AfterAll
-    static void afterAll() {
-        dynamodbTestInterface.teardown();
+                dynamodbTestDbBuilder.getDynamodbLowLevelConnection());
     }
 
     @AfterEach
     void afterEach() {
-        dynamodbTestInterface.deleteCreatedTables();
+        dynamodbTestDbBuilder.deleteCreatedTables();
     }
 
     @Test
     void testSimplePrimaryKey() {
         final String keyName = "primary_key";
-        dynamodbTestInterface.createTable(TABLE_NAME, keyName);
+        dynamodbTestDbBuilder.createTable(TABLE_NAME, keyName);
         final DynamodbTableMetadata dynamodbTableMetadata = tableMetadataFactory.buildMetadataForTable(TABLE_NAME);
         assertAll(//
                 () -> assertThat(dynamodbTableMetadata.getPrimaryIndex().getPartitionKey(), equalTo(keyName)),
@@ -60,7 +63,7 @@ class DynamodbTableMetadataFactoryTestIT {
     @Test
     void testSearchKey() {
         final CreateTableRequest.Builder requestBuilder = getBasicCreateTableRequest(Collections.emptyList());
-        dynamodbTestInterface.createTable(requestBuilder.build());
+        dynamodbTestDbBuilder.createTable(requestBuilder.build());
         final DynamodbTableMetadata dynamodbTableMetadata = tableMetadataFactory.buildMetadataForTable(TABLE_NAME);
         assertAll(//
                 () -> assertThat(dynamodbTableMetadata.getPrimaryIndex().getPartitionKey(), equalTo(PARTITION_KEY)),
@@ -97,7 +100,7 @@ class DynamodbTableMetadataFactoryTestIT {
                         KeySchemaElement.builder().attributeName(indexKey).keyType(KeyType.RANGE).build())
                 .indexName(indexName).projection(Projection.builder().projectionType(ProjectionType.KEYS_ONLY).build())
                 .build());
-        dynamodbTestInterface.createTable(requestBuilder.build());
+        dynamodbTestDbBuilder.createTable(requestBuilder.build());
         final DynamodbTableMetadata dynamodbTableMetadata = tableMetadataFactory.buildMetadataForTable(TABLE_NAME);
         final DynamodbIndex index = dynamodbTableMetadata.getLocalIndexes().get(0);
         assertAll(//
@@ -120,7 +123,7 @@ class DynamodbTableMetadataFactoryTestIT {
                 .indexName(indexName)
                 .provisionedThroughput(builder -> builder.readCapacityUnits(1L).writeCapacityUnits(1L).build())
                 .projection(builder -> builder.projectionType(ProjectionType.KEYS_ONLY)).build());
-        dynamodbTestInterface.createTable(requestBuilder.build());
+        dynamodbTestDbBuilder.createTable(requestBuilder.build());
         final DynamodbTableMetadata dynamodbTableMetadata = tableMetadataFactory.buildMetadataForTable(TABLE_NAME);
         final DynamodbSecondaryIndex index = dynamodbTableMetadata.getGlobalIndexes().get(0);
         assertAll(//

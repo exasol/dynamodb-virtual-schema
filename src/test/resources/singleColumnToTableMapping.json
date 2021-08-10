@@ -1,0 +1,31 @@
+{
+  "$schema": "../../main/resources/schemas/edml-1.0.0.json",
+  "source": "MY_BOOKS",
+  "destinationTable": "BOOKS",
+  "description": "Maps MY_BOOKS to BOOKS",
+  "mapping": {
+    "fields": {
+      "topics": {
+        "toTableMapping": {
+          "mapping": {
+            "toVarcharMapping": {
+              "destinationName": "NAME"
+            }
+          }
+        }
+      },
+      "isbn": {
+        "toVarcharMapping": {
+          "varcharColumnSize": 20,
+          "overflowBehaviour": "ABORT",
+          "required": true,
+          "key": "global"
+        }
+      },
+      "name": {
+        "toVarcharMapping": {
+        }
+      }
+    }
+  }
+}

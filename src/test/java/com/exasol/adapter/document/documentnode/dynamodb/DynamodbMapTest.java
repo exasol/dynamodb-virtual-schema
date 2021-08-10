@@ -7,6 +7,7 @@ import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 
+import com.exasol.adapter.document.documentnode.DocumentStringValue;
 import com.exasol.dynamodb.attributevalue.AttributeValueQuickCreator;
 
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
@@ -20,14 +21,14 @@ class DynamodbMapTest {
     @Test
     void testGet() {
         final DynamodbMap dynamodbList = (DynamodbMap) new DynamodbDocumentNodeFactory().buildDocumentNode(MAP);
-        final DynamodbString result = (DynamodbString) dynamodbList.get(KEY);
+        final DocumentStringValue result = (DocumentStringValue) dynamodbList.get(KEY);
         assertThat(result.getValue(), equalTo(VALUE));
     }
 
     @Test
     void testGetKeyValueMap() {
         final DynamodbMap dynamodbList = (DynamodbMap) new DynamodbDocumentNodeFactory().buildDocumentNode(MAP);
-        final DynamodbString result = (DynamodbString) dynamodbList.getKeyValueMap().get(KEY);
+        final DocumentStringValue result = (DocumentStringValue) dynamodbList.getKeyValueMap().get(KEY);
         assertThat(result.getValue(), equalTo(VALUE));
     }
 
@@ -41,26 +42,5 @@ class DynamodbMapTest {
     void testNonExistingHasKey() {
         final DynamodbMap dynamodbList = (DynamodbMap) new DynamodbDocumentNodeFactory().buildDocumentNode(MAP);
         assertThat(dynamodbList.hasKey("unknownKey"), equalTo(false));
-    }
-
-    @Test
-    void testVisitor() {
-        final VisitationCheck visitor = new VisitationCheck();
-        new DynamodbDocumentNodeFactory().buildDocumentNode(MAP).accept(visitor);
-        assertThat(visitor.visited, equalTo(true));
-    }
-
-    private static class VisitationCheck implements IncompleteDynamodbNodeVisitor {
-        boolean visited = false;
-
-        @Override
-        public void visit(final DynamodbMap map) {
-            this.visited = true;
-        }
-
-        @Override
-        public void defaultVisit(final String typeName) {
-            throw new IllegalStateException("Should not be called");
-        }
     }
 }

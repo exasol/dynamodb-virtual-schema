@@ -8,6 +8,7 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
+import com.exasol.adapter.document.documentnode.DocumentBinaryValue;
 import com.exasol.dynamodb.attributevalue.AttributeValueQuickCreator;
 
 import software.amazon.awssdk.core.SdkBytes;
@@ -23,37 +24,17 @@ class DynamodbBinarySetTest {
     void testGetValue() {
         final DynamodbBinarySet dynamodbList = (DynamodbBinarySet) new DynamodbDocumentNodeFactory()
                 .buildDocumentNode(BINARY_SET);
-        final DynamodbBinary result = dynamodbList.getValue(0);
-        assertThat(result.getValue(), equalTo(BINARY_1));
+        final DocumentBinaryValue result = dynamodbList.getValue(0);
+        assertThat(result.getBinary(), equalTo(BINARY_1.asByteArray()));
     }
 
     @Test
     void testGetValues() {
         final DynamodbBinarySet dynamodbList = (DynamodbBinarySet) new DynamodbDocumentNodeFactory()
                 .buildDocumentNode(BINARY_SET);
-        final DynamodbBinary result1 = dynamodbList.getValuesList().get(0);
-        final DynamodbBinary result2 = dynamodbList.getValuesList().get(1);
-        assertThat(List.of(result1.getValue(), result2.getValue()), containsInAnyOrder(BINARY_1, BINARY_2));
-    }
-
-    @Test
-    void testVisitor() {
-        final VisitationCheck visitor = new VisitationCheck();
-        new DynamodbDocumentNodeFactory().buildDocumentNode(BINARY_SET).accept(visitor);
-        assertThat(visitor.visited, equalTo(true));
-    }
-
-    private static class VisitationCheck implements IncompleteDynamodbNodeVisitor {
-        boolean visited = false;
-
-        @Override
-        public void visit(final DynamodbBinarySet value) {
-            this.visited = true;
-        }
-
-        @Override
-        public void defaultVisit(final String typeName) {
-            throw new IllegalStateException("Should not be called");
-        }
+        final DocumentBinaryValue result1 = dynamodbList.getValuesList().get(0);
+        final DocumentBinaryValue result2 = dynamodbList.getValuesList().get(1);
+        assertThat(List.of(result1.getBinary(), result2.getBinary()),
+                containsInAnyOrder(BINARY_1.asByteArray(), BINARY_2.asByteArray()));
     }
 }

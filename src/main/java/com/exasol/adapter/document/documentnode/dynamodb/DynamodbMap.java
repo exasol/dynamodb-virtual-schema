@@ -1,18 +1,18 @@
 package com.exasol.adapter.document.documentnode.dynamodb;
 
+import java.util.HashMap;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import com.exasol.adapter.document.documentnode.DocumentNode;
 import com.exasol.adapter.document.documentnode.DocumentObject;
+import com.exasol.errorreporting.ExaError;
 
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 
 /**
  * This class represents a DynamoDB map value.
  */
-public class DynamodbMap implements DocumentObject<DynamodbNodeVisitor> {
-    private static final long serialVersionUID = -3577529528412194549L;
+public class DynamodbMap implements DocumentObject {
     private final Map<String, AttributeValue> value;
 
     /**
@@ -25,25 +25,27 @@ public class DynamodbMap implements DocumentObject<DynamodbNodeVisitor> {
     }
 
     @Override
-    public Map<String, DocumentNode<DynamodbNodeVisitor>> getKeyValueMap() {
+    public Map<String, DocumentNode> getKeyValueMap() {
         final DynamodbDocumentNodeFactory nodeFactory = new DynamodbDocumentNodeFactory();
-        return this.value.entrySet().stream()
-                .collect(Collectors.toMap(Map.Entry::getKey, entry -> nodeFactory.buildDocumentNode(entry.getValue())));
+        final Map<String, DocumentNode> result = new HashMap<>();
+        for (final Map.Entry<String, AttributeValue> entry : this.value.entrySet()) {
+            if (result.put(entry.getKey(), nodeFactory.buildDocumentNode(entry.getValue())) != null) {
+                throw new IllegalStateException(ExaError.messageBuilder("F-VS-DY-33")
+                        .message("Invalid AttributeValue. The map had the same key twice.").ticketMitigation()
+                        .toString());
+            }
+        }
+        return result;
     }
 
     @Override
-    public DocumentNode<DynamodbNodeVisitor> get(final String key) {
+    public DocumentNode get(final String key) {
         return new DynamodbDocumentNodeFactory().buildDocumentNode(this.value.get(key));
     }
 
     @Override
     public boolean hasKey(final String key) {
         return this.value.containsKey(key);
-    }
-
-    @Override
-    public void accept(final DynamodbNodeVisitor visitor) {
-        visitor.visit(this);
     }
 
     Map<String, AttributeValue> getValue() {

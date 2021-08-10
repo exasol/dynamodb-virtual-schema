@@ -4,9 +4,8 @@ import java.io.Serializable;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import com.exasol.adapter.document.documentnode.DocumentValue;
-import com.exasol.adapter.document.documentnode.dynamodb.DynamodbNodeToAttributeValueConverter;
-import com.exasol.adapter.document.documentnode.dynamodb.DynamodbNodeVisitor;
+import com.exasol.adapter.sql.SqlNode;
+import com.exasol.errorreporting.ExaError;
 
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 
@@ -17,7 +16,7 @@ public class GenericTableAccessParameters implements Serializable {
     private static final long serialVersionUID = -822082800908345226L;
     private final String tableName;
     private final Map<String, String> expressionAttributeNames;
-    private final Map<String, DocumentValue<DynamodbNodeVisitor>> expressionAttributeValues;
+    private final Map<String, SerializableSqlNodeWrapper> expressionAttributeValues;
     private final String filterExpression;
     private final String projectionExpression;
 
@@ -31,11 +30,12 @@ public class GenericTableAccessParameters implements Serializable {
      * @param projectionExpression      projection expression
      */
     GenericTableAccessParameters(final String tableName, final Map<String, String> expressionAttributeNames,
-            final Map<String, DocumentValue<DynamodbNodeVisitor>> expressionAttributeValues,
-            final String filterExpression, final String projectionExpression) {
+            final Map<String, SqlNode> expressionAttributeValues, final String filterExpression,
+            final String projectionExpression) {
         this.tableName = tableName;
         this.expressionAttributeNames = expressionAttributeNames;
-        this.expressionAttributeValues = expressionAttributeValues;
+        this.expressionAttributeValues = expressionAttributeValues.entrySet().stream().collect(
+                Collectors.toMap(Map.Entry::getKey, entry -> new SerializableSqlNodeWrapper(entry.getValue())));
         this.filterExpression = filterExpression;
         this.projectionExpression = projectionExpression;
     }
@@ -73,9 +73,9 @@ public class GenericTableAccessParameters implements Serializable {
      * @return map of placeholders for attribute values
      */
     public Map<String, AttributeValue> getExpressionAttributeValues() {
-        final DynamodbNodeToAttributeValueConverter converter = new DynamodbNodeToAttributeValueConverter();
+        final SqlLiteralNodeToAttributeValueConverter literalConverter = new SqlLiteralNodeToAttributeValueConverter();
         return this.expressionAttributeValues.entrySet().stream().collect(
-                Collectors.toMap(Map.Entry::getKey, entry -> converter.convertToAttributeValue(entry.getValue())));
+                Collectors.toMap(Map.Entry::getKey, entry -> literalConverter.convert(entry.getValue().getSqlNode())));
     }
 
     /**
@@ -138,7 +138,7 @@ public class GenericTableAccessParameters implements Serializable {
     public static final class Builder {
         private String tableName;
         private Map<String, String> expressionAttributeNames;
-        private Map<String, DocumentValue<DynamodbNodeVisitor>> expressionAttributeValues;
+        private Map<String, SqlNode> expressionAttributeValues;
         private String filterExpression;
         private String projectionExpression;
 
@@ -177,8 +177,7 @@ public class GenericTableAccessParameters implements Serializable {
          * @param expressionAttributeValues placeholder map for attribute values
          * @return self
          */
-        public Builder expressionAttributeValues(
-                final Map<String, DocumentValue<DynamodbNodeVisitor>> expressionAttributeValues) {
+        public Builder expressionAttributeValues(final Map<String, SqlNode> expressionAttributeValues) {
             this.expressionAttributeValues = expressionAttributeValues;
             return this;
         }
@@ -206,23 +205,30 @@ public class GenericTableAccessParameters implements Serializable {
         }
 
         public GenericTableAccessParameters build() {
-            if(this.tableName == null){
-                throw new IllegalStateException("tableName was not set but is a mandatory field.");
+            if (this.tableName == null) {
+                throw getUnsetParameterException("tableName");
             }
-            if(this.expressionAttributeNames == null){
-                throw new IllegalStateException("expressionAttributeNames  was not set but is a mandatory field.");
+            if (this.expressionAttributeNames == null) {
+                throw getUnsetParameterException("expressionAttributeNames");
             }
-            if(this.expressionAttributeValues == null){
-                throw new IllegalStateException("expressionAttributeValues  was not set but is a mandatory field.");
+            if (this.expressionAttributeValues == null) {
+                throw getUnsetParameterException("expressionAttributeValues");
             }
-            if(this.filterExpression == null){
-                throw new IllegalStateException("filterExpression  was not set but is a mandatory field.");
+            if (this.filterExpression == null) {
+                throw getUnsetParameterException("filterExpression");
             }
-            if(this.projectionExpression == null){
-                throw new IllegalStateException("projectionExpression  was not set but is a mandatory field.");
+            if (this.projectionExpression == null) {
+                throw getUnsetParameterException("projectionExpression");
             }
             return new GenericTableAccessParameters(this.tableName, this.expressionAttributeNames,
                     this.expressionAttributeValues, this.filterExpression, this.projectionExpression);
+        }
+
+        private IllegalStateException getUnsetParameterException(final String field) {
+            return new IllegalStateException(ExaError.messageBuilder("F-VS-DY-17")
+                    .message("Can not GenericTableAccessParameters since the required field {{field}} was not set.",
+                            field)
+                    .ticketMitigation().toString());
         }
     }
 }

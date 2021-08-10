@@ -1,19 +1,18 @@
 package com.exasol.adapter.document.documentnode.dynamodb;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.stream.Collectors;
+import java.util.*;
 
 import com.exasol.adapter.document.documentnode.DocumentArray;
+import com.exasol.adapter.document.documentnode.DocumentBinaryValue;
+import com.exasol.adapter.document.documentnode.holder.BinaryHolderNode;
 
 import software.amazon.awssdk.core.SdkBytes;
 
 /**
  * This class represents a DynamoDB binary set value.
  */
-public class DynamodbBinarySet implements DocumentArray<DynamodbNodeVisitor> {
-    private static final long serialVersionUID = 6474569329954861497L;
-    private final List<DynamodbBinary> value;
+public class DynamodbBinarySet implements DocumentArray {
+    private final List<DocumentBinaryValue> value;
 
     /**
      * Create an instance of {@link DynamodbBinarySet}.
@@ -21,26 +20,27 @@ public class DynamodbBinarySet implements DocumentArray<DynamodbNodeVisitor> {
      * @param value value to hold
      */
     public DynamodbBinarySet(final Collection<SdkBytes> value) {
-        this.value = value.stream().map(DynamodbBinary::new).collect(Collectors.toList());
+        final List<DocumentBinaryValue> list = new ArrayList<>();
+        for (final SdkBytes sdkBytes : value) {
+            final byte[] asByteArray = sdkBytes.asByteArray();
+            final BinaryHolderNode binaryHolderNode = new BinaryHolderNode(asByteArray);
+            list.add(binaryHolderNode);
+        }
+        this.value = list;
     }
 
     @Override
-    public List<DynamodbBinary> getValuesList() {
+    public List<DocumentBinaryValue> getValuesList() {
         return this.value;
     }
 
     @Override
-    public DynamodbBinary getValue(final int index) {
+    public DocumentBinaryValue getValue(final int index) {
         return this.getValuesList().get(index);
     }
 
     @Override
     public int size() {
         return this.value.size();
-    }
-
-    @Override
-    public void accept(final DynamodbNodeVisitor visitor) {
-        visitor.visit(this);
     }
 }

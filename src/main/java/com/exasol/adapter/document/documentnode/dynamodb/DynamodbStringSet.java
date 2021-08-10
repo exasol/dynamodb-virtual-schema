@@ -1,16 +1,15 @@
 package com.exasol.adapter.document.documentnode.dynamodb;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.stream.Collectors;
+import java.util.*;
 
 import com.exasol.adapter.document.documentnode.DocumentArray;
+import com.exasol.adapter.document.documentnode.DocumentStringValue;
+import com.exasol.adapter.document.documentnode.holder.StringHolderNode;
 
 /**
  * This class represents a DynamoDB string set value.
  */
-public class DynamodbStringSet implements DocumentArray<DynamodbNodeVisitor> {
-    private static final long serialVersionUID = 9102250461309769820L;
+public class DynamodbStringSet implements DocumentArray {
     private final Collection<String> value;
 
     /**
@@ -23,26 +22,22 @@ public class DynamodbStringSet implements DocumentArray<DynamodbNodeVisitor> {
     }
 
     @Override
-    public List<DynamodbString> getValuesList() {
-        return this.value.stream().map(DynamodbString::new).collect(Collectors.toList());
+    public List<DocumentStringValue> getValuesList() {
+        final List<DocumentStringValue> result = new ArrayList<>();
+        for (final String string : this.value) {
+            final StringHolderNode stringHolderNode = new StringHolderNode(string);
+            result.add(stringHolderNode);
+        }
+        return result;
     }
 
     @Override
-    public DynamodbString getValue(final int index) {
+    public DocumentStringValue getValue(final int index) {
         return this.getValuesList().get(index);
     }
 
     @Override
     public int size() {
         return this.value.size();
-    }
-
-    @Override
-    public void accept(final DynamodbNodeVisitor visitor) {
-        visitor.visit(this);
-    }
-
-    Collection<String> getValue() {
-        return this.value;
     }
 }
