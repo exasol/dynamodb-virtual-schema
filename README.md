@@ -33,7 +33,7 @@ This adapter allows you to access document data that is stored in a [Amazon's Dy
 ## Information for Users
 
 * [User Guide](doc/user-guide/user_guide.md)
-* [Schema mapping language reference](https://exasol.github.io/virtual-schema-common-document/schema_doc/index.html)
+* [Exasol Document MApping Language User Guide](https://github.com/exasol/virtual-schema-common-document/blob/main/doc/user_guide/edml_user_guide.md)
 * [Changelog](doc/changes/changelog.md)
 * [Dependencies](dependencies.md)
 
