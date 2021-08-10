@@ -8,6 +8,7 @@ import javax.json.*;
 import com.exasol.adapter.request.parser.PushdownSqlParser;
 import com.exasol.adapter.request.renderer.PushdownSqlRenderer;
 import com.exasol.adapter.sql.SqlNode;
+import com.exasol.errorreporting.ExaError;
 
 import software.amazon.awssdk.utils.StringInputStream;
 
@@ -35,10 +36,25 @@ public class SerializableSqlNodeWrapper implements Serializable {
         return this.sqlNode;
     }
 
+    /**
+     * Custom serialization.
+     * <p>
+     * This method is called during deserialization
+     * </p>
+     * 
+     * @param out stream to write to
+     * @throws IOException if serialization fails
+     */
     private void writeObject(final ObjectOutputStream out) throws IOException {
         out.writeUTF(new PushdownSqlRenderer().render(this.sqlNode).toString());
     }
 
+    /**
+     * Custom deserialization.
+     * <p>
+     * This method is called during deserialization
+     * </p>
+     */
     private void readObject(final ObjectInputStream in) throws IOException, ClassNotFoundException {
         try (final StringInputStream jsonInputStream = new StringInputStream(in.readUTF());
                 final JsonReader jsonReader = Json.createReader(jsonInputStream)) {
@@ -48,7 +64,16 @@ public class SerializableSqlNodeWrapper implements Serializable {
         }
     }
 
+    /**
+     * Custom deserialization.
+     * <p>
+     * This method is called during deserialization
+     * </p>
+     * 
+     * @throws ObjectStreamException since no data is available if this method is called
+     */
     private void readObjectNoData() throws ObjectStreamException {
-        throw new InvalidObjectException("Stream data required");
+        throw new InvalidObjectException(
+                ExaError.messageBuilder("E-VS-DY-34").message("Failed to deserialize SqlNode.").toString());
     }
 }
