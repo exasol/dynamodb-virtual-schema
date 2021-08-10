@@ -5,6 +5,7 @@ import java.util.Map;
 
 import com.exasol.adapter.document.documentnode.DocumentNode;
 import com.exasol.adapter.document.documentnode.DocumentObject;
+import com.exasol.errorreporting.ExaError;
 
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 
@@ -29,7 +30,9 @@ public class DynamodbMap implements DocumentObject {
         final Map<String, DocumentNode> result = new HashMap<>();
         for (final Map.Entry<String, AttributeValue> entry : this.value.entrySet()) {
             if (result.put(entry.getKey(), nodeFactory.buildDocumentNode(entry.getValue())) != null) {
-                throw new IllegalStateException("Duplicate key");// todo throw proper exception
+                throw new IllegalStateException(ExaError.messageBuilder("F-VS-DY-33")
+                        .message("Invalid AttributeValue. The map had the same key twice.").ticketMitigation()
+                        .toString());
             }
         }
         return result;
