@@ -16,7 +16,7 @@
 
 ## Overview
 
-This adapter allows you to access document data that is stored in a [Amazon's DynamoDB]((https://aws.amazon.com/dynamodb/)) from inside of the Exasol analytical database. It abstracts over the different interfaces so that you can access the document data just like any regular Exasol table.
+This adapter allows you to access document data that is stored in a [Amazon's DynamoDB](https://aws.amazon.com/dynamodb/) from inside of the Exasol analytical database. It abstracts over the different interfaces so that you can access the document data just like any regular Exasol table.
 
 ## Features
 
@@ -24,7 +24,7 @@ This adapter allows you to access document data that is stored in a [Amazon's Dy
 * Maps unstructured document data to Exasol tables that you can access using regular SQL statements
 * Pushes down queries to the remote source
 * Distributes the data loading over the whole Exasol Cluster, what makes queries more than six times faster compared to using a JDBC adapter
-* Flexible definition of the schema mapping using the [Exasol Document Mapping Language](https://exasol.github.io/virtual-schema-common-ducument/schema_doc/index.html)
+* Flexible definition of the schema mapping using the [Exasol Document Mapping Language](https://github.com/exasol/virtual-schema-common-document/blob/main/doc/user_guide/edml_user_guide.md)
 
 ## Limitations
 
@@ -42,6 +42,5 @@ This adapter allows you to access document data that is stored in a [Amazon's Dy
 * [Developers Guide](doc/development/developers_guide.md)
 
 <!-- @formatter:off -->
-[edml-doc]: https://exasol.github.io/virtual-schema-common-ducument/schema_doc/index.html
 [virtual-schema-common-document]: https://github.com/exasol/virtual-schema-common-document
 [artifact-reference-checker-plugin]: https://github.com/exasol/artifact-reference-checker-maven-plugin
