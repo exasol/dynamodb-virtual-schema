@@ -1,4 +1,4 @@
-# dynamodb-virtual-schema 2.0.0, released 2020-08-10
+# dynamodb-virtual-schema 2.0.0, released 2021-08-10
 
 Code name: Dependency updates
 
