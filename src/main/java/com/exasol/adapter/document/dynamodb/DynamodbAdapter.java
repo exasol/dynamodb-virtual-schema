@@ -1,10 +1,8 @@
 package com.exasol.adapter.document.dynamodb;
 
 import com.exasol.ExaConnectionInformation;
-import com.exasol.adapter.capabilities.Capabilities;
-import com.exasol.adapter.capabilities.LiteralCapability;
-import com.exasol.adapter.capabilities.MainCapability;
-import com.exasol.adapter.capabilities.PredicateCapability;
+import com.exasol.adapter.AdapterProperties;
+import com.exasol.adapter.capabilities.*;
 import com.exasol.adapter.document.DocumentAdapter;
 import com.exasol.adapter.document.QueryPlanner;
 import com.exasol.adapter.document.dynamodbmetadata.BaseDynamodbTableMetadataFactory;
@@ -40,7 +38,8 @@ public class DynamodbAdapter extends DocumentAdapter {
     }
 
     @Override
-    protected QueryPlanner getQueryPlanner(final ExaConnectionInformation connectionInformation) {
+    protected QueryPlanner getQueryPlanner(final ExaConnectionInformation connectionInformation,
+            final AdapterProperties adapterProperties) {
         return new DynamodbQueryPlanner(getDynamoDBClient(connectionInformation));
     }
 

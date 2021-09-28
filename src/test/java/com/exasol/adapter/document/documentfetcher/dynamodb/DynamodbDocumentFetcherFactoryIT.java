@@ -43,7 +43,7 @@ class DynamodbDocumentFetcherFactoryIT {
     @BeforeAll
     static void beforeAll() throws IOException, AdapterException, URISyntaxException {
         dynamodbTestDbBuilder = new TestcontainerDynamodbTestDbBuilder(DYNAMODB);
-        basicMappingSetup = new BasicMappingSetup(tempDir);
+        basicMappingSetup = new BasicMappingSetup();
         setupTestDatabase();
     }
 

@@ -5,21 +5,16 @@ import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import java.io.File;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.io.IOException;
+import java.util.*;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-import com.exasol.adapter.document.dynamodbmetadata.DynamodbPrimaryIndex;
-import com.exasol.adapter.document.dynamodbmetadata.DynamodbTableMetadata;
-import com.exasol.adapter.document.dynamodbmetadata.DynamodbTableMetadataFactory;
+import com.exasol.adapter.document.documentfetcher.dynamodb.BasicMappingSetup;
+import com.exasol.adapter.document.dynamodbmetadata.*;
 import com.exasol.adapter.document.mapping.ColumnMapping;
-import com.exasol.adapter.document.mapping.MappingTestFiles;
 import com.exasol.adapter.document.mapping.TableKeyFetcher;
-import com.exasol.adapter.document.mapping.reader.JsonSchemaMappingReader;
 
 class DynamodbTableKeyFetcherTest {
     private static final String TEST_TABLE_NAME = "testTableName";
@@ -28,13 +23,11 @@ class DynamodbTableKeyFetcherTest {
     private static ColumnMapping PUBLISHER_COLUMN;
 
     @BeforeAll
-    static void beforeAll() {
-        COLUMNS = new JsonSchemaMappingReader(new File(
-                DynamodbTableKeyFetcher.class.getClassLoader().getResource(MappingTestFiles.BASIC_MAPPING).getFile()),
-                null).getSchemaMapping().getTableMappings().get(0).getColumns();
-        ISBN_COLUMN = COLUMNS.stream().filter(column -> column.getExasolColumnName().equals("ISBN")).findAny().get();
-        PUBLISHER_COLUMN = COLUMNS.stream().filter(column -> column.getExasolColumnName().equals("PUBLISHER")).findAny()
-                .get();
+    static void beforeAll() throws IOException {
+        final BasicMappingSetup basicMappingSetup = new BasicMappingSetup();
+        ISBN_COLUMN = basicMappingSetup.getIsbnColumn();
+        PUBLISHER_COLUMN = basicMappingSetup.getPublisherColumn();
+        COLUMNS = List.of(ISBN_COLUMN, PUBLISHER_COLUMN, basicMappingSetup.getPriceColumn());
     }
 
     @Test

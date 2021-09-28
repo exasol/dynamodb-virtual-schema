@@ -1,16 +1,13 @@
 package com.exasol.adapter.document.documentfetcher.dynamodb;
 
-import java.io.File;
 import java.io.IOException;
-import java.nio.file.Path;
-import java.util.List;
-import java.util.Set;
+import java.nio.charset.StandardCharsets;
+import java.util.*;
 
-import com.exasol.adapter.AdapterException;
-import com.exasol.adapter.document.mapping.ColumnMapping;
-import com.exasol.adapter.document.mapping.MappingTestFiles;
-import com.exasol.adapter.document.mapping.TableMapping;
+import com.exasol.adapter.document.mapping.*;
+import com.exasol.adapter.document.mapping.dynamodb.DynamodbTableKeyFetcher;
 import com.exasol.adapter.document.mapping.reader.JsonSchemaMappingReader;
+import com.exasol.adapter.document.properties.EdmlInput;
 import com.exasol.adapter.document.queryplanning.RemoteTableQuery;
 import com.exasol.adapter.document.querypredicate.*;
 import com.exasol.adapter.sql.SqlLiteralDouble;
@@ -29,21 +26,34 @@ public class BasicMappingSetup {
     private final ColumnMapping isbnColumn;
     private final ColumnMapping sourceReferenceColumn;
 
-    public BasicMappingSetup(final Path tempDir) throws IOException, AdapterException {
-        this.tableMapping = new JsonSchemaMappingReader(
-                new File(
-                        BasicMappingSetup.class.getClassLoader().getResource(MappingTestFiles.BASIC_MAPPING).getFile()),
-                null).getSchemaMapping().getTableMappings().get(0);
+    public BasicMappingSetup() throws IOException {
+        final String edmlString = new String(Objects.requireNonNull(
+                DynamodbTableKeyFetcher.class.getClassLoader().getResourceAsStream(MappingTestFiles.BASIC_MAPPING))
+                .readAllBytes(), StandardCharsets.UTF_8);
+        this.tableMapping = new JsonSchemaMappingReader(null)
+                .readSchemaMapping(List.of(new EdmlInput(edmlString, "test"))).getTableMappings().get(0);
         this.publisherColumn = this.tableMapping.getColumns().stream()
-                .filter(column -> column.getExasolColumnName().equals("PUBLISHER")).findAny().get();
+                .filter(column -> column.getExasolColumnName().equals("PUBLISHER")).findAny().orElseThrow();
         this.priceColumn = this.tableMapping.getColumns().stream()
-                .filter(column -> column.getExasolColumnName().equals("PRICE")).findAny().get();
+                .filter(column -> column.getExasolColumnName().equals("PRICE")).findAny().orElseThrow();
         this.nameColumn = this.tableMapping.getColumns().stream()
-                .filter(column -> column.getExasolColumnName().equals("NAME")).findAny().get();
+                .filter(column -> column.getExasolColumnName().equals("NAME")).findAny().orElseThrow();
         this.isbnColumn = this.tableMapping.getColumns().stream()
-                .filter(column -> column.getExasolColumnName().equals("ISBN")).findAny().get();
+                .filter(column -> column.getExasolColumnName().equals("ISBN")).findAny().orElseThrow();
         this.sourceReferenceColumn = this.tableMapping.getColumns().stream()
-                .filter(column -> column.getExasolColumnName().equals("SOURCE_REFERENCE")).findAny().get();
+                .filter(column -> column.getExasolColumnName().equals("SOURCE_REFERENCE")).findAny().orElseThrow();
+    }
+
+    public ColumnMapping getIsbnColumn() {
+        return this.isbnColumn;
+    }
+
+    public ColumnMapping getPublisherColumn() {
+        return this.publisherColumn;
+    }
+
+    public ColumnMapping getPriceColumn() {
+        return this.priceColumn;
     }
 
     public RemoteTableQuery getSelectAllQuery() {
