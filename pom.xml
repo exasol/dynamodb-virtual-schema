@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.exasol</groupId>
     <artifactId>dynamodb-virtual-schema</artifactId>
-    <version>2.0.0</version>
+    <version>2.1.0</version>
     <name>Virtual Schema for Amazon DynamoDB</name>
     <description>Adapter for DynamoDB data access from Virtual Schemas.</description>
     <url>https://github.com/exasol/dynamodb-virtual-schema</url>
@@ -12,9 +12,9 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <java.version>11</java.version>
-        <junit.version>5.7.2</junit.version>
+        <junit.version>5.8.1</junit.version>
         <jacoco.version>0.8.7</jacoco.version>
-        <vs-common-document.version>5.0.0</vs-common-document.version>
+        <vs-common-document.version>6.1.0</vs-common-document.version>
         <gpg.skip>true</gpg.skip>
         <!--
             M4 does not fail tests if beforeAll fails
@@ -52,7 +52,7 @@
             <dependency>
                 <groupId>software.amazon.awssdk</groupId>
                 <artifactId>bom</artifactId>
-                <version>2.17.15</version>
+                <version>2.17.47</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -120,7 +120,7 @@
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-junit-jupiter</artifactId>
-            <version>3.11.2</version>
+            <version>3.12.4</version>
             <scope>test</scope>
         </dependency>
         <!--Integration test dependencies-->
@@ -134,7 +134,7 @@
         <dependency>
             <groupId>com.exasol</groupId>
             <artifactId>exasol-testcontainers</artifactId>
-            <version>4.0.0</version>
+            <version>5.1.0</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -154,7 +154,7 @@
             <artifactId>org.jacoco.agent</artifactId>
             <version>${jacoco.version}</version>
             <classifier>runtime</classifier>
-            <scope>runtime</scope>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.jacoco</groupId>
@@ -177,7 +177,7 @@
         <dependency>
             <groupId>com.exasol</groupId>
             <artifactId>hamcrest-resultset-matcher</artifactId>
-            <version>1.4.1</version>
+            <version>1.5.0</version>
         </dependency>
     </dependencies>
     <build>
@@ -388,7 +388,7 @@
             <plugin>
                 <groupId>com.exasol</groupId>
                 <artifactId>project-keeper-maven-plugin</artifactId>
-                <version>0.10.0</version>
+                <version>1.2.0</version>
                 <executions>
                     <execution>
                         <goals>
@@ -407,7 +407,7 @@
             <plugin>
                 <groupId>com.exasol</groupId>
                 <artifactId>error-code-crawler-maven-plugin</artifactId>
-                <version>0.5.1</version>
+                <version>0.6.0</version>
                 <executions>
                     <execution>
                         <goals>

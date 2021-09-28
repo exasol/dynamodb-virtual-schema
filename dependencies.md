@@ -22,15 +22,10 @@
 | [Common Virtual Schema for document data][2]    | [MIT][1]                          |
 | [Test containers for Exasol on Docker][20]      | [MIT][1]                          |
 | [Testcontainers :: JUnit Jupiter Extension][22] | [MIT][23]                         |
+| [JaCoCo :: Agent][24]                           | [Eclipse Public License 2.0][25]  |
 | [JaCoCo :: Core][24]                            | [Eclipse Public License 2.0][25]  |
-| [Test Database Builder for Java][26]            | [MIT][1]                          |
-| [udf-debugging-java][28]                        | [MIT][1]                          |
-
-## Runtime Dependencies
-
-| Dependency            | License                          |
-| --------------------- | -------------------------------- |
-| [JaCoCo :: Agent][24] | [Eclipse Public License 2.0][25] |
+| [Test Database Builder for Java][28]            | [MIT][1]                          |
+| [udf-debugging-java][30]                        | [MIT][1]                          |
 
 ## Plugin Dependencies
 
@@ -67,7 +62,7 @@
 [1]: https://opensource.org/licenses/MIT
 [16]: https://github.com/mockito/mockito
 [34]: https://maven.apache.org/surefire/maven-failsafe-plugin/
-[26]: https://github.com/exasol/test-db-builder-java
+[28]: https://github.com/exasol/test-db-builder-java
 [42]: http://maven.apache.org/plugins/maven-dependency-plugin/
 [44]: http://www.mojohaus.org/versions-maven-plugin/
 [11]: http://opensource.org/licenses/BSD-3-Clause
@@ -88,7 +83,7 @@
 [12]: https://junit.org/junit5/
 [46]: https://sonatype.github.io/ossindex-maven/maven-plugin/
 [22]: https://testcontainers.org
-[28]: https://github.com/exasol/udf-debugging-java
+[30]: https://github.com/exasol/udf-debugging-java
 [10]: http://hamcrest.org/JavaHamcrest/
 [6]: http://www.slf4j.org
 [66]: http://maven.apache.org/plugins/maven-deploy-plugin/

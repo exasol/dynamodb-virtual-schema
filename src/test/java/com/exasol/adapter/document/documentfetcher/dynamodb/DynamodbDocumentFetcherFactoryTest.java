@@ -31,7 +31,7 @@ class DynamodbDocumentFetcherFactoryTest {
 
     @BeforeAll
     static void beforeAll() throws IOException, AdapterException {
-        basicMappingSetup = new BasicMappingSetup(tempDir);
+        basicMappingSetup = new BasicMappingSetup();
     }
 
     @Test
