@@ -17,10 +17,6 @@ This release integrates the new features from the virtual-schema-common-document
 
 For details see the [changelog of the virtual-schema-common-document](https://github.com/exasol/virtual-schema-common-document/blob/main/doc/changes/changes_6.1.0.md).
 
-## Features
-
-* ISSUE_NUMBER: description
-
 ## Dependency Updates
 
 ### Compile Dependency Updates
