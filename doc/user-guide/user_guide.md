@@ -17,7 +17,7 @@ Next create the Adapter Script:
  ```
 CREATE OR REPLACE JAVA ADAPTER SCRIPT ADAPTER.DYNAMODB_ADAPTER AS
     %scriptclass com.exasol.adapter.RequestDispatcher;
-    %jar /buckets/bfsdefault/default/document-virtual-schema-dist-6.1.0-dynamodb-2.1.0.jar;
+    %jar /buckets/bfsdefault/default/document-virtual-schema-dist-7.0.0-dynamodb-2.2.0.jar;
 /
 ```
 
@@ -31,7 +31,7 @@ CREATE OR REPLACE JAVA SET SCRIPT ADAPTER.IMPORT_FROM_DYNAMO_DB(
   CONNECTION_NAME VARCHAR(500))
   EMITS(...) AS
     %scriptclass com.exasol.adapter.document.UdfEntryPoint;
-    %jar /buckets/bfsdefault/default/document-virtual-schema-dist-6.1.0-dynamodb-2.1.0.jar;
+    %jar /buckets/bfsdefault/default/document-virtual-schema-dist-7.0.0-dynamodb-2.2.0.jar;
 /
 ```
 

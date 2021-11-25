@@ -7,8 +7,7 @@ import com.exasol.ExaConnectionInformation;
 import com.exasol.adapter.document.documentfetcher.DocumentFetcher;
 import com.exasol.adapter.document.documentfetcher.FetchedDocument;
 import com.exasol.adapter.document.documentnode.dynamodb.DynamodbMap;
-import com.exasol.adapter.document.iterators.AfterAllCallbackIterator;
-import com.exasol.adapter.document.iterators.TransformingIterator;
+import com.exasol.adapter.document.iterators.*;
 import com.exasol.dynamodb.DynamodbConnectionFactory;
 
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
@@ -21,13 +20,12 @@ abstract class AbstractDynamodbDocumentFetcher implements DocumentFetcher {
     private static final long serialVersionUID = 1110930661591665420L;
 
     @Override
-    public Iterator<FetchedDocument> run(final ExaConnectionInformation connectionInformation) {
+    public CloseableIterator<FetchedDocument> run(final ExaConnectionInformation connectionInformation) {
         final String tableName = getTableName();
         final DynamoDbClient connection = new DynamodbConnectionFactory().getConnection(connectionInformation);
-        final Iterator<Map<String, AttributeValue>> dynamodbResults = this.run(connection);
-        final Iterator<Map<String, AttributeValue>> resultsWithCloseDecorator = new AfterAllCallbackIterator<>(
-                dynamodbResults, connection::close);
-        return new TransformingIterator<>(resultsWithCloseDecorator,
+        final CloseableIterator<Map<String, AttributeValue>> dynamodbResults = new CloseableIteratorWrapper<>(
+                this.run(connection), connection::close);
+        return new TransformingIterator<>(dynamodbResults,
                 dynamodbEntry -> new FetchedDocument(new DynamodbMap(dynamodbEntry), tableName));
     }
 
