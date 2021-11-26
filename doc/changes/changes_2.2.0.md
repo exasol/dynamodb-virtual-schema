@@ -2,9 +2,9 @@
 
 Code name:
 
-## Features
+## Documentation
 
-* ISSUE_NUMBER: description
+* #162: Removed SQL_DIALECT property from documentation
 
 ## Dependency Updates
 

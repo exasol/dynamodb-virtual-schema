@@ -387,8 +387,7 @@ class DynamodbAdapterIT {
     private void createDynamodbVirtualSchema(final String mappingName) {
         this.createdVirtualSchemas.add(testDbBuilder.createVirtualSchemaBuilder(TEST_SCHEMA)
                 .adapterScript(adapterScript).connectionDefinition(connectionDefinition)
-                .properties(Map.of("MAPPING", "/bfsdefault/default/" + mappingName, "SQL_DIALECT", "DYNAMO_DB"))
-                .build());
+                .properties(Map.of("MAPPING", "/bfsdefault/default/" + mappingName)).build());
     }
 
     private void createDoubleNestedTableVirtualSchema() throws IOException {
