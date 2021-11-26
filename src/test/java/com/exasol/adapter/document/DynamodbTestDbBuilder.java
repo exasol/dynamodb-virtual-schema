@@ -1,16 +1,8 @@
 package com.exasol.adapter.document;
 
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.net.URISyntaxException;
 import java.util.*;
-
-import javax.json.Json;
-import javax.json.JsonArray;
-import javax.json.JsonReader;
-import javax.json.JsonValue;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,6 +11,7 @@ import com.exasol.ExaConnectionInformation;
 import com.exasol.dynamodb.DynamodbConnectionFactory;
 import com.exasol.dynamodb.attributevalue.AttributeValueQuickCreator;
 
+import jakarta.json.*;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 import software.amazon.awssdk.services.dynamodb.model.*;
 

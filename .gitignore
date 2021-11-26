@@ -28,3 +28,9 @@ Scripts
 .directory
 venv/
 pom.xml.versionsBackup
+~*
+*.lock
+*.bak
+*.orig
+*.old
+*.md.html

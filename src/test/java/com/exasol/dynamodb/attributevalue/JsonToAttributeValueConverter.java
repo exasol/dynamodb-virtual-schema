@@ -5,10 +5,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import javax.json.*;
-
 import com.exasol.errorreporting.ExaError;
 
+import jakarta.json.*;
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 
 public class JsonToAttributeValueConverter {

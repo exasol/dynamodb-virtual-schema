@@ -3,13 +3,12 @@ package com.exasol.adapter.document.documentfetcher.dynamodb;
 import java.io.*;
 import java.util.Collections;
 
-import javax.json.*;
-
 import com.exasol.adapter.request.parser.PushdownSqlParser;
 import com.exasol.adapter.request.renderer.PushdownSqlRenderer;
 import com.exasol.adapter.sql.SqlNode;
 import com.exasol.errorreporting.ExaError;
 
+import jakarta.json.*;
 import software.amazon.awssdk.utils.StringInputStream;
 
 /**
