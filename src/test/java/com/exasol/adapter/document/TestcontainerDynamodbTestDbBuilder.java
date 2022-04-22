@@ -16,7 +16,7 @@ public class TestcontainerDynamodbTestDbBuilder extends DynamodbTestDbBuilder {
      * Constructor using default login credentials for the local dynamodb docker instance.
      */
     public TestcontainerDynamodbTestDbBuilder(final DynamodbContainer dynamodbContainer) throws URISyntaxException {
-        super("http://localhost:" + dynamodbContainer.getPort(), LOCAL_DYNAMO_USER, LOCAL_DYNAMO_PASS,
-                Optional.empty());
+        super("http://" + dynamodbContainer.getContainerIpAddress() + ":" + dynamodbContainer.getPort(),
+                LOCAL_DYNAMO_USER, LOCAL_DYNAMO_PASS, Optional.empty());
     }
 }

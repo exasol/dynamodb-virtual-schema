@@ -62,7 +62,7 @@ class DynamodbBatchWriter implements Consumer<String> {
                 .requestItems(Map.of(this.tableName, writeRequests)).build();
         try {
             this.dynamoClient.batchWriteItem(batchWriteItemRequest);
-            LOGGER.info("# Writte items: " + this.itemCounter);
+            LOGGER.info("# Written items: " + this.itemCounter);
         } catch (final DynamoDbException exception) {
             LOGGER.error(exception.getMessage());
             this.errorCounter++;
