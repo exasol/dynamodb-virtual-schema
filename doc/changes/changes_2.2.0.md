@@ -12,7 +12,7 @@ Code name:
 
 * Updated `com.exasol:error-reporting-java:0.4.0` to `0.4.1`
 * Updated `com.exasol:hamcrest-resultset-matcher:1.5.0` to `1.5.1`
-* Updated `com.exasol:virtual-schema-common-document:6.1.0` to `8.1.1`
+* Updated `com.exasol:virtual-schema-common-document:6.1.0` to `7.0.1`
 * Updated `org.slf4j:slf4j-jdk14:1.7.32` to `1.7.36`
 * Updated `software.amazon.awssdk:dynamodb:2.17.47` to `2.17.175`
 
@@ -21,7 +21,7 @@ Code name:
 * Updated `com.exasol:exasol-testcontainers:5.1.0` to `6.1.1`
 * Updated `com.exasol:test-db-builder-java:3.2.1` to `3.3.1`
 * Updated `com.exasol:udf-debugging-java:0.4.0` to `0.6.0`
-* Updated `com.exasol:virtual-schema-common-document:6.1.0` to `8.1.1`
+* Updated `com.exasol:virtual-schema-common-document:6.1.0` to `7.0.1`
 * Updated `org.jacoco:org.jacoco.agent:0.8.7` to `0.8.8`
 * Updated `org.jacoco:org.jacoco.core:0.8.7` to `0.8.8`
 * Updated `org.junit.jupiter:junit-jupiter-engine:5.8.1` to `5.8.2`

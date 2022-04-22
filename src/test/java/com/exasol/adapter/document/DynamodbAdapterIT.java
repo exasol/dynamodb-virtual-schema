@@ -75,8 +75,9 @@ class DynamodbAdapterIT {
     static void beforeAll() throws Exception {
         dynamodbTestDbBuilder = new TestcontainerDynamodbTestDbBuilder(DYNAMODB);
         uploadAdapter();
-        final UdfTestSetup udfTestSetup = new UdfTestSetup(getTestHostIpFromInsideExasol(), EXASOL.getDefaultBucket());
-        testDbBuilder = new ExasolObjectFactory(EXASOL.createConnection(),
+        final Connection connection = EXASOL.createConnection();
+        final UdfTestSetup udfTestSetup = new UdfTestSetup(getTestHostIpFromInsideExasol(), EXASOL.getDefaultBucket(), connection);
+        testDbBuilder = new ExasolObjectFactory(connection,
                 ExasolObjectConfiguration.builder().withJvmOptions(udfTestSetup.getJvmOptions()).build());
         final ExasolSchema adapterSchema = testDbBuilder.createSchema("ADAPTER");
         adapterScript = adapterSchema.createAdapterScriptBuilder("DYNAMODB_ADAPTER")
@@ -97,7 +98,7 @@ class DynamodbAdapterIT {
             EXASOL.getDefaultBucket().uploadInputStream(
                     () -> DynamodbAdapterIT.class.getClassLoader().getResourceAsStream(mapping), mapping);
         }
-        statement = EXASOL.createConnection().createStatement();
+        statement = connection.createStatement();
     }
 
     private static String getTestHostIpFromInsideExasol() {
