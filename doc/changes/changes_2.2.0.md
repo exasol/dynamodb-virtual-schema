@@ -14,12 +14,12 @@ Code name:
 * Updated `com.exasol:hamcrest-resultset-matcher:1.5.0` to `1.5.1`
 * Updated `com.exasol:virtual-schema-common-document:6.1.0` to `7.0.1`
 * Updated `org.slf4j:slf4j-jdk14:1.7.32` to `1.7.36`
-* Updated `software.amazon.awssdk:dynamodb:2.17.47` to `2.17.175`
+* Updated `software.amazon.awssdk:dynamodb:2.17.47` to `2.17.176`
 
 ### Test Dependency Updates
 
 * Updated `com.exasol:exasol-testcontainers:5.1.0` to `6.1.1`
-* Updated `com.exasol:test-db-builder-java:3.2.1` to `3.3.1`
+* Updated `com.exasol:test-db-builder-java:3.2.1` to `3.3.2`
 * Updated `com.exasol:udf-debugging-java:0.4.0` to `0.6.0`
 * Updated `com.exasol:virtual-schema-common-document:6.1.0` to `7.0.1`
 * Updated `org.jacoco:org.jacoco.agent:0.8.7` to `0.8.8`
@@ -33,7 +33,7 @@ Code name:
 
 * Updated `com.exasol:artifact-reference-checker-maven-plugin:0.3.1` to `0.4.1`
 * Updated `com.exasol:error-code-crawler-maven-plugin:0.6.0` to `1.1.1`
-* Updated `com.exasol:project-keeper-maven-plugin:1.2.0` to `2.3.1`
+* Updated `com.exasol:project-keeper-maven-plugin:1.2.0` to `2.3.2`
 * Updated `io.github.zlika:reproducible-build-maven-plugin:0.13` to `0.15`
 * Updated `org.apache.maven.plugins:maven-compiler-plugin:3.8.1` to `3.10.1`
 * Updated `org.apache.maven.plugins:maven-dependency-plugin:2.8` to `3.2.0`

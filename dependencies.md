@@ -24,7 +24,7 @@
 | [Testcontainers :: JUnit Jupiter Extension][22] | [MIT][23]                         |
 | [JaCoCo :: Agent][24]                           | [Eclipse Public License 2.0][25]  |
 | [JaCoCo :: Core][24]                            | [Eclipse Public License 2.0][25]  |
-| [Test Database Builder for Java][28]            | [MIT][1]                          |
+| [Test Database Builder for Java][28]            | [MIT License][29]                 |
 | [udf-debugging-java][30]                        | [MIT][1]                          |
 
 ## Plugin Dependencies
@@ -56,6 +56,7 @@
 [2]: https://github.com/exasol/virtual-schema-common-document
 [24]: https://www.eclemma.org/jacoco/index.html
 [0]: https://github.com/exasol/error-reporting-java
+[28]: https://github.com/exasol/test-db-builder-java/
 [39]: http://www.apache.org/licenses/LICENSE-2.0.txt
 [44]: https://maven.apache.org/surefire/maven-surefire-plugin/
 [64]: http://maven.apache.org/plugins/maven-clean-plugin/
@@ -63,12 +64,12 @@
 [1]: https://opensource.org/licenses/MIT
 [16]: https://github.com/mockito/mockito
 [56]: https://maven.apache.org/surefire/maven-failsafe-plugin/
-[28]: https://github.com/exasol/test-db-builder-java
 [46]: http://www.mojohaus.org/versions-maven-plugin/
 [60]: https://github.com/exasol/project-keeper/
 [11]: http://opensource.org/licenses/BSD-3-Clause
 [34]: https://maven.apache.org/plugins/maven-compiler-plugin/
 [23]: http://opensource.org/licenses/MIT
+[29]: https://github.com/exasol/test-db-builder-java/blob/main/LICENSE
 [25]: https://www.eclipse.org/legal/epl-2.0/
 [33]: http://www.gnu.org/licenses/lgpl.txt
 [20]: https://github.com/exasol/exasol-testcontainers
