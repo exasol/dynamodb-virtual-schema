@@ -39,7 +39,7 @@ import software.amazon.awssdk.services.dynamodb.model.*;
 @Testcontainers
 class DynamodbAdapterIT {
     public static final String BUCKETS_BFSDEFAULT_DEFAULT = "/buckets/bfsdefault/default/";
-    private static final String JAR_NAME_AND_VERSION = "document-virtual-schema-dist-7.0.0-dynamodb-2.2.0.jar";
+    private static final String JAR_NAME_AND_VERSION = "document-virtual-schema-dist-7.0.1-dynamodb-2.2.0.jar";
     private static final Path PATH_TO_VIRTUAL_SCHEMAS_JAR = Path.of("target", JAR_NAME_AND_VERSION);
     private static final String LOCAL_DYNAMO_USER = "fakeMyKeyId";
     private static final String LOCAL_DYNAMO_PASS = "fakeSecretAccessKey";
@@ -75,8 +75,9 @@ class DynamodbAdapterIT {
     static void beforeAll() throws Exception {
         dynamodbTestDbBuilder = new TestcontainerDynamodbTestDbBuilder(DYNAMODB);
         uploadAdapter();
-        final UdfTestSetup udfTestSetup = new UdfTestSetup(getTestHostIpFromInsideExasol(), EXASOL.getDefaultBucket());
-        testDbBuilder = new ExasolObjectFactory(EXASOL.createConnection(),
+        final Connection connection = EXASOL.createConnection();
+        final UdfTestSetup udfTestSetup = new UdfTestSetup(getTestHostIpFromInsideExasol(), EXASOL.getDefaultBucket(), connection);
+        testDbBuilder = new ExasolObjectFactory(connection,
                 ExasolObjectConfiguration.builder().withJvmOptions(udfTestSetup.getJvmOptions()).build());
         final ExasolSchema adapterSchema = testDbBuilder.createSchema("ADAPTER");
         adapterScript = adapterSchema.createAdapterScriptBuilder("DYNAMODB_ADAPTER")
@@ -97,7 +98,7 @@ class DynamodbAdapterIT {
             EXASOL.getDefaultBucket().uploadInputStream(
                     () -> DynamodbAdapterIT.class.getClassLoader().getResourceAsStream(mapping), mapping);
         }
-        statement = EXASOL.createConnection().createStatement();
+        statement = connection.createStatement();
     }
 
     private static String getTestHostIpFromInsideExasol() {
