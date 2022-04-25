@@ -7,3 +7,4 @@ error-tags:
       - com.exasol.adapter.document.dynamodbmetadata
       - com.exasol.adapter.document.literalconverter.dynamodb
       - com.exasol.dynamodb
+    highest-index: 34
