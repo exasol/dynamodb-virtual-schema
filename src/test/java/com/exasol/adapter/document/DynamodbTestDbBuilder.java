@@ -1,5 +1,7 @@
 package com.exasol.adapter.document;
 
+import static com.exasol.adapter.document.JsonHelper.toJson;
+
 import java.io.*;
 import java.net.URISyntaxException;
 import java.util.*;
@@ -7,7 +9,7 @@ import java.util.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.exasol.ExaConnectionInformation;
+import com.exasol.adapter.document.dynamodb.connection.DynamodbConnectionProperties;
 import com.exasol.dynamodb.DynamodbConnectionFactory;
 import com.exasol.dynamodb.attributevalue.AttributeValueQuickCreator;
 
@@ -37,12 +39,17 @@ public abstract class DynamodbTestDbBuilder {
         this.dynamoUser = user;
         this.dynamoPass = pass;
         this.sessionToken = sessionToken;
-        this.dynamoClient = new DynamodbConnectionFactory().getConnection(dynamoUrl, user, pass, sessionToken);
+        final DynamodbConnectionProperties.DynamodbConnectionPropertiesBuilder connectionPropertyBuilder = DynamodbConnectionProperties
+                .builder().awsAccessKeyId(user).awsSecretAccessKey(pass)
+                .awsEndpointOverride(dynamoUrl.replace("https://", "").replace("http://", "")).awsRegion("eu-central-1")
+                .useSsl(false);
+        sessionToken.ifPresent(connectionPropertyBuilder::awsSessionToken);
+        final DynamodbConnectionProperties connectionProperties = connectionPropertyBuilder.build();
+        this.dynamoClient = new DynamodbConnectionFactory().getConnection(connectionProperties);
     }
 
     public DynamoDbClient getDynamodbLowLevelConnection() throws URISyntaxException {
-        return new DynamodbConnectionFactory().getConnection(this.getDynamoUrl(), this.getDynamoUser(),
-                this.getDynamoPass(), this.sessionToken);
+        return this.dynamoClient;
     }
 
     /**
@@ -169,28 +176,12 @@ public abstract class DynamodbTestDbBuilder {
         return this.sessionToken;
     }
 
-    public ExaConnectionInformation getExaConnectionInformationForDynamodb() {
-        return new ExaConnectionInformation() {
-            @Override
-            public ConnectionType getType() {
-                return ConnectionType.PASSWORD;
-            }
-
-            @Override
-            public String getAddress() {
-                return DynamodbTestDbBuilder.this.getDynamoUrl();
-            }
-
-            @Override
-            public String getUser() {
-                return DynamodbTestDbBuilder.this.getDynamoUser();
-            }
-
-            @Override
-            public String getPassword() {
-                return DynamodbTestDbBuilder.this.getDynamoPass();
-            }
-        };
+    public String getExaConnectionInformationForDynamodb() {
+        final JsonObject jsonConfig = Json.createObjectBuilder().add("awsAccessKeyId", this.getDynamoUser())
+                .add("awsSecretAccessKey", this.getDynamoPass())
+                .add("awsEndpointOverride", this.getDynamoUrl().replace("https://", "").replace("http://", ""))
+                .add("awsRegion", "eu-central-1").add("useSsl", false).build();
+        return toJson(jsonConfig);
     }
 
     public void dropAllTables() {

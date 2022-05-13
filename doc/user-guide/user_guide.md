@@ -17,7 +17,7 @@ Next create the Adapter Script:
  ```
 CREATE OR REPLACE JAVA ADAPTER SCRIPT ADAPTER.DYNAMODB_ADAPTER AS
     %scriptclass com.exasol.adapter.RequestDispatcher;
-    %jar /buckets/bfsdefault/default/document-virtual-schema-dist-7.0.1-dynamodb-2.2.0.jar;
+    %jar /buckets/bfsdefault/default/document-virtual-schema-dist-9.0.0-dynamodb-3.0.0.jar;
 /
 ```
 
@@ -31,7 +31,7 @@ CREATE OR REPLACE JAVA SET SCRIPT ADAPTER.IMPORT_FROM_DYNAMO_DB(
   CONNECTION_NAME VARCHAR(500))
   EMITS(...) AS
     %scriptclass com.exasol.adapter.document.UdfEntryPoint;
-    %jar /buckets/bfsdefault/default/document-virtual-schema-dist-7.0.1-dynamodb-2.2.0.jar;
+    %jar /buckets/bfsdefault/default/document-virtual-schema-dist-9.0.0-dynamodb-3.0.0.jar;
 /
 ```
 
@@ -43,21 +43,41 @@ For AWS use:
 
  ```
 CREATE CONNECTION DYNAMO_CONNECTION
-    TO 'aws:<REGION>'
-    USER '<AWS_ACCESS_KEY_ID>'
-    IDENTIFIED BY '<AWS_SECRET_ACCESS_KEY>';
+    TO ''
+    USER ''
+    IDENTIFIED BY '{
+        "awsAccessKeyId": "<AWS ACCESS KEY ID>", 
+        "awsSecretAccessKey": "<AWS SECRET KEY ID>", 
+        "awsRegion": "<AWS REGION>" 
+    }';
 ```
 
-As a region use for example `eu-central-1`.
+The connection stores all connection details as JSON in the `IDENTIFIED BY` part. There you can use the following keys:
+
+| Key                   | Default        |  Required  | Example                  |
+|-----------------------|----------------|:----------:|--------------------------|
+| `awsAccessKeyId`      |                |     ✓      | `"ABCDABCDABCDABCD1234"` |
+| `awsSecretAccessKey`  |                |     ✓      |                          |
+| `awsRegion`           |                |     ✓      | `"eu-central-1"`         |
+| `awsSessionToken`     |                |     ✘      |                          |
+| `awsEndpointOverride` | _AWS endpoint_ |     ✘      | `"s3.my-company.de"`     |
+| `useSsl`              | `true`         |     ✘      | `false`                  |
+
+By setting `awsSessionToken` you can use two-factor authentication with this Virtual Schema adapter. However, please keep in mind that the token will expire within few hours. So usually it's better to create a machine user without two-factor authentication enabled.
 
 For creating a connection to a local [AWS testing instance](https://docs.aws.amazon.com/de_de/amazondynamodb/latest/developerguide/DynamoDBLocal.html) use:
 
-```
+ ```
 CREATE CONNECTION DYNAMO_CONNECTION
-    TO 'http://localhost:8000'
-    USER 'fakeMyKeyId'
-    IDENTIFIED BY 'fakeSecretAccessKey';
-
+    TO ''
+    USER ''
+    IDENTIFIED BY '{
+        "awsAccessKeyId": "fakeMyKeyId", 
+        "awsSecretAccessKey": "fakeSecretAccessKey", 
+        "awsRegion": "eu-central-1",
+        "awsEndpointOverride": "localhost:8000",
+        "useSsl": false
+    }';
 ```
 
 ## Defining the Schema Mapping

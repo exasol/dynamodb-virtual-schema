@@ -1,6 +1,7 @@
 package com.exasol.adapter.document;
 
-import static com.exasol.adapter.document.UdfEntryPoint.*;
+import static com.exasol.adapter.document.GenericUdfCallHandler.*;
+import static com.exasol.adapter.document.JsonHelper.toJson;
 import static com.exasol.matcher.ResultSetStructureMatcher.table;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
@@ -18,7 +19,6 @@ import org.junit.jupiter.api.Tag;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
-import com.exasol.adapter.document.dynamodb.DynamodbAdapter;
 import com.exasol.adapter.document.mapping.MappingTestFiles;
 import com.exasol.bucketfs.Bucket;
 import com.exasol.bucketfs.BucketAccessException;
@@ -30,16 +30,19 @@ import com.exasol.udfdebugging.PushDownTesting;
 import com.exasol.udfdebugging.UdfTestSetup;
 import com.github.dockerjava.api.model.ContainerNetwork;
 
+import jakarta.json.Json;
+import jakarta.json.JsonObject;
 import software.amazon.awssdk.services.dynamodb.model.*;
 
 /**
- * Tests the {@link DynamodbAdapter} using a local docker version of DynamoDB and a local docker version of exasol.
+ * Tests the DynamoDB virtual schema adapter using a local docker version of DynamoDB and a local docker version of
+ * Exasol.
  **/
 @Tag("integration")
 @Testcontainers
 class DynamodbAdapterIT {
     public static final String BUCKETS_BFSDEFAULT_DEFAULT = "/buckets/bfsdefault/default/";
-    private static final String JAR_NAME_AND_VERSION = "document-virtual-schema-dist-7.0.1-dynamodb-2.2.0.jar";
+    private static final String JAR_NAME_AND_VERSION = "document-virtual-schema-dist-9.0.0-dynamodb-3.0.0.jar";
     private static final Path PATH_TO_VIRTUAL_SCHEMAS_JAR = Path.of("target", JAR_NAME_AND_VERSION);
     private static final String LOCAL_DYNAMO_USER = "fakeMyKeyId";
     private static final String LOCAL_DYNAMO_PASS = "fakeSecretAccessKey";
@@ -76,7 +79,8 @@ class DynamodbAdapterIT {
         dynamodbTestDbBuilder = new TestcontainerDynamodbTestDbBuilder(DYNAMODB);
         uploadAdapter();
         final Connection connection = EXASOL.createConnection();
-        final UdfTestSetup udfTestSetup = new UdfTestSetup(getTestHostIpFromInsideExasol(), EXASOL.getDefaultBucket(), connection);
+        final UdfTestSetup udfTestSetup = new UdfTestSetup(getTestHostIpFromInsideExasol(), EXASOL.getDefaultBucket(),
+                connection);
         testDbBuilder = new ExasolObjectFactory(connection,
                 ExasolObjectConfiguration.builder().withJvmOptions(udfTestSetup.getJvmOptions()).build());
         final ExasolSchema adapterSchema = testDbBuilder.createSchema("ADAPTER");
@@ -90,15 +94,22 @@ class DynamodbAdapterIT {
                 .parameter(PARAMETER_CONNECTION_NAME, "VARCHAR(500)").emits()
                 .bucketFsContent(UdfEntryPoint.class.getName(), "/buckets/bfsdefault/default/" + JAR_NAME_AND_VERSION)
                 .build();
-        connectionDefinition = testDbBuilder.createConnectionDefinition("DYNAMODB_CONNECTION",
-                "http://" + getTestHostIpFromInsideExasol() + ":" + DYNAMODB.getPort(), LOCAL_DYNAMO_USER,
-                LOCAL_DYNAMO_PASS);
+        connectionDefinition = testDbBuilder.createConnectionDefinition("DYNAMODB_CONNECTION", "", "",
+                getExaConnectionInformationForDynamodb());
 
         for (final String mapping : REQUIRED_MAPPINGS) {
             EXASOL.getDefaultBucket().uploadInputStream(
                     () -> DynamodbAdapterIT.class.getClassLoader().getResourceAsStream(mapping), mapping);
         }
         statement = connection.createStatement();
+    }
+
+    private static String getExaConnectionInformationForDynamodb() {
+        final JsonObject jsonConfig = Json.createObjectBuilder().add("awsAccessKeyId", LOCAL_DYNAMO_USER)
+                .add("awsSecretAccessKey", LOCAL_DYNAMO_PASS)
+                .add("awsEndpointOverride", getTestHostIpFromInsideExasol() + ":" + DYNAMODB.getPort())
+                .add("awsRegion", "eu-central-1").add("useSsl", false).build();
+        return toJson(jsonConfig);
     }
 
     private static String getTestHostIpFromInsideExasol() {

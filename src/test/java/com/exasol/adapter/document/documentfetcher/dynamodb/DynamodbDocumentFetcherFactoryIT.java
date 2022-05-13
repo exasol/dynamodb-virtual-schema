@@ -8,22 +8,21 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.Tag;
-import org.junit.jupiter.api.io.TempDir;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
-import com.exasol.adapter.AdapterException;
 import com.exasol.adapter.document.*;
+import com.exasol.adapter.document.connection.ConnectionPropertiesReader;
 import com.exasol.adapter.document.documentfetcher.DocumentFetcher;
 import com.exasol.adapter.document.documentfetcher.FetchedDocument;
 import com.exasol.adapter.document.documentnode.*;
+import com.exasol.adapter.document.iterators.CloseableIterator;
 import com.exasol.adapter.document.queryplanning.RemoteTableQuery;
 import com.exasol.dynamodb.DynamodbContainer;
 
@@ -36,12 +35,10 @@ class DynamodbDocumentFetcherFactoryIT {
     @Container
     private static final DynamodbContainer DYNAMODB = new DynamodbContainer();
     private static BasicMappingSetup basicMappingSetup;
-    @TempDir
-    static Path tempDir;
     private static DynamodbTestDbBuilder dynamodbTestDbBuilder;
 
     @BeforeAll
-    static void beforeAll() throws IOException, AdapterException, URISyntaxException {
+    static void beforeAll() throws IOException, URISyntaxException {
         dynamodbTestDbBuilder = new TestcontainerDynamodbTestDbBuilder(DYNAMODB);
         basicMappingSetup = new BasicMappingSetup();
         setupTestDatabase();
@@ -84,8 +81,10 @@ class DynamodbDocumentFetcherFactoryIT {
                 .getDocumentFetchers();
         final List<FetchedDocument> result = new ArrayList<>();
         for (final DocumentFetcher documentFetcher : documentFetchers) {
-            documentFetcher.run(dynamodbTestDbBuilder.getExaConnectionInformationForDynamodb())
-                    .forEachRemaining(result::add);
+            try (final CloseableIterator<FetchedDocument> iterator = documentFetcher.run(new ConnectionPropertiesReader(
+                    dynamodbTestDbBuilder.getExaConnectionInformationForDynamodb(), "inline"))) {
+                iterator.forEachRemaining(result::add);
+            }
         }
         return result;
     }

@@ -3,10 +3,11 @@ package com.exasol.adapter.document.documentfetcher.dynamodb;
 import java.util.Iterator;
 import java.util.Map;
 
-import com.exasol.ExaConnectionInformation;
+import com.exasol.adapter.document.connection.ConnectionPropertiesReader;
 import com.exasol.adapter.document.documentfetcher.DocumentFetcher;
 import com.exasol.adapter.document.documentfetcher.FetchedDocument;
 import com.exasol.adapter.document.documentnode.dynamodb.DynamodbMap;
+import com.exasol.adapter.document.dynamodb.connection.DynamodbConnectionPropertiesReader;
 import com.exasol.adapter.document.iterators.*;
 import com.exasol.dynamodb.DynamodbConnectionFactory;
 
@@ -20,9 +21,10 @@ abstract class AbstractDynamodbDocumentFetcher implements DocumentFetcher {
     private static final long serialVersionUID = 1110930661591665420L;
 
     @Override
-    public CloseableIterator<FetchedDocument> run(final ExaConnectionInformation connectionInformation) {
+    public CloseableIterator<FetchedDocument> run(final ConnectionPropertiesReader connectionPropertiesReader) {
         final String tableName = getTableName();
-        final DynamoDbClient connection = new DynamodbConnectionFactory().getConnection(connectionInformation);
+        final DynamoDbClient connection = new DynamodbConnectionFactory()
+                .getConnection(new DynamodbConnectionPropertiesReader().read(connectionPropertiesReader));
         final CloseableIterator<Map<String, AttributeValue>> dynamodbResults = new CloseableIteratorWrapper<>(
                 this.run(connection), connection::close);
         return new TransformingIterator<>(dynamodbResults,
