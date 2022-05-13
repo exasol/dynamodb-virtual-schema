@@ -4,10 +4,12 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 import org.junit.jupiter.api.Test;
 
-class DynamodbAdapterTest {
+import com.exasol.adapter.document.DocumentAdapter;
+
+class DynamodbDocumentAdapterDialectTest {
 
     @Test
     void testCapabilitiesAreSupportedByVsCommonDocument() {
-        assertDoesNotThrow(() -> new DynamodbAdapter().getCapabilities(null, null));
+        assertDoesNotThrow(() -> new DocumentAdapter(new DynamodbDocumentAdapterDialect()).getCapabilities(null, null));
     }
 }

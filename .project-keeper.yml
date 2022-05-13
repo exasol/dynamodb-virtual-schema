@@ -5,5 +5,6 @@ sources:
       - jar_artifact
       - integration_tests
       - udf_coverage
+      - lombok
 linkReplacements:
   - LICENSE-exasol-jdbc.txt|https://www.exasol.com/support/secure/attachment/155343/EXASOL_SDK-7.0.11.tar.gz

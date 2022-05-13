@@ -10,9 +10,11 @@ import java.util.*;
 import org.junit.jupiter.api.Test;
 
 import com.exasol.ExaConnectionInformation;
+import com.exasol.adapter.document.connection.ConnectionPropertiesReader;
 import com.exasol.adapter.document.documentfetcher.FetchedDocument;
 import com.exasol.adapter.document.documentnode.DocumentObject;
 import com.exasol.adapter.document.documentnode.DocumentStringValue;
+import com.exasol.adapter.document.iterators.CloseableIterator;
 import com.exasol.dynamodb.attributevalue.AttributeValueQuickCreator;
 
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
@@ -27,7 +29,11 @@ class AbstractDynamodbDocumentFetcherTest {
     void testRun() {
         final List<FetchedDocument> results = new ArrayList<>();
         final ExaConnectionInformation connectionInformation = mockConnectionInformation();
-        new Stub().run(connectionInformation).forEachRemaining(results::add);
+        try (final CloseableIterator<FetchedDocument> iterator = new Stub().run(new ConnectionPropertiesReader(
+                "{ \"awsAccessKeyId\": \"abc\", \"awsSecretAccessKey\": \"abc\", \"awsRegion\": \"eu-central-1\"}",
+                "user-guide-url"))) {
+            iterator.forEachRemaining(results::add);
+        }
         final DocumentObject rootElement = (DocumentObject) results.get(0).getRootDocumentNode();
         final DocumentStringValue value = (DocumentStringValue) rootElement.get(KEY);
         assertThat(value.getValue(), equalTo(VALUE));
