@@ -1,4 +1,4 @@
-# Virtual Schema for Amazon DynamoDB 3.0.0, released 2021-05-13
+# Virtual Schema for Amazon DynamoDB 3.0.0, released 2022-05-13
 
 Code name: Dependency Updates
 
