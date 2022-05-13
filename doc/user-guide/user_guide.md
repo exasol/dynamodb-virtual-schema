@@ -75,7 +75,7 @@ CREATE CONNECTION DYNAMO_CONNECTION
         "awsAccessKeyId": "fakeMyKeyId", 
         "awsSecretAccessKey": "fakeSecretAccessKey", 
         "awsRegion": "eu-central-1",
-        "awsEndpointOverride": "localhost:8000'",
+        "awsEndpointOverride": "localhost:8000",
         "useSsl": false
     }';
 ```
