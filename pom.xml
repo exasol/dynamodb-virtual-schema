@@ -10,7 +10,7 @@
     <properties>
         <junit.version>5.8.2</junit.version>
         <jacoco.version>0.8.8</jacoco.version>
-        <vs-common-document.version>9.0.1</vs-common-document.version>
+        <vs-common-document.version>9.0.2</vs-common-document.version>
     </properties>
     <distributionManagement>
         <snapshotRepository>
@@ -189,7 +189,7 @@
                 <artifactId>ossindex-maven-plugin</artifactId>
                 <configuration>
                     <excludeVulnerabilityIds>
-                        <!-- This issue is mitigated in the AWS SDK. See https://github.com/exasol/cloudwatch-adapter/issues/72 -->
+                        <!-- This issue is mitigated in the AWS SDK. See https://github.com/aws/aws-sdk-java-v2/issues/3263 -->
                         <excludeVulnerabilityId>sonatype-2020-0026</excludeVulnerabilityId>
                     </excludeVulnerabilityIds>
                 </configuration>
