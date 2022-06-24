@@ -14,6 +14,7 @@ import java.sql.*;
 import java.util.*;
 import java.util.concurrent.TimeoutException;
 
+import com.exasol.matcher.TypeMatchMode;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.Tag;
 import org.testcontainers.junit.jupiter.Container;
@@ -42,7 +43,7 @@ import software.amazon.awssdk.services.dynamodb.model.*;
 @Testcontainers
 class DynamodbAdapterIT {
     public static final String BUCKETS_BFSDEFAULT_DEFAULT = "/buckets/bfsdefault/default/";
-    private static final String JAR_NAME_AND_VERSION = "document-virtual-schema-dist-9.0.0-dynamodb-3.0.0.jar";
+    private static final String JAR_NAME_AND_VERSION = "document-virtual-schema-dist-9.0.1-dynamodb-3.0.1.jar";
     private static final Path PATH_TO_VIRTUAL_SCHEMAS_JAR = Path.of("target", JAR_NAME_AND_VERSION);
     private static final String LOCAL_DYNAMO_USER = "fakeMyKeyId";
     private static final String LOCAL_DYNAMO_PASS = "fakeSecretAccessKey";
@@ -143,7 +144,8 @@ class DynamodbAdapterIT {
         assertThat(result,
                 table().row("123254545", "bad book 2", "Jakob Braun", "MY_BOOKS", "jb books", 10)
                         .row("123567", "bad book 1", "Jakob Braun", "MY_BOOKS", "jb books", 15)
-                        .row("1235673", "boring book", "Jakob Braun", "MY_BOOKS", "no name", 21.12).matchesFuzzily());
+                        .row("1235673", "boring book", "Jakob Braun", "MY_BOOKS", "no name", 21.12)
+                        .matches(TypeMatchMode.NO_JAVA_TYPE_CHECK));
     }
 
     @Test
@@ -163,7 +165,7 @@ class DynamodbAdapterIT {
         dynamodbTestDbBuilder.importData(DYNAMO_BOOKS_TABLE, TestDocuments.books());
         final ResultSet result = statement
                 .executeQuery("SELECT COUNT(*) as NUMBER_OF_BOOKS FROM " + TEST_SCHEMA + ".BOOKS;");
-        assertThat(result, table().row(3L).matchesFuzzily());
+        assertThat(result, table().row(3L).matches(TypeMatchMode.NO_JAVA_TYPE_CHECK));
     }
 
     @Test
@@ -274,7 +276,7 @@ class DynamodbAdapterIT {
                 () -> assertThat(PushDownTesting.getSelectionThatIsSentToTheAdapter(statement, query),
                         endsWith("BOOKS.ISBN='123567'")),
                 () -> assertThat(PushDownTesting.getPushDownSql(statement, query), endsWith("WHERE TRUE")),
-                () -> assertThat(statement.executeQuery(query), table().row(selectedIsbn).matchesFuzzily())//
+                () -> assertThat(statement.executeQuery(query), table().row(selectedIsbn).matches(TypeMatchMode.NO_JAVA_TYPE_CHECK))//
         );
     }
 
@@ -290,7 +292,7 @@ class DynamodbAdapterIT {
                         endsWith("NOT (BOOKS.ISBN='123567')")),
                 () -> assertThat(PushDownTesting.getPushDownSql(statement, query), endsWith("WHERE TRUE")),
                 () -> assertThat(statement.executeQuery(query),
-                        table().row("123254545").row("1235673").matchesFuzzily())//
+                        table().row("123254545").row("1235673").matches(TypeMatchMode.NO_JAVA_TYPE_CHECK))//
         );
     }
 
@@ -300,7 +302,7 @@ class DynamodbAdapterIT {
         createTableBooksTableWithPublisherPriceKey();
         final ResultSet actualResultSet = statement.executeQuery(
                 "SELECT ISBN FROM " + TEST_SCHEMA + ".\"BOOKS\" WHERE PUBLISHER = 'jb books' AND PRICE > 10;");
-        assertThat(actualResultSet, table().row("123567").matchesFuzzily());
+        assertThat(actualResultSet, table().row("123567").matches(TypeMatchMode.NO_JAVA_TYPE_CHECK));
     }
 
     @Test
@@ -314,7 +316,7 @@ class DynamodbAdapterIT {
                 () -> assertThat(PushDownTesting.getSelectionThatIsSentToTheAdapter(statement, query),
                         equalTo("(BOOKS.PUBLISHER='jb books') AND (BOOKS.PRICE<11)")),
                 () -> assertThat(PushDownTesting.getPushDownSql(statement, query), endsWith("WHERE TRUE")),
-                () -> assertThat(actualResultSet, table().row("123254545").matchesFuzzily())//
+                () -> assertThat(actualResultSet, table().row("123254545").matches(TypeMatchMode.NO_JAVA_TYPE_CHECK))//
         );
     }
 
