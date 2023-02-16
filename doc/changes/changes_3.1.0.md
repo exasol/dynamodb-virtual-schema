@@ -1,12 +1,15 @@
 # Virtual Schema for Amazon DynamoDB 3.1.0, released 2023-??-??
 
-Code name:
+Code name: Maintenance
 
 ## Summary
 
+Remove references to discontinued repository `maven.exasol.com` and renamed error codes from `VS-DY` to `VSDY`.
+
 ## Features
 
-* ISSUE_NUMBER: description
+* #171: Renamed error codes from `VS-DY` to `VSDY`
+* #172: Remove references to discontinued repository `maven.exasol.com`
 
 ## Dependency Updates
 
