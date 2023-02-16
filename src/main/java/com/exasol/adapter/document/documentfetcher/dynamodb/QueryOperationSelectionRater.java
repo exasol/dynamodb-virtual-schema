@@ -40,7 +40,7 @@ public class QueryOperationSelectionRater {
         case GREATER_EQUAL:
             return 1;
         default:
-            throw new UnsupportedOperationException(ExaError.messageBuilder("E-VS-DY-27")
+            throw new UnsupportedOperationException(ExaError.messageBuilder("E-VSDY-27")
                     .message("Operator rating is not implemented for the operator {{operator}}",
                             sortKeyCondition.getOperator())
                     .toString());

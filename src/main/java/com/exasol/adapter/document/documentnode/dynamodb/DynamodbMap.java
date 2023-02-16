@@ -30,7 +30,7 @@ public class DynamodbMap implements DocumentObject {
         final Map<String, DocumentNode> result = new HashMap<>();
         for (final Map.Entry<String, AttributeValue> entry : this.value.entrySet()) {
             if (result.put(entry.getKey(), nodeFactory.buildDocumentNode(entry.getValue())) != null) {
-                throw new IllegalStateException(ExaError.messageBuilder("F-VS-DY-33")
+                throw new IllegalStateException(ExaError.messageBuilder("F-VSDY-33")
                         .message("Invalid AttributeValue. The map had the same key twice.").ticketMitigation()
                         .toString());
             }

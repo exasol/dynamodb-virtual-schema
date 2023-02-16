@@ -1,5 +1,5 @@
 error-tags:
-  VS-DY:
+  VSDY:
     packages:
       - com.exasol.adapter.dynamodb
       - com.exasol.adapter.document.documentfetcher.dynamodb

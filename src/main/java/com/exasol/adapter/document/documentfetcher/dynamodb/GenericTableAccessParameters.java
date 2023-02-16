@@ -225,7 +225,7 @@ public class GenericTableAccessParameters implements Serializable {
         }
 
         private IllegalStateException getUnsetParameterException(final String field) {
-            return new IllegalStateException(ExaError.messageBuilder("F-VS-DY-17")
+            return new IllegalStateException(ExaError.messageBuilder("F-VSDY-17")
                     .message("Can not GenericTableAccessParameters since the required field {{field}} was not set.",
                             field)
                     .ticketMitigation().toString());

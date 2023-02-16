@@ -36,6 +36,6 @@ class DocumentPathToDynamodbExpressionConverterTest {
         final UnsupportedOperationException exception = assertThrows(UnsupportedOperationException.class,
                 () -> CONVERTER.convert(path, namePlaceholderMapBuilder));
         assertThat(exception.getMessage(), equalTo(
-                "F-VS-DY-4: ArrayAll path segments can't be converted to DynamoDB path expressions. This is an internal error that should not happen. Please report it by opening a GitHub issue."));
+                "F-VSDY-4: ArrayAll path segments can't be converted to DynamoDB path expressions. This is an internal error that should not happen. Please report it by opening a GitHub issue."));
     }
 }

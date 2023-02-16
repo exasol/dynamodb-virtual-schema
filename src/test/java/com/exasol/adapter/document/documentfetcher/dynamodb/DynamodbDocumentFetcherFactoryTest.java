@@ -227,7 +227,7 @@ class DynamodbDocumentFetcherFactoryTest {
             } else if (value.n() != null) {
                 result = result.replace(valuePlaceholder.getKey(), value.n());
             } else {
-                throw new IllegalStateException(ExaError.messageBuilder("E-VS-DY-6").message(
+                throw new IllegalStateException(ExaError.messageBuilder("E-VSDY-6").message(
                         "Filling in a placeholder of this type is not yet implemented. Value for the placeholder: {{value}}.",
                         value).toString());
             }

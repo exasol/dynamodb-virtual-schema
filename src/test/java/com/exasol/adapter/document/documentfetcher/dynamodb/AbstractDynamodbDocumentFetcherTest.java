@@ -2,14 +2,11 @@ package com.exasol.adapter.document.documentfetcher.dynamodb;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 import java.util.*;
 
 import org.junit.jupiter.api.Test;
 
-import com.exasol.ExaConnectionInformation;
 import com.exasol.adapter.document.connection.ConnectionPropertiesReader;
 import com.exasol.adapter.document.documentfetcher.FetchedDocument;
 import com.exasol.adapter.document.documentnode.DocumentObject;
@@ -28,7 +25,6 @@ class AbstractDynamodbDocumentFetcherTest {
     @Test
     void testRun() {
         final List<FetchedDocument> results = new ArrayList<>();
-        final ExaConnectionInformation connectionInformation = mockConnectionInformation();
         try (final CloseableIterator<FetchedDocument> iterator = new Stub().run(new ConnectionPropertiesReader(
                 "{ \"awsAccessKeyId\": \"abc\", \"awsSecretAccessKey\": \"abc\", \"awsRegion\": \"eu-central-1\"}",
                 "user-guide-url"))) {
@@ -39,15 +35,9 @@ class AbstractDynamodbDocumentFetcherTest {
         assertThat(value.getValue(), equalTo(VALUE));
     }
 
-    private ExaConnectionInformation mockConnectionInformation() {
-        final ExaConnectionInformation connectionInformation = mock(ExaConnectionInformation.class);
-        when(connectionInformation.getAddress()).thenReturn("https://127.0.0.1");
-        when(connectionInformation.getUser()).thenReturn("test");
-        when(connectionInformation.getPassword()).thenReturn("test");
-        return connectionInformation;
-    }
-
     private static class Stub extends AbstractDynamodbDocumentFetcher {
+        private static final long serialVersionUID = 1L;
+
         @Override
         protected Iterator<Map<String, AttributeValue>> run(final DynamoDbClient client) {
             return List.of(Map.of(KEY, AttributeValueQuickCreator.forString(VALUE))).iterator();

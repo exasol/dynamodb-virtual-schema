@@ -165,7 +165,7 @@ public class DynamodbQueryDocumentFetcher extends AbstractDynamodbDocumentFetche
          */
         public DynamodbQueryDocumentFetcher build() {
             if (this.keyConditionExpression == null) {
-                throw new IllegalStateException(ExaError.messageBuilder("E-VS-DY-13").message(
+                throw new IllegalStateException(ExaError.messageBuilder("E-VSDY-13").message(
                         "Can not build DynamodbQueryDocumentFetcher: keyConditionExpression was not set but is a mandatory field.")
                         .toString());
             }

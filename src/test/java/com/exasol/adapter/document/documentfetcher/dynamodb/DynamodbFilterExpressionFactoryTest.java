@@ -108,7 +108,7 @@ class DynamodbFilterExpressionFactoryTest {
         final UnsupportedOperationException exception = assertThrows(UnsupportedOperationException.class,
                 () -> factory.buildFilterExpression(comparison));
         assertThat(exception.getMessage(), equalTo(
-                "E-VS-DY-9: The column 'SOURCE_REFERENCE' has no corresponding DynamoDB column. Hence it can't be part of a filter expression."));
+                "E-VSDY-9: The column 'SOURCE_REFERENCE' has no corresponding DynamoDB column. Hence it can't be part of a filter expression."));
     }
 
     @Test

@@ -42,7 +42,7 @@ public class DynamodbDocumentNodeFactory {
         } else if (attributeValue.hasSs()) {
             return new DynamodbStringSet(attributeValue.ss());
         } else {
-            throw new UnsupportedOperationException(ExaError.messageBuilder("F-VS-DY-7").message(
+            throw new UnsupportedOperationException(ExaError.messageBuilder("F-VSDY-7").message(
                     "The type of the DynamoDB node {{node}} is not supported in this version of the dynamodb-virtual-schema.",
                     attributeValue).ticketMitigation().toString());
         }

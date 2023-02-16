@@ -52,7 +52,7 @@ public class JsonToAttributeValueConverter {
             final JsonObject jsonObject = (JsonObject) value;
             return AttributeValue.builder().m(convertJsonObject(jsonObject)).build();
         default:
-            throw new UnsupportedOperationException(ExaError.messageBuilder("F-VS-DY-18").message(
+            throw new UnsupportedOperationException(ExaError.messageBuilder("F-VSDY-18").message(
                     "Failed to convert JSON value of type {{type}} to DynamoDB attribute value. This conversion is not yet implemented.",
                     value.getValueType().toString()).ticketMitigation().toString());
         }

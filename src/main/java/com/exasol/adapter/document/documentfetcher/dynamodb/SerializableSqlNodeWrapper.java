@@ -6,7 +6,6 @@ import java.util.Collections;
 import com.exasol.adapter.request.parser.PushdownSqlParser;
 import com.exasol.adapter.request.renderer.PushdownSqlRenderer;
 import com.exasol.adapter.sql.SqlNode;
-import com.exasol.errorreporting.ExaError;
 
 import jakarta.json.*;
 import software.amazon.awssdk.utils.StringInputStream;
@@ -15,11 +14,12 @@ import software.amazon.awssdk.utils.StringInputStream;
  * This class wraps a {@link SqlNode} to make it serializable.
  */
 public class SerializableSqlNodeWrapper implements Serializable {
+    private static final long serialVersionUID = 1L;
     private SqlNode sqlNode;
 
     /**
      * Create a new instance of {@link SerializableSqlNodeWrapper}.
-     * 
+     *
      * @param sqlNode {@link SqlNode} to wrap
      */
     public SerializableSqlNodeWrapper(final SqlNode sqlNode) {
@@ -28,7 +28,7 @@ public class SerializableSqlNodeWrapper implements Serializable {
 
     /**
      * Get the wrapped {@link SqlNode}.
-     * 
+     *
      * @return wrapped {@link SqlNode}
      */
     public SqlNode getSqlNode() {
@@ -40,7 +40,7 @@ public class SerializableSqlNodeWrapper implements Serializable {
      * <p>
      * This method is called during deserialization
      * </p>
-     * 
+     *
      * @param out stream to write to
      * @throws IOException if serialization fails
      */
@@ -61,18 +61,5 @@ public class SerializableSqlNodeWrapper implements Serializable {
             this.sqlNode = PushdownSqlParser.createWithTablesMetadata(Collections.emptyList())
                     .parseExpression(sqlNodeAsJson);
         }
-    }
-
-    /**
-     * Custom deserialization.
-     * <p>
-     * This method is called during deserialization
-     * </p>
-     * 
-     * @throws ObjectStreamException since no data is available if this method is called
-     */
-    private void readObjectNoData() throws ObjectStreamException {
-        throw new InvalidObjectException(
-                ExaError.messageBuilder("E-VS-DY-34").message("Failed to deserialize SqlNode.").toString());
     }
 }
