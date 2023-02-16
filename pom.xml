@@ -27,6 +27,7 @@
             <dependency>
                 <groupId>software.amazon.awssdk</groupId>
                 <artifactId>bom</artifactId>
+                <!-- must be compatible to artifact dynamodb -->
                 <version>2.20.4</version>
                 <type>pom</type>
                 <scope>import</scope>
@@ -60,6 +61,12 @@
             <artifactId>dynamodb</artifactId>
             <version>2.20.5</version>
         </dependency>
+        <!-- override transitive dependency of dynamodb to fix vulnerability sonatype-2020-0026 -->
+        <dependency>
+            <groupId>commons-codec</groupId>
+            <artifactId>commons-codec</artifactId>
+            <version>1.15</version>
+        </dependency>
         <!-- Test dependencies -->
         <dependency>
             <groupId>org.hamcrest</groupId>
@@ -92,6 +99,13 @@
             <version>${vs-common-document.version}</version>
             <type>test-jar</type>
             <scope>test</scope>
+        </dependency>
+        <!-- override transitive dependency of virtual-schema-common-document
+             to fix vulnerability CVE-2022-45688 -->
+        <dependency>
+            <groupId>com.exasol</groupId>
+            <artifactId>edml-java</artifactId>
+            <version>1.1.3</version>
         </dependency>
         <dependency>
             <groupId>com.exasol</groupId>
