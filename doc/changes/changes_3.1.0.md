@@ -4,20 +4,30 @@ Code name: Maintenance
 
 ## Summary
 
-Remove references to discontinued repository `maven.exasol.com` and renamed error codes from `VS-DY` to `VSDY`.
+Fixed vulnerabilities
+* CVE-2022-45688 in [org.json:json:jar:20220320](https://ossindex.sonatype.org/component/pkg:maven/org.json/json@20220320?utm_source=ossindex-client&utm_medium=integration&utm_content=1.8.1) by overriding transitive dependency `com.exasol:edml-java` of `virtual-schema-common-document`
+* [sonatype-2012-0050](https://ossindex.sonatype.org/vulnerability/sonatype-2012-0050) by overriding transitive dependency `commons-codec:commons-codec` of `software.amazon.awssdk:dynamodb`.
 
-## Features
+Removed references to discontinued repository `maven.exasol.com` and renamed error codes from `VS-DY` to `VSDY`.
+
+## Bugfixes
+
+* #174: Fixed vulnerabilities in transitive dependencies
+* #172: Removed references to discontinued repository `maven.exasol.com`
+
+## Refactorings
 
 * #171: Renamed error codes from `VS-DY` to `VSDY`
-* #172: Remove references to discontinued repository `maven.exasol.com`
 
 ## Dependency Updates
 
 ### Compile Dependency Updates
 
+* Added `com.exasol:edml-java:1.1.3`
 * Updated `com.exasol:error-reporting-java:0.4.1` to `1.0.1`
 * Updated `com.exasol:hamcrest-resultset-matcher:1.5.1` to `1.5.2`
 * Updated `com.exasol:virtual-schema-common-document:9.0.2` to `9.1.2`
+* Added `commons-codec:commons-codec:1.15`
 * Updated `org.slf4j:slf4j-jdk14:1.7.36` to `2.0.6`
 * Updated `software.amazon.awssdk:dynamodb:2.17.218` to `2.20.5`
 
