@@ -6,6 +6,7 @@ import java.util.Collections;
 import com.exasol.adapter.request.parser.PushdownSqlParser;
 import com.exasol.adapter.request.renderer.PushdownSqlRenderer;
 import com.exasol.adapter.sql.SqlNode;
+import com.exasol.errorreporting.ExaError;
 
 import jakarta.json.*;
 import software.amazon.awssdk.utils.StringInputStream;
@@ -66,11 +67,13 @@ public class SerializableSqlNodeWrapper implements Serializable {
     /**
      * Custom deserialization.
      * <p>
-     * This method is called during deserialization
+     * This method is not invoked explicitly but called during deserialization, see
+     * https://stackoverflow.com/questions/7445217/java-when-to-add-readobjectnodata-during-serialization.
      * </p>
-     * 
+     *
      * @throws ObjectStreamException since no data is available if this method is called
      */
+    @SuppressWarnings("unused") // not invoked explicitly but called during deserialization
     private void readObjectNoData() throws ObjectStreamException {
         throw new InvalidObjectException(
                 ExaError.messageBuilder("E-VS-DY-34").message("Failed to deserialize SqlNode.").toString());
