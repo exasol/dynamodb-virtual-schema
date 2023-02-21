@@ -62,4 +62,17 @@ public class SerializableSqlNodeWrapper implements Serializable {
                     .parseExpression(sqlNodeAsJson);
         }
     }
+
+    /**
+     * Custom deserialization.
+     * <p>
+     * This method is called during deserialization
+     * </p>
+     * 
+     * @throws ObjectStreamException since no data is available if this method is called
+     */
+    private void readObjectNoData() throws ObjectStreamException {
+        throw new InvalidObjectException(
+                ExaError.messageBuilder("E-VS-DY-34").message("Failed to deserialize SqlNode.").toString());
+    }
 }
