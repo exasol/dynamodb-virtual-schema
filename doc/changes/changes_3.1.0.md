@@ -1,11 +1,11 @@
-# Virtual Schema for Amazon DynamoDB 3.1.0, released 2023-??-??
+# Virtual Schema for Amazon DynamoDB 3.1.0, released 2023-02-21
 
 Code name: Maintenance
 
 ## Summary
 
 Fixed vulnerabilities
-* CVE-2022-45688 in [org.json:json:jar:20220320](https://ossindex.sonatype.org/component/pkg:maven/org.json/json@20220320?utm_source=ossindex-client&utm_medium=integration&utm_content=1.8.1) by overriding transitive dependency `com.exasol:edml-java` of `virtual-schema-common-document`
+* CVE-2022-45688 by updating dependency to `virtual-schema-common-document`
 * [sonatype-2012-0050](https://ossindex.sonatype.org/vulnerability/sonatype-2012-0050) by overriding transitive dependency `commons-codec:commons-codec` of `software.amazon.awssdk:dynamodb`.
 
 Removed references to discontinued repository `maven.exasol.com` and renamed error codes from `VS-DY` to `VSDY`.
