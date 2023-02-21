@@ -75,7 +75,7 @@ public class DynamodbFilterExpressionFactory {
         public void visit(final LogicalOperator logicalOperator) {
             final Set<QueryPredicate> operands = logicalOperator.getOperands();
             if (operands.isEmpty()) {
-                throw new IllegalArgumentException(ExaError.messageBuilder("E-VS-DY-8")
+                throw new IllegalArgumentException(ExaError.messageBuilder("E-VSDY-8")
                         .message("Empty logic expressions must be removed before converting to FilterExpression.")
                         .ticketMitigation().toString());
             } else if (operands.size() == 1) {
@@ -157,7 +157,7 @@ public class DynamodbFilterExpressionFactory {
                         + convertComparisonOperator(columnLiteralComparisonPredicate.getOperator()) + " "
                         + valuePlaceholder;
             } else {
-                throw new UnsupportedOperationException(ExaError.messageBuilder("E-VS-DY-9")
+                throw new UnsupportedOperationException(ExaError.messageBuilder("E-VSDY-9")
                         .message(
                                 "The column {{column}} has no corresponding DynamoDB column. "
                                         + "Hence it can't be part of a filter expression.",
@@ -181,7 +181,7 @@ public class DynamodbFilterExpressionFactory {
             case GREATER_EQUAL:
                 return ">=";
             default:
-                throw new UnsupportedOperationException(ExaError.messageBuilder("E-VS-DY-12")
+                throw new UnsupportedOperationException(ExaError.messageBuilder("E-VSDY-12")
                         .message("The operator {{operator}} has no equivalent in DynamoDB.", operator).toString());
             }
         }

@@ -6,7 +6,7 @@ import java.util.Optional;
  * This class is the abstract base for a DynamoDB indexes.
  */
 abstract class AbstractDynamodbIndex implements DynamodbIndex {
-
+    private static final long serialVersionUID = 1L;
     private final String partitionKey;
     private final String sortKey;
 

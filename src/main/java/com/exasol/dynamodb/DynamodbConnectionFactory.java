@@ -39,7 +39,7 @@ public class DynamodbConnectionFactory {
         try {
             return new URI(uri);
         } catch (final URISyntaxException exception) {
-            throw new IllegalArgumentException(ExaError.messageBuilder("E-VS-DY-1")
+            throw new IllegalArgumentException(ExaError.messageBuilder("E-VSDY-1")
                     .message("Invalid DynamoDB URI {{URI}}.").parameter("URI", uri)
                     .mitigation(
                             "Please set a valid value for awsEndpointOverride in the format HOST:PORT. The value must not start with http:// or https://.")

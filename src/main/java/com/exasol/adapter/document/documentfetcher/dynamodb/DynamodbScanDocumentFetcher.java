@@ -214,14 +214,14 @@ class DynamodbScanDocumentFetcher extends AbstractDynamodbDocumentFetcher {
          */
         public DynamodbScanDocumentFetcher build() {
             if (this.totalSegments == -1) {
-                throw new IllegalStateException(ExaError.messageBuilder("F-VS-DY-15")
+                throw new IllegalStateException(ExaError.messageBuilder("F-VSDY-15")
                         .message(BUILD_FAILED_MESSAGE + " TotalSegments was not set but is a mandatory field.")
                         .mitigation(
                                 "Invoke the totalSegments(totalSegments) method on this builder before calling build().")
                         .ticketMitigation().toString());
             }
             if (this.segment == -1) {
-                throw new IllegalStateException(ExaError.messageBuilder("F-VS-DY-16")
+                throw new IllegalStateException(ExaError.messageBuilder("F-VSDY-16")
                         .message(BUILD_FAILED_MESSAGE + " Segment was not set but is a mandatory field.")
                         .mitigation(
                                 "Invoke the totalSegments(totalSegments) method on this builder before calling build().")

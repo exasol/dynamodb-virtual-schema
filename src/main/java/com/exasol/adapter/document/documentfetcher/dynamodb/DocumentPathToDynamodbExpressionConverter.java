@@ -70,7 +70,7 @@ public class DocumentPathToDynamodbExpressionConverter {
 
         @Override
         public void visit(final ArrayAllPathSegment arrayAllPathSegment) {
-            throw new UnsupportedOperationException(ExaError.messageBuilder("F-VS-DY-4")
+            throw new UnsupportedOperationException(ExaError.messageBuilder("F-VSDY-4")
                     .message("ArrayAll path segments can't be converted to DynamoDB path expressions.")
                     .ticketMitigation().toString());
         }

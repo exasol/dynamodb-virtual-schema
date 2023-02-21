@@ -64,7 +64,7 @@ class DynamodbQueryDocumentFetcherFactory {
             }
         }
         if (bestQueryOperationSelection == null) {
-            throw new PlanDoesNotFitException(ExaError.messageBuilder("E-VS-DY-14")
+            throw new PlanDoesNotFitException(ExaError.messageBuilder("E-VSDY-14")
                     .message("Could not find any Query operation plan").toString());
         }
         return bestQueryOperationSelection;

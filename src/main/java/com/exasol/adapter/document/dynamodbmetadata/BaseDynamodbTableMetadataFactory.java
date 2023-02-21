@@ -47,7 +47,7 @@ public class BaseDynamodbTableMetadataFactory implements DynamodbTableMetadataFa
                 return keySchemaElement.attributeName();
             }
         }
-        throw new IllegalStateException(ExaError.messageBuilder("F-VS-DY-30")
+        throw new IllegalStateException(ExaError.messageBuilder("F-VSDY-30")
                 .message("Could not find partition key. "
                         + "This should never happen because each Dynamodb table must define a partition key.")
                 .ticketMitigation().toString());

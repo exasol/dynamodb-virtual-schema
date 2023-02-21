@@ -6,9 +6,6 @@ import java.io.*;
 import java.net.URISyntaxException;
 import java.util.*;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.exasol.adapter.document.dynamodb.connection.DynamodbConnectionProperties;
 import com.exasol.dynamodb.DynamodbConnectionFactory;
 import com.exasol.dynamodb.attributevalue.AttributeValueQuickCreator;
@@ -22,7 +19,6 @@ import software.amazon.awssdk.services.dynamodb.model.*;
  * test setups for a DynamoDB.
  */
 public abstract class DynamodbTestDbBuilder {
-    private static final Logger LOGGER = LoggerFactory.getLogger(DynamodbTestDbBuilder.class);
     private final DynamoDbClient dynamoClient;
     private final String dynamoUrl;
     private final String dynamoUser;
@@ -63,7 +59,7 @@ public abstract class DynamodbTestDbBuilder {
 
     /**
      * Add one ore more items to a given table defined by a JSON string.
-     * 
+     *
      * @param tableName name of the table to put the items in
      * @param itemsJson json definitions of the items
      */
@@ -75,7 +71,7 @@ public abstract class DynamodbTestDbBuilder {
 
     /**
      * Runs a table scan on the given DynamoDB table. The scan result is logged.
-     * 
+     *
      * @param tableName DynamoDB table name to scan
      * @return number of scanned items
      */
@@ -87,7 +83,7 @@ public abstract class DynamodbTestDbBuilder {
 
     /**
      * Create a DynamoDB table.
-     * 
+     *
      * @param tableName name for the new DynamoDB table
      * @param keyName   partition key (type is always string)
      */
@@ -105,7 +101,7 @@ public abstract class DynamodbTestDbBuilder {
 
     /**
      * Create a DynamoDB table.
-     * 
+     *
      * @param request {@link CreateTableRequest}
      */
     public void createTable(final CreateTableRequest request) {
@@ -115,7 +111,7 @@ public abstract class DynamodbTestDbBuilder {
 
     /**
      * Deletes a DynamoDB table.
-     * 
+     *
      * @param tableName name of the DynamoDB table to delete
      */
     public void deleteTable(final String tableName) {

@@ -51,7 +51,7 @@ public class ComparisonNegator {
             case NOT_LIKE:
                 return LIKE;
             default:
-                throw new UnsupportedOperationException(ExaError.messageBuilder("E-VS-DY-2")
+                throw new UnsupportedOperationException(ExaError.messageBuilder("E-VSDY-2")
                         .message("Unsupported operator {{operator}}.", operator).ticketMitigation().toString());// All
                                                                                                                 // possible
                                                                                                                 // operators

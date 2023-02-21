@@ -22,7 +22,7 @@ public class SqlLiteralNodeToAttributeValueConverter {
         try {
             sqlNode.accept(visitor);
         } catch (final AdapterException exception) {
-            throw new IllegalStateException(ExaError.messageBuilder("F-VS-DY-31")
+            throw new IllegalStateException(ExaError.messageBuilder("F-VSDY-31")
                     .message("An unexpected error occurred during conversion from SqlNode to DynamoDB AttributeValue.")
                     .toString(), exception);
         }
@@ -64,7 +64,7 @@ public class SqlLiteralNodeToAttributeValueConverter {
 
         @Override
         public void visitUnimplemented() {
-            throw new IllegalStateException(ExaError.messageBuilder("E-VS-DY-32")
+            throw new IllegalStateException(ExaError.messageBuilder("E-VSDY-32")
                     .message("Could not convert SqlNode to DynamoDB AttributeValue.").ticketMitigation().toString());
         }
 

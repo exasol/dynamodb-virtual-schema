@@ -57,13 +57,13 @@ class QueryOperationSelectionFactory {
                 .filter(this::hasOnlyOnePartitionKeyCondition).filter(this::abortIfOneAndHasNoPartitionKey)
                 .map(set -> set.iterator().next()).collect(Collectors.toSet());
         if (partitionKeyConditions.size() > 1) {
-            throw new PlanDoesNotFitException(ExaError.messageBuilder("E-VS-DY-19")
+            throw new PlanDoesNotFitException(ExaError.messageBuilder("E-VSDY-19")
                     .message("This query specifies more than one partition key. "
                             + "This could be solved by multiple query operations, but is not implemented yet.")
                     .toString());
         }
         if (partitionKeyConditions.isEmpty()) {
-            throw new PlanDoesNotFitException(ExaError.messageBuilder("E-VS-DY-20")
+            throw new PlanDoesNotFitException(ExaError.messageBuilder("E-VSDY-20")
                     .message("This query does not specify a partition key. Use a SCAN operation instead.").toString());
         }
         return partitionKeyConditions.iterator().next();
@@ -77,7 +77,7 @@ class QueryOperationSelectionFactory {
             return Optional.empty();
         } else if (andsSortKeyConditions.size() > 1) {
             // TODO optimization: split query
-            throw new PlanDoesNotFitException(ExaError.messageBuilder("E-VS-DY-21")
+            throw new PlanDoesNotFitException(ExaError.messageBuilder("E-VSDY-21")
                     .message("This is not a Query operation as different sort key conditions are used.").toString());
         } else {
             return andsSortKeyConditions.iterator().next();
@@ -110,7 +110,7 @@ class QueryOperationSelectionFactory {
                 .map(this::castToColumnLiteralComparisonWithAbortIfNotPossible).collect(Collectors.toSet());
         if (conditions.size() > 1) {
             // TODO optimization: try to merge conditions
-            throw new PlanDoesNotFitException(ExaError.messageBuilder("E-VS-DY-22")
+            throw new PlanDoesNotFitException(ExaError.messageBuilder("E-VSDY-22")
                     .message("Different sort key conditions are not supported in a single AND.").toString());
         } else if (conditions.size() == 1) {
             return Optional.of(conditions.iterator().next());
@@ -121,7 +121,7 @@ class QueryOperationSelectionFactory {
 
     private boolean abortIfOneAndHasNoPartitionKey(final Set<ColumnLiteralComparisonPredicate> andsPartitionKeys) {
         if (andsPartitionKeys.isEmpty()) {
-            throw new PlanDoesNotFitException(ExaError.messageBuilder("E-VS-DY-23").message(
+            throw new PlanDoesNotFitException(ExaError.messageBuilder("E-VSDY-23").message(
                     "One or more predicates does not specify a partiton key. Therefore this Query requires a SCAN operation.")
                     .toString());
         }
@@ -132,7 +132,7 @@ class QueryOperationSelectionFactory {
         if (comparison.isNegated()) {
             final ComparisonPredicate negated = NEGATOR.negate(comparison.getComparisonPredicate());
             if (!SUPPORTED_OPERATORS_FOR_KEY_COLUMNS.contains(negated.getOperator())) {
-                throw new PlanDoesNotFitException(ExaError.messageBuilder("E-VS-DY-24")
+                throw new PlanDoesNotFitException(ExaError.messageBuilder("E-VSDY-24")
                         .message("DynamoDB does not support the {{operator}} operator for key conditions.",
                                 negated.getOperator())
                         .toString());
@@ -165,7 +165,7 @@ class QueryOperationSelectionFactory {
         if (comparison.getComparisonPredicate().getOperator().equals(EQUAL) && !comparison.isNegated()) {
             return true;
         } else {
-            throw new PlanDoesNotFitException(ExaError.messageBuilder("E-VS-DY-25")
+            throw new PlanDoesNotFitException(ExaError.messageBuilder("E-VSDY-25")
                     .message("DynamoDB does only support equality comparisons on the primary key.").toString());
         }
     }
@@ -175,7 +175,7 @@ class QueryOperationSelectionFactory {
         if (comparisonPredicate instanceof ColumnLiteralComparisonPredicate) {
             return (ColumnLiteralComparisonPredicate) comparisonPredicate;
         } else {
-            throw new PlanDoesNotFitException(ExaError.messageBuilder("E-VS-DY-26")
+            throw new PlanDoesNotFitException(ExaError.messageBuilder("E-VSDY-26")
                     .message("DynamoDB does only support comparisons to a literal for key columns.").toString());
         }
     }
