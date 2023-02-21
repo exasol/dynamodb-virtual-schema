@@ -23,10 +23,9 @@ Removed references to discontinued repository `maven.exasol.com` and renamed err
 
 ### Compile Dependency Updates
 
-* Added `com.exasol:edml-java:1.1.3`
 * Updated `com.exasol:error-reporting-java:0.4.1` to `1.0.1`
 * Updated `com.exasol:hamcrest-resultset-matcher:1.5.1` to `1.5.2`
-* Updated `com.exasol:virtual-schema-common-document:9.0.2` to `9.1.2`
+* Updated `com.exasol:virtual-schema-common-document:9.0.2` to `9.2.0`
 * Added `commons-codec:commons-codec:1.15`
 * Updated `org.slf4j:slf4j-jdk14:1.7.36` to `2.0.6`
 * Updated `software.amazon.awssdk:dynamodb:2.17.218` to `2.20.5`
@@ -36,7 +35,7 @@ Removed references to discontinued repository `maven.exasol.com` and renamed err
 * Updated `com.exasol:exasol-testcontainers:6.1.2` to `6.5.1`
 * Updated `com.exasol:test-db-builder-java:3.3.3` to `3.4.2`
 * Updated `com.exasol:udf-debugging-java:0.6.2` to `0.6.8`
-* Updated `com.exasol:virtual-schema-common-document:9.0.2` to `9.1.2`
+* Updated `com.exasol:virtual-schema-common-document:9.0.2` to `9.2.0`
 * Updated `org.junit.jupiter:junit-jupiter-engine:5.8.2` to `5.9.2`
 * Updated `org.junit.jupiter:junit-jupiter-params:5.8.2` to `5.9.2`
 * Updated `org.mockito:mockito-junit-jupiter:4.6.1` to `5.1.1`
