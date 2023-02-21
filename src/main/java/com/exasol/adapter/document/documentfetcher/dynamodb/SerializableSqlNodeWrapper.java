@@ -76,6 +76,6 @@ public class SerializableSqlNodeWrapper implements Serializable {
     @SuppressWarnings("unused") // not invoked explicitly but called during deserialization
     private void readObjectNoData() throws ObjectStreamException {
         throw new InvalidObjectException(
-                ExaError.messageBuilder("E-VS-DY-34").message("Failed to deserialize SqlNode.").toString());
+                ExaError.messageBuilder("E-VSDY-34").message("Failed to deserialize SqlNode.").toString());
     }
 }
