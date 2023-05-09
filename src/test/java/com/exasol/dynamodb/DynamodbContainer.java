@@ -3,7 +3,7 @@ package com.exasol.dynamodb;
 import org.testcontainers.containers.GenericContainer;
 
 public class DynamodbContainer extends GenericContainer<DynamodbContainer> {
-    private static final String DYNAMODB_IMAGE = "amazon/dynamodb-local";
+    private static final String DYNAMODB_IMAGE = "amazon/dynamodb-local:1.21.0";
     private static final int DYNAMODB_PORT = 8000;
 
     public DynamodbContainer() {
