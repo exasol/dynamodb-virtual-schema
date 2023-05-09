@@ -1,28 +1,23 @@
 {
-  "$schema": "../../main/resources/schemas/edml-1.0.0.json",
+  "$schema": "https://schemas.exasol.com/edml-1.5.0.json",
   "source": "DATA_TYPE_TEST",
   "destinationTable": "TEST",
   "mapping": {
     "fields": {
       "stringValue": {
-        "toVarcharMapping": {
-        }
+        "toVarcharMapping": {}
       },
       "boolValue": {
-        "toVarcharMapping": {
-        }
+        "toVarcharMapping": {}
       },
       "doubleValue": {
-        "toVarcharMapping": {
-        }
+        "toVarcharMapping": {}
       },
       "integerValue": {
-        "toVarcharMapping": {
-        }
+        "toVarcharMapping": {}
       },
       "nullValue": {
-        "toVarcharMapping": {
-        }
+        "toVarcharMapping": {}
       }
     }
   }

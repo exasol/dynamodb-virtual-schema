@@ -14,7 +14,6 @@ import java.sql.*;
 import java.util.*;
 import java.util.concurrent.TimeoutException;
 
-import com.exasol.matcher.TypeMatchMode;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.Tag;
 import org.testcontainers.junit.jupiter.Container;
@@ -27,6 +26,7 @@ import com.exasol.containers.ExasolContainer;
 import com.exasol.dbbuilder.dialects.exasol.*;
 import com.exasol.dbbuilder.dialects.exasol.udf.UdfScript;
 import com.exasol.dynamodb.DynamodbContainer;
+import com.exasol.matcher.TypeMatchMode;
 import com.exasol.udfdebugging.PushDownTesting;
 import com.exasol.udfdebugging.UdfTestSetup;
 import com.github.dockerjava.api.model.ContainerNetwork;
@@ -276,7 +276,8 @@ class DynamodbAdapterIT {
                 () -> assertThat(PushDownTesting.getSelectionThatIsSentToTheAdapter(statement, query),
                         endsWith("BOOKS.ISBN='123567'")),
                 () -> assertThat(PushDownTesting.getPushDownSql(statement, query), endsWith("WHERE TRUE")),
-                () -> assertThat(statement.executeQuery(query), table().row(selectedIsbn).matches(TypeMatchMode.NO_JAVA_TYPE_CHECK))//
+                () -> assertThat(statement.executeQuery(query),
+                        table().row(selectedIsbn).matches(TypeMatchMode.NO_JAVA_TYPE_CHECK))//
         );
     }
 
@@ -387,7 +388,7 @@ class DynamodbAdapterIT {
             throws InterruptedException, BucketAccessException, TimeoutException {
         final Bucket bucket = EXASOL.getDefaultBucket();
         bucket.uploadStringContent(
-                "{\"$schema\": \"../../main/resources/schemas/edml-1.2.0.json\", \"source\": \"TEST\", \"destinationTable\": \""
+                "{\"$schema\": \"https://schemas.exasol.com/edml-1.5.0.json\", \"source\": \"TEST\", \"destinationTable\": \""
                         + tableName + "\", \"mapping\":{ \"toJsonMapping\":{\"destinationName\":\"test\"}}}",
                 mappingName);
     }
