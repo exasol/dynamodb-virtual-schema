@@ -14,7 +14,7 @@ This release updates dependencies on top of 3.1.0.
 
 ### Compile Dependency Updates
 
-* Updated `com.exasol:hamcrest-resultset-matcher:1.5.2` to `1.6.0`
+* Removed `com.exasol:hamcrest-resultset-matcher:1.5.2`
 * Updated `com.exasol:virtual-schema-common-document:9.2.0` to `9.4.0`
 * Removed `commons-codec:commons-codec:1.15`
 * Removed `org.slf4j:slf4j-jdk14:2.0.6`
@@ -27,7 +27,9 @@ This release updates dependencies on top of 3.1.0.
 ### Test Dependency Updates
 
 * Updated `com.exasol:exasol-testcontainers:6.5.1` to `6.5.2`
+* Added `com.exasol:hamcrest-resultset-matcher:1.6.0`
 * Updated `com.exasol:virtual-schema-common-document:9.2.0` to `9.4.0`
+* Added `nl.jqno.equalsverifier:equalsverifier:3.14.1`
 * Updated `org.jacoco:org.jacoco.agent:0.8.8` to `0.8.9`
 * Removed `org.jacoco:org.jacoco.core:0.8.8`
 * Updated `org.junit.jupiter:junit-jupiter-engine:5.9.2` to `5.9.3`
@@ -48,3 +50,4 @@ This release updates dependencies on top of 3.1.0.
 * Updated `org.codehaus.mojo:flatten-maven-plugin:1.3.0` to `1.4.1`
 * Updated `org.codehaus.mojo:versions-maven-plugin:2.14.2` to `2.15.0`
 * Updated `org.jacoco:jacoco-maven-plugin:0.8.8` to `0.8.9`
+* Removed `org.projectlombok:lombok-maven-plugin:1.18.20.0`

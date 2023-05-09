@@ -5,5 +5,3 @@ sources:
       - jar_artifact
       - integration_tests
       - udf_coverage
-      - lombok
-linkReplacements:
