@@ -121,7 +121,7 @@ aws dynamodb batch-write-item --request-items file://./exampleData.json
 
 ## Setup an Exasol database
 
-Now we need an Exasol database. In this guide, we will use a local Exasol VM. You can however also use the [Exasol docker-db](https://github.com/exasol/docker-db), the [Exasol public demo](https://docs.exasol.com/get_started/publicdemo/publicdemosystem.htm) or run [Exasol in the Cloud](https://docs.exasol.com/cloud_platforms/aws/cloud_wizard.htm).
+Now we need an Exasol database. In this guide, we will use a local Exasol VM. You can however also use the [Exasol docker-db](https://github.com/exasol/docker-db), the [Exasol SaaS](https://docs.exasol.com/saas/get_started.htm) or run [Exasol in the Cloud](https://docs.exasol.com/cloud_platforms/aws/cloud_wizard.htm).
 
 Independent of which setup you choose it is important that the Exasol database can reach the DynamoDB over the network. Hence you can not use an Exasol DB running in the cloud in combination with a local DynamoDB (ok, it would be possible if you can open a port on your firewall, but probably you don't want to do so).
 
