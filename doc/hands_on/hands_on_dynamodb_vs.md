@@ -55,9 +55,9 @@ If you decided to use DynamoDB on AWS, let us show you how to set it up.
    *Don't forget to replace `<YOUR_ACCESS_KEY>` and `<YOUR_SECRET_ACCESS_KEY>` by you keys from the previous steps.*
 
 1. Verify the setup by typing:
-    ``` shell script
-   aws help
-   ```
+    ```shell
+    aws help
+    ```
 
 ### Local DynamoDB
 
@@ -66,7 +66,7 @@ Amazon offers a local version of DynamoDB for testing purposes. You can run the 
 Steps for setup:
 
 1. Install DynamoDB:
-    ```shell script
+    ```shell
     docker run -p 8000:8000 amazon/dynamodb-local -jar DynamoDBLocal.jar -sharedDb -dbPath .
     ``` 
 1. [Install AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2.html)
@@ -87,7 +87,7 @@ Now we are going to load some example data into the DynamoDB. For that we first 
 
 You can create the table by simply running the following command in a shell.
 
-``` shell script
+```shell
 aws dynamodb create-table \
     --table-name Books \
     --attribute-definitions \
@@ -100,7 +100,7 @@ aws dynamodb create-table \
 
 You can verify that the table was created by running:
 
-```shell script
+```shell
 aws dynamodb list-tables
 ```
 
@@ -115,7 +115,7 @@ Steps:
 1. [Download example data](./exampleData.json)
 2. Load the data into DynamoDB by running:
 
-``` shell script
+```shell
 aws dynamodb batch-write-item --request-items file://./exampleData.json
 ```  
 
@@ -134,7 +134,7 @@ Steps:
 1. [Download latest adapter release (.jar)](https://github.com/exasol/dynamodb-virtual-schema/releases/)
 1. [Create a Bucket in BucketFS](https://docs.exasol.com/administration/on-premise/bucketfs/create_new_bucket_in_bucketfs_service.htm)
 1. Upload the adapter to the BucketFS:
-    ``` shell script
+    ```shell
    curl -I -X PUT -T document-virtual-schema-dist-9.2.0-dynamodb-3.1.0.jar http://w:writepw@<YOUR_DB_IP>:2580/default/
    ```
 1. Create a schema to hold the adapter script:
@@ -188,7 +188,7 @@ You can create the file wherever you want. We will later upload it to the Bucket
 
 Now upload the mapping to BucketFS:
 
-```shell script
+```shell
 curl -I -X PUT -T firstMapping.json http://w:writepw@<YOUR_DB_IP>:2580/default/mappings/firstMapping.json
 ```
 
