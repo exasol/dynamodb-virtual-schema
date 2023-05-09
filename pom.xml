@@ -7,7 +7,6 @@
     <description>Adapter for DynamoDB data access from Virtual Schemas.</description>
     <url>https://github.com/exasol/dynamodb-virtual-schema/</url>
     <properties>
-        <junit.version>5.9.3</junit.version>
         <vs-common-document.version>9.4.0</vs-common-document.version>
     </properties>
     <distributionManagement>
@@ -67,14 +66,8 @@
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-engine</artifactId>
-            <version>${junit.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-params</artifactId>
-            <version>${junit.version}</version>
+            <version>5.9.3</version>
             <scope>test</scope>
         </dependency>
         <dependency>

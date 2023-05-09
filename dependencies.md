@@ -14,7 +14,6 @@
 | Dependency                                      | License                           |
 | ----------------------------------------------- | --------------------------------- |
 | [Hamcrest][6]                                   | [BSD License 3][7]                |
-| [JUnit Jupiter Engine][8]                       | [Eclipse Public License v2.0][9]  |
 | [JUnit Jupiter Params][8]                       | [Eclipse Public License v2.0][9]  |
 | [mockito-junit-jupiter][10]                     | [The MIT License][11]             |
 | [Common Virtual Schema for document data][2]    | [MIT License][3]                  |

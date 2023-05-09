@@ -32,7 +32,7 @@ This release updates dependencies on top of 3.1.0.
 * Added `nl.jqno.equalsverifier:equalsverifier:3.14.1`
 * Updated `org.jacoco:org.jacoco.agent:0.8.8` to `0.8.9`
 * Removed `org.jacoco:org.jacoco.core:0.8.8`
-* Updated `org.junit.jupiter:junit-jupiter-engine:5.9.2` to `5.9.3`
+* Removed `org.junit.jupiter:junit-jupiter-engine:5.9.2`
 * Updated `org.junit.jupiter:junit-jupiter-params:5.9.2` to `5.9.3`
 * Updated `org.mockito:mockito-junit-jupiter:5.1.1` to `5.3.1`
 * Updated `org.testcontainers:junit-jupiter:1.17.6` to `1.18.0`
