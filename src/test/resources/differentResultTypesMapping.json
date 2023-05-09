@@ -1,5 +1,5 @@
 {
-  "$schema": "https://schemas.exasol.com/edml-1.1.0.json",
+  "$schema": "https://schemas.exasol.com/edml-1.5.0.json",
   "source": "NON_EXISTENT",
   "destinationTable": "DIFFERENT_RESULT_TYPE_TABLE",
   "mapping": {

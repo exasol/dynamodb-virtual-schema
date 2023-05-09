@@ -170,7 +170,7 @@ You can create the file wherever you want. We will later upload it to the Bucket
 
 ```json
 {
-  "$schema": "https://schemas.exasol.com/edml-1.0.0.json",
+  "$schema": "https://schemas.exasol.com/edml-1.5.0.json",
   "source": "Books",
   "destinationTable": "BOOKS",
   "description": "Mapping for the Books table",
