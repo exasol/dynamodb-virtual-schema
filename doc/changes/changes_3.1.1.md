@@ -1,4 +1,4 @@
-# Virtual Schema for Amazon DynamoDB 3.1.1, released 2023-05-09
+# Virtual Schema for Amazon DynamoDB 3.1.1, released 2023-05-10
 
 Code name: Update dependencies on Top of 3.1.0
 
