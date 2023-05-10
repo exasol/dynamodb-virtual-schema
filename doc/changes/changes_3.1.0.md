@@ -6,7 +6,7 @@ Code name: Maintenance
 
 Fixed vulnerabilities
 * CVE-2022-45688 by updating dependency to `virtual-schema-common-document`
-* [sonatype-2012-0050](https://ossindex.sonatype.org/vulnerability/sonatype-2012-0050) by overriding transitive dependency `commons-codec:commons-codec` of `software.amazon.awssdk:dynamodb`.
+* sonatype-2012-0050 by overriding transitive dependency `commons-codec:commons-codec` of `software.amazon.awssdk:dynamodb`.
 
 Removed references to discontinued repository `maven.exasol.com` and renamed error codes from `VS-DY` to `VSDY`.
 

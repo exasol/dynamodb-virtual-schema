@@ -35,8 +35,8 @@ public abstract class DynamodbTestDbBuilder {
         this.dynamoUser = user;
         this.dynamoPass = pass;
         this.sessionToken = sessionToken;
-        final DynamodbConnectionProperties.DynamodbConnectionPropertiesBuilder connectionPropertyBuilder = DynamodbConnectionProperties
-                .builder().awsAccessKeyId(user).awsSecretAccessKey(pass)
+        final DynamodbConnectionProperties.Builder connectionPropertyBuilder = DynamodbConnectionProperties.builder()
+                .awsAccessKeyId(user).awsSecretAccessKey(pass)
                 .awsEndpointOverride(dynamoUrl.replace("https://", "").replace("http://", "")).awsRegion("eu-central-1")
                 .useSsl(false);
         sessionToken.ifPresent(connectionPropertyBuilder::awsSessionToken);

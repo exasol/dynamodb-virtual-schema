@@ -3,6 +3,10 @@
 # Eclipse and Maven
 .classpath
 .project
+/.settings/org.eclipse.core.resources.prefs
+/.settings/org.eclipse.m2e.core.prefs
+/.settings/org.eclipse.jdt.apt.core.prefs
+
 # .settings : we need Eclipse settings for code formatter and clean-up rules
 target
 .cache
@@ -12,11 +16,6 @@ dependency-reduced-pom.xml
 .idea
 # Intellij recommends to share iml files, however, better don't share files which might be outdated
 *.iml
-
-# Integration tests
-src/test/resources/integration/driver/hive/*.jar
-src/test/resources/integration/driver/oracle/*.jar
-src/test/resources/integration/driver/oracle/*.zip
 
 # Others
 .DS_Store

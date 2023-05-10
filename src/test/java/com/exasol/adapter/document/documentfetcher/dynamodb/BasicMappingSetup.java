@@ -5,6 +5,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 import com.exasol.adapter.document.mapping.*;
+import com.exasol.adapter.document.mapping.auto.SchemaFetcher;
+import com.exasol.adapter.document.mapping.auto.SchemaInferencer;
 import com.exasol.adapter.document.mapping.dynamodb.DynamodbTableKeyFetcher;
 import com.exasol.adapter.document.mapping.reader.JsonSchemaMappingReader;
 import com.exasol.adapter.document.properties.EdmlInput;
@@ -30,7 +32,8 @@ public class BasicMappingSetup {
         final String edmlString = new String(Objects.requireNonNull(
                 DynamodbTableKeyFetcher.class.getClassLoader().getResourceAsStream(MappingTestFiles.BASIC_MAPPING))
                 .readAllBytes(), StandardCharsets.UTF_8);
-        this.tableMapping = new JsonSchemaMappingReader(null)
+        final SchemaFetcher dummySchemaFetcher = source -> Optional.empty();
+        this.tableMapping = new JsonSchemaMappingReader(null, new SchemaInferencer(dummySchemaFetcher))
                 .readSchemaMapping(List.of(new EdmlInput(edmlString, "test"))).getTableMappings().get(0);
         this.publisherColumn = this.tableMapping.getColumns().stream()
                 .filter(column -> column.getExasolColumnName().equals("PUBLISHER")).findAny().orElseThrow();
