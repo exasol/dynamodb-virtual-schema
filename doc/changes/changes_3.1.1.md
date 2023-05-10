@@ -4,7 +4,7 @@ Code name: Update dependencies on Top of 3.1.0
 
 ## Summary
 
-This release updates dependencies on top of 3.1.0.
+This release fixes broken links in the documentation and updates dependencies on top of 3.1.0. It also reduces external dependencies by removing the Lombok library.
 
 ## Documentation
 
