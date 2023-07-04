@@ -46,9 +46,9 @@ CREATE CONNECTION DYNAMO_CONNECTION
     TO ''
     USER ''
     IDENTIFIED BY '{
-        "awsAccessKeyId": "<AWS ACCESS KEY ID>", 
-        "awsSecretAccessKey": "<AWS SECRET KEY ID>", 
-        "awsRegion": "<AWS REGION>" 
+        "awsAccessKeyId": "<AWS ACCESS KEY ID>",
+        "awsSecretAccessKey": "<AWS SECRET KEY ID>",
+        "awsRegion": "<AWS REGION>"
     }';
 ```
 
@@ -72,8 +72,8 @@ CREATE CONNECTION DYNAMO_CONNECTION
     TO ''
     USER ''
     IDENTIFIED BY '{
-        "awsAccessKeyId": "fakeMyKeyId", 
-        "awsSecretAccessKey": "fakeSecretAccessKey", 
+        "awsAccessKeyId": "fakeMyKeyId",
+        "awsSecretAccessKey": "fakeSecretAccessKey",
         "awsRegion": "eu-central-1",
         "awsEndpointOverride": "localhost:8000",
         "useSsl": false
@@ -106,3 +106,27 @@ The CREATE VIRTUAL SCHEMA command accepts the following properties:
 |`MAX_PARALLEL_UDFS`| No          | -1            | Maximum number of UDFs that are executed in parallel. -1 represents unlimited.|
 
 Now browse the data using your favorite SQL client.
+
+## Known Limitations
+
+When mapping integer values in DynamoDB to Exasol columns of type `CHAR` or `VARCHAR`
+then `WHERE`-clauses in SQL statements may produce wrong results.
+
+Look at the following sample mapping (see also [EDML user guide](https://github.com/exasol/virtual-schema-common-document/blob/main/doc/user_guide/edml_user_guide.md#supported-conversion) for document-based virtual schemas):
+
+```json
+"mapping": {
+  "toStringMapping": {
+    "nonStringBehaviour": "CONVERT_OR_ABORT"
+  }
+}
+```
+
+
+The `WHERE`-clause of the following SQL statement will return an empty result set:
+```sql
+SELECT ID FROM MY_SCHEMA.MY_TABLE WHERE ID = '1'
+```
+
+This reason for this behavior is that Exasol database pushes down the `WHERE`-clause, while the
+DynamoDB virtual schema will not find any values matching the VARCHAR expression `'1'`.

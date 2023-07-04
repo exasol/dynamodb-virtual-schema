@@ -1,14 +1,15 @@
 # Virtual Schema for Amazon DynamoDB 3.1.2, released 2023-07-04
 
-Code name: Dependency Upgrade on top of 3.1.1
+Code name: Updated documentation and dependencies on top of 3.1.1
 
 ## Summary
 
-This release fixes vulnerability CVE-2023-34462 in transitive dependency `io.netty:netty-handler:jar:4.1.86.Final` by updating `software.amazon.awssdk:dynamodb`.
+This release adds a known limitation to the User Guide and fixes vulnerability CVE-2023-34462 in transitive dependency `io.netty:netty-handler:jar:4.1.86.Final` by updating `software.amazon.awssdk:dynamodb`.
 
 ## Security
 
 * #177: Updated dependencies
+* #158: Updated documentation
 
 ## Dependency Updates
 
