@@ -112,14 +112,15 @@ Now browse the data using your favorite SQL client.
 When mapping integer values in DynamoDB to Exasol columns of type `CHAR` or `VARCHAR`
 then `WHERE`-clauses in SQL statements may produce wrong results.
 
-Look at the following sample mapping (see also [EDML user guide](https://github.com/exasol/virtual-schema-common-document/blob/main/doc/user_guide/edml_user_guide.md#supported-conversion) for document-based virtual schemas):
+Look at the following mapping (see also [EDML user guide for document-based virtual schemas](https://github.com/exasol/virtual-schema-common-document/blob/main/doc/user_guide/edml_user_guide.md#supported-conversion)):
 
 ```json
 "mapping": {
-  "toStringMapping": {
-    "nonStringBehaviour": "CONVERT_OR_ABORT"
-  }
-}
+  "fields": {
+    "id": {
+      "toStringMapping": {
+        "nonStringBehaviour": "CONVERT_OR_ABORT"
+      } } } }
 ```
 
 
@@ -130,3 +131,5 @@ SELECT ID FROM MY_SCHEMA.MY_TABLE WHERE ID = '1'
 
 This reason for this behavior is that Exasol database pushes down the `WHERE`-clause, while the
 DynamoDB virtual schema will not find any values matching the VARCHAR expression `'1'`.
+
+To fix this use `toDecimalMapping` for integer values in DynamoDB.
