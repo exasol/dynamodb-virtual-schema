@@ -43,7 +43,7 @@ import software.amazon.awssdk.services.dynamodb.model.*;
 @Testcontainers
 class DynamodbAdapterIT {
     public static final String BUCKETS_BFSDEFAULT_DEFAULT = "/buckets/bfsdefault/default/";
-    private static final String JAR_NAME_AND_VERSION = "document-virtual-schema-dist-9.4.0-dynamodb-3.1.1.jar";
+    private static final String JAR_NAME_AND_VERSION = "document-virtual-schema-dist-9.4.1-dynamodb-3.1.2.jar";
     private static final Path PATH_TO_VIRTUAL_SCHEMAS_JAR = Path.of("target", JAR_NAME_AND_VERSION);
     private static final String LOCAL_DYNAMO_USER = "fakeMyKeyId";
     private static final String LOCAL_DYNAMO_PASS = "fakeSecretAccessKey";
