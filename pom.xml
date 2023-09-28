@@ -21,17 +21,6 @@
             </dependency>
         </dependencies>
     </dependencyManagement>
-    <repositories>
-        <repository>
-            <id>dynamodb-local-frankfurt</id>
-            <name>DynamoDB Local Release Repository</name>
-            <url>https://s3.eu-central-1.amazonaws.com/dynamodb-local-frankfurt/release</url>
-        </repository>
-        <repository>
-            <id>jitpack.io</id>
-            <url>https://jitpack.io</url>
-        </repository>
-    </repositories>
     <dependencies>
         <dependency>
             <groupId>com.exasol</groupId>
