@@ -1,4 +1,4 @@
-# Virtual Schema for Amazon DynamoDB 3.1.3, released 2023-09-28
+# Virtual Schema for Amazon DynamoDB 3.1.3, released 2023-09-29
 
 Code name: Fix vulnerabilities in dependencies
 
