@@ -10,7 +10,7 @@ This release fixes CVE-2023-42503 (CWE-20: Improper Input Validation (5.5)) in d
 
 ## Security
 
-* #36: Fix vulnerabilities in dependencies
+* #180: Fix vulnerabilities in dependencies
 
 ## Dependency Updates
 
