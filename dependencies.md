@@ -22,14 +22,14 @@
 | [Test Database Builder for Java][16]            | [MIT License][17]                 |
 | [udf-debugging-java][18]                        | [MIT License][19]                 |
 | [Matcher for SQL Result Sets][20]               | [MIT License][21]                 |
-| [EqualsVerifier | release normal jar][22]       | [Apache License, Version 2.0][23] |
+| [EqualsVerifier \| release normal jar][22]      | [Apache License, Version 2.0][23] |
 | [JaCoCo :: Agent][24]                           | [Eclipse Public License 2.0][25]  |
 
 ## Runtime Dependencies
 
-| Dependency                | License           |
-| ------------------------- | ----------------- |
-| [SLF4J JDK14 Binding][26] | [MIT License][27] |
+| Dependency                 | License           |
+| -------------------------- | ----------------- |
+| [SLF4J JDK14 Provider][26] | [MIT License][27] |
 
 ## Plugin Dependencies
 
@@ -43,10 +43,10 @@
 | [Maven Surefire Plugin][35]                             | [Apache-2.0][23]                               |
 | [Versions Maven Plugin][36]                             | [Apache License, Version 2.0][23]              |
 | [duplicate-finder-maven-plugin Maven Mojo][37]          | [Apache License 2.0][38]                       |
-| [Apache Maven Assembly Plugin][39]                      | [Apache License, Version 2.0][23]              |
+| [Apache Maven Assembly Plugin][39]                      | [Apache-2.0][23]                               |
 | [Apache Maven JAR Plugin][40]                           | [Apache License, Version 2.0][23]              |
 | [Artifact reference checker and unifier][41]            | [MIT License][42]                              |
-| [Apache Maven Dependency Plugin][43]                    | [Apache License, Version 2.0][23]              |
+| [Apache Maven Dependency Plugin][43]                    | [Apache-2.0][23]                               |
 | [Project keeper maven plugin][44]                       | [The MIT License][45]                          |
 | [Maven Failsafe Plugin][46]                             | [Apache-2.0][23]                               |
 | [JaCoCo :: Maven Plugin][47]                            | [Eclipse Public License 2.0][25]               |
@@ -72,7 +72,7 @@
 [11]: https://github.com/mockito/mockito/blob/main/LICENSE
 [12]: https://github.com/exasol/exasol-testcontainers/
 [13]: https://github.com/exasol/exasol-testcontainers/blob/main/LICENSE
-[14]: https://testcontainers.org
+[14]: https://java.testcontainers.org
 [15]: http://opensource.org/licenses/MIT
 [16]: https://github.com/exasol/test-db-builder-java/
 [17]: https://github.com/exasol/test-db-builder-java/blob/main/LICENSE
@@ -95,7 +95,7 @@
 [34]: http://www.apache.org/licenses/LICENSE-2.0.txt
 [35]: https://maven.apache.org/surefire/maven-surefire-plugin/
 [36]: https://www.mojohaus.org/versions/versions-maven-plugin/
-[37]: https://github.com/basepom/duplicate-finder-maven-plugin
+[37]: https://basepom.github.io/duplicate-finder-maven-plugin
 [38]: http://www.apache.org/licenses/LICENSE-2.0.html
 [39]: https://maven.apache.org/plugins/maven-assembly-plugin/
 [40]: https://maven.apache.org/plugins/maven-jar-plugin/
