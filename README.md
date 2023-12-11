@@ -39,7 +39,7 @@ This adapter allows you to access document data that is stored in a [Amazon's Dy
 
 ## Information for Developers
 
-* [Developers Guide](doc/development/developers_guide.md)
+* [Developer Guide](doc/development/developer_guide.md)
 
 <!-- @formatter:off -->
 [virtual-schema-common-document]: https://github.com/exasol/virtual-schema-common-document
