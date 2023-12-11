@@ -1,8 +1,6 @@
 package com.exasol.adapter.document;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -62,9 +60,9 @@ class DynamodbBatchWriter implements Consumer<String> {
                 .requestItems(Map.of(this.tableName, writeRequests)).build();
         try {
             this.dynamoClient.batchWriteItem(batchWriteItemRequest);
-            LOGGER.info("# Written items: " + this.itemCounter);
+            LOGGER.debug("Wrote " + this.itemCounter + " items to table " + this.tableName);
         } catch (final DynamoDbException exception) {
-            LOGGER.error(exception.getMessage());
+            LOGGER.error("Error writing to table " + this.tableName + ": " + exception.getMessage(), exception);
             this.errorCounter++;
         }
         this.batch.clear();
