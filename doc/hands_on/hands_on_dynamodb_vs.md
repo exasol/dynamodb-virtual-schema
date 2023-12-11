@@ -204,26 +204,36 @@ Steps:
 
 1. Create a connection to DynamoDB
     * For DynamoDB on AWS use:
-       ```sql
+      ```sql
       CREATE CONNECTION DYNAMO_CONNECTION
-         TO 'aws:<REGION>'
-         USER '<AWS_ACCESS_KEY_ID>'
-         IDENTIFIED BY '<AWS_SECRET_ACCESS_KEY>';
+        TO ''
+        USER ''
+        IDENTIFIED BY '{
+            "awsAccessKeyId": "<AWS ACCESS KEY ID>",
+            "awsSecretAccessKey": "<AWS SECRET KEY ID>",
+            "awsRegion": "<AWS REGION>"
+        }';
       ```
     * For a local DynamoDB use:
-       ```sql
+      ```sql
       CREATE CONNECTION DYNAMO_CONNECTION
-          TO 'http://<YOUR_DYNAMODB_IP>:8000'
-          USER 'fakeMyKeyId'
-          IDENTIFIED BY 'fakeSecretAccessKey';
+        TO ''
+        USER ''
+        IDENTIFIED BY '{
+            "awsAccessKeyId": "fakeMyKeyId",
+            "awsSecretAccessKey": "fakeSecretAccessKey",
+            "awsRegion": "eu-central-1",
+            "awsEndpointOverride": "localhost:8000",
+            "useSsl": false
+        }';
       ```
 
 2. Create Virtual Schema:
     ```sql
-   CREATE VIRTUAL SCHEMA DYNAMODB_TEST USING ADAPTER.DYNAMODB_ADAPTER WITH
-       CONNECTION_NAME = 'DYNAMO_CONNECTION'
-       MAPPING         = '/bfsdefault/default/mappings/firstMapping.json';
-   ```
+    CREATE VIRTUAL SCHEMA DYNAMODB_TEST USING ADAPTER.DYNAMODB_ADAPTER WITH
+      CONNECTION_NAME = 'DYNAMO_CONNECTION'
+      MAPPING         = '/bfsdefault/default/mappings/firstMapping.json';
+    ```
 
 ## First Results
 
