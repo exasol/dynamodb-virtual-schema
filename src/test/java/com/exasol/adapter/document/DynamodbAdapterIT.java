@@ -14,6 +14,7 @@ import java.sql.*;
 import java.util.*;
 import java.util.concurrent.TimeoutException;
 
+import org.hamcrest.Matcher;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.Tag;
 import org.testcontainers.junit.jupiter.Container;
@@ -141,10 +142,9 @@ class DynamodbAdapterIT {
         createBasicMappingVirtualSchema();
         dynamodbTestDbBuilder.createTable(DYNAMO_BOOKS_TABLE, TestDocuments.BOOKS_ISBN_PROPERTY);
         dynamodbTestDbBuilder.importData(DYNAMO_BOOKS_TABLE, TestDocuments.books());
-        final ResultSet result = statement
-                .executeQuery("SELECT ISBN, NAME, AUTHOR_NAME, SOURCE_REFERENCE, PUBLISHER, PRICE FROM " + TEST_SCHEMA
-                        + ".\"BOOKS\" ORDER BY PRICE ASC;");
-        assertThat(result,
+        assertResult(
+                "SELECT ISBN, NAME, AUTHOR_NAME, SOURCE_REFERENCE, PUBLISHER, PRICE FROM " + TEST_SCHEMA
+                        + ".\"BOOKS\" ORDER BY PRICE ASC",
                 table().row("123254545", "bad book 2", "Jakob Braun", "MY_BOOKS", "jb books", 10)
                         .row("123567", "bad book 1", "Jakob Braun", "MY_BOOKS", "jb books", 15)
                         .row("1235673", "boring book", "Jakob Braun", "MY_BOOKS", "no name", 21.12)
@@ -154,11 +154,11 @@ class DynamodbAdapterIT {
     @Test
     void testResultHasCorrectDataTypes() throws SQLException {
         createDynamodbVirtualSchema(DIFFERENT_RESULT_TYPE_MAPPING);
-        final ResultSet resultSet = statement.executeQuery(
-                "SELECT COLUMN_NAME, COLUMN_TYPE FROM SYS.EXA_ALL_COLUMNS WHERE COLUMN_TABLE = 'DIFFERENT_RESULT_TYPE_TABLE' ORDER BY COLUMN_NAME ASC");
-        assertThat(resultSet, table().row("DECIMAL_COLUMN", "DECIMAL(11,3)")//
-                .row("JSON_COLUMN", "VARCHAR(1000) UTF8")//
-                .row("VARCHAR_COLUMN", "VARCHAR(20) UTF8").matches());
+        assertResult(
+                "SELECT COLUMN_NAME, COLUMN_TYPE FROM SYS.EXA_ALL_COLUMNS WHERE COLUMN_TABLE = 'DIFFERENT_RESULT_TYPE_TABLE' ORDER BY COLUMN_NAME ASC",
+                table().row("DECIMAL_COLUMN", "DECIMAL(11,3)")//
+                        .row("JSON_COLUMN", "VARCHAR(1000) UTF8")//
+                        .row("VARCHAR_COLUMN", "VARCHAR(20) UTF8").matches());
     }
 
     @Test
@@ -166,27 +166,27 @@ class DynamodbAdapterIT {
         createBasicMappingVirtualSchema();
         dynamodbTestDbBuilder.createTable(DYNAMO_BOOKS_TABLE, TestDocuments.BOOKS_ISBN_PROPERTY);
         dynamodbTestDbBuilder.importData(DYNAMO_BOOKS_TABLE, TestDocuments.books());
-        final ResultSet result = statement
-                .executeQuery("SELECT COUNT(*) as NUMBER_OF_BOOKS FROM " + TEST_SCHEMA + ".BOOKS;");
-        assertThat(result, table().row(3L).matches(TypeMatchMode.NO_JAVA_TYPE_CHECK));
+        assertResult("SELECT COUNT(*) as NUMBER_OF_BOOKS FROM " + TEST_SCHEMA + ".BOOKS",
+                table().row(3L).matches(TypeMatchMode.NO_JAVA_TYPE_CHECK));
     }
 
     @Test
     void testSelectNestedTableResult() throws SQLException, IOException {
         createNestedTableVirtualSchema();
-        final ResultSet result = statement
-                .executeQuery("SELECT BOOKS_ISBN, NAME FROM " + TEST_SCHEMA + ".\"BOOKS_TOPICS\" ORDER BY NAME ASC;");
-        assertThat(result, table().row("1235673", "Birds").row("123567", "DynamoDB").row("123567", "Exasol")
-                .row("123254545", "Fantasy").row("1235673", "Nature").row("123567", "Virtual Schema").matches());
+        assertResult("SELECT BOOKS_ISBN, NAME FROM " + TEST_SCHEMA + ".\"BOOKS_TOPICS\" ORDER BY NAME ASC;",
+                table().row("1235673", "Birds").row("123567", "DynamoDB").row("123567", "Exasol")
+                        .row("123254545", "Fantasy").row("1235673", "Nature").row("123567", "Virtual Schema")
+                        .matches());
     }
 
     // TODO refactor
     @Test
     void testJoinOnNestedTable() throws IOException, SQLException {
         createNestedTableVirtualSchema();
-        final ResultSet result = statement.executeQuery("SELECT BOOKS_TOPICS.NAME FROM " + TEST_SCHEMA + ".BOOKS JOIN "
-                + TEST_SCHEMA + ".\"BOOKS_TOPICS\" ON ISBN = BOOKS_ISBN WHERE BOOKS.NAME = 'bad book 1';");
-        assertThat(result, table().row("Exasol").row("DynamoDB").row("Virtual Schema").matches());
+        assertResult(
+                "SELECT BOOKS_TOPICS.NAME FROM " + TEST_SCHEMA + ".BOOKS JOIN " + TEST_SCHEMA
+                        + ".\"BOOKS_TOPICS\" ON ISBN = BOOKS_ISBN WHERE BOOKS.NAME = 'bad book 1'",
+                table().row("Exasol").row("DynamoDB").row("Virtual Schema").matches());
     }
 
     @Test
@@ -198,7 +198,7 @@ class DynamodbAdapterIT {
                 () -> assertThat(PushDownTesting.getSelectionThatIsSentToTheAdapter(statement, query),
                         equalTo("BOOKS_TOPICS.NAME='Exasol'")),
                 () -> assertThat(PushDownTesting.getPushDownSql(statement, query), endsWith("\"NAME\" = 'Exasol'")),
-                () -> assertThat(statement.executeQuery(query), table().row("Exasol").matches())//
+                () -> assertResult(query, table().row("Exasol").matches())//
         );
     }
 
@@ -206,12 +206,11 @@ class DynamodbAdapterIT {
     @Test
     void testJoinOnDoubleNestedTable() throws IOException, SQLException {
         createDoubleNestedTableVirtualSchema();
-        final ResultSet result = statement.executeQuery("SELECT BOOKS_CHAPTERS_FIGURES.NAME FROM " + TEST_SCHEMA
-                + ".BOOKS JOIN " + TEST_SCHEMA + ".\"BOOKS_CHAPTERS\" ON ISBN = BOOKS_CHAPTERS.BOOKS_ISBN " + "JOIN "
-                + TEST_SCHEMA
+        assertResult("SELECT BOOKS_CHAPTERS_FIGURES.NAME FROM " + TEST_SCHEMA + ".BOOKS JOIN " + TEST_SCHEMA
+                + ".\"BOOKS_CHAPTERS\" ON ISBN = BOOKS_CHAPTERS.BOOKS_ISBN " + "JOIN " + TEST_SCHEMA
                 + ".BOOKS_CHAPTERS_FIGURES ON BOOKS_CHAPTERS.INDEX = BOOKS_CHAPTERS_INDEX AND ISBN = BOOKS_CHAPTERS_FIGURES.BOOKS_ISBN "
-                + "WHERE BOOKS.NAME = 'bad book 1';");
-        assertThat(result, table().row("Image of the Author").row("figure 2").row("figure 3").matches());
+                + "WHERE BOOKS.NAME = 'bad book 1'",
+                table().row("Image of the Author").row("figure 2").row("figure 3").matches());
     }
 
     @Test
@@ -223,16 +222,15 @@ class DynamodbAdapterIT {
                 () -> assertThat(PushDownTesting.getSelectionThatIsSentToTheAdapter(statement, query),
                         equalTo("BOOKS_CHAPTERS.INDEX=0")),
                 () -> assertThat(PushDownTesting.getPushDownSql(statement, query), endsWith("WHERE \"INDEX\" = 0")),
-                () -> assertThat(statement.executeQuery(query), table().row("Main Chapter").row("chapter 1").matches())//
+                () -> assertResult(query, table().row("Main Chapter").row("chapter 1").matches())//
         );
     }
 
     @Test
     void testProjectionOnPropertyInList() throws SQLException, IOException {
         createDoubleNestedTableVirtualSchema();
-        final ResultSet result = statement
-                .executeQuery("SELECT NAME FROM " + TEST_SCHEMA + ".BOOKS_CHAPTERS ORDER BY NAME ASC");
-        assertThat(result, table().row("Main Chapter").row("chapter 1").row("chapter 2").matches());
+        assertResult("SELECT NAME FROM " + TEST_SCHEMA + ".BOOKS_CHAPTERS ORDER BY NAME ASC",
+                table().row("Main Chapter").row("chapter 1").row("chapter 2").matches());
     }
 
     @Test
@@ -246,7 +244,7 @@ class DynamodbAdapterIT {
                 () -> assertThat(PushDownTesting.getPushDownSql(statement, query),
                         anyOf(endsWith("(\"INDEX\" = 0) AND (\"NAME\" = 'Main Chapter')"),
                                 endsWith("(\"NAME\" = 'Main Chapter') AND (\"INDEX\" = 0)"))),
-                () -> assertThat(statement.executeQuery(query), table().row("Main Chapter").matches())//
+                () -> assertResult(query, table().row("Main Chapter").matches())//
         );
     }
 
@@ -255,7 +253,7 @@ class DynamodbAdapterIT {
         createDoubleNestedTableVirtualSchemaWithCompoundPrimaryKey();
         final String query = "SELECT NAME, BOOKS_ISBN, BOOKS_NAME, \"INDEX\" FROM " + TEST_SCHEMA
                 + ".BOOKS_CHAPTERS ORDER BY NAME ASC;";
-        assertThat(statement.executeQuery(query), table("VARCHAR", "VARCHAR", "VARCHAR", "INTEGER")//
+        assertResult(query, table("VARCHAR", "VARCHAR", "VARCHAR", "INTEGER")//
                 .row("Main Chapter", "123254545", "bad book 2", 0)//
                 .row("chapter 1", "123567", "bad book 1", 0)//
                 .row("chapter 2", "123567", "bad book 1", 1)//
@@ -279,8 +277,7 @@ class DynamodbAdapterIT {
                 () -> assertThat(PushDownTesting.getSelectionThatIsSentToTheAdapter(statement, query),
                         endsWith("BOOKS.ISBN='123567'")),
                 () -> assertThat(PushDownTesting.getPushDownSql(statement, query), endsWith("WHERE TRUE")),
-                () -> assertThat(statement.executeQuery(query),
-                        table().row(selectedIsbn).matches(TypeMatchMode.NO_JAVA_TYPE_CHECK))//
+                () -> assertResult(query, table().row(selectedIsbn).matches(TypeMatchMode.NO_JAVA_TYPE_CHECK))//
         );
     }
 
@@ -295,7 +292,7 @@ class DynamodbAdapterIT {
                 () -> assertThat(PushDownTesting.getSelectionThatIsSentToTheAdapter(statement, query),
                         endsWith("NOT (BOOKS.ISBN='123567')")),
                 () -> assertThat(PushDownTesting.getPushDownSql(statement, query), endsWith("WHERE TRUE")),
-                () -> assertThat(statement.executeQuery(query),
+                () -> assertResult(query,
                         table().row("123254545").row("1235673").matches(TypeMatchMode.NO_JAVA_TYPE_CHECK))//
         );
     }
@@ -304,9 +301,8 @@ class DynamodbAdapterIT {
     void testGreaterSelectionWithSortKey() throws SQLException, IOException {
         createBasicMappingVirtualSchema();
         createTableBooksTableWithPublisherPriceKey();
-        final ResultSet actualResultSet = statement.executeQuery(
-                "SELECT ISBN FROM " + TEST_SCHEMA + ".\"BOOKS\" WHERE PUBLISHER = 'jb books' AND PRICE > 10;");
-        assertThat(actualResultSet, table().row("123567").matches(TypeMatchMode.NO_JAVA_TYPE_CHECK));
+        assertResult("SELECT ISBN FROM " + TEST_SCHEMA + ".\"BOOKS\" WHERE PUBLISHER = 'jb books' AND PRICE > 10;",
+                table().row("123567").matches(TypeMatchMode.NO_JAVA_TYPE_CHECK));
     }
 
     @Test
@@ -315,12 +311,11 @@ class DynamodbAdapterIT {
         createTableBooksTableWithPublisherPriceKey();
         final String query = "SELECT ISBN FROM " + TEST_SCHEMA
                 + ".\"BOOKS\" WHERE PUBLISHER = 'jb books' AND PRICE < 11";
-        final ResultSet actualResultSet = statement.executeQuery(query);
         assertAll(//
                 () -> assertThat(PushDownTesting.getSelectionThatIsSentToTheAdapter(statement, query),
                         equalTo("(BOOKS.PUBLISHER='jb books') AND (BOOKS.PRICE<11)")),
                 () -> assertThat(PushDownTesting.getPushDownSql(statement, query), endsWith("WHERE TRUE")),
-                () -> assertThat(actualResultSet, table().row("123254545").matches(TypeMatchMode.NO_JAVA_TYPE_CHECK))//
+                () -> assertResult(query, table().row("123254545").matches(TypeMatchMode.NO_JAVA_TYPE_CHECK))//
         );
     }
 
@@ -329,10 +324,9 @@ class DynamodbAdapterIT {
         createToJsonMappingVirtualSchema();
         dynamodbTestDbBuilder.createTable(DYNAMO_BOOKS_TABLE, TestDocuments.BOOKS_ISBN_PROPERTY);
         dynamodbTestDbBuilder.importData(DYNAMO_BOOKS_TABLE, TestDocuments.books());
-        final ResultSet result = statement
-                .executeQuery("SELECT TOPICS FROM " + TEST_SCHEMA + ".BOOKS ORDER BY TOPICS ASC");
-        assertThat(result, table("VARCHAR").row("[\"Birds\",\"Nature\"]")
-                .row("[\"Exasol\",\"DynamoDB\",\"Virtual Schema\"]").row("[\"Fantasy\"]").matches());
+        assertResult("SELECT TOPICS FROM " + TEST_SCHEMA + ".BOOKS ORDER BY TOPICS ASC",
+                table("VARCHAR").row("[\"Birds\",\"Nature\"]").row("[\"Exasol\",\"DynamoDB\",\"Virtual Schema\"]")
+                        .row("[\"Fantasy\"]").matches());
     }
 
     private void createTableBooksTableWithPublisherPriceKey() throws IOException {
@@ -353,15 +347,16 @@ class DynamodbAdapterIT {
     @Test
     void testConvertDifferentDynamodbTypesToVarchar() throws IOException, SQLException {
         createDataTypesVirtualSchema();
-        final ResultSet actualResultSet = statement.executeQuery("SELECT * FROM " + TEST_SCHEMA + "."
-                + MappingTestFiles.DATA_TYPE_TEST_EXASOL_TABLE_NAME + " WHERE STRINGVALUE = 'test';");
-        actualResultSet.next();
-        assertAll(() -> assertThat(actualResultSet.getString("STRINGVALUE"), equalTo("test")),
-                () -> assertThat(actualResultSet.getString("BOOLVALUE"), equalTo("true")),
-                () -> assertThat(actualResultSet.getString("DOUBLEVALUE"), equalTo("1.2")),
-                () -> assertThat(actualResultSet.getString("INTEGERVALUE"), equalTo("1")),
-                () -> assertThat(actualResultSet.getString("NULLVALUE"), equalTo(null))//
-        );
+        try (final ResultSet actualResultSet = statement.executeQuery("SELECT * FROM " + TEST_SCHEMA + "."
+                + MappingTestFiles.DATA_TYPE_TEST_EXASOL_TABLE_NAME + " WHERE STRINGVALUE = 'test';")) {
+            actualResultSet.next();
+            assertAll(() -> assertThat(actualResultSet.getString("STRINGVALUE"), equalTo("test")),
+                    () -> assertThat(actualResultSet.getString("BOOLVALUE"), equalTo("true")),
+                    () -> assertThat(actualResultSet.getString("DOUBLEVALUE"), equalTo("1.2")),
+                    () -> assertThat(actualResultSet.getString("INTEGERVALUE"), equalTo("1")),
+                    () -> assertThat(actualResultSet.getString("NULLVALUE"), equalTo(null)) //
+            );
+        }
     }
 
     @Test
@@ -370,9 +365,9 @@ class DynamodbAdapterIT {
         final String mappingName = "mappingForReplaceTest.json";
         uploadEmptyMappingWithTable(mappingName, "T1");
         createDynamodbVirtualSchema(mappingName);
-        assertThat(statement.executeQuery(LIST_TABLES_QUERY), table().row("T1").matches());
+        assertResult(LIST_TABLES_QUERY, table().row("T1").matches());
         uploadEmptyMappingWithTable(mappingName, "T2");
-        assertThat(statement.executeQuery(LIST_TABLES_QUERY), table().row("T1").matches());
+        assertResult(LIST_TABLES_QUERY, table().row("T1").matches());
     }
 
     @Test
@@ -381,10 +376,19 @@ class DynamodbAdapterIT {
         final String mappingName = "mappingForReplaceTest.json";
         uploadEmptyMappingWithTable(mappingName, "T1");
         createDynamodbVirtualSchema(mappingName);
-        assertThat(statement.executeQuery(LIST_TABLES_QUERY), table().row("T1").matches());
+        assertResult(LIST_TABLES_QUERY, table().row("T1").matches());
         uploadEmptyMappingWithTable(mappingName, "T2");
         statement.executeUpdate("ALTER VIRTUAL SCHEMA " + TEST_SCHEMA + " REFRESH");
-        assertThat(statement.executeQuery(LIST_TABLES_QUERY), table().row("T2").matches());
+        assertResult(LIST_TABLES_QUERY, table().row("T2").matches());
+    }
+
+    private void assertResult(final String sql, final Matcher<ResultSet> matcher) {
+        try (ResultSet result = statement.executeQuery(sql)) {
+            assertThat(result, matcher);
+        } catch (final SQLException exception) {
+            throw new IllegalStateException("Failed to execute assert query '" + sql + "': " + exception.getMessage(),
+                    exception);
+        }
     }
 
     private void uploadEmptyMappingWithTable(final String mappingName, final String tableName)
