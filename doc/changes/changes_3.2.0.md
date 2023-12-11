@@ -1,24 +1,10 @@
 # Virtual Schema for Amazon DynamoDB 3.2.0, released 2023-12-12
 
-Code name: Add tests with Exasol v8
+Code name: Support `ALTER VIRTUAL SCHEMA SET`
 
 ## Summary
 
-This release integrates the following new features from `virtual-schema-common-document` 10.1.0:
-
-### Remove support for `TIMESTAMP WITH LOCAL TIME ZONE`
-
-This release adds support for Exasol 8 by removing support for data type `TIMESTAMP WITH LOCAL TIME ZONE`. This type caused problems with the stricter type checks enabled by default in Exasol, causing pushdown queries for document based virtual schemas to fail with the following error:
-
-```
-Data type mismatch in column number 5 (1-indexed).Expected TIMESTAMP(3) WITH LOCAL TIME ZONE, but got TIMESTAMP(3).
-```
-
-We fixed this error by removing support `TIMESTAMP WITH LOCAL TIME ZONE` completely. Please update you EDML definitions to version `2.0.0`.
-
-### Add support for `ALTER VIRTUAL SCHEMA SET`
-
-This release adds support for `ALTER VIRTUAL SCHEMA SET`. This will allow changing properties like `MAPPING` of document based virtual schemas without dropping and re-creating the virtual schema:
+This release adds support for `ALTER VIRTUAL SCHEMA SET`. This will allow changing properties like `MAPPING` without dropping and re-creating the virtual schema:
 
 ```sql
 -- Update EDML mapping of the virtual schema
@@ -30,6 +16,8 @@ ALTER VIRTUAL SCHEMA MY_VIRTUAL_SCHEMA SET LOG_LEVEL = 'INFO';
 ```
 
 See the [`ALTER SCHEMA` documentation](https://docs.exasol.com/db/latest/sql/alter_schema.htm) for details.
+
+The release also adds integration tests with Exasol version 8
 
 ## Features
 
