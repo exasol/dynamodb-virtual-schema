@@ -12,12 +12,12 @@ import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 /**
  * This class imports the open library dataset into a DynamoDB table.
  *
- * run via
- * {@code  mvn  -Dexec.mainClass="com.exasol.adapter.dynamodb.OpenLibrary" -Dexec.classpathScope=test  test-compile exec:java}
+ * Run via
+ * {@code mvn -Dexec.mainClass="com.exasol.adapter.dynamodb.OpenLibrary" -Dexec.classpathScope=test test-compile exec:java}
  * 
- * for better performance you probably want to run this setup on an ec2 instance. Therefore run the following command in
+ * For better performance you probably want to run this setup on an EC2 instance. Therefore run the following command in
  * the tools directory:
- * {@code ./runMavenOnAws.sh -Dexec.mainClass="com.exasol.adapter.dynamodb.OpenLibrary" -Dexec.classpathScope=test  test-compile exec:java}
+ * {@code ./runMavenOnAws.sh -Dexec.mainClass="com.exasol.adapter.dynamodb.OpenLibrary" -Dexec.classpathScope=test test-compile exec:java}
  */
 public class OpenLibrary {
     private static final Logger LOGGER = LoggerFactory.getLogger(OpenLibrary.class);
@@ -39,8 +39,8 @@ public class OpenLibrary {
 
     void importTestData() throws IOException {
         try (final FileInputStream fileInputStream = new FileInputStream(new File(LOCAL_DATASET_PATH));
-                final GZIPInputStream unzipedInputStream = new GZIPInputStream(fileInputStream)) {
-            importDataFromJsonLines(TABLE_NAME, unzipedInputStream, -1);
+                final GZIPInputStream unzippedInputStream = new GZIPInputStream(fileInputStream)) {
+            importDataFromJsonLines(TABLE_NAME, unzippedInputStream, -1);
         }
     }
 
@@ -57,7 +57,7 @@ public class OpenLibrary {
                 }
                 System.out.println("done");
             } catch (final IOException exception) {
-                LOGGER.error("failed reading wget output");
+                LOGGER.error("failed reading wget output", exception);
             }
         }
     }

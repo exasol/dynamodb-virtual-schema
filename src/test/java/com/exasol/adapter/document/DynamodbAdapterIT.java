@@ -106,10 +106,13 @@ class DynamodbAdapterIT {
     }
 
     private static String getExaConnectionInformationForDynamodb() {
-        final JsonObject jsonConfig = Json.createObjectBuilder().add("awsAccessKeyId", LOCAL_DYNAMO_USER)
+        final JsonObject jsonConfig = Json.createObjectBuilder() //
+                .add("awsAccessKeyId", LOCAL_DYNAMO_USER) //
                 .add("awsSecretAccessKey", LOCAL_DYNAMO_PASS)
                 .add("awsEndpointOverride", getTestHostIpFromInsideExasol() + ":" + DYNAMODB.getPort())
-                .add("awsRegion", "eu-central-1").add("useSsl", false).build();
+                .add("awsRegion", "eu-central-1") //
+                .add("useSsl", false) //
+                .build();
         return toJson(jsonConfig);
     }
 
