@@ -2,7 +2,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <artifactId>dynamodb-virtual-schema</artifactId>
-    <version>3.1.4</version>
+    <version>4.0.0</version>
     <name>Virtual Schema for Amazon DynamoDB</name>
     <description>Adapter for DynamoDB data access from Virtual Schemas.</description>
     <url>https://github.com/exasol/dynamodb-virtual-schema/</url>
@@ -150,7 +150,7 @@
     <parent>
         <artifactId>dynamodb-virtual-schema-generated-parent</artifactId>
         <groupId>com.exasol</groupId>
-        <version>3.1.4</version>
+        <version>4.0.0</version>
         <relativePath>pk_generated_parent.pom</relativePath>
     </parent>
 </project>
