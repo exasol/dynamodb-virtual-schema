@@ -7,7 +7,7 @@
     <description>Adapter for DynamoDB data access from Virtual Schemas.</description>
     <url>https://github.com/exasol/dynamodb-virtual-schema/</url>
     <properties>
-        <vs-common-document.version>10.0.0</vs-common-document.version>
+        <vs-common-document.version>10.1.0</vs-common-document.version>
     </properties>
     <dependencyManagement>
         <dependencies>

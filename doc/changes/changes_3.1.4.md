@@ -14,7 +14,7 @@ This release adds integration tests using Exasol version 8
 
 ### Compile Dependency Updates
 
-* Updated `com.exasol:virtual-schema-common-document:9.4.2` to `10.0.0`
+* Updated `com.exasol:virtual-schema-common-document:9.4.2` to `10.1.0`
 * Updated `software.amazon.awssdk:dynamodb:2.20.156` to `2.21.42`
 
 ### Test Dependency Updates
@@ -22,7 +22,7 @@ This release adds integration tests using Exasol version 8
 * Updated `com.exasol:exasol-testcontainers:6.6.2` to `7.0.0`
 * Updated `com.exasol:hamcrest-resultset-matcher:1.6.1` to `1.6.3`
 * Updated `com.exasol:test-db-builder-java:3.5.1` to `3.5.3`
-* Updated `com.exasol:virtual-schema-common-document:9.4.2` to `10.0.0`
+* Updated `com.exasol:virtual-schema-common-document:9.4.2` to `10.1.0`
 * Updated `nl.jqno.equalsverifier:equalsverifier:3.15.2` to `3.15.4`
 * Updated `org.jacoco:org.jacoco.agent:0.8.10` to `0.8.11`
 * Updated `org.junit.jupiter:junit-jupiter-params:5.10.0` to `5.10.1`
