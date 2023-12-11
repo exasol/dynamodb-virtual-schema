@@ -12,7 +12,7 @@ Exasol's Virtual Schemas allow you to access external data just like regular tab
 
 For example:
 
- ```json
+```json
 {
   "Name": "The picture of Dorian Gray",
   "Author": {
@@ -46,7 +46,7 @@ If you decided to use DynamoDB on AWS, let us show you how to set it up.
 1. [Install AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2.html)
 1. [Create an access key](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_access-keys.html#Using_CreateAccessKey)  for your AWS account
 1. create `~/.aws/credentials` and fill in:
-    ```
+    ```ini
     [default]
         aws_access_key_id = <YOUR_ACCESS_KEY>
         aws_secret_access_key = <YOUR_SECRET_ACCESS_KEY>
@@ -71,7 +71,7 @@ Steps for setup:
     ```
 1. [Install AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2.html)
 1. create `~/.aws/credentials` and fill in:
-   ```
+   ```ini
    [default]
        aws_access_key_id = fakeMyKeyId
        aws_secret_access_key = fakeSecretAccessKey
@@ -134,11 +134,11 @@ Steps:
 1. [Download latest adapter release (.jar)](https://github.com/exasol/dynamodb-virtual-schema/releases/)
 1. [Create a Bucket in BucketFS](https://docs.exasol.com/administration/on-premise/bucketfs/create_new_bucket_in_bucketfs_service.htm)
 1. Upload the adapter to the BucketFS:
-    ```shell
+   ```shell
    curl -I -X PUT -T document-virtual-schema-dist-10.0.0-dynamodb-3.1.4.jar http://w:writepw@<YOUR_DB_IP>:2580/default/
    ```
 1. Create a schema to hold the adapter script:
-    ```sql
+   ```sql
    CREATE SCHEMA ADAPTER;
    ```
 1. Create the Adapter Script:
