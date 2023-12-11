@@ -1,4 +1,4 @@
-# Virtual Schema for Amazon DynamoDB 4.0.0, released 2023-??-??
+# Virtual Schema for Amazon DynamoDB 4.0.0, released 2023-12-12
 
 Code name: Add tests with Exasol v8
 
