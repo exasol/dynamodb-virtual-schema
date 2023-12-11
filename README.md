@@ -24,11 +24,11 @@ This adapter allows you to access document data that is stored in a [Amazon's Dy
 * Maps unstructured document data to Exasol tables that you can access using regular SQL statements
 * Pushes down queries to the remote source
 * Distributes the data loading over the whole Exasol Cluster, what makes queries more than six times faster compared to using a JDBC adapter
-* Flexible definition of the schema mapping using the [Exasol Document Mapping Language](https://github.com/exasol/virtual-schema-common-document/blob/main/doc/user_guide/edml_user_guide.md)
+* Flexible definition of the schema mapping using the [Exasol Document Mapping Language (EDML)](https://github.com/exasol/virtual-schema-common-document/blob/main/doc/user_guide/edml_user_guide.md)
 
 ## Limitations
 
-* In this version the adapter does not support comparisons between two columns
+* The adapter does not support comparisons between two columns
 
 ## Information for Users
 
@@ -40,7 +40,3 @@ This adapter allows you to access document data that is stored in a [Amazon's Dy
 ## Information for Developers
 
 * [Developer Guide](doc/development/developer_guide.md)
-
-<!-- @formatter:off -->
-[virtual-schema-common-document]: https://github.com/exasol/virtual-schema-common-document
-[artifact-reference-checker-plugin]: https://github.com/exasol/artifact-reference-checker-maven-plugin
