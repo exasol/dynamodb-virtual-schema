@@ -28,7 +28,7 @@ This adapter allows you to access document data that is stored in a [Amazon's Dy
 
 ## Limitations
 
-* The adapter does not support comparisons between two columns
+* The adapter does not support comparisons between two columns.
 
 ## Information for Users
 
