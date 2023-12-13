@@ -1,4 +1,4 @@
-# Virtual Schema for Amazon DynamoDB 3.2.0, released 2023-12-12
+# Virtual Schema for Amazon DynamoDB 3.2.0, released 2023-12-13
 
 Code name: Support `ALTER VIRTUAL SCHEMA SET`
 
