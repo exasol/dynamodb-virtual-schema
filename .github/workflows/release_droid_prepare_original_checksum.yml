@@ -5,8 +5,13 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-20.04 # UDFs fail with "VM error: Internal error: VM crashed" on ubuntu-latest
+    runs-on: ubuntu-20.04
     steps:
+      - name: Free Disk Space
+        if: ${{ false }}
+        run: |
+          sudo rm -rf /usr/local/lib/android
+          sudo rm -rf /usr/share/dotnet
       - name: Checkout the repository
         uses: actions/checkout@v4
         with:

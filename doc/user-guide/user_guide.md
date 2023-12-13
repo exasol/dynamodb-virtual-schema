@@ -8,30 +8,30 @@ Upload the latest available [release of this adapter](https://github.com/exasol/
 
 Then create a schema to hold the adapter script.
 
-```
+```sql
 CREATE SCHEMA ADAPTER;
 ```
 
 Next create the Adapter Script:
 
- ```
+```sql
 CREATE OR REPLACE JAVA ADAPTER SCRIPT ADAPTER.DYNAMODB_ADAPTER AS
     %scriptclass com.exasol.adapter.RequestDispatcher;
-    %jar /buckets/bfsdefault/default/document-virtual-schema-dist-9.4.2-dynamodb-3.1.3.jar;
+    %jar /buckets/bfsdefault/default/document-virtual-schema-dist-10.1.0-dynamodb-3.2.0.jar;
 /
 ```
 
 In addition to the adapter script we must create a UDF function that will handle the loading of the data:
 The UDF must be defined in the same schema as the `ADAPTER SCRIPT` (e.g. `ADAPTER`).
 
-```
+```sql
 CREATE OR REPLACE JAVA SET SCRIPT ADAPTER.IMPORT_FROM_DYNAMO_DB(
   DATA_LOADER VARCHAR(2000000),
   SCHEMA_MAPPING_REQUEST VARCHAR(2000000),
   CONNECTION_NAME VARCHAR(500))
   EMITS(...) AS
     %scriptclass com.exasol.adapter.document.UdfEntryPoint;
-    %jar /buckets/bfsdefault/default/document-virtual-schema-dist-9.4.2-dynamodb-3.1.3.jar;
+    %jar /buckets/bfsdefault/default/document-virtual-schema-dist-10.1.0-dynamodb-3.2.0.jar;
 /
 ```
 
@@ -41,7 +41,7 @@ For creating a Virtual Schema you need a connection either to AWS or to a local 
 
 For AWS use:
 
- ```
+```sql
 CREATE CONNECTION DYNAMO_CONNECTION
     TO ''
     USER ''
@@ -67,7 +67,7 @@ By setting `awsSessionToken` you can use two-factor authentication with this Vir
 
 For creating a connection to a local [AWS testing instance](https://docs.aws.amazon.com/de_de/amazondynamodb/latest/developerguide/DynamoDBLocal.html) use:
 
- ```
+```sql
 CREATE CONNECTION DYNAMO_CONNECTION
     TO ''
     USER ''
@@ -92,7 +92,7 @@ In the definitions you have to define the `source` property. For DynamoDB you us
 
 Finally create the Virtual Schema using:
 
-```
+```sql
 CREATE VIRTUAL SCHEMA DYNAMODB_TEST USING ADAPTER.DYNAMODB_ADAPTER WITH
     CONNECTION_NAME = 'DYNAMO_CONNECTION'
     MAPPING         = '/bfsdefault/default/path/to/mappings/in/bucketfs';

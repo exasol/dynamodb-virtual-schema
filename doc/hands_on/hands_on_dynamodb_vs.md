@@ -12,7 +12,7 @@ Exasol's Virtual Schemas allow you to access external data just like regular tab
 
 For example:
 
- ```json
+```json
 {
   "Name": "The picture of Dorian Gray",
   "Author": {
@@ -46,7 +46,7 @@ If you decided to use DynamoDB on AWS, let us show you how to set it up.
 1. [Install AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2.html)
 1. [Create an access key](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_access-keys.html#Using_CreateAccessKey)  for your AWS account
 1. create `~/.aws/credentials` and fill in:
-    ```
+    ```ini
     [default]
         aws_access_key_id = <YOUR_ACCESS_KEY>
         aws_secret_access_key = <YOUR_SECRET_ACCESS_KEY>
@@ -71,7 +71,7 @@ Steps for setup:
     ```
 1. [Install AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2.html)
 1. create `~/.aws/credentials` and fill in:
-   ```
+   ```ini
    [default]
        aws_access_key_id = fakeMyKeyId
        aws_secret_access_key = fakeSecretAccessKey
@@ -134,18 +134,18 @@ Steps:
 1. [Download latest adapter release (.jar)](https://github.com/exasol/dynamodb-virtual-schema/releases/)
 1. [Create a Bucket in BucketFS](https://docs.exasol.com/administration/on-premise/bucketfs/create_new_bucket_in_bucketfs_service.htm)
 1. Upload the adapter to the BucketFS:
-    ```shell
-   curl -I -X PUT -T document-virtual-schema-dist-9.4.2-dynamodb-3.1.3.jar http://w:writepw@<YOUR_DB_IP>:2580/default/
+   ```shell
+   curl -I -X PUT -T document-virtual-schema-dist-10.1.0-dynamodb-3.2.0.jar http://w:writepw@<YOUR_DB_IP>:2580/default/
    ```
 1. Create a schema to hold the adapter script:
-    ```sql
+   ```sql
    CREATE SCHEMA ADAPTER;
    ```
 1. Create the Adapter Script:
     ```sql
     CREATE OR REPLACE JAVA ADAPTER SCRIPT ADAPTER.DYNAMODB_ADAPTER AS
        %scriptclass com.exasol.adapter.RequestDispatcher;
-       %jar /buckets/bfsdefault/default/document-virtual-schema-dist-9.4.2-dynamodb-3.1.3.jar;
+       %jar /buckets/bfsdefault/default/document-virtual-schema-dist-10.1.0-dynamodb-3.2.0.jar;
     /
     ```
 1. Create UDF:
@@ -156,7 +156,7 @@ Steps:
       CONNECTION_NAME VARCHAR(500))
       EMITS(...) AS
         %scriptclass com.exasol.adapter.document.UdfEntryPoint;
-        %jar /buckets/bfsdefault/default/document-virtual-schema-dist-9.4.2-dynamodb-3.1.3.jar;
+        %jar /buckets/bfsdefault/default/document-virtual-schema-dist-10.1.0-dynamodb-3.2.0.jar;
     /
    ```
 
@@ -204,26 +204,36 @@ Steps:
 
 1. Create a connection to DynamoDB
     * For DynamoDB on AWS use:
-       ```sql
+      ```sql
       CREATE CONNECTION DYNAMO_CONNECTION
-         TO 'aws:<REGION>'
-         USER '<AWS_ACCESS_KEY_ID>'
-         IDENTIFIED BY '<AWS_SECRET_ACCESS_KEY>';
+        TO ''
+        USER ''
+        IDENTIFIED BY '{
+            "awsAccessKeyId": "<AWS ACCESS KEY ID>",
+            "awsSecretAccessKey": "<AWS SECRET KEY ID>",
+            "awsRegion": "<AWS REGION>"
+        }';
       ```
     * For a local DynamoDB use:
-       ```sql
+      ```sql
       CREATE CONNECTION DYNAMO_CONNECTION
-          TO 'http://<YOUR_DYNAMODB_IP>:8000'
-          USER 'fakeMyKeyId'
-          IDENTIFIED BY 'fakeSecretAccessKey';
+        TO ''
+        USER ''
+        IDENTIFIED BY '{
+            "awsAccessKeyId": "fakeMyKeyId",
+            "awsSecretAccessKey": "fakeSecretAccessKey",
+            "awsRegion": "eu-central-1",
+            "awsEndpointOverride": "localhost:8000",
+            "useSsl": false
+        }';
       ```
 
 2. Create Virtual Schema:
     ```sql
-   CREATE VIRTUAL SCHEMA DYNAMODB_TEST USING ADAPTER.DYNAMODB_ADAPTER WITH
-       CONNECTION_NAME = 'DYNAMO_CONNECTION'
-       MAPPING         = '/bfsdefault/default/mappings/firstMapping.json';
-   ```
+    CREATE VIRTUAL SCHEMA DYNAMODB_TEST USING ADAPTER.DYNAMODB_ADAPTER WITH
+      CONNECTION_NAME = 'DYNAMO_CONNECTION'
+      MAPPING         = '/bfsdefault/default/mappings/firstMapping.json';
+    ```
 
 ## First Results
 
