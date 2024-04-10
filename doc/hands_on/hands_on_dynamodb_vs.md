@@ -135,7 +135,7 @@ Steps:
 1. [Create a Bucket in BucketFS](https://docs.exasol.com/administration/on-premise/bucketfs/create_new_bucket_in_bucketfs_service.htm)
 1. Upload the adapter to the BucketFS:
    ```shell
-   curl -I -X PUT -T document-virtual-schema-dist-10.1.1-dynamodb-3.2.1.jar http://w:writepw@<YOUR_DB_IP>:2580/default/
+   curl -I -X PUT -T document-virtual-schema-dist-10.1.2-dynamodb-3.2.2.jar http://w:writepw@<YOUR_DB_IP>:2580/default/
    ```
 1. Create a schema to hold the adapter script:
    ```sql
@@ -145,7 +145,7 @@ Steps:
     ```sql
     CREATE OR REPLACE JAVA ADAPTER SCRIPT ADAPTER.DYNAMODB_ADAPTER AS
        %scriptclass com.exasol.adapter.RequestDispatcher;
-       %jar /buckets/bfsdefault/default/document-virtual-schema-dist-10.1.1-dynamodb-3.2.1.jar;
+       %jar /buckets/bfsdefault/default/document-virtual-schema-dist-10.1.2-dynamodb-3.2.2.jar;
     /
     ```
 1. Create UDF:
@@ -156,7 +156,7 @@ Steps:
       CONNECTION_NAME VARCHAR(500))
       EMITS(...) AS
         %scriptclass com.exasol.adapter.document.UdfEntryPoint;
-        %jar /buckets/bfsdefault/default/document-virtual-schema-dist-10.1.1-dynamodb-3.2.1.jar;
+        %jar /buckets/bfsdefault/default/document-virtual-schema-dist-10.1.2-dynamodb-3.2.2.jar;
     /
    ```
 

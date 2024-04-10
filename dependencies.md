@@ -50,7 +50,7 @@
 | [Apache Maven Dependency Plugin][44]                    | [Apache-2.0][23]                  |
 | [Project Keeper Maven plugin][45]                       | [The MIT License][46]             |
 | [Maven Failsafe Plugin][47]                             | [Apache-2.0][23]                  |
-| [JaCoCo :: Maven Plugin][48]                            | [Eclipse Public License 2.0][25]  |
+| [JaCoCo :: Maven Plugin][48]                            | [EPL-2.0][25]                     |
 | [error-code-crawler-maven-plugin][49]                   | [MIT License][50]                 |
 | [Reproducible Build Maven Plugin][51]                   | [Apache 2.0][35]                  |
 
