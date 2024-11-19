@@ -3,7 +3,6 @@ package com.exasol.adapter.document;
 import static com.exasol.adapter.document.JsonHelper.toJson;
 
 import java.io.*;
-import java.net.URISyntaxException;
 import java.util.*;
 
 import com.exasol.adapter.document.dynamodb.connection.DynamodbConnectionProperties;
@@ -30,7 +29,7 @@ public abstract class DynamodbTestDbBuilder {
      * Constructor called by all other constructors.
      */
     protected DynamodbTestDbBuilder(final String dynamoUrl, final String user, final String pass,
-            final Optional<String> sessionToken) throws URISyntaxException {
+            final Optional<String> sessionToken) {
         this.dynamoUrl = dynamoUrl;
         this.dynamoUser = user;
         this.dynamoPass = pass;
@@ -44,7 +43,7 @@ public abstract class DynamodbTestDbBuilder {
         this.dynamoClient = new DynamodbConnectionFactory().getConnection(connectionProperties);
     }
 
-    public DynamoDbClient getDynamodbLowLevelConnection() throws URISyntaxException {
+    public DynamoDbClient getDynamodbLowLevelConnection() {
         return this.dynamoClient;
     }
 
