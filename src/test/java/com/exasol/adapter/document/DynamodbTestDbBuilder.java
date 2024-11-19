@@ -143,7 +143,7 @@ public abstract class DynamodbTestDbBuilder {
         }
     }
 
-    public void importData(final String tableName, final InputStream stream) throws IOException {
+    public void importData(final String tableName, final InputStream stream) {
         try (final JsonReader jsonReader = Json
                 .createReader(Objects.requireNonNull(stream, "input stream for table " + tableName))) {
             final String[] itemsJson = splitJsonArrayInArrayOfJsonStrings(jsonReader.readArray());
