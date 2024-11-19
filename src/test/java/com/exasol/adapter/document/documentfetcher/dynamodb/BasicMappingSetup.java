@@ -17,10 +17,10 @@ import com.exasol.adapter.sql.SqlLiteralString;
 
 public class BasicMappingSetup {
 
-    public final static String PRIMARY_KEY_NAME = "isbn";
-    public final static String INDEX_NAME = "publisherIndex";
-    public final static String INDEX_PARTITION_KEY = "publisher";
-    public final static String INDEX_SORT_KEY = "price";
+    public static final String PRIMARY_KEY_NAME = "isbn";
+    public static final String INDEX_NAME = "publisherIndex";
+    public static final String INDEX_PARTITION_KEY = "publisher";
+    public static final String INDEX_SORT_KEY = "price";
     public final TableMapping tableMapping;
     private final ColumnMapping publisherColumn;
     private final ColumnMapping priceColumn;
@@ -32,8 +32,7 @@ public class BasicMappingSetup {
         final String edmlString = new String(Objects.requireNonNull(
                 DynamodbTableKeyFetcher.class.getClassLoader().getResourceAsStream(MappingTestFiles.BASIC_MAPPING))
                 .readAllBytes(), StandardCharsets.UTF_8);
-        final SchemaFetcher dummySchemaFetcher = source -> Optional.empty();
-        this.tableMapping = new JsonSchemaMappingReader(null, new SchemaInferencer(dummySchemaFetcher))
+        this.tableMapping = new JsonSchemaMappingReader(null, new SchemaInferencer(SchemaFetcher.empty()))
                 .readSchemaMapping(List.of(new EdmlInput(edmlString, "test"))).getTableMappings().get(0);
         this.publisherColumn = this.tableMapping.getColumns().stream()
                 .filter(column -> column.getExasolColumnName().equals("PUBLISHER")).findAny().orElseThrow();
