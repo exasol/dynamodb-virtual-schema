@@ -32,8 +32,7 @@ public class BasicMappingSetup {
         final String edmlString = new String(Objects.requireNonNull(
                 DynamodbTableKeyFetcher.class.getClassLoader().getResourceAsStream(MappingTestFiles.BASIC_MAPPING))
                 .readAllBytes(), StandardCharsets.UTF_8);
-        final SchemaFetcher dummySchemaFetcher = source -> Optional.empty();
-        this.tableMapping = new JsonSchemaMappingReader(null, new SchemaInferencer(dummySchemaFetcher))
+        this.tableMapping = new JsonSchemaMappingReader(null, new SchemaInferencer(SchemaFetcher.empty()))
                 .readSchemaMapping(List.of(new EdmlInput(edmlString, "test"))).getTableMappings().get(0);
         this.publisherColumn = this.tableMapping.getColumns().stream()
                 .filter(column -> column.getExasolColumnName().equals("PUBLISHER")).findAny().orElseThrow();
