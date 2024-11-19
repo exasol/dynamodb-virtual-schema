@@ -9,5 +9,5 @@ build:
   runnerOs: ubuntu-20.04
   freeDiskSpace: false
   exasolDbVersions:
-    - "8.24.0"
-    - "7.1.26"
+    - "8.31.0" # Tests fail with 8.32.0, see https://github.com/exasol/virtual-schema-common-document/issues/193
+    - "7.1.30"
