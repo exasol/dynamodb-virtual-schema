@@ -107,7 +107,7 @@ class DynamodbAdapterIT {
     }
 
     @AfterAll
-    void afterAll() {
+    static void afterAll() {
         udfTestSetup.close();
     }
 
