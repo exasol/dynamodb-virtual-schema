@@ -1,12 +1,18 @@
-# Virtual Schema for Amazon DynamoDB 3.2.4, released 2025-??-??
+# Virtual Schema for Amazon DynamoDB 3.2.4, released 2025-02-12
 
-Code name:
+Code name: Fix vulnerabilities CVE-2025-25193 and CVE-2025-24970 in dependencies
 
 ## Summary
 
-## Features
+This release fixes the following vulnerabilities in dependencies:
 
-* ISSUE_NUMBER: description
+* `io.netty:netty-common:jar:4.1.115.Final`: CVE-2025-25193
+* `io.netty:netty-handler:jar:4.1.115.Final`: CVE-2025-24970
+
+## Security
+
+* #193: Fixed CVE-2025-25193 in `io.netty:netty-common:jar:4.1.115.Final`
+* #192: Fixed CVE-2025-24970 in `io.netty:netty-handler:jar:4.1.115.Final`
 
 ## Dependency Updates
 
