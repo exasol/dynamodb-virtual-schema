@@ -6,8 +6,18 @@ sources:
       - integration_tests
       - udf_coverage
 build:
-  # UDFs in Exasol 7.1 require Ubuntu 20.04
-  runnerOs: ubuntu-20.04
+  runnerOs: ubuntu-24.04
   exasolDbVersions:
     - "8.31.0" # Tests fail with 8.32.0, see https://github.com/exasol/virtual-schema-common-document/issues/193
-    - "7.1.30"
+    # - "7.1.30" # Exasol 7.1.x currently does not work with the latest Ubuntu version
+
+  workflows:
+    - name: ci-build.yml
+      stepCustomizations:
+        - action: INSERT_AFTER
+          job: matrix-build
+          stepId: enable-testcontainer-reuse
+          content:
+            name: Fix VM Crash in UDFs
+            id: fix-vm-crash
+            run: sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
