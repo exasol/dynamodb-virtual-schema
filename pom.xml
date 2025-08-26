@@ -1,8 +1,8 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <artifactId>dynamodb-virtual-schema</artifactId>
-    <version>3.2.5</version>
+    <version>3.2.6</version>
     <name>Virtual Schema for Amazon DynamoDB</name>
     <description>Adapter for DynamoDB data access from Virtual Schemas.</description>
     <url>https://github.com/exasol/dynamodb-virtual-schema/</url>
@@ -55,7 +55,7 @@
         <dependency>
             <groupId>com.exasol</groupId>
             <artifactId>exasol-testcontainers</artifactId>
-            <version>7.1.5</version>
+            <version>7.1.7</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -118,7 +118,7 @@
             <plugin>
                 <groupId>com.exasol</groupId>
                 <artifactId>project-keeper-maven-plugin</artifactId>
-                <version>5.1.0</version>
+                <version>5.2.3</version>
                 <executions>
                     <execution>
                         <goals>
@@ -149,7 +149,17 @@
     <parent>
         <artifactId>dynamodb-virtual-schema-generated-parent</artifactId>
         <groupId>com.exasol</groupId>
-        <version>3.2.5</version>
+        <version>3.2.6</version>
         <relativePath>pk_generated_parent.pom</relativePath>
     </parent>
+    <dependencyManagement>
+        <dependencies>
+            <!--Transitive dependency override for CVE-2025-55163, direct dependency: software.amazon.awssdk:dynamodb:2.31.55:compile-->
+            <dependency>
+                <groupId>io.netty</groupId>
+                <artifactId>netty-codec-http2</artifactId>
+                <version>4.2.4.Final</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 </project>
