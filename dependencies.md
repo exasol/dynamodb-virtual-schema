@@ -68,7 +68,7 @@
 [5]: https://aws.amazon.com/apache2.0
 [6]: http://hamcrest.org/JavaHamcrest/
 [7]: https://raw.githubusercontent.com/hamcrest/JavaHamcrest/master/LICENSE
-[8]: https://junit.org/junit5/
+[8]: https://junit.org/
 [9]: https://www.eclipse.org/legal/epl-v20.html
 [10]: https://github.com/mockito/mockito
 [11]: https://opensource.org/licenses/MIT
