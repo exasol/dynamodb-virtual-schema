@@ -1,4 +1,4 @@
-# Virtual Schema for Amazon DynamoDB 3.2.7, released 2025-??-??
+# Virtual Schema for Amazon DynamoDB 3.2.7, released 2025-09-22
 
 Code name: Fixed vulnerabilities in Netty
 
