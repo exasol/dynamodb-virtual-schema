@@ -22,7 +22,7 @@ Netty is an asynchronous event-driven network application framework for developm
 ### Compile Dependency Updates
 
 * Updated `com.exasol:virtual-schema-common-document:11.0.3` to `11.0.6`
-* Updated `software.amazon.awssdk:dynamodb:2.31.55` to `2.33.4`
+* Updated `software.amazon.awssdk:dynamodb:2.31.55` to `2.34.0`
 
 ### Test Dependency Updates
 
@@ -32,5 +32,5 @@ Netty is an asynchronous event-driven network application framework for developm
 * Updated `com.exasol:virtual-schema-common-document:11.0.3` to `11.0.6`
 * Updated `nl.jqno.equalsverifier:equalsverifier:3.19` to `3.19.4`
 * Updated `org.junit.jupiter:junit-jupiter-params:5.13.0` to `5.13.4`
-* Updated `org.mockito:mockito-junit-jupiter:5.18.0` to `5.19.0`
+* Updated `org.mockito:mockito-junit-jupiter:5.18.0` to `5.20.0`
 * Updated `org.testcontainers:junit-jupiter:1.21.1` to `1.21.3`
