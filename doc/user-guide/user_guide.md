@@ -2,6 +2,12 @@
 
 This user guide helps with getting started with the DynamoDB Virtual Schemas.
 
+## Telemetry
+
+This virtual schema uses `telemetry-java` to send anonymous feature-usage events.
+
+For details on what is collected and how to disable telemetry, see the [documentation](https://github.com/exasol/telemetry-java/blob/main/doc/app-user-guide.md).
+
 ### Installation
 
 Upload the latest available [release of this adapter](https://github.com/exasol/dynamodb-virtual-schema/releases) to BucketFS. See [Create a bucket in BucketFS](https://docs.exasol.com/administration/on-premise/bucketfs/create_new_bucket_in_bucketfs_service.htm) and [Upload the driver to BucketFS](https://docs.exasol.com/administration/on-premise/bucketfs/accessfiles.htm) for details.
@@ -17,7 +23,7 @@ Next create the Adapter Script:
 ```sql
 CREATE OR REPLACE JAVA ADAPTER SCRIPT ADAPTER.DYNAMODB_ADAPTER AS
     %scriptclass com.exasol.adapter.RequestDispatcher;
-    %jar /buckets/bfsdefault/default/document-virtual-schema-dist-11.0.6-dynamodb-3.2.7.jar;
+    %jar /buckets/bfsdefault/default/document-virtual-schema-dist-12.0.2-dynamodb-4.0.0.jar;
 /
 ```
 
@@ -31,7 +37,7 @@ CREATE OR REPLACE JAVA SET SCRIPT ADAPTER.IMPORT_FROM_DYNAMO_DB(
   CONNECTION_NAME VARCHAR(500))
   EMITS(...) AS
     %scriptclass com.exasol.adapter.document.UdfEntryPoint;
-    %jar /buckets/bfsdefault/default/document-virtual-schema-dist-11.0.6-dynamodb-3.2.7.jar;
+    %jar /buckets/bfsdefault/default/document-virtual-schema-dist-12.0.2-dynamodb-4.0.0.jar;
 /
 ```
 
