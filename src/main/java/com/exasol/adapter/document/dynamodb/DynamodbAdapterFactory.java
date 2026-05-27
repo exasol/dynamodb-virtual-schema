@@ -4,8 +4,7 @@ import static com.exasol.adapter.document.dynamodb.DynamodbDocumentAdapterDialec
 
 import java.util.ServiceLoader;
 
-import com.exasol.adapter.AdapterFactory;
-import com.exasol.adapter.VirtualSchemaAdapter;
+import com.exasol.adapter.*;
 import com.exasol.adapter.document.DocumentAdapter;
 import com.exasol.logging.VersionCollector;
 
@@ -18,7 +17,7 @@ import com.exasol.logging.VersionCollector;
 public class DynamodbAdapterFactory implements AdapterFactory {
 
     @Override
-    public VirtualSchemaAdapter createAdapter() {
+    public VirtualSchemaAdapter createAdapter(final AdapterContext context) {
         return new DocumentAdapter(new DynamodbDocumentAdapterDialect());
     }
 
@@ -32,5 +31,10 @@ public class DynamodbAdapterFactory implements AdapterFactory {
     @Override
     public String getAdapterName() {
         return ADAPTER_NAME;
+    }
+
+    @Override
+    public String getAdapterProjectShortTag() {
+        return "VSDY";
     }
 }
