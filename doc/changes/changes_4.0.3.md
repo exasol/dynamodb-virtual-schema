@@ -81,6 +81,24 @@ This release fixes 29 dependency vulnerabilities, including memory exhaustion, r
 
 ## Dependency Updates
 
+### Compile Dependency Updates
+
+* Updated `com.exasol:virtual-schema-common-document:12.0.3` to `12.1.2`
+* Updated `software.amazon.awssdk:dynamodb:2.49.4` to `2.57.3`
+
+### Runtime Dependency Updates
+
+* Updated `org.slf4j:slf4j-jdk14:2.0.18` to `2.0.20`
+
+### Test Dependency Updates
+
+* Updated `com.exasol:exasol-testcontainers:8.0.1` to `8.0.2`
+* Updated `com.exasol:hamcrest-resultset-matcher:1.7.3` to `1.7.4`
+* Updated `com.exasol:test-db-builder-java:4.0.1` to `4.0.3`
+* Updated `com.exasol:udf-debugging-java:0.6.20` to `0.6.22`
+* Updated `com.exasol:virtual-schema-common-document:12.0.3` to `12.1.2`
+* Updated `org.mockito:mockito-junit-jupiter:5.23.0` to `5.24.0`
+
 ### Plugin Dependency Updates
 
 * Updated `com.exasol:error-code-crawler-maven-plugin:2.1.0` to `2.1.2`
