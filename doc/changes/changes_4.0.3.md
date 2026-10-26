@@ -1,14 +1,10 @@
-# Virtual Schema for Amazon DynamoDB 4.0.3, released 2026-??-??
+# Virtual Schema for Amazon DynamoDB 4.0.3, released 2026-10-26
 
 Code name: Dependency security fixes
 
 ## Summary
 
 This release fixes 29 dependency vulnerabilities, including memory exhaustion, request smuggling, and certificate validation issues.
-
-## Features
-
-* ISSUE_NUMBER: description
 
 ## Security
 
@@ -42,42 +38,6 @@ This release fixes 29 dependency vulnerabilities, including memory exhaustion, r
 * #236: Fixed CVE-2026-86231 (certificate revocation validation) in dependency `com.github.mwiede:jsch:jar:2.28.5:test`
 * #228: Fixed CVE-2026-64607 (connection not released after invalid encoding) in dependency `org.apache.httpcomponents.client5:httpclient5:jar:5.6.2:runtime`
 * #234: Fixed CVE-2026-71290 (TLS hostname verification bypass) in dependency `org.apache.httpcomponents.client5:httpclient5:jar:5.6.2:runtime`
-
-####
-
-
-- Fixes #226
-- Fixes #228
-- Fixes #230
-- Fixes #232
-- Fixes #233
-- Fixes #234
-- Fixes #236
-- Fixes #237
-- Fixes #238
-- Fixes #243
-- Fixes #244
-- Fixes #245
-- Fixes #246
-- Fixes #247
-- Fixes #248
-- Fixes #249
-- Fixes #250
-- Fixes #251
-- Fixes #252
-- Fixes #253
-- Fixes #254
-- Fixes #255
-- Fixes #257
-- Fixes #258
-- Fixes #259
-- Fixes #260
-- Fixes #261
-- Fixes #262
-- Fixes #263
-- Fixes #264
-
-
 
 ## Dependency Updates
 
