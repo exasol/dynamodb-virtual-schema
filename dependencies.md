@@ -50,11 +50,11 @@
 | [Artifact reference checker and unifier][43]            | [MIT License][44]                              |
 | [spdx-maven-plugin Maven Plugin][45]                    | [The Apache Software License, Version 2.0][35] |
 | [Apache Maven Dependency Plugin][46]                    | [Apache-2.0][23]                               |
-| [Project Keeper Maven plugin][47]                       | [The MIT License][48]                          |
-| [Maven Failsafe Plugin][49]                             | [Apache-2.0][23]                               |
-| [JaCoCo :: Maven Plugin][50]                            | [EPL-2.0][25]                                  |
-| [error-code-crawler-maven-plugin][51]                   | [MIT License][52]                              |
-| [Git Commit Id Maven Plugin][53]                        | [GNU Lesser General Public License 3.0][54]    |
+| [Maven Failsafe Plugin][47]                             | [Apache-2.0][23]                               |
+| [JaCoCo :: Maven Plugin][48]                            | [EPL-2.0][25]                                  |
+| [error-code-crawler-maven-plugin][49]                   | [MIT License][50]                              |
+| [Git Commit Id Maven Plugin][51]                        | [GNU Lesser General Public License 3.0][52]    |
+| [Project Keeper Maven plugin][53]                       | [The MIT License][54]                          |
 | [Apache Maven Clean Plugin][55]                         | [Apache-2.0][23]                               |
 | [Apache Maven Resources Plugin][56]                     | [Apache-2.0][23]                               |
 | [Apache Maven Install Plugin][57]                       | [Apache-2.0][23]                               |
@@ -107,14 +107,14 @@
 [44]: https://github.com/exasol/artifact-reference-checker-maven-plugin/blob/main/LICENSE
 [45]: https://github.com/spdx/spdx-maven-plugin
 [46]: https://maven.apache.org/plugins/maven-dependency-plugin/
-[47]: https://github.com/exasol/project-keeper/
-[48]: https://github.com/exasol/project-keeper/blob/main/LICENSE
-[49]: https://maven.apache.org/surefire/maven-failsafe-plugin/
-[50]: https://www.jacoco.org/jacoco/trunk/doc/maven.html
-[51]: https://github.com/exasol/error-code-crawler-maven-plugin/
-[52]: https://github.com/exasol/error-code-crawler-maven-plugin/blob/main/LICENSE
-[53]: https://github.com/git-commit-id/git-commit-id-maven-plugin
-[54]: http://www.gnu.org/licenses/lgpl-3.0.txt
+[47]: https://maven.apache.org/surefire/maven-failsafe-plugin/
+[48]: https://www.jacoco.org/jacoco/trunk/doc/maven.html
+[49]: https://github.com/exasol/error-code-crawler-maven-plugin/
+[50]: https://github.com/exasol/error-code-crawler-maven-plugin/blob/main/LICENSE
+[51]: https://github.com/git-commit-id/git-commit-id-maven-plugin
+[52]: http://www.gnu.org/licenses/lgpl-3.0.txt
+[53]: https://github.com/exasol/project-keeper/
+[54]: https://github.com/exasol/project-keeper/blob/main/LICENSE
 [55]: https://maven.apache.org/plugins/maven-clean-plugin/
 [56]: https://maven.apache.org/plugins/maven-resources-plugin/
 [57]: https://maven.apache.org/plugins/maven-install-plugin/
